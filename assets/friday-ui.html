@@ -3,121 +3,285 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>星期五 · Friday</title>
-  <style>
-    :root {
-      --bg: #0a0e14;
-      --surface: #0d1117;
-      --border: #21262d;
-      --text: #e6edf3;
-      --dim: #8b949e;
-      --accent: #58a6ff;
-      --glow: rgba(88, 166, 255, 0.3);
-      --phase-assume: #f0883e;
-      --phase-plan: #a371f7;
-      --phase-track: #3fb950;
-      --phase-verify: #79c0ff;
-      --phase-decide: #d2a8ff;
+  <title>Friday</title>
+  <script>
+    if (window.location.search.indexOf('transparent') !== -1) {
+      document.documentElement.classList.add('transparent-mode');
+      document.documentElement.style.background = 'transparent';
+      if (document.body) document.body.style.background = 'transparent';
     }
-    * { box-sizing: border-box; }
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .transparent-mode body { background: transparent !important; }
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
+      background: #030306;
+      color: rgba(255,255,255,0.92);
       min-height: 100vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+    }
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      perspective: 800px;
+    }
+    .grid-sphere {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 120vmax;
+      height: 120vmax;
+      margin-left: -60vmax;
+      margin-top: -60vmax;
+      transform-style: preserve-3d;
+      animation: spin 32s linear infinite;
+    }
+    .transparent-mode .grid-sphere {
+      width: 92vmax;
+      height: 92vmax;
+      margin-left: -46vmax;
+      margin-top: -46vmax;
+    }
+    .grid-sphere::before,
+    .grid-sphere::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.08) 1px, transparent 1px);
+      background-size: 4% 4%;
+      border-radius: 50%;
+      transform: rotateX(75deg) rotateZ(0deg);
+    }
+    .grid-sphere::after {
+      transform: rotateX(75deg) rotateZ(90deg);
+      opacity: 0.6;
+    }
+    .orb {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 180px;
+      height: 180px;
+      margin-left: -90px;
+      margin-top: -90px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(0,212,255,0.35), rgba(0,100,180,0.12));
+      box-shadow:
+        0 0 60px rgba(0,212,255,0.2),
+        inset 0 0 60px rgba(0,212,255,0.08);
+      animation: pulse 4s ease-in-out infinite;
+      z-index: 1;
+    }
+    .ring {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 50%;
+      transform-style: preserve-3d;
+      z-index: 0;
+    }
+    .ring-1 { width: 220px; height: 220px; margin-left: -110px; margin-top: -110px; animation: spin 20s linear infinite reverse; }
+    .ring-2 { width: 280px; height: 280px; margin-left: -140px; margin-top: -140px; animation: spin 25s linear infinite; }
+    .ring-3 { width: 340px; height: 340px; margin-left: -170px; margin-top: -170px; animation: spin 30s linear infinite reverse; }
+    .transparent-mode .ring-1 { width: 180px; height: 180px; margin-left: -90px; margin-top: -90px; }
+    .transparent-mode .ring-2 { width: 230px; height: 230px; margin-left: -115px; margin-top: -115px; }
+    .transparent-mode .ring-3 { width: 280px; height: 280px; margin-left: -140px; margin-top: -140px; }
+    .transparent-mode .orb { width: 140px; height: 140px; margin-left: -70px; margin-top: -70px; }
+    @keyframes spin {
+      from { transform: rotateZ(0deg); }
+      to { transform: rotateZ(360deg); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.02); }
+    }
+    .content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
       padding: 1.5rem;
+      max-width: 420px;
     }
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      color: var(--accent);
-      text-shadow: 0 0 20px var(--glow);
-      margin-bottom: 0.5rem;
+    .title {
+      font-size: 1rem;
+      font-weight: 300;
+      letter-spacing: 0.4em;
+      color: rgba(0,212,255,0.9);
+      margin-bottom: 1.2rem;
     }
-    .tagline { color: var(--dim); font-size: 0.9rem; margin-bottom: 1.5rem; }
-    .panel {
-      width: 100%;
-      max-width: 560px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
+    .phase-badge {
+      display: inline-block;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-bottom: 0.8rem;
+      background: rgba(0,212,255,0.15);
+      color: rgba(0,212,255,0.95);
+      border: 1px solid rgba(0,212,255,0.35);
+    }
+    .mission-line {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.7);
       margin-bottom: 1rem;
     }
-    .panel h2 { font-size: 0.85rem; color: var(--dim); margin: 0 0 0.5rem 0; text-transform: uppercase; }
-    .mission { font-size: 1rem; word-break: break-word; }
-    .phase {
-      display: inline-block;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      font-weight: 600;
+    .round {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
     }
-    .phase-assume { background: var(--phase-assume); color: #0a0e14; }
-    .phase-plan { background: var(--phase-plan); color: #fff; }
-    .phase-track { background: var(--phase-track); color: #0a0e14; }
-    .phase-verify { background: var(--phase-verify); color: #0a0e14; }
-    .phase-decide { background: var(--phase-decide); color: #0a0e14; }
-    .iq-section { margin-top: 0.75rem; }
-    .iq-section h2 { margin-bottom: 0.5rem; }
-    .iq-levels { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .iq-level {
-      padding: 0.35rem 0.6rem;
-      background: var(--border);
-      border-radius: 4px;
-      font-size: 0.8rem;
+    .toggle-logs {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: rgba(0,212,255,0.6);
+      cursor: pointer;
+      user-select: none;
     }
-    .iq-level.active { border: 1px solid var(--accent); color: var(--accent); }
-    footer { margin-top: auto; color: var(--dim); font-size: 0.75rem; }
+    .toggle-logs:hover { color: rgba(0,212,255,0.9); }
+    .log-drawer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+      text-align: left;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 0.5rem;
+    }
+    .log-drawer.open { max-height: 160px; overflow-y: auto; }
+    .log-drawer .log-item { padding: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .stream-in { animation: streamIn 0.4s ease; }
+    @keyframes streamIn {
+      from { opacity: 0.5; transform: translateY(-2px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: rgba(0,212,255,0.8); margin-right: 0.35rem; box-shadow: 0 0 8px rgba(0,212,255,0.6); animation: livePulse 2s ease-in-out infinite; }
+    @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .think-cursor { display: inline-block; width: 2px; height: 1em; background: rgba(0,212,255,0.9); margin-left: 1px; vertical-align: text-bottom; animation: blink 0.8s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
   </style>
 </head>
 <body>
-  <h1>FRIDAY</h1>
-  <p class="tagline">自我进化 · 始终知道当前要干什么</p>
-
-  <div class="panel">
-    <h2>当前使命</h2>
-    <div class="mission" id="mission">—</div>
-    <div style="margin-top: 0.5rem;">
-      <span class="phase phase-assume" id="phase">假设</span>
-      <span style="margin-left: 0.5rem; color: var(--dim);" id="updated">—</span>
-    </div>
-    <div style="margin-top: 0.5rem; font-size: 0.9rem;" id="next">—</div>
+  <div class="bg">
+    <div class="grid-sphere"></div>
+    <div class="ring ring-1"></div>
+    <div class="ring ring-2"></div>
+    <div class="ring ring-3"></div>
+    <div class="orb"></div>
   </div>
-
-  <div class="panel iq-section">
-    <h2>智商阶段</h2>
-    <div class="iq-levels">
-      <span class="iq-level" data-iq="1">初级</span>
-      <span class="iq-level" data-iq="2">中级</span>
-      <span class="iq-level" data-iq="3">高级</span>
-    </div>
-    <p style="margin: 0.5rem 0 0 0; color: var(--dim); font-size: 0.8rem;">不同阶段对应不同操作难度，可随进化迭代。</p>
+  <div class="content">
+    <div class="title">FRIDAY</div>
+    <div class="phase-badge" id="phase"><span class="think-cursor"></span></div>
+    <div class="mission-line" id="mission"><span class="think-cursor"></span></div>
+    <div class="round" id="roundInfo"><span class="live-dot" id="liveDot"></span><span id="roundText"></span></div>
+    <div class="toggle-logs" id="toggleLogs">··· 详情</div>
+    <div class="log-drawer" id="logDrawer"></div>
   </div>
-
-  <footer>状态来自 state/current_mission.json · 闭环：假设→规划→追踪→校验→决策</footer>
 
   <script>
     (function () {
-      var statePath = '../state/current_mission.json';
-      var phaseMap = { '假设': 'phase-assume', '规划': 'phase-plan', '追踪': 'phase-track', '校验': 'phase-verify', '决策': 'phase-decide' };
-      function loadState() {
-        fetch(statePath).then(function (r) { return r.ok ? r.json() : null; }).then(function (s) {
-          if (!s) return;
-          document.getElementById('mission').textContent = s.mission || '—';
-          document.getElementById('phase').textContent = s.phase || '—';
-          document.getElementById('phase').className = 'phase ' + (phaseMap[s.phase] || 'phase-assume');
-          document.getElementById('updated').textContent = s.updated_at ? '更新于 ' + s.updated_at.slice(0, 19) : '—';
-          document.getElementById('next').textContent = (s.next_action ? '下一步: ' + s.next_action : '—');
-        }).catch(function () {});
+      var isServed = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+      var phaseEl = document.getElementById('phase');
+      var missionEl = document.getElementById('mission');
+      var roundTextEl = document.getElementById('roundText');
+      var logDrawer = document.getElementById('logDrawer');
+      var missionStreamTimer = null;
+      var phaseStreamTimer = null;
+      var firstApply = true;
+      function streamText(el, newText, speed, done) {
+        if (el._streamTimer) clearTimeout(el._streamTimer);
+        el._streamTarget = newText;
+        el._streamDone = done;
+        el._streamIdx = 0;
+        el.innerHTML = '';
+        var cursor = document.createElement('span');
+        cursor.className = 'think-cursor';
+        cursor.setAttribute('aria-hidden', 'true');
+        el.appendChild(cursor);
+        function tick() {
+          if (el._streamIdx >= el._streamTarget.length) {
+            if (cursor.parentNode === el) el.removeChild(cursor);
+            el.textContent = el._streamTarget;
+            if (el._streamDone) el._streamDone();
+            return;
+          }
+          el._streamIdx += 1;
+          el.textContent = el._streamTarget.slice(0, el._streamIdx);
+          el.appendChild(cursor);
+          el._streamTimer = setTimeout(tick, speed);
+        }
+        tick();
       }
-      loadState();
-      setInterval(loadState, 5000);
+      function apply(payload) {
+        var s = (payload && payload.state) || {};
+        var phase = s.phase || '—';
+        var mission = (s.mission || '—').slice(0, 80) + ((s.mission || '').length > 80 ? '…' : '');
+        var r = s.loop_round || 0;
+        if (phase !== phaseEl._lastPhase) {
+          phaseEl._lastPhase = phase;
+          if (phaseStreamTimer) clearTimeout(phaseStreamTimer);
+          phaseEl.classList.add('stream-in');
+          streamText(phaseEl, phase, 70, function () {
+            phaseStreamTimer = setTimeout(function () { phaseEl.classList.remove('stream-in'); }, 300);
+          });
+        }
+        if (mission !== missionEl._lastMission) {
+          missionEl._lastMission = mission;
+          if (missionStreamTimer) clearTimeout(missionStreamTimer);
+          missionEl.classList.add('stream-in');
+          streamText(missionEl, mission, 48, function () {
+            missionStreamTimer = setTimeout(function () { missionEl.classList.remove('stream-in'); }, 300);
+          });
+        }
+        if (firstApply) firstApply = false;
+        roundTextEl.textContent = r > 0 ? '第 ' + r + ' 轮' : '';
+        var entries = (payload && payload.logs && payload.logs.entries) || [];
+        if (entries.length === 0) {
+          logDrawer.innerHTML = '<div class="log-item">暂无</div>';
+        } else {
+          var html = entries.slice(-12).reverse().map(function (e) {
+            return '<div class="log-item stream-in">' + (e.phase || '') + ' · ' + (e.desc || '').slice(0, 42) + '</div>';
+          }).join('');
+          if (logDrawer.innerHTML !== html) {
+            logDrawer.innerHTML = html;
+          }
+        }
+      }
+      document.getElementById('toggleLogs').onclick = function () {
+        document.getElementById('logDrawer').classList.toggle('open');
+      };
+      if (isServed) {
+        var es = new EventSource('/stream');
+        es.onmessage = function (e) {
+          try {
+            var payload = JSON.parse(e.data);
+            apply(payload);
+          } catch (err) {}
+        };
+        es.onerror = function () {
+          setTimeout(function () { es = new EventSource('/stream'); }, 2000);
+        };
+      } else {
+        fetch('../state/current_mission.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (s) {
+          apply({ state: s || {}, logs: { entries: [] } });
+        }).catch(function () {});
+        setInterval(function () {
+          Promise.all([
+            fetch('../state/current_mission.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (s) { return s || {}; }),
+            fetch('../state/recent_logs.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { return (d && d.entries) || []; })
+          ]).then(function (arr) {
+            apply({ state: arr[0], logs: { entries: arr[1] } });
+          }).catch(function () {});
+        }, 1500);
+      }
     })();
   </script>
 </body>

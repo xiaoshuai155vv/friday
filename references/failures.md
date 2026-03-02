@@ -15,6 +15,11 @@
 - 2025-03-02：某自动化步骤因窗口未前置失败 → 原因：未等待窗口激活。下次：先激活目标窗口再发送按键。
 ```
 
+- 2026-03-02：screenshot_tool 写 BMP 时 buf 切片非 bytes → 原因：ctypes 数组切片类型。下次：用 memoryview(buf).tobytes() 写入。
+- 2026-03-02：run_plan 中 vision 步骤报错 → 原因：未配置 vision_config.json 或环境变量。下次：规划时注明「需配置多模态 API」；无 key 时 run_plan 可跳过 vision 或记入 failures，不阻断整链。
+- 2026-03-02：打开摄像头时出现「需要用新应用打开此 microsoft.windows.camera 链接」弹窗阻断 → 已在 selfie.py 中 1.5s 后自动发送回车尝试确认；若仍阻断可截图→vision 定位「确定」按钮→click。
+- 2026-03-02：自校验用 vision 判别「是否有 CMD/是否圆形/是否无标题栏」时 vision_proxy 可能超时 → 下次：自校验轮可设较短 vision 超时或重试；或记录「待人工抽检」后继续下一轮假设。
+
 ## 与决策的关系
 
 - 主动决策阶段：查阅本表与最近日志，再决定下一轮假设/规划。
