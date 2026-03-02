@@ -84,6 +84,7 @@ description: |
 | [references/logging.md](references/logging.md) | 需要规范行为日志与溯源时。 |
 | [references/ui_iq.md](references/ui_iq.md) | 需要 UI 或智商阶段设计时。 |
 | [references/failures.md](references/failures.md) | 决策或规划时吸取历史教训。 |
+| [references/evolution_guide.md](references/evolution_guide.md) | 自我进化实施顺序、Git 与版本、多模态与私域。 |
 
 ## 脚本
 
