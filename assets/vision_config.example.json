@@ -1,0 +1,7 @@
+{
+  "model_type": "openai_chat",
+  "model_name": "qwen3-vl-30b-a3b-instruct",
+  "api_key": "YOUR_API_KEY",
+  "base_url": "https://mgallery.haier.net/v1",
+  "_comment": "多模态备用：当需要看图决策时，可配合 hex-machine-code 技能的 vision_proxy.py 使用；将本文件复制为 vision_config.json 并填写 api_key"
+}

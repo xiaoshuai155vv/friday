@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>星期五 · Friday</title>
+  <style>
+    :root {
+      --bg: #0a0e14;
+      --surface: #0d1117;
+      --border: #21262d;
+      --text: #e6edf3;
+      --dim: #8b949e;
+      --accent: #58a6ff;
+      --glow: rgba(88, 166, 255, 0.3);
+      --phase-assume: #f0883e;
+      --phase-plan: #a371f7;
+      --phase-track: #3fb950;
+      --phase-verify: #79c0ff;
+      --phase-decide: #d2a8ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      text-shadow: 0 0 20px var(--glow);
+      margin-bottom: 0.5rem;
+    }
+    .tagline { color: var(--dim); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .panel {
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .panel h2 { font-size: 0.85rem; color: var(--dim); margin: 0 0 0.5rem 0; text-transform: uppercase; }
+    .mission { font-size: 1rem; word-break: break-word; }
+    .phase {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .phase-assume { background: var(--phase-assume); color: #0a0e14; }
+    .phase-plan { background: var(--phase-plan); color: #fff; }
+    .phase-track { background: var(--phase-track); color: #0a0e14; }
+    .phase-verify { background: var(--phase-verify); color: #0a0e14; }
+    .phase-decide { background: var(--phase-decide); color: #0a0e14; }
+    .iq-section { margin-top: 0.75rem; }
+    .iq-section h2 { margin-bottom: 0.5rem; }
+    .iq-levels { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .iq-level {
+      padding: 0.35rem 0.6rem;
+      background: var(--border);
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+    .iq-level.active { border: 1px solid var(--accent); color: var(--accent); }
+    footer { margin-top: auto; color: var(--dim); font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <h1>FRIDAY</h1>
+  <p class="tagline">自我进化 · 始终知道当前要干什么</p>
+
+  <div class="panel">
+    <h2>当前使命</h2>
+    <div class="mission" id="mission">—</div>
+    <div style="margin-top: 0.5rem;">
+      <span class="phase phase-assume" id="phase">假设</span>
+      <span style="margin-left: 0.5rem; color: var(--dim);" id="updated">—</span>
+    </div>
+    <div style="margin-top: 0.5rem; font-size: 0.9rem;" id="next">—</div>
+  </div>
+
+  <div class="panel iq-section">
+    <h2>智商阶段</h2>
+    <div class="iq-levels">
+      <span class="iq-level" data-iq="1">初级</span>
+      <span class="iq-level" data-iq="2">中级</span>
+      <span class="iq-level" data-iq="3">高级</span>
+    </div>
+    <p style="margin: 0.5rem 0 0 0; color: var(--dim); font-size: 0.8rem;">不同阶段对应不同操作难度，可随进化迭代。</p>
+  </div>
+
+  <footer>状态来自 state/current_mission.json · 闭环：假设→规划→追踪→校验→决策</footer>
+
+  <script>
+    (function () {
+      var statePath = '../state/current_mission.json';
+      var phaseMap = { '假设': 'phase-assume', '规划': 'phase-plan', '追踪': 'phase-track', '校验': 'phase-verify', '决策': 'phase-decide' };
+      function loadState() {
+        fetch(statePath).then(function (r) { return r.ok ? r.json() : null; }).then(function (s) {
+          if (!s) return;
+          document.getElementById('mission').textContent = s.mission || '—';
+          document.getElementById('phase').textContent = s.phase || '—';
+          document.getElementById('phase').className = 'phase ' + (phaseMap[s.phase] || 'phase-assume');
+          document.getElementById('updated').textContent = s.updated_at ? '更新于 ' + s.updated_at.slice(0, 19) : '—';
+          document.getElementById('next').textContent = (s.next_action ? '下一步: ' + s.next_action : '—');
+        }).catch(function () {});
+      }
+      loadState();
+      setInterval(loadState, 5000);
+    })();
+  </script>
+</body>
+</html>
