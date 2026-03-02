@@ -7,7 +7,7 @@
 
 ## 闭环执行顺序
 
-1. **主动假设**：列出/补充需求假设（含用户补充、私域如 ihaier），写一条 `assume` 日志。
+1. **主动假设**：列出/补充需求假设（含用户补充、私域见 references/private_domains.md），写一条 `assume` 日志。
 2. **主动规划**：产出能力清单与任务分解，写 `plan` 日志。
 3. **任务追踪**：执行任务并更新状态与 `track` 日志。
 4. **完成校验**：测试是否满足假设，写 `verify` 日志；失败则记入 `references/failures.md`。
@@ -24,9 +24,9 @@
 
 ## 多模态备用
 
-需要看图理解时，使用 hex-machine-code 技能的 `vision_proxy.py`，并配置 `assets/vision_config.example.json`（复制为 vision_config.json 并填写 API）。
+需要看图理解时，使用本技能内 `scripts/vision_proxy.py`，配置 `vision_config.json`（可参考 `assets/vision_config.example.json`）填写 API。
 
 ## 私域与用户补充
 
-- 私域：见 `references/private_knowledge.md`、`references/ihaier.md`，按需用 `scripts/load_private_knowledge.py get ihaier` 等加载。
+- 私域：见 `references/private_knowledge.md`、`references/private_domains.md`，按需用 `scripts/load_private_knowledge.py get domains` 等加载。
 - 用户补充需求：纳入「主动假设」清单，并在闭环中回环实现。

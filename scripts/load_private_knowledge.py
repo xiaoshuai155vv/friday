@@ -4,7 +4,7 @@
 按需加载私域知识：根据关键词或任务类型返回对应 reference 路径或摘要。
 用法:
   python load_private_knowledge.py list
-  python load_private_knowledge.py get ihaier
+  python load_private_knowledge.py get domains
   python load_private_knowledge.py get user_assumptions
 """
 
@@ -13,7 +13,7 @@ import os
 
 REFS = os.path.join(os.path.dirname(__file__), "..", "references")
 MAP = {
-    "ihaier": "ihaier.md",
+    "domains": "private_domains.md",
     "user_assumptions": "private_knowledge.md",
 }
 

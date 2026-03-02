@@ -2,7 +2,7 @@
 name: friday-self-evolution
 description: |
   依托用户电脑的自我进化技能，形成「主动假设→主动规划→任务追踪→完成校验→主动决策」闭环，满足用户所有需求。始终知道当前要干什么，不迷失。
-  触发：星期五、贾维斯、自我进化、主动假设、任务追踪、闭环生态、技能进化、当前在干什么、私域知识、ihaier、行为日志溯源、智商阶段。
+  触发：星期五、贾维斯、自我进化、主动假设、任务追踪、闭环生态、技能进化、当前在干什么、私域知识、行为日志溯源、智商阶段。
 ---
 
 # 星期五 · 自我进化技能
@@ -21,7 +21,7 @@ description: |
 
 | 模块         | 职责 |
 |--------------|------|
-| **主动假设** | 假设用户需求（含用户补充的假设），维护私域知识（如 ihaier 办公平台）按需加载。 |
+| **主动假设** | 假设用户需求（含用户补充的假设），维护私域知识（见 references/private_domains.md）按需加载。 |
 | **主动规划** | 根据假设生成能力清单与实施路线。 |
 | **任务追踪** | 跟踪任务状态，使用文档/状态文件自我管理，形成闭环。 |
 | **完成校验** | 审核完成情况，测试是否满足假想需求。 |
@@ -38,17 +38,17 @@ description: |
 
 ## 私域知识与用户补充
 
-- **私域**：LLM 可能不知道的知识，按需加载。例如办公平台为 **ihaier**（桌面端应用）。
+- **私域**：LLM 可能不知道的知识，按需加载；不限于单一平台，见 `references/private_domains.md`（如办公平台 ihaier 等）。
 - **用户补充假设**：用户可补充需求假设，需纳入闭环（假设→规划→追踪→校验→决策）并回环实现。
-- **按需加载**：大段私域放在 `references/private_knowledge.md` 或 `references/ihaier.md`，在 SKILL 中仅说明「何时读」；必要时用 `scripts/load_private_knowledge.py` 或直接读文件。
+- **按需加载**：大段私域放在 `references/private_domains.md`、`references/private_knowledge.md`，在 SKILL 中仅说明「何时读」；必要时用 `scripts/load_private_knowledge.py get domains` 等。
 
 详见 [references/private_knowledge.md](references/private_knowledge.md)。
 
 ## 多模态与视觉理解
 
 - 当文本/代码无法拟人理解界面时，使用**多模态模型**看图决策（截图→模型→点击/键盘）。
-- **备用视觉模型**：可配置为 qwen3-vl 等，通过 `scripts/vision_proxy.py`（参见 hex-machine-code 技能）或本技能 `assets/vision_config.example.json` 配置。
-- 与「截图 + 鼠标 + 键盘」基础工具配合，实现自动化与自我验证。
+- **自包含**：本技能内 `scripts/vision_proxy.py` 读 `vision_config.json`（或环境变量），调用 OpenAI 兼容多模态 API（如 qwen3-vl）；配置示例见 `assets/vision_config.example.json`。
+- 与本技能内「截图 + 鼠标 + 键盘」脚本配合，实现自动化与自我验证。
 
 ## 行为日志与溯源
 
@@ -63,16 +63,16 @@ description: |
 
 详见 [references/failures.md](references/failures.md)。
 
-## 通用基础能力抽象
+## 通用基础能力（自包含）
 
-- **鼠标 / 键盘 / 屏幕**：不重复造轮子，优先使用 **hex-machine-code-x64-win** 技能提供的 `mouse_tool.py`、`keyboard_tool.py`、`screenshot_tool.py`、`screen_size_tool.py` 等。
-- 本技能聚焦「闭环、状态、私域、日志、决策」，基础输入输出与自动化委托给该技能。
+- **独立自闭环**：本技能不依赖其他技能。鼠标、键盘、屏幕、截图、多模态均由本技能内脚本完成。
+- **脚本**：`scripts/screen_size_tool.py`（主屏宽高）、`scripts/mouse_tool.py`（click/scroll）、`scripts/keyboard_tool.py`（key/keys/type）、`scripts/screenshot_tool.py`（全屏 BMP）、`scripts/vision_proxy.py`（看图问答）。均为 Windows 下自包含（ctypes/标准库）。
 
 ## UI：科幻主体与智商阶段
 
-- **风格**：类似贾维斯/星期五的科幻主体，持续自我完善。
-- **智商阶段**：用不同「阶段」对应不同难度（如不同年龄用户能完成的电脑操作难度），便于适配与扩展。
-- **实现**：见 [references/ui_iq.md](references/ui_iq.md)；前端骨架在 `assets/`，可随进化迭代。
+- **形态**：采用 **BS（浏览器端）**，理由见 [references/ui_iq.md](references/ui_iq.md)（开发与迭代成本低、易自进化）。
+- **风格**：类似贾维斯/星期五的科幻主体，持续自我完善；智商阶段对应不同操作难度。
+- **实现**：见 [references/ui_iq.md](references/ui_iq.md)；前端骨架在 `assets/friday-ui.html`。
 
 ## 技能内资源索引（按需加载）
 
@@ -80,7 +80,9 @@ description: |
 |------|--------|
 | [references/loop.md](references/loop.md) | 需要细化闭环流程、各模块输入输出时。 |
 | [references/state.md](references/state.md) | 需要读写当前使命/任务、防迷失时。 |
-| [references/private_knowledge.md](references/private_knowledge.md) | 需要私域知识或 ihaier/用户补充假设时。 |
+| [references/private_knowledge.md](references/private_knowledge.md) | 需要私域知识或用户补充假设时。 |
+| [references/private_domains.md](references/private_domains.md) | 需要按域加载私域（如办公平台等）时。 |
+| [references/requirements.md](references/requirements.md) | 项目约束与要求，自我进化中必须遵守。 |
 | [references/logging.md](references/logging.md) | 需要规范行为日志与溯源时。 |
 | [references/ui_iq.md](references/ui_iq.md) | 需要 UI 或智商阶段设计时。 |
 | [references/failures.md](references/failures.md) | 决策或规划时吸取历史教训。 |
@@ -90,14 +92,16 @@ description: |
 
 - `scripts/state_tracker.py` — 读写 `state/current_mission.json`，维护「当前要干什么」。
 - `scripts/behavior_log.py` — 写行为日志到 `logs/`。
-- `scripts/load_private_knowledge.py` — 按需加载并输出私域知识片段（或仅做路径/索引）。
+- `scripts/load_private_knowledge.py` — 按需加载私域（`get domains` / `get user_assumptions`）。
+- `scripts/screen_size_tool.py`、`scripts/mouse_tool.py`、`scripts/keyboard_tool.py`、`scripts/screenshot_tool.py` — 自包含的屏幕/鼠标/键盘/截图（Windows）。
+- `scripts/vision_proxy.py` — 自包含多模态看图问答，配置见 `vision_config.json`。
 
 ## 资源与配置
 
-- **多模态备用**：`assets/vision_config.example.json` 可复制为 `vision_config.json` 并填写 api_key，配合 hex-machine-code 的 `vision_proxy.py` 使用（如 qwen3-vl）。
-- **UI**：`assets/friday-ui.html` 为科幻主题骨架，展示当前使命、阶段与智商等级；可本地用浏览器打开，状态来自 `state/current_mission.json`。
+- **多模态**：复制 `assets/vision_config.example.json` 为 `scripts/vision_config.json` 或项目根下 `vision_config.json`，填写 api_key、base_url、model_name。
+- **UI**：`assets/friday-ui.html` 为 BS 科幻主题骨架，展示当前使命、阶段与智商等级；本地用浏览器打开即可，状态来自 `state/current_mission.json`。
 
 ## 设计参考
 
 - 整体思路与架构参考 **skill-creator**：SKILL.md 精简、引用 references、脚本可独立运行、渐进式披露。
-- 长期任务：适当抽象通用功能（如通过引用 hex-machine-code 的鼠标/键盘/屏幕），避免重复实现。
+- 本技能**独立自闭环**，不依赖其他技能；长期任务中可继续抽象通用能力并沉淀在本技能内。

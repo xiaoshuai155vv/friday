@@ -7,7 +7,7 @@
 
 ## 已知私域示例
 
-- **办公平台**：ihaier，桌面端应用。操作、入口、术语等可写在 `references/ihaier.md`，需要时再读。
+- **多域**：私域不限于单一平台，统一写在 `references/private_domains.md`（如办公平台 ihaier 等），需要时用 `scripts/load_private_knowledge.py get domains` 加载。
 
 ## 用户补充假设
 
@@ -17,5 +17,5 @@
 ## 按需加载方式
 
 1. 在 SKILL.md 或本文件注明「何时读哪份文档」。
-2. 大段内容放在 `references/` 下独立文件（如 `ihaier.md`），需要时再读。
+2. 大段内容放在 `references/private_domains.md` 等独立文件，需要时再读。
 3. 可选：`scripts/load_private_knowledge.py` 根据关键词或任务类型返回对应片段路径或内容摘要，供调用方读取。
