@@ -10,7 +10,7 @@
 |------|------|-----------|
 | **输入·键盘** | 单键、组合键、输入字符串(ASCII) | keyboard_tool key/keys/type；do 按回车、音量静音/减/增 |
 | **输入·鼠标** | 左键点击、滚轮、当前坐标 | mouse_tool click/scroll/pos |
-| **输入·剪贴板** | 文本读/写 | clipboard_tool get/set；do 剪贴板读/写 |
+| **输入·剪贴板** | 文本读/写；图片(BMP)读/写 | clipboard_tool get/set/image_get/image_set；do 剪贴板读/写/剪贴板图片保存/写入 |
 | **输出·屏幕** | 全屏截图(BMP)、屏幕宽高 | screenshot_tool、screen_size_tool |
 | **输出·文件** | 文本读/写、列目录 | file_tool read/write/list；do 读文件/写文件/列目录 |
 | **看** | 看图问答(多模态) | vision_proxy；run_plan 中 vision 步骤 |
@@ -19,9 +19,10 @@
 | **系统·时间** | 当前时间(UTC/本地) | time_tool；do 当前时间 |
 | **系统·环境** | 主机名、用户名 | env_tool；do 主机名/用户名 |
 | **系统·网络** | ipconfig 信息 | network_tool；do 网络信息 |
-| **系统·电源** | 防休眠/关屏 N 秒 | power_tool prevent_sleep |
+| **系统·电源** | 防休眠/关屏 N 秒；睡眠/休眠 | power_tool prevent_sleep、sleep、hibernate；do 防休眠/睡眠/休眠 |
 | **系统·音量** | 静音/减/增(模拟键) | keyboard_tool key 173/174/175 |
 | **启动·应用** | 记事本、浏览器、摄像头、资源管理器、闹钟、日历、设置、任务管理器、计算器、运行(Win+R) | 各 launch_*.py 与 do |
+| **窗口·激活** | 按标题（部分匹配）提到前台 | window_tool activate；do 窗口激活 |
 | **闭环·状态** | 当前使命/阶段/轮次 | state_tracker、current_mission.json |
 | **闭环·日志** | 行为记录、近期导出 | behavior_log、export_recent_logs |
 | **闭环·校验** | 能力链自检 | self_verify_capabilities |
@@ -33,13 +34,13 @@
 
 | 缺口 | 说明 | 可行实现 |
 |------|------|----------|
-| **鼠标·右键/中键** | 仅支持左键点击，无法「右键菜单」「中键」 | mouse_tool 增加 right_click / middle_click（ctypes mouse_event RIGHTDOWN/RIGHTUP等） |
+| **鼠标·右键/中键** | 已覆盖：mouse_tool right_click、middle_click | — |
 | **鼠标·拖拽** | 已覆盖：mouse_tool drag x1 y1 x2 y2 | — |
 | **键盘·中文/Unicode** | type 主要 ASCII，中文会变成空格 | SendInput Unicode 或 IME 模拟；或依赖剪贴板粘贴中文 |
-| **窗口·前后台** | 无法「把某窗口提到前台」或「按标题激活」 | ctypes FindWindow/SetForegroundWindow；或 do 常用组合键 Alt+Tab |
+| **窗口·前后台** | 已覆盖：window_tool activate "部分标题"；do 窗口激活 | — |
 | **进程·列表/结束** | 已覆盖：process_tool list / kill（tasklist/taskkill） | 按窗口标题查 PID 可扩展 |
-| **剪贴板·图片** | 仅文本，无法读写图片剪贴板 | 扩展 clipboard_tool 支持 CF_DIB 等 |
-| **电源·关机/休眠** | 仅有防休眠，无关机/休眠/重启 | powercfg / SetSuspendState / ExitWindowsEx；或 run_plan 点设置 |
+| **剪贴板·图片** | 已覆盖：clipboard_tool image_get/image_set（BMP/CF_DIB） | — |
+| **电源·睡眠/休眠** | 已覆盖：power_tool sleep、hibernate；do 睡眠、休眠 | 关机/重启可按需扩展 |
 | **组合键·常用** | Win+E、Ctrl+C/V、Alt+F4 等未在 do/capabilities 显式列出 | capabilities 补充「组合键用 keyboard_tool keys」；do 可加 do 复制/粘贴 等 |
 | **路径·解析** | 无 %USERPROFILE%、%TEMP% 等展开 | env_tool 或 file_tool 支持 expand 路径 |
 

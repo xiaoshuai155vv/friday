@@ -169,7 +169,9 @@ description: |
 - `scripts/load_private_knowledge.py` — 按需加载私域（`get domains` / `get user_assumptions`）。
 - `scripts/screen_size_tool.py`、`scripts/mouse_tool.py`（含 right_click/middle_click/drag）、`scripts/keyboard_tool.py`、`scripts/screenshot_tool.py`、`scripts/clipboard_tool.py`、`scripts/timer_tool.py`、`scripts/file_tool.py`、`scripts/time_tool.py`、`scripts/process_tool.py`（进程 list/kill）— 屏幕/鼠标/键盘/截图/剪贴板/定时/文件/时间/进程（Windows）。
 - `scripts/launch_clock.py`、`scripts/launch_calendar.py`、`scripts/launch_settings.py`、`scripts/launch_taskmgr.py`、`scripts/launch_calc.py`、`scripts/env_tool.py`（含 EXPAND 路径）、`scripts/network_tool.py` — 打开闹钟、日历、设置、任务管理器、计算器；环境/网络只读。
-- `scripts/power_tool.py` — 防止休眠/关屏（prevent_sleep [秒数]，Windows ctypes）。
+- `scripts/window_tool.py` — 窗口激活：`activate "标题或部分标题"`（EnumWindows+SetForegroundWindow）；`do.py 窗口激活 记事本`。
+- `scripts/power_tool.py` — 防止休眠/关屏（prevent_sleep [秒数]）；睡眠/休眠（sleep、hibernate）；Windows ctypes。
+- `scripts/clipboard_tool.py` — get/set 文本；image_get/image_set 剪贴板图片（BMP/CF_DIB）；`do.py 剪贴板图片保存|剪贴板图片写入 [路径]`。
 - `scripts/vision_proxy.py` — 自包含多模态看图问答，配置见 `vision_config.json`。
 - `scripts/serve.py` — 本地 HTTP 服务（默认 8765）；启动后约 1.5s 自动打开置顶悬浮窗。使用本技能前需先运行此服务。
 - `scripts/friday_floating_main.py` — 悬浮窗统一入口：优先启动 Qt 版，无 PyQt5 时回退 WebView 版。
@@ -182,7 +184,7 @@ description: |
 - `scripts/launch_notepad.py`、`scripts/launch_explorer.py` — 打开记事本、文件管理器（可带路径）。
 - `scripts/selfie.py` — 自拍：打开摄像头 → 等 3s → 截屏保存 screenshots/selfie_*.bmp。
 - `scripts/parse_vision_steps.py` — 从 vision 自然语言输出解析 click/type/key 步骤，输出 JSON。
-- `scripts/do.py` — 便捷入口：`do.py 自拍|打开摄像头|截图|打开浏览器 [url]`；意图由模型识别后选用。
+- `scripts/do.py` — 便捷入口：自拍/摄像头/截图/浏览器/剪贴板读写/剪贴板图片保存写入/窗口激活/睡眠/休眠/防休眠/进程/复制粘贴等；意图由模型识别后选用。
 
 ## 资源与配置
 

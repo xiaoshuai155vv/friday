@@ -22,12 +22,12 @@
 | 打开记事本 | `python scripts/launch_notepad.py [文件路径]` 或 `do.py 打开记事本` |
 | 打开文件管理器 | `python scripts/launch_explorer.py [目录]` 或 `do.py 打开文件管理器` |
 | 打开闹钟/日历 | `do.py 打开闹钟`、`do.py 打开日历` |
-| 剪贴板读/写 | `do.py 剪贴板读`、`do.py 剪贴板写 内容` |
+| 剪贴板读/写 | `do.py 剪贴板读`、`do.py 剪贴板写 内容`；图片：`clipboard_tool.py image_get <路径>`、`image_set <路径>`；`do.py 剪贴板图片保存 [路径]`、`剪贴板图片写入 <路径>` |
 | 防休眠、音量 | `do.py 防休眠 [秒]`、`do.py 音量静音`、`do.py 音量减`、`do.py 音量增` |
 | 执行任意脚本 | `do.py run <脚本名> [参数...]`，如 `do.py run screenshot_tool`、`do.py run timer_tool 5 run launch_notepad` |
 | 按回车（可用来确认弹窗） | `python scripts/keyboard_tool.py key 13` 或 `do.py 按回车` |
 | 音量静音/减/增 | `python scripts/keyboard_tool.py key 173`（静音）/`174`（减）/`175`（增） |
-| 剪贴板读/写 | `python scripts/clipboard_tool.py get`、`python scripts/clipboard_tool.py set "内容"` |
+| 剪贴板读/写/图片 | `clipboard_tool.py get`、`set "内容"`；`image_get <路径>` 将剪贴板图存为 BMP、`image_set <路径>` 从 BMP 写入剪贴板 |
 | 定时 N 秒后执行 | `python scripts/timer_tool.py <秒数>` 仅等待；`timer_tool.py <秒> run launch_notepad` 等执行脚本 |
 | 当前系统时间 | `python scripts/time_tool.py`（UTC）、`time_tool.py --local` 本地；`do.py 当前时间` |
 | 主机名/用户名/路径展开 | `env_tool.py COMPUTERNAME|USERNAME|all`；`env_tool.py EXPAND %USERPROFILE%\\Desktop`；`do.py 主机名`、`do.py 用户名` |
@@ -36,6 +36,8 @@
 | 打开闹钟与时钟 | `python scripts/launch_clock.py` |
 | 打开日历（闹钟与时钟） | `python scripts/launch_calendar.py` |
 | 防止休眠/关屏（N 秒内） | `python scripts/power_tool.py prevent_sleep [秒数]`，0 表示持续到进程结束 |
+| 睡眠/休眠 | `power_tool.py sleep`、`power_tool.py hibernate`；`do.py 睡眠`、`do.py 休眠` |
+| 窗口激活（按标题） | `python scripts/window_tool.py activate "标题或部分标题"`；`do.py 窗口激活 记事本` |
 | 显示/亮度设置 | `python scripts/launch_settings.py display` 或 run_plan 打开后 vision+点击 |
 | 通知设置 | `python scripts/launch_settings.py notifications` |
 | 打开运行对话框（Win+R） | `do.py 打开运行` 或 `keyboard_tool.py keys 91 82` |
