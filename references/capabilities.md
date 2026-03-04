@@ -15,15 +15,16 @@
 | 当前光标位置 | `python scripts/mouse_tool.py pos`（输出 x y） |
 | 鼠标滚轮 | `python scripts/mouse_tool.py scroll delta` |
 | 常用组合键 | `keyboard_tool.py keys <vk1> <vk2>`，如 Alt+Tab=18 9、Ctrl+C=17 67、Win+E=91 69、Alt+F4=18 115 |
-| 键盘输入 | `python scripts/keyboard_tool.py type "内容"` 或 `key <vk>` |
+| 键盘输入 | `python scripts/keyboard_tool.py type "内容"` 或 `key <vk>`（type 仅 ASCII） |
+| 中文/Unicode 输入 | `do.py 输入中文 内容`（先写剪贴板再 Ctrl+V 粘贴）；计划中可用 step paste 粘贴剪贴板内容 |
 | 看图提问 | `python scripts/vision_proxy.py <图路径> "问题"` |
-| 执行计划（截图/vision/点击/输入等） | `python scripts/run_plan.py plans/xxx.json`；步骤类型：screenshot / vision / click / type / key / scroll / wait / run（执行 scripts 下脚本） |
+| 执行计划（截图/vision/点击/输入等） | `python scripts/run_plan.py plans/xxx.json`；步骤类型：screenshot / vision / click / type / key / paste / scroll / wait / run |
 | vision 输出解析为步骤 JSON | `python scripts/parse_vision_steps.py [文件或 stdin]` |
 | 打开记事本 | `python scripts/launch_notepad.py [文件路径]` 或 `do.py 打开记事本` |
 | 打开文件管理器 | `python scripts/launch_explorer.py [目录]` 或 `do.py 打开文件管理器` |
 | 打开闹钟/日历 | `do.py 打开闹钟`、`do.py 打开日历` |
 | 剪贴板读/写 | `do.py 剪贴板读`、`do.py 剪贴板写 内容`；图片：`clipboard_tool.py image_get <路径>`、`image_set <路径>`；`do.py 剪贴板图片保存 [路径]`、`剪贴板图片写入 <路径>` |
-| 防休眠、音量 | `do.py 防休眠 [秒]`、`do.py 音量静音`、`do.py 音量减`、`do.py 音量增` |
+| 防休眠、音量 | `do.py 防休眠 [秒]`、`do.py 音量静音`、`do.py 音量减`、`do.py 音量增`；精确音量：`volume_tool.py get`、`set <0-100>`；`do.py 音量值`、`do.py 设置音量 50` |
 | 执行任意脚本 | `do.py run <脚本名> [参数...]`，如 `do.py run screenshot_tool`、`do.py run timer_tool 5 run launch_notepad` |
 | 按回车（可用来确认弹窗） | `python scripts/keyboard_tool.py key 13` 或 `do.py 按回车` |
 | 音量静音/减/增 | `python scripts/keyboard_tool.py key 173`（静音）/`174`（减）/`175`（增） |
@@ -37,17 +38,19 @@
 | 打开日历（闹钟与时钟） | `python scripts/launch_calendar.py` |
 | 防止休眠/关屏（N 秒内） | `python scripts/power_tool.py prevent_sleep [秒数]`，0 表示持续到进程结束 |
 | 睡眠/休眠 | `power_tool.py sleep`、`power_tool.py hibernate`；`do.py 睡眠`、`do.py 休眠` |
-| 窗口激活（按标题） | `python scripts/window_tool.py activate "标题或部分标题"`；`do.py 窗口激活 记事本` |
-| 显示/亮度设置 | `python scripts/launch_settings.py display` 或 run_plan 打开后 vision+点击 |
-| 通知设置 | `python scripts/launch_settings.py notifications` |
+| 关机/重启 | `power_tool.py shutdown [秒]`、`power_tool.py reboot [秒]`；`do.py 关机 [秒]`、`do.py 重启 [秒]`（默认立即） |
+| 窗口激活（按标题/按进程名） | `window_tool.py activate "标题"`；`window_tool.py activate_process <进程名>`（从进程列表匹配，如 ihaier、ihaier.exe）；`window_tool.py activate_pid <PID>`；`do.py 窗口激活 记事本`；按标题查 PID：`window_tool.py pid "标题"` |
+| 显示/亮度 | `launch_settings.py display` 或 run_plan+vision；软件亮度：`brightness_tool.py get`、`set <0-100>`；`do.py 亮度`、`do.py 设置亮度 80` |
+| 通知/Toast | `notification_tool.py show "正文"`；`do.py 通知 内容`（Win10+）；通知设置：`launch_settings.py notifications` |
 | 打开运行对话框（Win+R） | `do.py 打开运行` 或 `keyboard_tool.py keys 91 82` |
 | 任务管理器 | `do.py 任务管理器` 或 `python scripts/launch_taskmgr.py` |
 | 计算器 | `do.py 计算器` 或 `python scripts/launch_calc.py` |
-| 网络信息 | `do.py 网络信息` 或 `do.py 网络信息 all`；`python scripts/network_tool.py [ipconfig|brief]` |
+| 网络信息 | `do.py 网络信息`、`do.py 网络信息 all`；`network_tool.py [ipconfig|brief|wlan|interfaces]`；`do.py WLAN`、`do.py 网络接口` |
+| 注册表读/写 | `reg_tool.py get HKCU "Software\\..." [值名]`、`reg_tool.py set HKCU "Software\\..." 值名 sz "内容"` 或 `dword 1`；根键 HKCU/HKLM/HKCR/HKU/HKCC |
 | 文本文件读/写/列目录 | `file_tool.py read/write <路径> [内容]`、`file_tool.py list <目录>`；`do.py 列目录 [路径]` |
 | 自主校验能力链（截图/鼠标/键盘/启动/vision/剪贴板） | `python scripts/self_verify_capabilities.py`，结果见 `state/self_verify_result.json` |
 | 闭环跑者（无人时持续推进轮次与日志） | `python scripts/loop_runner.py` 一轮；`loop_runner.py --daemon [--interval 300]` 常驻 |
-| 计划模板（plans/） | `minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_send_message.json`、`example_screenshot_vision.json`，供 run_plan 引用 |
+| 计划模板（plans/） | `minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_send_message.json`、`example_ihaier_check_messages.json`、`example_screenshot_vision.json`，供 run_plan 引用 |
 
 ## 说明
 

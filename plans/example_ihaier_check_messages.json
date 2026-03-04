@@ -1,0 +1,7 @@
+[
+  {"do": "comment", "comment": "检查 ihaier 是否有人找我：先激活窗口再截图+vision"},
+  {"do": "run", "script": "window_tool", "args": ["activate_process", "ihaier"]},
+  {"do": "wait", "sec": 1.2, "comment": "等待窗口置顶"},
+  {"do": "screenshot", "path": "screenshots/ihaier_check.bmp"},
+  {"do": "vision", "image": "screenshots/ihaier_check.bmp", "question": "图中是 ihaier 办公平台界面（或当前桌面）。请检查并回答：1) 是否有未读消息、@我、或「有人找我」类的提示？2) 是否有红点、数字角标、通知中心未读、消息列表未读？3) 如有，请简要列出内容或位置；如没有或无法识别 ihaier 界面，请直接说明「未发现有人找我」或「当前界面未看到 ihaier 消息提示」。用一两句话总结即可。"}
+]
