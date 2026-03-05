@@ -1,0 +1,10 @@
+[
+  {"do": "comment", "comment": "获取「我的」最新消息：先激活 ihaier，再点击中间列表置顶第一条（多为「我的」），右侧即显示我的会话，再截图+vision 读最新一条"},
+  {"do": "run", "script": "window_tool", "args": ["activate", "办公平台"]},
+  {"do": "wait", "sec": 1.2},
+  {"do": "comment", "comment": "点击中间列表置顶第一条（我的）；坐标以 1920x1080 为参考，中间列首行约 (280,300)，分辨率不同可先截图+vision 取坐标"},
+  {"do": "click", "x": 280, "y": 300},
+  {"do": "wait", "sec": 0.8},
+  {"do": "screenshot", "path": "screenshots/ihaier_my_latest.bmp"},
+  {"do": "vision", "image": "screenshots/ihaier_my_latest.bmp", "question": "图中是 ihaier 消息界面。私域：已点击中间列表第一条，右侧应显示「我的」会话；最下面一条是最新消息，时间在对话框中间。请：1) 写出中间列表第一条的会话名；2) 读出右侧最下面一条（最新）消息的发送方、内容摘要与时间。"}
+]

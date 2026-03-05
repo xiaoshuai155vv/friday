@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 执行自动化计划：按顺序执行 截图/vision/点击/输入/按键，实现「点点点」与多模态决策。
-计划为 JSON 数组，每步: screenshot | vision | click | right_click | middle_click | drag | type | key | scroll | wait。
+计划为 JSON 数组，每步: screenshot | vision | click | right_click | middle_click | drag | type | key | paste | scroll | wait。
 用法: python run_plan.py <plan.json>  或  python run_plan.py --stdin  (从 stdin 读 JSON)
 """
 import sys
@@ -13,9 +13,22 @@ import time
 
 SCRIPTS = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(SCRIPTS)
+STATE_DIR = os.path.join(PROJECT, "state")
+VISION_LAST_OUTPUT = os.path.join(STATE_DIR, "vision_last_output.txt")
+
+# 子进程统一用 UTF-8 输出，避免 vision/脚本输出 GBK 被当 UTF-8 解码导致乱码（含写入 vision_last_output.txt）
+_SUBPROCESS_ENV = {**os.environ, "PYTHONIOENCODING": "utf-8"}
 
 def run(cmd_list, cwd=None):
-    return subprocess.run(cmd_list, cwd=cwd or PROJECT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    return subprocess.run(
+        cmd_list,
+        cwd=cwd or PROJECT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=_SUBPROCESS_ENV,
+    )
 
 def step_screenshot(args):
     path = args.get("path") or os.path.join(PROJECT, "screenshots", "plan_capture.bmp")
@@ -71,6 +84,11 @@ def step_key(args):
     r = run([sys.executable, os.path.join(SCRIPTS, "keyboard_tool.py"), "key", str(vk)])
     return r.returncode == 0, r.stderr or ""
 
+def step_paste(args):
+    """Ctrl+V 粘贴（可用于粘贴剪贴板中的中文等）。"""
+    r = run([sys.executable, os.path.join(SCRIPTS, "keyboard_tool.py"), "keys", "17", "86"])
+    return r.returncode == 0, r.stderr or ""
+
 def step_wait(args):
     t = float(args.get("sec") or args.get("seconds") or 1)
     time.sleep(t)
@@ -87,8 +105,30 @@ def step_run(args):
     path = os.path.join(SCRIPTS, name + ".py")
     if not os.path.isfile(path):
         return False, "run: script not found " + path
-    r = subprocess.run([sys.executable, path] + (args.get("args") or []), cwd=PROJECT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    run_args = [str(a) for a in (args.get("args") or [])]
+    r = subprocess.run(
+        [sys.executable, path] + run_args,
+        cwd=PROJECT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=_SUBPROCESS_ENV,
+    )
     return r.returncode == 0, r.stderr or ""
+
+def _safe_print_vision(out):
+    """在 Windows 控制台 gbk 下安全打印 vision 输出（多为 UTF-8 文本）。"""
+    try:
+        print(out)
+    except UnicodeEncodeError:
+        try:
+            sys.stdout.reconfigure(encoding="utf-8")
+            print(out)
+        except (AttributeError, OSError):
+            sys.stdout.buffer.write((out.encode("utf-8", errors="replace") + b"\n"))
+            sys.stdout.buffer.flush()
+
 
 def main():
     if "--stdin" in sys.argv:
@@ -115,6 +155,7 @@ def main():
         "drag": step_drag,
         "type": step_type,
         "key": step_key,
+        "paste": step_paste,
         "scroll": step_scroll,
         "wait": step_wait,
         "comment": step_comment,
@@ -133,7 +174,13 @@ def main():
             print("step {} {} failed: {}".format(i + 1, do, out), file=sys.stderr)
             sys.exit(1)
         if out and do == "vision":
-            print(out)
+            try:
+                os.makedirs(STATE_DIR, exist_ok=True)
+                with open(VISION_LAST_OUTPUT, "w", encoding="utf-8") as f:
+                    f.write(out)
+            except OSError:
+                pass
+            _safe_print_vision(out)
     print("plan done")
 
 if __name__ == "__main__":
