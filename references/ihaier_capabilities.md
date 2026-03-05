@@ -48,7 +48,7 @@
 ## 三、计划与引用
 
 - 获取未读消息、列出未读会话：`plans/example_ihaier_check_messages.json`、`plans/example_ihaier_who_contacted_me.json`（读取消息列表 + vision）。
-- 获取「我的」最新消息：`plans/example_ihaier_my_latest_message.json`（激活后若右侧已是「我的」则直接读最新一条；否则先点中间列表第一条再截图读）。
+- 获取「我的」最新消息：`plans/example_ihaier_my_latest_message.json`（激活后先**点击中间列表最上方圆形头像（我的）**，再截图读最新一条；勿点其下长方形会话条目。若提示词中明确当前用户姓名如周小帅，vision 可据此确认「我的」即该用户会话）。
 - 发消息：`plans/example_ihaier_send_message.json`（激活 ihaier → 点击输入框 → 粘贴剪贴板 → Enter 发送；执行前需设置剪贴板为要发送的内容）。
 - 其他能力（视频会议、云文档、会议室预约等）：暂无独立 plan，统一走「激活 ihaier → 截图 → vision 定位左侧入口 → click」，后续可按需加命名 plan。
 
