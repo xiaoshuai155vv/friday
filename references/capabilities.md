@@ -9,6 +9,8 @@
 | 自拍 | `python scripts/selfie.py` |
 | 打开摄像头 | `python scripts/launch_camera.py` |
 | 截图 | `python scripts/screenshot_tool.py` 或带路径 |
+| 屏幕尺寸 | `python scripts/screen_size.py` 输出主屏逻辑宽高 W H（与截图/鼠标坐标一致） |
+| 验证点击坐标 | `python scripts/click_verify.py <x> <y> [秒数] [--screenshot path]` 移动鼠标到 (x,y) 并等待，用于核对多模态返回的坐标是否正确 |
 | 打开浏览器/某 URL | `python scripts/launch_browser.py [url]` |
 | 屏幕宽高 | `python scripts/screen_size_tool.py` |
 | 鼠标点击 (x,y) | `mouse_tool.py click x y`；右键 `right_click x y`、中键 `middle_click x y`；拖拽 `drag x1 y1 x2 y2` |
@@ -50,9 +52,11 @@
 | 文本文件读/写/列目录 | `file_tool.py read/write <路径> [内容]`、`file_tool.py list <目录>`；`do.py 列目录 [路径]` |
 | 自主校验能力链（截图/鼠标/键盘/启动/vision/剪贴板） | `python scripts/self_verify_capabilities.py`，结果见 `state/self_verify_result.json` |
 | 闭环跑者（无人时持续推进轮次与日志） | `python scripts/loop_runner.py` 一轮；`loop_runner.py --daemon [--interval 300]` 常驻 |
-| 计划模板（plans/） | `minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_send_message.json`、`example_ihaier_check_messages.json`、`example_screenshot_vision.json`，供 run_plan 引用 |
+| 计划模板（plans/） | `minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_send_message.json`、`example_ihaier_check_messages.json`、`example_ihaier_who_contacted_me.json`、`example_ihaier_my_latest_message.json`、`example_screenshot_vision.json`，供 run_plan 引用 |
 
 ## 说明
 
 - 模型只需在识别到用户意图后，从表中选对应命令执行即可。
 - 更多脚本见 SKILL.md「脚本」节；需求与能力链见 assumed_demands.md。
+- **保底方案（鼠标+键盘+截图+多模态）** 在 Windows 上的界面引导（任务栏亮线切换应用、托盘向上箭头展开、托盘图标右键菜单等）见 **SKILL.md「保底方案：Windows 界面引导」**，规划 run_plan 或 vision 提问时可参考。
+- **ihaier**：**能力**（读取消息列表、消息详情、视频会议、云文档、会议室预约、工作台、审批、日历、任务、搜索、发消息等）与 **场景**（谁找我、发消息给某人等）的区分及执行方式见 **references/ihaier_capabilities.md**。
