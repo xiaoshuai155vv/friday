@@ -2,7 +2,7 @@
 name: friday-self-evolution
 description: |
   依托用户电脑的自我进化技能，形成「主动假设→主动规划→任务追踪→完成校验→主动决策」闭环，满足用户所有需求；未满足不反馈、一直自进化。始终知道当前要干什么，不迷失。宗旨与约束见 SKILL 内「本技能宗旨与约束」。
-  触发：星期五、贾维斯、自我进化、主动假设、任务追踪、闭环生态、技能进化、当前在干什么、私域知识、行为日志溯源。
+  触发：星期五、贾维斯、电脑操作、自我进化、主动假设、任务追踪、闭环生态、技能进化、当前在干什么、私域知识、行为日志溯源。
 ---
 
 # 星期五 · 自我进化技能
@@ -52,6 +52,8 @@ description: |
 **`references/agent_evolution_workflow.md`**
 
 该文档说明进化环（假设 → 自主决策 → 自主执行 → 自主校验审核 → 自主优化反思 → 回到假设）及每一阶段的输入、输出与执行清单。按其中步骤执行即可形成无限进化循环。读完该文档后再按需查阅本 SKILL 其余能力与脚本说明。
+
+**必守约定**：① **看图理解必须用本技能 vision**：运行环境（如 Claude Code）可能**无法直接读取或展示截图/图片**，不要尝试直接读截图文件；一律用 `python scripts/vision_proxy.py <图片路径> "<问题>"` 或 run_plan 中的 vision 步骤。② **键盘组合键**：`keyboard_tool` 使用**虚拟键码**（如 `keys 17 75` 表示 Ctrl+K），见 capabilities 或 `keyboard_tool shortcut ctrl+k`。③ **激活窗口后先最大化**再截图/多模态，见 private_domains 与各 ihaier 计划。④ **ihaier 窗口**：主窗口标题是「**办公平台**」，激活请用 `window_tool activate "办公平台"` 或 `activate_process iHaier2.0`，**不要用** `activate "ihaier"`（会找不到窗口）。
 
 ---
 
@@ -154,9 +156,15 @@ python scripts/friday_floating_qt.py
 ## 多模态与视觉理解
 
 - 当文本/代码无法拟人理解界面时，使用**多模态模型**看图决策（截图→模型→点击/键盘）。
-- **自包含**：本技能内 `scripts/vision_proxy.py` 读 `vision_config.json`（或环境变量），调用 OpenAI 兼容多模态 API（如 qwen3-vl）；配置示例见 `assets/vision_config.example.json`。
+- **自包含**：本技能内 `scripts/vision_proxy.py` 读 `vision_config.json`（或环境变量），调用 OpenAI 兼容多模态 API（如 qwen3-vl、glm-4-5v）；配置示例见 `assets/vision_config.example.json`。支持多 provider（qwen/glm 等），`vision_config.json` 中 `provider` 指定当前使用哪个。
 - 与本技能内「截图 + 鼠标 + 键盘」脚本配合，实现自动化与自我验证。
 - **通用智能体/驱动本技能的智能体**：**不要直接读取截图文件**（大图、二进制或无法解析）；运行环境通常不具备「看图」能力。若需理解截图内容，**必须使用本技能的 vision 脚本**：`python scripts/vision_proxy.py <图片路径> "<问题>"`（或 run_plan 中的 vision 步骤）。失败或无法读图时，一律走 vision 多模态识别，勿反复尝试直接读图。
+
+### 多模态能力设定（坐标稳定性）
+
+- **3 轮取中位数**：仅当 vision 需要返回**点击坐标**时才多轮。计划中 vision 步骤加 `"coords": true` 时，run_plan 会传 `--runs 3` 给 vision_proxy，对同一张图跑 3 次、解析 3 组 (x,y)、取中位数输出；非坐标类提问（如「输出消息内容」）不加 coords，只跑 1 次。中位数含义：3 个值排序取中间；若两次相近、一次离群，则取到相近对的中间值，自动排除离群。通用智能体规划时：**需要坐标返回的 vision 步骤加 `"coords": true`**。
+- **校准偏移**：vision 返回的坐标常有系统性偏差，需通过 `vision_calibrate.py calibrate` 得到 offset 并写入 `state/vision_calibration.json`；run_plan / click_from_vision_or_key 会自动加上该偏移再点击。换分辨率后需重跑校准。
+- **provider 选择**：可用 `vision_calibrate.py benchmark` 对比各 provider 的偏差稳定性（std 越小越稳）；benchmark 结果通常推荐 glm。
 
 ## 行为日志与溯源
 
@@ -218,7 +226,7 @@ python scripts/friday_floating_qt.py
 | 用户可能表达的意图 | 可调用的能力（在技能目录下执行） |
 |--------------------|----------------------------------|
 | 自拍、帮我来个自拍 | `python scripts/selfie.py` 或 `python scripts/do.py 自拍` |
-| 打开摄像头、看看摄像头 | `python scripts/launch_camera.py` 或 `python scripts/do.py 打开摄像头` |
+| 打开摄像头、看看摄像头 | `python scripts/camera_qt.py` 或 `python scripts/do.py 打开摄像头` |
 | 截图、截屏 | `python scripts/screenshot_tool.py [路径]` 或 `python scripts/do.py 截图` |
 | 打开浏览器、打开某网址 | `python scripts/launch_browser.py [url]` 或 `python scripts/do.py 打开浏览器 [url]` |
 | 打开记事本、打开文件管理器 | `python scripts/launch_notepad.py`、`python scripts/launch_explorer.py [目录]` 或 `do.py 打开记事本/打开文件管理器` |
@@ -285,10 +293,10 @@ python scripts/friday_floating_qt.py
 - `scripts/friday_floating.py` — 悬浮窗 **WebView 版**（需 `pip install pywebview`）：内嵌 Friday UI；无 PyQt5 时由 main 自动选用。
 - `scripts/launch_friday_floating.py` — 无 CMD 窗口启动悬浮窗；**默认启动 Qt 版**（friday_floating_qt.py），无 PyQt5 时再回退 WebView。
 - `scripts/run_plan.py` — 执行自动化计划（screenshot/vision/click/right_click/middle_click/drag/type/key/paste/scroll/wait/run）；步骤 `paste` 为 Ctrl+V 粘贴（可配合剪贴板输入中文）；计划见 `plans/*.json`。
-- `scripts/launch_camera.py` — 打开系统摄像头应用；配合截图+vision 可「看到了什么」。优先级：CAMERA_APP_PATH → UWP 相机 → **PyQt5 直接打开摄像头**（`camera_qt.py`，无白框）→ protocol。**若本机未安装 Windows 相机且商店不可用**，会优先用 Qt 摄像头窗口；也可设置 **CAMERA_APP_PATH** 指定第三方 exe。
+- `scripts/camera_qt.py` — 用 PyQt5 直接打开摄像头窗口；配合截图+vision 可「看到了什么」。
 - `scripts/launch_browser.py` — 用默认浏览器打开 URL；配合截图+vision+run_plan 可访问网站并操作。
 - `scripts/launch_notepad.py`、`scripts/launch_explorer.py` — 打开记事本、文件管理器（可带路径）。
-- `scripts/selfie.py` — 自拍：打开摄像头 → 等弹窗出现后回车关闭（若出现「需要用新应用打开 camera 链接」）→ 再等约 4s 摄像头加载 → 截屏保存 screenshots/selfie_*.bmp。
+- `scripts/selfie.py` — 自拍：直接启动 camera_qt → 等约 4s 画面就绪 → 截屏保存 screenshots/selfie_*.bmp。用 `run_with_env` 或系统 `python` 执行时，camera_qt 会使用调用者 Python（避免便携环境检测不到摄像头）。
 - `scripts/parse_vision_steps.py` — 从 vision 自然语言输出解析 click/type/key 步骤，输出 JSON。
 - `scripts/do.py` — 便捷入口：自拍/截图/剪贴板/输入中文/窗口激活/窗口PID/结束窗口/睡眠/休眠/关机/重启/音量值/设置音量/亮度/设置亮度/通知/WLAN/网络接口等；意图由模型识别后选用。
 

@@ -7,7 +7,7 @@
 | 意图/场景 | 命令（在技能项目根或 scripts 所在目录执行） |
 |-----------|---------------------------------------------|
 | 自拍 | `python scripts/selfie.py` |
-| 打开摄像头 | `python scripts/launch_camera.py` |
+| 打开摄像头 | `python scripts/camera_qt.py` 或 `do.py 打开摄像头` |
 | 截图 | `python scripts/screenshot_tool.py` 或带路径 |
 | 屏幕尺寸 | `python scripts/screen_size.py` 输出主屏逻辑宽高 W H（与截图/鼠标坐标一致） |
 | 验证点击坐标 | `python scripts/click_verify.py <x> <y> [秒数] [--screenshot path]` 移动鼠标到 (x,y) 并等待，用于核对多模态返回的坐标是否正确 |
@@ -16,7 +16,7 @@
 | 鼠标点击 (x,y) | `mouse_tool.py click x y`；右键 `right_click x y`、中键 `middle_click x y`；拖拽 `drag x1 y1 x2 y2` |
 | 当前光标位置 | `python scripts/mouse_tool.py pos`（输出 x y） |
 | 鼠标滚轮 | `python scripts/mouse_tool.py scroll delta` |
-| 常用组合键 | `keyboard_tool.py keys <vk1> <vk2>`，如 Alt+Tab=18 9、Ctrl+C=17 67、Win+E=91 69、Alt+F4=18 115 |
+| 常用组合键 | `keyboard_tool.py keys <vk1> <vk2>`（VK 十进制）；或 `keyboard_tool.py shortcut ctrl+k` / `shortcut ctrl+c` / `shortcut ctrl+v` 等（无需记 VK）。Ctrl=17, K=75, 故 Ctrl+K 也可写 `keys 17 75`。 |
 | 键盘输入 | `python scripts/keyboard_tool.py type "内容"` 或 `key <vk>`（type 仅 ASCII） |
 | 中文/Unicode 输入 | `do.py 输入中文 内容`（先写剪贴板再 Ctrl+V 粘贴）；计划中可用 step paste 粘贴剪贴板内容 |
 | 看图提问 | `python scripts/vision_proxy.py <图路径> "问题"` |
@@ -41,7 +41,8 @@
 | 防止休眠/关屏（N 秒内） | `python scripts/power_tool.py prevent_sleep [秒数]`，0 表示持续到进程结束 |
 | 睡眠/休眠 | `power_tool.py sleep`、`power_tool.py hibernate`；`do.py 睡眠`、`do.py 休眠` |
 | 关机/重启 | `power_tool.py shutdown [秒]`、`power_tool.py reboot [秒]`；`do.py 关机 [秒]`、`do.py 重启 [秒]`（默认立即） |
-| 窗口激活（按标题/按进程名） | `window_tool.py activate "标题"`；`window_tool.py activate_process <进程名>`（从进程列表匹配，如 ihaier、ihaier.exe）；`window_tool.py activate_pid <PID>`；`do.py 窗口激活 记事本`；按标题查 PID：`window_tool.py pid "标题"` |
+| 窗口激活（按标题/按进程名） | `window_tool.py activate "标题"`；`window_tool.py activate_process <进程名>`；`window_tool.py activate_pid <PID>`；按标题查 PID：`window_tool.py pid "标题"`。**ihaier 主窗口标题是「办公平台」**，请用 `activate "办公平台"` 或 `activate_process iHaier2.0`，不要用 `activate "ihaier"`。 |
+| 窗口最大化（激活后先最大化再截图，避免背景干扰多模态） | `window_tool.py maximize "标题"`（如 `maximize "办公平台"`）；`window_tool.py maximize_process <进程名>`；计划中在 activate 后加一步 run window_tool args ["maximize", "办公平台"] 再 wait → screenshot |
 | 显示/亮度 | `launch_settings.py display` 或 run_plan+vision；软件亮度：`brightness_tool.py get`、`set <0-100>`；`do.py 亮度`、`do.py 设置亮度 80` |
 | 通知/Toast | `notification_tool.py show "正文"`；`do.py 通知 内容`（Win10+）；通知设置：`launch_settings.py notifications` |
 | 打开运行对话框（Win+R） | `do.py 打开运行` 或 `keyboard_tool.py keys 91 82` |
@@ -50,6 +51,7 @@
 | 网络信息 | `do.py 网络信息`、`do.py 网络信息 all`；`network_tool.py [ipconfig|brief|wlan|interfaces]`；`do.py WLAN`、`do.py 网络接口` |
 | 注册表读/写 | `reg_tool.py get HKCU "Software\\..." [值名]`、`reg_tool.py set HKCU "Software\\..." 值名 sz "内容"` 或 `dword 1`；根键 HKCU/HKLM/HKCR/HKU/HKCC |
 | 文本文件读/写/列目录 | `file_tool.py read/write <路径> [内容]`、`file_tool.py list <目录>`；`do.py 列目录 [路径]` |
+| Vision 坐标校准（维护偏移数据集） | `python scripts/vision_calibrate.py calibrate`：屏幕 5 点红点→截图→多模态识坐标→算偏移写入 state/vision_calibration.json；run_plan/click_from_vision_or_key 会自动加该偏移再点击。换分辨率后需重跑。详见 vision_parse_convention.md。 |
 | 自主校验能力链（截图/鼠标/键盘/启动/vision/剪贴板） | `python scripts/self_verify_capabilities.py`，结果见 `state/self_verify_result.json` |
 | 闭环跑者（无人时持续推进轮次与日志） | `python scripts/loop_runner.py` 一轮；`loop_runner.py --daemon [--interval 300]` 常驻 |
 | 计划模板（plans/） | `minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_send_message.json`、`example_ihaier_check_messages.json`、`example_ihaier_who_contacted_me.json`、`example_ihaier_my_latest_message.json`、`example_screenshot_vision.json`，供 run_plan 引用 |
