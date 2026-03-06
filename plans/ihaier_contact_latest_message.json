@@ -1,0 +1,17 @@
+[
+  {"do": "comment", "comment": "获取指定联系人的最后一条消息。用法：run_plan.py 本文件 --contact 联系人名。通过搜索打开会话，用 PowerShell 设置剪贴板再粘贴输入联系人名（避免 ctypes 剪贴板在远程/无桌面环境失败）。"},
+  {"do": "run", "script": "window_tool", "args": ["activate", "办公平台"]},
+  {"do": "run", "script": "window_tool", "args": ["maximize", "办公平台"]},
+  {"do": "wait", "sec": 1.2},
+  {"do": "comment", "comment": "打开 ihaier 搜索（Ctrl+K），输入联系人名后选第一条进入会话"},
+  {"do": "run", "script": "keyboard_tool", "args": ["shortcut", "ctrl+k"]},
+  {"do": "wait", "sec": 0.8},
+  {"do": "run", "script": "set_clipboard_ps", "args": ["{{contact}}"]},
+  {"do": "paste"},
+  {"do": "wait", "sec": 1.0},
+  {"do": "comment", "comment": "回车选择搜索列表第一条，界面会跳转到该联系人对话，右侧为对话内容"},
+  {"do": "key", "key": 13},
+  {"do": "wait", "sec": 1.0},
+  {"do": "screenshot", "path": "screenshots/ihaier_contact_chat.bmp"},
+  {"do": "vision", "image": "screenshots/ihaier_contact_chat.bmp", "question": "图中是 ihaier 与「{{contact}}」的聊天界面。请读取右侧对话区域最下面一条（最新）消息的完整内容，包括发送方、消息内容和时间。"}
+]
