@@ -16,6 +16,28 @@ PROJECT = os.path.dirname(SCRIPTS)
 _SUBPROCESS_ENV = {**os.environ, "PYTHONIOENCODING": "utf-8"}
 
 
+def _get_image_size(img_path):
+    """返回 (width, height) 或 None。支持 BMP、PNG。"""
+    try:
+        with open(img_path, "rb") as f:
+            head = f.read(30)
+        if len(head) < 26:
+            return None
+        if head[:2] == b"BM":
+            w = int.from_bytes(head[18:22], "little")
+            h = int.from_bytes(head[22:26], "little")
+            if h < 0:
+                h = -h
+            return (w, h)
+        if head[:8] == b"\x89PNG\r\n\x1a\n" and len(head) >= 24:
+            w = int.from_bytes(head[16:20], "big")
+            h = int.from_bytes(head[20:24], "big")
+            return (w, h)
+    except (OSError, ValueError):
+        pass
+    return None
+
+
 def _parse_xy(text):
     """从文本解析单个 (x,y)，多候选时取 x 最小的（如左侧列表项）。"""
     if not text or not text.strip():
@@ -36,6 +58,32 @@ def _parse_xy(text):
     return min(candidates, key=lambda p: p[0])
 
 
+def _parse_normalized_xy(text):
+    """解析归一化坐标 (0-1)，返回 (nx, ny) 或 None。支持 0.5 0.5、.5 .5、1.0 0 等格式。"""
+    if not text or not text.strip():
+        return None
+    candidates = []
+    for m in re.finditer(r"(\d*\.?\d+)\s+(\d*\.?\d+)", text):
+        try:
+            nx, ny = float(m.group(1)), float(m.group(2))
+            if 0 <= nx <= 1 and 0 <= ny <= 1:
+                candidates.append((nx, ny))
+        except ValueError:
+            pass
+    for m in re.finditer(r"(\d*\.?\d+)\s*[,，]\s*(\d*\.?\d+)", text):
+        try:
+            nx, ny = float(m.group(1)), float(m.group(2))
+            if 0 <= nx <= 1 and 0 <= ny <= 1:
+                candidates.append((nx, ny))
+        except ValueError:
+            pass
+    if not candidates:
+        return None
+    if len(candidates) == 1:
+        return candidates[0]
+    return min(candidates, key=lambda p: p[0])
+
+
 def _median(vals):
     if not vals:
         return None
@@ -46,7 +94,8 @@ def _median(vals):
 
 def main():
     runs = 3
-    extra_args = []  # --provider / --model 透传给 vision_proxy
+    use_normalized = False
+    extra_args = []  # --provider / --model / --verbose 透传给 vision_proxy
     args = sys.argv[1:]
     while len(args) >= 2 and args[0].startswith("--"):
         if args[0] == "--runs":
@@ -55,13 +104,21 @@ def main():
             except (ValueError, IndexError):
                 runs = 3
             args = args[2:]
+        elif args[0] == "--normalized":
+            use_normalized = True
+            args = args[1:]
         elif args[0] in ("--provider", "--model") and len(args) >= 2:
             extra_args.extend(args[:2])
             args = args[2:]
+        elif args[0] == "--verbose":
+            extra_args.extend(["--verbose"])
+            args = args[1:]
         else:
             break
+    if os.environ.get("FRIDAY_VISION_VERBOSE", "").lower() in ("1", "true", "yes"):
+        extra_args.append("--verbose")
     if len(args) < 2:
-        print("usage: vision_coords.py [--runs 3] [--provider qwen|glm] [--model MODEL] <image_path> \"<question>\"", file=sys.stderr)
+        print("usage: vision_coords.py [--runs 3] [--normalized] [--verbose] [--provider qwen|glm] [--model MODEL] <image_path> \"<question>\"", file=sys.stderr)
         sys.exit(1)
     img_path = args[0]
     question = args[1]
@@ -72,6 +129,12 @@ def main():
     vision_proxy = os.path.join(SCRIPTS, "vision_proxy.py")
     coords_list = []
     last_text = ""
+
+    if use_normalized:
+        extra_args.append("--normalized")
+    dims = _get_image_size(img_path) if use_normalized else None
+    if use_normalized and not dims:
+        print("vision_coords: --normalized 需要图片尺寸，当前无法解析，回退到像素坐标解析", file=sys.stderr)
 
     for i in range(runs):
         if runs > 1:
@@ -94,7 +157,17 @@ def main():
             sys.exit(1)
         text = (r.stdout or "").strip()
         last_text = text
-        parsed = _parse_xy(text)
+        parsed = None
+        if use_normalized and dims:
+            norm = _parse_normalized_xy(text)
+            if norm:
+                px = int(norm[0] * dims[0])
+                py = int(norm[1] * dims[1])
+                parsed = (px, py)
+                if runs > 1:
+                    print("  normalized %s -> (%d, %d)" % (norm, px, py), file=sys.stderr)
+        if not parsed:
+            parsed = _parse_xy(text)
         if parsed:
             coords_list.append(parsed)
 

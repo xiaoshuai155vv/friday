@@ -55,7 +55,12 @@ def step_vision(args):
     # vision 通用看图；vision_coords 或 coords:true 用 vision_coords（多轮取中位数）
     use_coords = args.get("coords") or args.get("runs", 1) > 1
     if use_coords:
-        cmd = [sys.executable, os.path.join(SCRIPTS, "vision_coords.py"), "--runs", "3", img, q]
+        cmd = [sys.executable, os.path.join(SCRIPTS, "vision_coords.py"), "--runs", "3"]
+        if args.get("normalized"):
+            cmd.append("--normalized")
+        if os.environ.get("FRIDAY_VISION_VERBOSE", "").lower() in ("1", "true", "yes"):
+            cmd.append("--verbose")
+        cmd.extend([img, q])
     else:
         cmd = [sys.executable, os.path.join(SCRIPTS, "vision_proxy.py"), img, q]
     r = run(cmd)

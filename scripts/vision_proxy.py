@@ -86,6 +86,8 @@ def main():
     _ensure_utf8_stdout()
     provider_override = None
     model_override = None
+    use_normalized = False
+    verbose = os.environ.get("FRIDAY_VISION_VERBOSE", "").lower() in ("1", "true", "yes")
     args = sys.argv[1:]
     while len(args) >= 2 and args[0].startswith("--"):
         if args[0] == "--provider":
@@ -94,21 +96,36 @@ def main():
         elif args[0] == "--model":
             model_override = args[1]
             args = args[2:]
+        elif args[0] == "--verbose":
+            verbose = True
+            args = args[1:]
+        elif args[0] == "--normalized":
+            use_normalized = True
+            args = args[1:]
         else:
             break
     if len(args) < 2:
-        print("usage: vision_proxy.py [--provider qwen|glm] [--model MODEL] <image_path> \"<question>\"", file=sys.stderr)
+        print("usage: vision_proxy.py [--provider qwen|glm] [--model MODEL] [--verbose] [--normalized] <image_path> \"<question>\"", file=sys.stderr)
         sys.exit(1)
     img_path = args[0]
     question = args[1]
     if not os.path.isfile(img_path):
         print("File not found:", img_path, file=sys.stderr)
         sys.exit(1)
-    # 注入图片尺寸与坐标约束，避免多模态返回区域相对坐标或缩放后的坐标
+    # 注入图片尺寸与坐标约束
     dims = _get_image_size(img_path)
     if dims:
-        hint = "\n[重要：此图尺寸为 {}×{} 像素。返回的 x y 必须是以整张图片最左上角(0,0)为原点的绝对像素坐标，不能缩放、不能只算某块区域、不能使用界面内相对坐标。]"
-        question = question.rstrip() + hint.format(dims[0], dims[1])
+        if use_normalized:
+            hint = "\n[重要：此图尺寸为 {}×{} 像素。请输出归一化坐标(0-1)，格式为 x y 两个小数，左上角(0,0)、右下角(1,1)。例如 0.5 0.5 表示图像中心。不要输出像素值。]"
+            question = question.rstrip() + hint.format(dims[0], dims[1])
+        else:
+            hint = "\n[重要：此图尺寸为 {}×{} 像素。返回的 x y 必须是以整张图片最左上角(0,0)为原点的绝对像素坐标，不能缩放、不能只算某块区域、不能使用界面内相对坐标。]"
+            question = question.rstrip() + hint.format(dims[0], dims[1])
+
+    if verbose:
+        print("--- vision_proxy 输入 ---", file=sys.stderr)
+        print("image:", img_path, "dims:", dims, file=sys.stderr)
+        print("prompt:", repr(question[:500] + ("..." if len(question) > 500 else "")), file=sys.stderr)
     cfg = load_config()
     # 支持 --provider / --model 覆盖，用于 benchmark 多 provider 测试
     provider = provider_override or cfg.get("provider") or "qwen"
@@ -169,6 +186,9 @@ def main():
         m = re.search(r"<\|begin_of_box\|>(.*?)<\|end_of_box\|>", text, re.DOTALL)
         if m:
             text = m.group(1).strip()
+        if verbose:
+            print("--- vision_proxy 模型原始输出 ---", file=sys.stderr)
+            print(text or "(空)", file=sys.stderr)
         print(text or "")
     except urllib.error.HTTPError as e:
         err_body = e.read().decode("utf-8", errors="replace")
