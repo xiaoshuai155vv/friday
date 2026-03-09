@@ -2,6 +2,8 @@
 
 本技能**不做意图识别**。意图由 Claude Code / Cursor 等运行环境中的模型识别；识别后可从下表选用对应能力并执行。
 
+**do.py 不支持时**：当 `do.py <意图>` 返回「未知意图」，**不要放弃**。使用保底能力完成：① 鼠标（mouse_tool click）、键盘（keyboard_tool、Win+R+type+Enter）；② 多模态：截图 → vision_proxy/vision_coords 定位 → click。若成功，将最短路径固化为 `plans/<场景>.json`，下次直接 `run_plan`。
+
 ## 能力与调用
 
 | 意图/场景 | 命令（在技能项目根或 scripts 所在目录执行） |
@@ -26,6 +28,7 @@
 | 打开记事本 | `python scripts/launch_notepad.py [文件路径]` 或 `do.py 打开记事本` |
 | 打开文件管理器 | `python scripts/launch_explorer.py [目录]` 或 `do.py 打开文件管理器` |
 | 打开闹钟/日历 | `do.py 打开闹钟`、`do.py 打开日历` |
+| 打开音乐播放器 | `do.py 打开网易云音乐`、`do.py 打开QQ音乐`、`do.py 打开酷狗音乐`、`do.py 打开Spotify`；通用 `do.py 打开应用 <应用名>`（Win+R 输入） |
 | 剪贴板读/写 | `do.py 剪贴板读`、`do.py 剪贴板写 内容`；图片：`clipboard_tool.py image_get <路径>`、`image_set <路径>`；`do.py 剪贴板图片保存 [路径]`、`剪贴板图片写入 <路径>` |
 | 防休眠、音量 | `do.py 防休眠 [秒]`、`do.py 音量静音`、`do.py 音量减`、`do.py 音量增`；精确音量：`volume_tool.py get`、`set <0-100>`；`do.py 音量值`、`do.py 设置音量 50` |
 | 执行任意脚本 | `do.py run <脚本名> [参数...]`，如 `do.py run screenshot_tool`、`do.py run timer_tool 5 run launch_notepad` |

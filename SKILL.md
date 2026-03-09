@@ -1,7 +1,6 @@
 ---
 name: friday-self-evolution
-description: |
-  依托用户电脑的自我进化技能，形成「主动假设→主动规划→任务追踪→完成校验→主动决策」闭环，满足用户所有需求；未满足不反馈、一直自进化。始终知道当前要干什么，不迷失。宗旨与约束见 SKILL 内「本技能宗旨与约束」。
+description:  电脑自动化（鼠标、键盘、截图识别、多模态坐标），依托用户电脑的自我进化技能，形成「主动假设→主动规划→任务追踪→完成校验→主动决策」闭环，满足用户所有需求；未满足不反馈、一直自进化。始终知道当前要干什么，不迷失。宗旨与约束见 SKILL 内「本技能宗旨与约束」。
   触发：星期五、贾维斯、电脑操作、自我进化、主动假设、任务追踪、闭环生态、技能进化、当前在干什么、私域知识、行为日志溯源。
 ---
 
@@ -53,7 +52,7 @@ description: |
 
 该文档说明进化环（假设 → 自主决策 → 自主执行 → 自主校验审核 → 自主优化反思 → 回到假设）及每一阶段的输入、输出与执行清单。按其中步骤执行即可形成无限进化循环。读完该文档后再按需查阅本 SKILL 其余能力与脚本说明。
 
-**必守约定**：① **看图理解必须用本技能 vision**：运行环境（如 Claude Code）可能**无法直接读取或展示截图/图片**，不要尝试直接读截图文件；一律用 `python scripts/vision_proxy.py <图片路径> "<问题>"`（通用看图）或 `python scripts/vision_coords.py <图片路径> "<问题>"`（**获取点击坐标**，内部多轮取中位数）或 run_plan 中的 vision 步骤。② **键盘组合键**：`keyboard_tool` 使用**虚拟键码**（如 `keys 17 75` 表示 Ctrl+K），见 capabilities 或 `keyboard_tool shortcut ctrl+k`。③ **激活窗口后先最大化**再截图/多模态，见 private_domains 与各 ihaier 计划。④ **ihaier 窗口**：主窗口标题是「**办公平台**」，激活请用 `window_tool activate "办公平台"` 或 `activate_process iHaier2.0`，**不要用** `activate "ihaier"`（会找不到窗口）。
+**必守约定**：① **看图理解必须用本技能 vision**：运行环境（如 Claude Code）可能**无法直接读取或展示截图/图片**，不要尝试直接读截图文件；一律用 `python scripts/vision_proxy.py <图片路径> "<问题>"`（通用看图）或 `python scripts/vision_coords.py <图片路径> "<问题>"`（**获取点击坐标**，内部多轮取中位数）或 run_plan 中的 vision 步骤。② **键盘组合键**：`keyboard_tool` 使用**虚拟键码**（如 `keys 17 75` 表示 Ctrl+K），见 capabilities 或 `keyboard_tool shortcut ctrl+k`。③ **激活窗口后先最大化**再截图/多模态，见 private_domains 与各 ihaier 计划。④ **ihaier 窗口**：主窗口标题是「**办公平台**」，激活请用 `window_tool activate "办公平台"` 或 `activate_process iHaier2.0`，**不要用** `activate "ihaier"`（会找不到窗口）。⑤ **do.py 不支持时勿放弃**：当 `do.py` 返回「未知意图」，使用**保底能力**（鼠标、键盘、多模态、vision_coords）完成需求；若成功，将最短路径固化为 `plans/<场景>.json`，下次同类需求直接 run_plan。
 
 ---
 
@@ -62,10 +61,10 @@ description: |
 **使用本技能时，需自动运行**以下命令以展示 **FRIDAY 的执行阶段与过程**（当前使命、阶段、轮次等）：
 
 ```text
-python scripts/friday_floating_qt.py
+python scripts/launch_friday_floating.py
 ```
 
-其中 **`python` 为项目内预先打包的解释器**：若项目根存在 `python/python.exe`，请使用 `python\python.exe scripts\friday_floating_qt.py` 或 `python scripts/run_with_env.py friday_floating_qt`；无便携环境时使用系统 `python`。运行后会出现**圆形置顶悬浮窗**，实时显示当前阶段、使命、轮次；双击可查看过程/日志。
+**必须用 `launch_friday_floating.py`**（不要直接运行 `friday_floating_qt.py`）：launch 会优先 Qt 版，无 PyQt5 或 Qt 平台插件异常时自动回退到 WebView 版，避免「导入失败」导致悬浮窗完全无法启动。其中 **`python` 为项目内预先打包的解释器**：若项目根存在 `python/python.exe`，请使用 `python\python.exe scripts\launch_friday_floating.py` 或 `python scripts/run_with_env.py launch_friday_floating`；无便携环境时使用系统 `python`。运行后会出现**圆形置顶悬浮窗**，实时显示当前阶段、使命、轮次；双击可查看过程/日志。
 
 **使用本技能前需先启动服务（可选）**：若需本地 HTTP 服务与自动拉起悬浮窗，可在技能目录下执行 `python scripts/serve.py`（python 同上，优先用项目内打包的）。服务启动后会自动打开上述悬浮窗。**推荐安装 PyQt5**（项目内 `python` 已装或系统 `pip install PyQt5`）以使用**原生 GUI 版**（无 WebView、真透明、网格球+环+光球）；未装 PyQt5 时自动回退到 WebView 版（需 `pywebview`）。
 

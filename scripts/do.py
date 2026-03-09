@@ -22,9 +22,21 @@ import subprocess
 SCRIPTS = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(SCRIPTS)
 
+
+def _launch_via_win_r(app_name):
+    """Win+R 输入应用名回车，用于启动未在 do 中显式列出的应用。"""
+    import time
+    kbd = os.path.join(SCRIPTS, "keyboard_tool.py")
+    subprocess.run([sys.executable, kbd, "keys", "91", "82"], cwd=PROJECT)  # Win+R
+    time.sleep(0.5)
+    subprocess.run([sys.executable, kbd, "type", app_name], cwd=PROJECT)
+    time.sleep(0.3)
+    subprocess.run([sys.executable, kbd, "key", "13"], cwd=PROJECT)  # Enter
+
+
 def main():
     if len(sys.argv) < 2:
-        print("用法: do.py 自拍|打开摄像头|截图|...|剪贴板读|剪贴板写|剪贴板图片保存|剪贴板图片写入|防休眠|睡眠|休眠|窗口激活|...|run <脚本名> [参数...]", file=sys.stderr)
+        print("用法: do.py 自拍|打开摄像头|截图|打开网易云音乐|打开QQ音乐|...|剪贴板读|剪贴板写|防休眠|睡眠|...|run <脚本名> [参数...]", file=sys.stderr)
         sys.exit(1)
     intent = sys.argv[1].strip()
     if intent == "自拍":
@@ -123,6 +135,16 @@ def main():
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "launch_taskmgr.py")], cwd=PROJECT)
     elif intent in ("计算器", "打开计算器"):
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "launch_calc.py")], cwd=PROJECT)
+    elif intent in ("打开网易云音乐", "网易云音乐", "云音乐"):
+        _launch_via_win_r("CloudMusic")
+    elif intent in ("打开QQ音乐", "QQ音乐"):
+        _launch_via_win_r("QQMusic")
+    elif intent in ("打开酷狗音乐", "酷狗音乐", "酷狗"):
+        _launch_via_win_r("Kugou")
+    elif intent in ("打开Spotify", "Spotify"):
+        _launch_via_win_r("Spotify")
+    elif intent in ("打开应用", "启动应用") and len(sys.argv) > 2:
+        _launch_via_win_r(sys.argv[2])  # do.py 打开应用 CloudMusic
     elif intent in ("网络信息", "ipconfig", "网络"):
         mode = sys.argv[2] if len(sys.argv) > 2 else "brief"
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "network_tool.py"), mode], cwd=PROJECT)
