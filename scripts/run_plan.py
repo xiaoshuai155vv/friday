@@ -4,7 +4,7 @@
 执行自动化计划：按顺序执行 截图/vision/点击/输入/按键，实现「点点点」与多模态决策。
 计划为 JSON 数组，每步: screenshot | vision | vision_coords | click | ...。vision=通用看图；vision_coords=获取点击坐标（多轮取中位数）。click 可设 "from_vision_coords": true 从上一步 vision/vision_coords 输出解析 x y。
 用法: python run_plan.py <plan.json> [--var k=v] [--contact 名] [--period 月度|季度|年度] [--verbose] [--no-floating] 或 --stdin
-  --verbose: 打印多模态提示词与模型输出（vision/vision_coords）
+  默认打印多模态提示词与模型输出；--no-verbose 可关闭
   默认启动时自动拉起 Qt 悬浮球，进度与输出在悬浮球上可见；--no-floating 可跳过
 """
 import sys
@@ -220,9 +220,9 @@ def _substitute_vars(obj, vars_dict):
 
 
 def _parse_plan_vars(argv):
-    """从 argv 解析 --var k=v、--contact、--period、--verbose、--no-floating，返回 (vars_dict, verbose, no_floating)。"""
+    """从 argv 解析 --var k=v、--contact、--period、--no-verbose、--no-floating，返回 (vars_dict, verbose, no_floating)。"""
     out = {}
-    verbose = False
+    verbose = True  # 默认开启
     no_floating = False
     i = 1
     while i < len(argv):
@@ -241,8 +241,8 @@ def _parse_plan_vars(argv):
             out["period"] = argv[i + 1]
             i += 2
             continue
-        if argv[i] == "--verbose":
-            verbose = True
+        if argv[i] == "--no-verbose":
+            verbose = False
             i += 1
             continue
         if argv[i] == "--no-floating":
@@ -315,7 +315,7 @@ def main():
         plan_path_idx = -1
     else:
         if not argv or argv[0].startswith("--"):
-            print("usage: run_plan.py <plan.json> [--var k=v] [--contact 名] [--period 月度|季度|年度] [--verbose] [--no-floating]  |  run_plan.py --stdin", file=sys.stderr)
+            print("usage: run_plan.py <plan.json> [--var k=v] [--contact 名] [--period 月度|季度|年度] [--no-verbose] [--no-floating]  |  run_plan.py --stdin", file=sys.stderr)
             sys.exit(1)
         plan_path_idx = 0
         with open(argv[0], "r", encoding="utf-8") as f:
@@ -328,6 +328,7 @@ def main():
     if not isinstance(plan, list):
         plan = plan.get("steps", plan) if isinstance(plan, dict) else []
     vars_dict, plan_verbose, no_floating = _parse_plan_vars(sys.argv)
+    # 默认开启 verbose，打印多模态提示词与模型输出；--no-verbose 可关闭
     if plan_verbose:
         os.environ["FRIDAY_VISION_VERBOSE"] = "1"
     plan_path = argv[0] if plan_path_idx >= 0 and argv else ""
