@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 执行自动化计划：按顺序执行 截图/vision/点击/输入/按键，实现「点点点」与多模态决策。
-计划为 JSON 数组，每步: screenshot | vision | click | right_click | middle_click | drag | type | key | paste | scroll | wait | run。click 可设 "from_vision_coords": true，则从上一步 vision 输出中解析 x y 再点击（不写死坐标）。
+计划为 JSON 数组，每步: screenshot | vision | vision_coords | click | ...。vision=通用看图；vision_coords=获取点击坐标（多轮取中位数）。click 可设 "from_vision_coords": true 从上一步 vision/vision_coords 输出解析 x y。
 用法: python run_plan.py <plan.json> [--var k=v] [--contact 名] 或 --stdin；计划内 {{key}} 会被替换
 """
 import sys
@@ -52,8 +52,9 @@ def step_vision(args):
     q = args.get("question") or args.get("q") or "描述画面内容与可点击元素。"
     if not img or not os.path.isfile(img):
         return False, "vision: image path missing or not found"
-    # 坐标需求用 vision_coords（内部多轮取中位数）；非坐标用 vision_proxy
-    if args.get("coords") or args.get("runs", 1) > 1:
+    # vision 通用看图；vision_coords 或 coords:true 用 vision_coords（多轮取中位数）
+    use_coords = args.get("coords") or args.get("runs", 1) > 1
+    if use_coords:
         cmd = [sys.executable, os.path.join(SCRIPTS, "vision_coords.py"), "--runs", "3", img, q]
     else:
         cmd = [sys.executable, os.path.join(SCRIPTS, "vision_proxy.py"), img, q]
@@ -262,9 +263,15 @@ def main():
         plan = _substitute_vars(plan, vars_dict)
     last_screenshot_plan_path = None
     last_screenshot_actual_path = None
+    def step_vision_coords(args):
+        args = dict(args)
+        args["coords"] = True
+        return step_vision(args)
+
     handlers = {
         "screenshot": step_screenshot,
         "vision": step_vision,
+        "vision_coords": step_vision_coords,
         "click": step_click,
         "right_click": step_right_click,
         "middle_click": step_middle_click,
@@ -286,7 +293,7 @@ def main():
             print("unknown step:", do, file=sys.stderr)
             continue
         print("step %d: %s" % (i + 1, do), file=sys.stderr)
-        if do == "vision" and last_screenshot_plan_path and last_screenshot_actual_path:
+        if do in ("vision", "vision_coords") and last_screenshot_plan_path and last_screenshot_actual_path:
             item = dict(item)
             img = (item.get("image") or item.get("path") or "").strip()
             if img and os.path.normpath(img) == last_screenshot_plan_path:
@@ -298,7 +305,7 @@ def main():
         if do == "screenshot" and ok and out:
             last_screenshot_plan_path = os.path.normpath(item.get("path") or "")
             last_screenshot_actual_path = out
-        if out and do == "vision":
+        if out and do in ("vision", "vision_coords"):
             try:
                 os.makedirs(STATE_DIR, exist_ok=True)
                 with open(VISION_LAST_OUTPUT, "w", encoding="utf-8") as f:

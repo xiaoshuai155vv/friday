@@ -162,8 +162,8 @@ python scripts/friday_floating_qt.py
 
 ### 多模态能力设定（坐标稳定性）
 
-- **vision_proxy**：通用看图问答，单次调用，输出自然语言。
-- **vision_coords**：**获取点击坐标**专用，内部调用 vision_proxy 多轮（默认 3 次）、解析 (x,y) 取中位数，输出 `x y`。计划中 vision 步骤加 `"coords": true` 时，run_plan 自动用 vision_coords；非坐标类（如「输出消息内容」）用 vision_proxy。通用智能体规划时：**需要坐标返回的 vision 步骤加 `"coords": true`**。
+- **vision**：通用看图问答，单次调用，输出自然语言。计划步骤 `{"do": "vision", ...}`。
+- **vision_coords**：**获取点击坐标**专用，内部多轮取中位数，输出 `x y`。计划步骤 `{"do": "vision_coords", ...}`。通用智能体规划时：**需要坐标用 vision_coords，读内容用 vision**。
 - **校准偏移**：vision 返回的坐标常有系统性偏差，需通过 `vision_calibrate.py calibrate` 得到 offset 并写入 `state/vision_calibration.json`；run_plan / click_from_vision_or_key 会自动加上该偏移再点击。换分辨率后需重跑校准。
 - **provider 选择**：可用 `vision_calibrate.py benchmark` 对比各 provider 的偏差稳定性（std 越小越稳）；benchmark 结果通常推荐 glm。
 
@@ -233,8 +233,8 @@ python scripts/friday_floating_qt.py
 | 打开记事本、打开文件管理器 | `python scripts/launch_notepad.py`、`python scripts/launch_explorer.py [目录]` 或 `do.py 打开记事本/打开文件管理器` |
 | 按回车、按键 | `python scripts/keyboard_tool.py key 13` 或 `do.py 按回车` |
 | 点击 (x,y)、输入文字、中文输入 | `mouse_tool.py click x y`、`keyboard_tool.py type "..."`；`do.py 输入中文 内容`（剪贴板+粘贴）；`run_plan.py` |
-| 看图并问问题 | `python scripts/vision_proxy.py <图片路径> "<问题>"` |
-| **获取点击坐标**（多轮取中位数） | `python scripts/vision_coords.py <图片路径> "<问题>"` 或 run_plan 中 vision 加 `"coords": true` |
+| 看图并问问题 | `python scripts/vision_proxy.py <图片路径> "<问题>"` 或 run_plan 中 `{"do": "vision", ...}` |
+| **获取点击坐标**（多轮取中位数） | `python scripts/vision_coords.py <图片路径> "<问题>"` 或 run_plan 中 `{"do": "vision_coords", ...}` |
 | 按计划执行一系列操作 | `python scripts/run_plan.py plans/xxx.json` |
 
 更多脚本与用法见下方「脚本」节；详细需求与能力链见 [references/assumed_demands.md](references/assumed_demands.md)。
@@ -295,7 +295,7 @@ python scripts/friday_floating_qt.py
 - `scripts/friday_floating_qt.py` — 悬浮窗**原生 GUI 版**（需 `pip install PyQt5`）：圆形、透明、托盘图标右键退出、网格球+环+光球。
 - `scripts/friday_floating.py` — 悬浮窗 **WebView 版**（需 `pip install pywebview`）：内嵌 Friday UI；无 PyQt5 时由 main 自动选用。
 - `scripts/launch_friday_floating.py` — 无 CMD 窗口启动悬浮窗；**默认启动 Qt 版**（friday_floating_qt.py），无 PyQt5 时再回退 WebView。
-- `scripts/run_plan.py` — 执行自动化计划（screenshot/vision/click/right_click/middle_click/drag/type/key/paste/scroll/wait/run）；步骤 `paste` 为 Ctrl+V 粘贴（可配合剪贴板输入中文）；计划见 `plans/*.json`。
+- `scripts/run_plan.py` — 执行自动化计划；步骤类型：screenshot / **vision**（通用看图）/ **vision_coords**（获取坐标，多轮取中位数）/ click / type / key / paste / scroll / wait / run；计划见 `plans/*.json`。
 - `scripts/camera_qt.py` — 用 PyQt5 直接打开摄像头窗口；配合截图+vision 可「看到了什么」。
 - `scripts/launch_browser.py` — 用默认浏览器打开 URL；配合截图+vision+run_plan 可访问网站并操作。
 - `scripts/launch_notepad.py`、`scripts/launch_explorer.py` — 打开记事本、文件管理器（可带路径）。
