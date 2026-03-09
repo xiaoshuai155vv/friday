@@ -3,7 +3,9 @@
 """
 执行自动化计划：按顺序执行 截图/vision/点击/输入/按键，实现「点点点」与多模态决策。
 计划为 JSON 数组，每步: screenshot | vision | vision_coords | click | ...。vision=通用看图；vision_coords=获取点击坐标（多轮取中位数）。click 可设 "from_vision_coords": true 从上一步 vision/vision_coords 输出解析 x y。
-用法: python run_plan.py <plan.json> [--var k=v] [--contact 名] 或 --stdin；计划内 {{key}} 会被替换
+用法: python run_plan.py <plan.json> [--var k=v] [--contact 名] [--period 月度|季度|年度] [--verbose] [--no-floating] 或 --stdin
+  --verbose: 打印多模态提示词与模型输出（vision/vision_coords）
+  默认启动时自动拉起 Qt 悬浮球，进度与输出在悬浮球上可见；--no-floating 可跳过
 """
 import sys
 import os
@@ -17,9 +19,13 @@ SCRIPTS = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(SCRIPTS)
 STATE_DIR = os.path.join(PROJECT, "state")
 VISION_LAST_OUTPUT = os.path.join(STATE_DIR, "vision_last_output.txt")
+CURRENT_MISSION_FILE = os.path.join(STATE_DIR, "current_mission.json")
+LOG_DIR = os.path.join(PROJECT, "logs")
 
 # 子进程统一用 UTF-8 输出，避免 vision/脚本输出 GBK 被当 UTF-8 解码导致乱码（含写入 vision_last_output.txt）
 _SUBPROCESS_ENV = {**os.environ, "PYTHONIOENCODING": "utf-8"}
+
+_CREATE_NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0x08000000) if sys.platform == "win32" else 0
 
 def run(cmd_list, cwd=None):
     return subprocess.run(
@@ -214,8 +220,10 @@ def _substitute_vars(obj, vars_dict):
 
 
 def _parse_plan_vars(argv):
-    """从 argv 解析 --var k=v 和 --contact 联系人，返回 dict。"""
+    """从 argv 解析 --var k=v、--contact、--period、--verbose、--no-floating，返回 (vars_dict, verbose, no_floating)。"""
     out = {}
+    verbose = False
+    no_floating = False
     i = 1
     while i < len(argv):
         if argv[i] == "--var" and i + 1 < len(argv):
@@ -233,8 +241,16 @@ def _parse_plan_vars(argv):
             out["period"] = argv[i + 1]
             i += 2
             continue
+        if argv[i] == "--verbose":
+            verbose = True
+            i += 1
+            continue
+        if argv[i] == "--no-floating":
+            no_floating = True
+            i += 1
+            continue
         i += 1
-    return out
+    return out, verbose, no_floating
 
 
 def _safe_print_vision(out):
@@ -250,6 +266,48 @@ def _safe_print_vision(out):
             sys.stdout.buffer.flush()
 
 
+def _launch_floating_ball():
+    """无 CMD 窗口启动 Qt 悬浮球，供悬浮球显示 run_plan 进度。"""
+    try:
+        launch_script = os.path.join(SCRIPTS, "launch_friday_floating.py")
+        if os.path.isfile(launch_script):
+            subprocess.Popen(
+                [sys.executable, launch_script],
+                cwd=PROJECT,
+                creationflags=_CREATE_NO_WINDOW,
+                env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+            )
+    except Exception:
+        pass
+
+
+def _update_floating_state(plan_name, step_idx, do, phase_display, desc_display):
+    """更新 state/current_mission.json 和 logs/behavior_*.log，供悬浮球实时显示。"""
+    mission = os.path.basename(plan_name) if plan_name else "run_plan"
+    try:
+        os.makedirs(STATE_DIR, exist_ok=True)
+        state = {
+            "mission": mission,
+            "phase": do,
+            "loop_round": step_idx,
+        }
+        with open(CURRENT_MISSION_FILE, "w", encoding="utf-8") as f:
+            json.dump(state, f, ensure_ascii=False, indent=0)
+    except OSError:
+        pass
+    try:
+        os.makedirs(LOG_DIR, exist_ok=True)
+        today = datetime.now().strftime("%Y-%m-%d")
+        log_path = os.path.join(LOG_DIR, "behavior_%s.log" % today)
+        ts = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        # 悬浮球弹框显示 phase · desc
+        line = "%s\t%s\t%s\tmission=%s\n" % (ts, phase_display, desc_display, mission)
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(line)
+    except OSError:
+        pass
+
+
 def main():
     argv = sys.argv[1:]
     if "--stdin" in argv:
@@ -257,7 +315,7 @@ def main():
         plan_path_idx = -1
     else:
         if not argv or argv[0].startswith("--"):
-            print("usage: run_plan.py <plan.json> [--var k=v] [--contact 名] [--period 月度|季度|年度]  |  run_plan.py --stdin", file=sys.stderr)
+            print("usage: run_plan.py <plan.json> [--var k=v] [--contact 名] [--period 月度|季度|年度] [--verbose] [--no-floating]  |  run_plan.py --stdin", file=sys.stderr)
             sys.exit(1)
         plan_path_idx = 0
         with open(argv[0], "r", encoding="utf-8") as f:
@@ -269,12 +327,16 @@ def main():
         sys.exit(1)
     if not isinstance(plan, list):
         plan = plan.get("steps", plan) if isinstance(plan, dict) else []
-    vars_dict = _parse_plan_vars(sys.argv)
+    vars_dict, plan_verbose, no_floating = _parse_plan_vars(sys.argv)
+    if plan_verbose:
+        os.environ["FRIDAY_VISION_VERBOSE"] = "1"
     plan_path = argv[0] if plan_path_idx >= 0 and argv else ""
     if "performance_declaration" in plan_path and "period" not in vars_dict:
         vars_dict["period"] = "月度"
     if vars_dict:
         plan = _substitute_vars(plan, vars_dict)
+    if not no_floating:
+        _launch_floating_ball()
     last_screenshot_plan_path = None
     last_screenshot_actual_path = None
     def step_vision_coords(args):
@@ -307,12 +369,20 @@ def main():
             print("unknown step:", do, file=sys.stderr)
             continue
         print("step %d: %s" % (i + 1, do), file=sys.stderr)
+        _update_floating_state(plan_path, i + 1, do, "step %d: %s" % (i + 1, do), "…")
         if do in ("vision", "vision_coords") and last_screenshot_plan_path and last_screenshot_actual_path:
             item = dict(item)
             img = (item.get("image") or item.get("path") or "").strip()
             if img and os.path.normpath(img) == last_screenshot_plan_path:
                 item["image"] = last_screenshot_actual_path
         ok, out = fn(item)
+        if ok and out and do in ("vision", "vision_coords"):
+            result_str = (str(out)[:50] + "…") if len(str(out)) > 50 else str(out)
+        elif ok:
+            result_str = "ok"
+        else:
+            result_str = "fail: " + ((str(out)[:50] + "…") if out and len(str(out)) > 50 else (str(out) or ""))
+        _update_floating_state(plan_path, i + 1, do, "step %d: %s" % (i + 1, do), result_str)
         if not ok:
             print("step %d %s failed: %s" % (i + 1, do, out), file=sys.stderr)
             sys.exit(1)
@@ -327,6 +397,7 @@ def main():
             except OSError:
                 pass
             _safe_print_vision(out)
+    _update_floating_state(plan_path, 0, "done", "plan done", "ok")
     print("plan done")
 
 if __name__ == "__main__":

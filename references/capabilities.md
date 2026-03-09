@@ -21,7 +21,7 @@
 | 中文/Unicode 输入 | `do.py 输入中文 内容`（先写剪贴板再 Ctrl+V 粘贴）；计划中可用 step paste 粘贴剪贴板内容 |
 | 看图提问 | `python scripts/vision_proxy.py <图路径> "问题"` |
 | **获取点击坐标**（多轮取中位数） | `python scripts/vision_coords.py <图路径> "问题"` 或 run_plan 中 `{"do": "vision_coords", ...}`；默认归一化(0-1)转像素，加 `"pixel": true` 用像素直出；设 `FRIDAY_VISION_VERBOSE=1` 打印提示词与模型输出 |
-| 执行计划（截图/vision/点击/输入等） | `python scripts/run_plan.py plans/xxx.json`；步骤类型：screenshot / vision / vision_coords / click / type / key / paste / scroll / wait / run |
+| 执行计划（截图/vision/点击/输入等） | `python scripts/run_plan.py plans/xxx.json`；步骤类型：screenshot / vision / vision_coords / click / type / key / paste / scroll / wait / run；`--verbose` 打印多模态输入输出；默认自动启动 Qt 悬浮球显示进度，`--no-floating` 可跳过 |
 | vision 输出解析为步骤 JSON | `python scripts/parse_vision_steps.py [文件或 stdin]` |
 | 打开记事本 | `python scripts/launch_notepad.py [文件路径]` 或 `do.py 打开记事本` |
 | 打开文件管理器 | `python scripts/launch_explorer.py [目录]` 或 `do.py 打开文件管理器` |
