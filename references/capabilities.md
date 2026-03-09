@@ -55,7 +55,7 @@
 | Vision 坐标校准（维护偏移数据集） | `python scripts/vision_calibrate.py calibrate`：屏幕 5 点红点→截图→多模态识坐标→算偏移写入 state/vision_calibration.json；run_plan/click_from_vision_or_key 会自动加该偏移再点击。换分辨率后需重跑。详见 vision_parse_convention.md。 |
 | 自主校验能力链（截图/鼠标/键盘/启动/vision/剪贴板） | `python scripts/self_verify_capabilities.py`，结果见 `state/self_verify_result.json` |
 | 闭环跑者（无人时持续推进轮次与日志） | `python scripts/loop_runner.py` 一轮；`loop_runner.py --daemon [--interval 300]` 常驻 |
-| 计划模板（plans/） | `minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_send_message.json`、`example_ihaier_check_messages.json`、`example_ihaier_who_contacted_me.json`、`example_ihaier_my_latest_message.json`、`example_screenshot_vision.json`，供 run_plan 引用 |
+| 计划模板（plans/） | `minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_send_message.json`、`example_ihaier_check_messages.json`、`example_ihaier_who_contacted_me.json`、`example_ihaier_my_latest_message.json`、`ihaier_performance_declaration.json`（绩效达成申报）、`example_screenshot_vision.json`，供 run_plan 引用 |
 
 ## 说明
 

@@ -7,6 +7,7 @@
 | 帮我打开摄像头，看到了什么 | camera_qt → 截图 → vision 描述 | 已具备脚本；需联调 |
 | 帮我来个自拍 | do.py 自拍 → selfie.py（打开摄像头→等3s→截屏） | 已实现；对话中说自拍即执行 do.py 自拍 |
 | 用 ihaier 给周小帅发个消息 | 打开/聚焦 ihaier → 截图 → vision 找联系人与输入框 → click + type | 待规划计划 |
+| 绩效达成申报 | 搜索绩效管理 → 进入应用 → 目标签订/实际申报 → 选周期 → 达成申报 → 填写表单 → 保存草稿 | 已实现 plan `ihaier_performance_declaration.json`；`--period 月度|季度|年度` |
 | 帮我访问某网站完成某操作 | launch_browser → 截图 → vision 决策 → click/type（见 plans/example_visit_website.json） | 计划模板已有 |
 | 点点点（基础点击、输入） | run_plan：screenshot / vision / click / type / key | 已实现 run_plan |
 

@@ -222,6 +222,10 @@ def _parse_plan_vars(argv):
             out["contact"] = argv[i + 1]
             i += 2
             continue
+        if argv[i] == "--period" and i + 1 < len(argv):
+            out["period"] = argv[i + 1]
+            i += 2
+            continue
         i += 1
     return out
 
@@ -246,7 +250,7 @@ def main():
         plan_path_idx = -1
     else:
         if not argv or argv[0].startswith("--"):
-            print("usage: run_plan.py <plan.json> [--var k=v] [--contact 名]  |  run_plan.py --stdin", file=sys.stderr)
+            print("usage: run_plan.py <plan.json> [--var k=v] [--contact 名] [--period 月度|季度|年度]  |  run_plan.py --stdin", file=sys.stderr)
             sys.exit(1)
         plan_path_idx = 0
         with open(argv[0], "r", encoding="utf-8") as f:
@@ -259,6 +263,9 @@ def main():
     if not isinstance(plan, list):
         plan = plan.get("steps", plan) if isinstance(plan, dict) else []
     vars_dict = _parse_plan_vars(sys.argv)
+    plan_path = argv[0] if plan_path_idx >= 0 and argv else ""
+    if "performance_declaration" in plan_path and "period" not in vars_dict:
+        vars_dict["period"] = "月度"
     if vars_dict:
         plan = _substitute_vars(plan, vars_dict)
     last_screenshot_plan_path = None
