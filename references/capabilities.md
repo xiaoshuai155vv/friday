@@ -2,7 +2,7 @@
 
 本技能**不做意图识别**。意图由 Claude Code / Cursor 等运行环境中的模型识别；识别后可从下表选用对应能力并执行。
 
-**do.py 不支持时**：当 `do.py <意图>` 返回「未知意图」，**不要放弃**。使用保底能力完成：① 鼠标（mouse_tool click）、键盘（keyboard_tool、Win+R+type+Enter）；② 多模态：截图 → vision_proxy/vision_coords 定位 → click。若成功，将最短路径固化为 `plans/<场景>.json`，下次直接 `run_plan`。
+**do.py 不支持时**：当 `do.py <意图>` 返回「未知意图」，**不要放弃**。使用保底能力完成：① 鼠标（mouse_tool click）、键盘（keyboard_tool、Win+R+type+Enter）；② 多模态：截图 → vision_proxy/vision_coords 定位 → click。若成功，将最短路径固化为 `plans/<场景>.json`，下次直接 `run_plan`。**打开应用**：Windows 上所有应用可从开始菜单/任务栏搜到，用 Win 键、Win+R 或 `do 打开应用 <名>` 即可；**不要**去文件系统搜 exe 路径。
 
 ## 能力与调用
 

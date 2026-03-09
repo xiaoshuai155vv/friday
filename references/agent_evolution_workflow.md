@@ -26,6 +26,7 @@
 
 1. **识别意图**并优先尝试 `do.py <意图>` 或对应脚本。
 2. **若 do.py 返回「未知意图」**：不要放弃。使用**保底能力**完成需求：
+   - **打开应用**：Windows 上**所有应用**可从开始菜单/任务栏搜到；用 Win 键、Win+R+type+Enter 或 `do 打开应用 <名>` 即可。**不要**去文件系统搜 exe、Program Files。
    - **鼠标**（`mouse_tool click x y`）、**键盘**（`keyboard_tool` 组合键、type、shortcut）
    - **多模态**：`vision_proxy` 看图理解、`vision_coords` 获取点击坐标
    - **流程**：截图 → vision_coords 定位可点击元素 → click 点击；或 Win+R → type 应用名 → Enter
