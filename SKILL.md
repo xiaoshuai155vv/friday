@@ -53,7 +53,7 @@ description: |
 
 该文档说明进化环（假设 → 自主决策 → 自主执行 → 自主校验审核 → 自主优化反思 → 回到假设）及每一阶段的输入、输出与执行清单。按其中步骤执行即可形成无限进化循环。读完该文档后再按需查阅本 SKILL 其余能力与脚本说明。
 
-**必守约定**：① **看图理解必须用本技能 vision**：运行环境（如 Claude Code）可能**无法直接读取或展示截图/图片**，不要尝试直接读截图文件；一律用 `python scripts/vision_proxy.py <图片路径> "<问题>"` 或 run_plan 中的 vision 步骤。② **键盘组合键**：`keyboard_tool` 使用**虚拟键码**（如 `keys 17 75` 表示 Ctrl+K），见 capabilities 或 `keyboard_tool shortcut ctrl+k`。③ **激活窗口后先最大化**再截图/多模态，见 private_domains 与各 ihaier 计划。④ **ihaier 窗口**：主窗口标题是「**办公平台**」，激活请用 `window_tool activate "办公平台"` 或 `activate_process iHaier2.0`，**不要用** `activate "ihaier"`（会找不到窗口）。
+**必守约定**：① **看图理解必须用本技能 vision**：运行环境（如 Claude Code）可能**无法直接读取或展示截图/图片**，不要尝试直接读截图文件；一律用 `python scripts/vision_proxy.py <图片路径> "<问题>"`（通用看图）或 `python scripts/vision_coords.py <图片路径> "<问题>"`（**获取点击坐标**，内部多轮取中位数）或 run_plan 中的 vision 步骤。② **键盘组合键**：`keyboard_tool` 使用**虚拟键码**（如 `keys 17 75` 表示 Ctrl+K），见 capabilities 或 `keyboard_tool shortcut ctrl+k`。③ **激活窗口后先最大化**再截图/多模态，见 private_domains 与各 ihaier 计划。④ **ihaier 窗口**：主窗口标题是「**办公平台**」，激活请用 `window_tool activate "办公平台"` 或 `activate_process iHaier2.0`，**不要用** `activate "ihaier"`（会找不到窗口）。
 
 ---
 
@@ -158,11 +158,12 @@ python scripts/friday_floating_qt.py
 - 当文本/代码无法拟人理解界面时，使用**多模态模型**看图决策（截图→模型→点击/键盘）。
 - **自包含**：本技能内 `scripts/vision_proxy.py` 读 `vision_config.json`（或环境变量），调用 OpenAI 兼容多模态 API（如 qwen3-vl、glm-4-5v）；配置示例见 `assets/vision_config.example.json`。支持多 provider（qwen/glm 等），`vision_config.json` 中 `provider` 指定当前使用哪个。
 - 与本技能内「截图 + 鼠标 + 键盘」脚本配合，实现自动化与自我验证。
-- **通用智能体/驱动本技能的智能体**：**不要直接读取截图文件**（大图、二进制或无法解析）；运行环境通常不具备「看图」能力。若需理解截图内容，**必须使用本技能的 vision 脚本**：`python scripts/vision_proxy.py <图片路径> "<问题>"`（或 run_plan 中的 vision 步骤）。失败或无法读图时，一律走 vision 多模态识别，勿反复尝试直接读图。
+- **通用智能体/驱动本技能的智能体**：**不要直接读取截图文件**（大图、二进制或无法解析）；运行环境通常不具备「看图」能力。若需理解截图内容，**必须使用本技能的 vision 脚本**：`vision_proxy.py`（通用看图）或 `vision_coords.py`（**获取点击坐标**，多轮取中位数）；或 run_plan 中的 vision 步骤（`coords: true` 时自动用 vision_coords）。失败或无法读图时，一律走 vision 多模态识别，勿反复尝试直接读图。
 
 ### 多模态能力设定（坐标稳定性）
 
-- **3 轮取中位数**：仅当 vision 需要返回**点击坐标**时才多轮。计划中 vision 步骤加 `"coords": true` 时，run_plan 会传 `--runs 3` 给 vision_proxy，对同一张图跑 3 次、解析 3 组 (x,y)、取中位数输出；非坐标类提问（如「输出消息内容」）不加 coords，只跑 1 次。中位数含义：3 个值排序取中间；若两次相近、一次离群，则取到相近对的中间值，自动排除离群。通用智能体规划时：**需要坐标返回的 vision 步骤加 `"coords": true`**。
+- **vision_proxy**：通用看图问答，单次调用，输出自然语言。
+- **vision_coords**：**获取点击坐标**专用，内部调用 vision_proxy 多轮（默认 3 次）、解析 (x,y) 取中位数，输出 `x y`。计划中 vision 步骤加 `"coords": true` 时，run_plan 自动用 vision_coords；非坐标类（如「输出消息内容」）用 vision_proxy。通用智能体规划时：**需要坐标返回的 vision 步骤加 `"coords": true`**。
 - **校准偏移**：vision 返回的坐标常有系统性偏差，需通过 `vision_calibrate.py calibrate` 得到 offset 并写入 `state/vision_calibration.json`；run_plan / click_from_vision_or_key 会自动加上该偏移再点击。换分辨率后需重跑校准。
 - **provider 选择**：可用 `vision_calibrate.py benchmark` 对比各 provider 的偏差稳定性（std 越小越稳）；benchmark 结果通常推荐 glm。
 
@@ -233,6 +234,7 @@ python scripts/friday_floating_qt.py
 | 按回车、按键 | `python scripts/keyboard_tool.py key 13` 或 `do.py 按回车` |
 | 点击 (x,y)、输入文字、中文输入 | `mouse_tool.py click x y`、`keyboard_tool.py type "..."`；`do.py 输入中文 内容`（剪贴板+粘贴）；`run_plan.py` |
 | 看图并问问题 | `python scripts/vision_proxy.py <图片路径> "<问题>"` |
+| **获取点击坐标**（多轮取中位数） | `python scripts/vision_coords.py <图片路径> "<问题>"` 或 run_plan 中 vision 加 `"coords": true` |
 | 按计划执行一系列操作 | `python scripts/run_plan.py plans/xxx.json` |
 
 更多脚本与用法见下方「脚本」节；详细需求与能力链见 [references/assumed_demands.md](references/assumed_demands.md)。
@@ -240,7 +242,7 @@ python scripts/friday_floating_qt.py
 ## 通用基础能力（自包含）
 
 - **独立自闭环**：本技能不依赖其他技能。鼠标、键盘、屏幕、截图、多模态均由本技能内脚本完成。
-- **脚本**：`scripts/screen_size_tool.py`（主屏宽高）、`scripts/mouse_tool.py`（click/right_click/middle_click/scroll/drag）、`scripts/keyboard_tool.py`（key/keys/type）、`scripts/screenshot_tool.py`（全屏 BMP）、`scripts/vision_proxy.py`（看图问答）。均为 Windows 下自包含（ctypes/标准库）。
+- **脚本**：`scripts/screen_size_tool.py`（主屏宽高）、`scripts/mouse_tool.py`（click/right_click/middle_click/scroll/drag）、`scripts/keyboard_tool.py`（key/keys/type）、`scripts/screenshot_tool.py`（全屏 BMP）、`scripts/vision_proxy.py`（看图问答）、`scripts/vision_coords.py`（**获取点击坐标**，多轮取中位数）。均为 Windows 下自包含（ctypes/标准库）。
 
 ## UI：科幻主体
 
@@ -286,7 +288,8 @@ python scripts/friday_floating_qt.py
 - `scripts/volume_tool.py` — 主音量 get/set 0–100（winmm）；`do.py 音量值`、`do.py 设置音量 50`。
 - `scripts/brightness_tool.py` — 屏幕亮度 get/set 0–100（伽马）；`do.py 亮度`、`do.py 设置亮度 80`。
 - `scripts/notification_tool.py` — Toast 通知 show（Win10+）；`do.py 通知 内容`。
-- `scripts/vision_proxy.py` — 自包含多模态看图问答，配置见 `vision_config.json`。
+- `scripts/vision_proxy.py` — 自包含多模态看图问答（单次），配置见 `vision_config.json`。
+- `scripts/vision_coords.py` — **获取点击坐标**：对同一图多轮调用 vision_proxy、解析 (x,y) 取中位数，输出 `x y`；run_plan 中 `coords: true` 时自动使用。
 - `scripts/serve.py` — 本地 HTTP 服务（默认 8765）；启动后约 1.5s 自动打开置顶悬浮窗。使用本技能前需先运行此服务。
 - `scripts/friday_floating_main.py` — 悬浮窗统一入口：优先启动 Qt 版，无 PyQt5 时回退 WebView 版。
 - `scripts/friday_floating_qt.py` — 悬浮窗**原生 GUI 版**（需 `pip install PyQt5`）：圆形、透明、托盘图标右键退出、网格球+环+光球。
