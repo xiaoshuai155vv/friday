@@ -104,17 +104,11 @@ def main():
     if not os.path.isfile(img_path):
         print("File not found:", img_path, file=sys.stderr)
         sys.exit(1)
-    # 动态注入屏幕分辨率与图片尺寸，便于多模态识别与返回与屏幕一致的点击坐标
-    screen = _get_screen_size()
+    # 注入图片尺寸与坐标约束，避免多模态返回区域相对坐标或缩放后的坐标
     dims = _get_image_size(img_path)
-    parts = []
-    # if screen:
-    #     parts.append("当前屏幕逻辑分辨率 宽{} 高{}".format(screen[0], screen[1]))
-    # if dims:
-    #     parts.append("此图片像素尺寸 宽{} 高{}".format(dims[0], dims[1]))
-    # if parts:
-    #     size_hint = "\n[系统：" + "；".join(parts) + "。返回的坐标必须是以整张图片左上角为原点(0,0)的全图像素坐标，不要使用界面内某一块区域的相对坐标。]"
-    #     question = question.rstrip() + size_hint
+    if dims:
+        hint = "\n[重要：此图尺寸为 {}×{} 像素。返回的 x y 必须是以整张图片最左上角(0,0)为原点的绝对像素坐标，不能缩放、不能只算某块区域、不能使用界面内相对坐标。]"
+        question = question.rstrip() + hint.format(dims[0], dims[1])
     cfg = load_config()
     # 支持 --provider / --model 覆盖，用于 benchmark 多 provider 测试
     provider = provider_override or cfg.get("provider") or "qwen"
