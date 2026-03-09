@@ -56,8 +56,10 @@ def step_vision(args):
     use_coords = args.get("coords") or args.get("runs", 1) > 1
     if use_coords:
         cmd = [sys.executable, os.path.join(SCRIPTS, "vision_coords.py"), "--runs", "3"]
-        if args.get("normalized"):
+        if args.get("normalized", True):
             cmd.append("--normalized")
+        elif args.get("pixel"):
+            cmd.append("--pixel")
         if os.environ.get("FRIDAY_VISION_VERBOSE", "").lower() in ("1", "true", "yes"):
             cmd.append("--verbose")
         cmd.extend([img, q])

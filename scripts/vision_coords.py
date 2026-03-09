@@ -94,7 +94,7 @@ def _median(vals):
 
 def main():
     runs = 3
-    use_normalized = False
+    use_normalized = True  # 默认归一化，GLM/Qwen3 等模型像素坐标常偏小，归一化(0-1)转像素更准
     extra_args = []  # --provider / --model / --verbose 透传给 vision_proxy
     args = sys.argv[1:]
     while len(args) >= 2 and args[0].startswith("--"):
@@ -107,6 +107,9 @@ def main():
         elif args[0] == "--normalized":
             use_normalized = True
             args = args[1:]
+        elif args[0] == "--pixel":
+            use_normalized = False
+            args = args[1:]
         elif args[0] in ("--provider", "--model") and len(args) >= 2:
             extra_args.extend(args[:2])
             args = args[2:]
@@ -118,7 +121,7 @@ def main():
     if os.environ.get("FRIDAY_VISION_VERBOSE", "").lower() in ("1", "true", "yes"):
         extra_args.append("--verbose")
     if len(args) < 2:
-        print("usage: vision_coords.py [--runs 3] [--normalized] [--verbose] [--provider qwen|glm] [--model MODEL] <image_path> \"<question>\"", file=sys.stderr)
+        print("usage: vision_coords.py [--runs 3] [--normalized|--pixel] [--verbose] [--provider qwen|glm] [--model MODEL] <image_path> \"<question>\"", file=sys.stderr)
         sys.exit(1)
     img_path = args[0]
     question = args[1]
