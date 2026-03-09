@@ -52,7 +52,7 @@ description:  电脑自动化（鼠标、键盘、截图识别、多模态坐标
 
 该文档说明进化环（假设 → 自主决策 → 自主执行 → 自主校验审核 → 自主优化反思 → 回到假设）及每一阶段的输入、输出与执行清单。按其中步骤执行即可形成无限进化循环。读完该文档后再按需查阅本 SKILL 其余能力与脚本说明。
 
-**必守约定**：① **打开应用勿搜文件系统**：Windows 上**所有已安装应用**均可从**开始菜单**或**任务栏**搜到/看到；用 Win 键（或 Win+R 输入应用名）、开始菜单搜索、任务栏点击即可启动。**不要**去文件系统搜 exe 路径、Program Files 等。② **看图理解必须用本技能 vision**：运行环境（如 Claude Code）可能**无法直接读取或展示截图/图片**，不要尝试直接读截图文件；一律用 `python scripts/vision_proxy.py <图片路径> "<问题>"`（通用看图）或 `python scripts/vision_coords.py <图片路径> "<问题>"`（**获取点击坐标**，内部多轮取中位数）或 run_plan 中的 vision 步骤。③ **键盘组合键**：`keyboard_tool` 使用**虚拟键码**（如 `keys 17 75` 表示 Ctrl+K），见 capabilities 或 `keyboard_tool shortcut ctrl+k`。④ **激活窗口后先最大化**再截图/多模态，见 private_domains 与各 ihaier 计划。⑤ **ihaier 窗口**：主窗口标题是「**办公平台**」，激活请用 `window_tool activate "办公平台"` 或 `activate_process iHaier2.0`，**不要用** `activate "ihaier"`（会找不到窗口）。⑥ **do.py 不支持时勿放弃**：当 `do.py` 返回「未知意图」，使用**保底能力**（鼠标、键盘、多模态、vision_coords）完成需求；若成功，将最短路径固化为 `plans/<场景>.json`，下次同类需求直接 run_plan。
+**必守约定**：① **打开应用勿搜文件系统**：Windows 上**所有已安装应用**均可从**开始菜单**或**任务栏**搜到/看到；用 Win 键（或 Win+R 输入应用名）、开始菜单搜索、任务栏点击即可启动。**不要**去文件系统搜 exe 路径、Program Files 等。② **看图理解必须用本技能 vision**：运行环境（如 Claude Code）可能**无法直接读取或展示截图/图片**，不要尝试直接读截图文件；一律用 `python scripts/vision_proxy.py <图片路径> "<问题>"`（通用看图）或 `python scripts/vision_coords.py <图片路径> "<问题>"`（**获取点击坐标**，内部多轮取中位数）或 run_plan 中的 vision 步骤。③ **键盘组合键**：`keyboard_tool` 使用**虚拟键码**（如 `keys 17 75` 表示 Ctrl+K），见 capabilities 或 `keyboard_tool shortcut ctrl+k`。④ **激活窗口后先最大化再截图/多模态**：窗口未最大化时截图会带入背景、其他窗口，干扰 vision 识别；最大化后能更好截取目标界面内容。计划中 activate 后加 `window_tool maximize "标题"`，再 wait → screenshot。⑤ **ihaier 窗口**：主窗口标题是「**办公平台**」，激活请用 `window_tool activate "办公平台"` 或 `activate_process iHaier2.0`，**不要用** `activate "ihaier"`（会找不到窗口）。⑥ **do.py 不支持时勿放弃**：当 `do.py` 返回「未知意图」，使用**保底能力**（鼠标、键盘、多模态、vision_coords）完成需求；若成功，将最短路径固化为 `plans/<场景>.json`，下次同类需求直接 run_plan。
 
 ---
 
@@ -64,9 +64,9 @@ description:  电脑自动化（鼠标、键盘、截图识别、多模态坐标
 python scripts/launch_friday_floating.py
 ```
 
-**必须用 `launch_friday_floating.py`**（不要直接运行 `friday_floating_qt.py`）：launch 会优先 Qt 版，无 PyQt5 或 Qt 平台插件异常时自动回退到 WebView 版，避免「导入失败」导致悬浮窗完全无法启动。其中 **`python` 为项目内预先打包的解释器**：若项目根存在 `python/python.exe`，请使用 `python\python.exe scripts\launch_friday_floating.py` 或 `python scripts/run_with_env.py launch_friday_floating`；无便携环境时使用系统 `python`。运行后会出现**圆形置顶悬浮窗**，实时显示当前阶段、使命、轮次；双击可查看过程/日志。
+**必须用 `launch_friday_floating.py`**（不要直接运行 `friday_floating_qt.py`）。其中 **`python` 为项目内预先打包的解释器**：若项目根存在 `python/python.exe`，请使用 `python\python.exe scripts\launch_friday_floating.py` 或 `python scripts/run_with_env.py launch_friday_floating`；无便携环境时使用系统 `python`。运行后会出现**圆形置顶悬浮窗**，实时显示当前阶段、使命、轮次；双击可查看过程/日志。**需 pip install PyQt5**。
 
-**使用本技能前需先启动服务（可选）**：若需本地 HTTP 服务与自动拉起悬浮窗，可在技能目录下执行 `python scripts/serve.py`（python 同上，优先用项目内打包的）。服务启动后会自动打开上述悬浮窗。**推荐安装 PyQt5**（项目内 `python` 已装或系统 `pip install PyQt5`）以使用**原生 GUI 版**（无 WebView、真透明、网格球+环+光球）；未装 PyQt5 时自动回退到 WebView 版（需 `pywebview`）。
+**使用本技能前需先启动服务（可选）**：若需本地 HTTP 服务与自动拉起悬浮窗，可在技能目录下执行 `python scripts/serve.py`（python 同上）。服务启动后会自动打开 Qt 悬浮球。
 
 **使用本技能时**：自闭环需**多轮持续**，不得在一轮结束后向用户「总结并结束」。每轮 decide 后更新 state、写入日志，并立即进入下一轮假设/规划。
 
@@ -80,11 +80,10 @@ python scripts/launch_friday_floating.py
 
 | 依赖 | 用途 | 是否必须 |
 |------|------|----------|
-| **PyQt5** | 悬浮窗**原生 GUI 版**：圆形、透明、托盘右键退出、网格球动画；不依赖 WebView | **推荐**（不装则用下一条） |
-| **pywebview** | 悬浮窗**回退版**：无 PyQt5 时用浏览器内核内嵌 Friday UI；Windows 下透明可能不生效 | 可选（仅当未装 PyQt5 且需悬浮窗时） |
+| **PyQt5** | 悬浮窗 Qt 版：圆形、透明、托盘右键退出、网格球动画 | **必须**（需悬浮窗时） |
 | 多模态 API | `vision_proxy.py` 看图问答：需在 `scripts/vision_config.json` 或环境变量中配置 API（见 `assets/vision_config.example.json`），无额外 pip 包要求 | 按需配置 |
 
-- **悬浮窗**：**`scripts/launch_friday_floating.py` 默认直接启动 Qt 版**（`friday_floating_qt.py`），即圆形原生 GUI 悬浮球；仅当无 PyQt5 时才回退到 pywebview 版（`scripts/friday_floating.py`）。由 `serve.py` 自动拉起时同样优先 Qt 版。
+- **悬浮窗**：**`scripts/launch_friday_floating.py`** 启动 Qt 版悬浮球（`friday_floating_qt.py`）。由 `serve.py` 自动拉起时同样启动 Qt 版。
 - **一键安装推荐**：`pip install -r requirements.txt`（当前主要为 PyQt5）。
 
 ## 命令行编码（避免中文乱码）
@@ -293,10 +292,9 @@ python scripts/launch_friday_floating.py
 - `scripts/vision_proxy.py` — 自包含多模态看图问答（单次），配置见 `vision_config.json`。
 - `scripts/vision_coords.py` — **获取点击坐标**：对同一图多轮调用 vision_proxy、解析 (x,y) 取中位数，输出 `x y`；run_plan 中 `coords: true` 时自动使用。
 - `scripts/serve.py` — 本地 HTTP 服务（默认 8765）；启动后约 1.5s 自动打开置顶悬浮窗。使用本技能前需先运行此服务。
-- `scripts/friday_floating_main.py` — 悬浮窗统一入口：优先启动 Qt 版，无 PyQt5 时回退 WebView 版。
-- `scripts/friday_floating_qt.py` — 悬浮窗**原生 GUI 版**（需 `pip install PyQt5`）：圆形、透明、托盘图标右键退出、网格球+环+光球。
-- `scripts/friday_floating.py` — 悬浮窗 **WebView 版**（需 `pip install pywebview`）：内嵌 Friday UI；无 PyQt5 时由 main 自动选用。
-- `scripts/launch_friday_floating.py` — 无 CMD 窗口启动悬浮窗；**默认启动 Qt 版**（friday_floating_qt.py），无 PyQt5 时再回退 WebView。
+- `scripts/friday_floating_qt.py` — 悬浮窗 Qt 版（需 `pip install PyQt5`）：圆形、透明、托盘图标右键退出、网格球+环+光球。
+- `scripts/launch_friday_floating.py` — 启动 Qt 悬浮球。
+- `scripts/installed_apps_tool.py` — 获取已安装应用列表（从注册表 Uninstall）；`--json` 输出 JSON。
 - `scripts/run_plan.py` — 执行自动化计划；步骤类型：screenshot / **vision**（通用看图）/ **vision_coords**（获取坐标，多轮取中位数）/ click / type / key / paste / scroll / wait / run；计划见 `plans/*.json`。
 - `scripts/camera_qt.py` — 用 PyQt5 直接打开摄像头窗口；配合截图+vision 可「看到了什么」。
 - `scripts/launch_browser.py` — 用默认浏览器打开 URL；配合截图+vision+run_plan 可访问网站并操作。
@@ -308,7 +306,7 @@ python scripts/launch_friday_floating.py
 ## 资源与配置
 
 - **多模态**：复制 `assets/vision_config.example.json` 为 `scripts/vision_config.json` 或项目根下 `vision_config.json`，填写 api_key、base_url、model_name。
-- **UI**：`assets/friday-ui.html` 为 BS 科幻主题骨架，由 `serve.py` 提供。悬浮窗优先用 PyQt5 原生绘制（见上方「依赖与安装」）；回退 WebView 时内嵌该页面。
+- **UI**：`assets/friday-ui.html` 为 BS 科幻主题骨架，由 `serve.py` 提供；悬浮窗用 PyQt5 原生绘制。
 
 ## 设计参考
 

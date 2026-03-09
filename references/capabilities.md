@@ -29,6 +29,7 @@
 | 打开文件管理器 | `python scripts/launch_explorer.py [目录]` 或 `do.py 打开文件管理器` |
 | 打开闹钟/日历 | `do.py 打开闹钟`、`do.py 打开日历` |
 | 打开音乐播放器 | `do.py 打开网易云音乐`、`do.py 打开QQ音乐`、`do.py 打开酷狗音乐`、`do.py 打开Spotify`；通用 `do.py 打开应用 <应用名>`（Win+R 输入） |
+| 已安装应用列表 | `do.py 已安装应用` 或 `installed_apps_tool.py`；`--json` 输出 JSON（含 name/version/publisher），默认每行一个应用名 |
 | 剪贴板读/写 | `do.py 剪贴板读`、`do.py 剪贴板写 内容`；图片：`clipboard_tool.py image_get <路径>`、`image_set <路径>`；`do.py 剪贴板图片保存 [路径]`、`剪贴板图片写入 <路径>` |
 | 防休眠、音量 | `do.py 防休眠 [秒]`、`do.py 音量静音`、`do.py 音量减`、`do.py 音量增`；精确音量：`volume_tool.py get`、`set <0-100>`；`do.py 音量值`、`do.py 设置音量 50` |
 | 执行任意脚本 | `do.py run <脚本名> [参数...]`，如 `do.py run screenshot_tool`、`do.py run timer_tool 5 run launch_notepad` |
@@ -46,7 +47,7 @@
 | 睡眠/休眠 | `power_tool.py sleep`、`power_tool.py hibernate`；`do.py 睡眠`、`do.py 休眠` |
 | 关机/重启 | `power_tool.py shutdown [秒]`、`power_tool.py reboot [秒]`；`do.py 关机 [秒]`、`do.py 重启 [秒]`（默认立即） |
 | 窗口激活（按标题/按进程名） | `window_tool.py activate "标题"`；`window_tool.py activate_process <进程名>`；`window_tool.py activate_pid <PID>`；按标题查 PID：`window_tool.py pid "标题"`。**ihaier 主窗口标题是「办公平台」**，请用 `activate "办公平台"` 或 `activate_process iHaier2.0`，不要用 `activate "ihaier"`。 |
-| 窗口最大化（激活后先最大化再截图，避免背景干扰多模态） | `window_tool.py maximize "标题"`（如 `maximize "办公平台"`）；`window_tool.py maximize_process <进程名>`；计划中在 activate 后加一步 run window_tool args ["maximize", "办公平台"] 再 wait → screenshot |
+| 窗口最大化（激活后先最大化再截图，有助于截取目标界面、避免背景干扰多模态） | `window_tool.py maximize "标题"`（如 `maximize "办公平台"`）；`window_tool.py maximize_process <进程名>`；计划中在 activate 后加一步 run window_tool args ["maximize", "办公平台"] 再 wait → screenshot |
 | 显示/亮度 | `launch_settings.py display` 或 run_plan+vision；软件亮度：`brightness_tool.py get`、`set <0-100>`；`do.py 亮度`、`do.py 设置亮度 80` |
 | 通知/Toast | `notification_tool.py show "正文"`；`do.py 通知 内容`（Win10+）；通知设置：`launch_settings.py notifications` |
 | 打开运行对话框（Win+R） | `do.py 打开运行` 或 `keyboard_tool.py keys 91 82` |

@@ -36,7 +36,7 @@ def _launch_via_win_r(app_name):
 
 def main():
     if len(sys.argv) < 2:
-        print("用法: do.py 自拍|打开摄像头|截图|打开网易云音乐|打开QQ音乐|...|剪贴板读|剪贴板写|防休眠|睡眠|...|run <脚本名> [参数...]", file=sys.stderr)
+        print("用法: do.py 自拍|打开摄像头|截图|已安装应用|打开网易云音乐|...|剪贴板读|防休眠|...|run <脚本名> [参数...]", file=sys.stderr)
         sys.exit(1)
     intent = sys.argv[1].strip()
     if intent == "自拍":
@@ -145,6 +145,8 @@ def main():
         _launch_via_win_r("Spotify")
     elif intent in ("打开应用", "启动应用") and len(sys.argv) > 2:
         _launch_via_win_r(sys.argv[2])  # do.py 打开应用 CloudMusic
+    elif intent in ("已安装应用", "应用列表", "列出应用", "installed_apps"):
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "installed_apps_tool.py")] + sys.argv[2:], cwd=PROJECT)
     elif intent in ("网络信息", "ipconfig", "网络"):
         mode = sys.argv[2] if len(sys.argv) > 2 else "brief"
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "network_tool.py"), mode], cwd=PROJECT)
