@@ -30,7 +30,7 @@
 - **类型**：ihaier 内通过搜索可打开的企业应用，用于维护个人绩效单、提交达成申报。
 - **入口**：ihaier 综合搜索（Ctrl+K）输入「绩效管理」→ 点击第一条应用结果。
 - **单的结构**：个人单从小微继承，分为**横轴**（定量、可量化任务）与**纵轴**（定性、过程描述类任务）；横纵轴等级 8 区位系数为 1，不扣钱，高了增值。
-- **达成申报流程**：打开绩效管理 → 点击「目标签订/实际申报」→ 选择申报周期（月/季/年）→ 点击「达成申报」→ 可选导入历史数据 → 填写表单 → 保存草稿。详见 [ihaier_capabilities.md](ihaier_capabilities.md) 与 plan `ihaier_performance_declaration.json`。
+- **达成申报流程**：打开绩效管理 → 点击左侧一级菜单「我的绩效」→ 点击二级菜单「目标签订&达成申报」→ 选择申报周期（月/季/年）→ 点击「达成申报」→ 可选导入历史数据 → 填写表单 → 保存草稿。详见 [ihaier_capabilities.md](ihaier_capabilities.md) 与 plan `ihaier_performance_declaration.json`。
 
 ---
 
