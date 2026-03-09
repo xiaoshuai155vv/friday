@@ -1,0 +1,11 @@
+{
+  "triggers": ["填写绩效达成", "绩效达成申报", "绩效申报", "帮我填绩效", "填写绩效", "绩效管理达成", "检查代码填写绩效", "三月份代码填写绩效"],
+  "intent": "绩效达成申报",
+  "description": "用户要填写绩效达成时，直接使用已有 plan 执行，勿手动截图+vision 逐步操作。",
+  "steps": [
+    "若用户提到「三月份/某月代码」：先 git log --since=YYYY-MM-01 --until=YYYY-MM-31 --pretty=format:'%h | %ad | %s' --date=short 统计提交，打印供用户填写时参考",
+    "直接执行 run_plan plans/ihaier_performance_declaration.json [--period 月度|季度|年度]",
+    "勿手动激活窗口、截图、vision 逐步操作；plan 内有 30 秒等待用户手动填写表单"
+  ],
+  "run_plan": "plans/ihaier_performance_declaration.json"
+}

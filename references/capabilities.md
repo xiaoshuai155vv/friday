@@ -28,7 +28,9 @@
 | 打开记事本 | `python scripts/launch_notepad.py [文件路径]` 或 `do.py 打开记事本` |
 | 打开文件管理器 | `python scripts/launch_explorer.py [目录]` 或 `do.py 打开文件管理器` |
 | 打开闹钟/日历 | `do.py 打开闹钟`、`do.py 打开日历` |
-| 打开音乐播放器 | `do.py 打开网易云音乐`、`do.py 打开QQ音乐`、`do.py 打开酷狗音乐`、`do.py 打开Spotify`；通用 `do.py 打开应用 <应用名>`（Win+R 输入） |
+| 放个歌/播放音乐 | **查阅** `scenarios/play_music.json` 按步骤执行。**勿用浏览器** |
+| 填写绩效达成/绩效申报 | **查阅** `scenarios/performance_declaration.json`：**直接** `run_plan plans/ihaier_performance_declaration.json`，勿手动截图+vision 逐步操作 |
+| 打开音乐播放器 | 同上，或先 `do 已安装应用` 查列表，识别后 `do 打开应用 <名>`；保底 `do 打开WMP` |
 | 已安装应用列表 | `do.py 已安装应用` 或 `installed_apps_tool.py`；`--json` 输出 JSON（含 name/version/publisher），默认每行一个应用名 |
 | 剪贴板读/写 | `do.py 剪贴板读`、`do.py 剪贴板写 内容`；图片：`clipboard_tool.py image_get <路径>`、`image_set <路径>`；`do.py 剪贴板图片保存 [路径]`、`剪贴板图片写入 <路径>` |
 | 防休眠、音量 | `do.py 防休眠 [秒]`、`do.py 音量静音`、`do.py 音量减`、`do.py 音量增`；精确音量：`volume_tool.py get`、`set <0-100>`；`do.py 音量值`、`do.py 设置音量 50` |
