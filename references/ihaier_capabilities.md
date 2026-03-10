@@ -39,7 +39,7 @@
 |------|------------|------|
 | **获取未读消息 / 谁找我 / 是否有人找我** | 读取消息列表（+ 可选：消息详情） | 看左侧消息红数字、中间列表红数字与加粗；若要「什么事」再点进会话用「消息详情」。 |
 | **获取「我的」最新消息** | 读取消息列表 + 消息详情 | 中间列表最上方置顶，第一条多为「我的」；点进后右侧对话框最下面一条为最新消息。见 plan `example_ihaier_my_latest_message.json`。 |
-| **获取指定联系人的最后一条消息** | 搜索 + 进入会话 + 消息详情 | 不写死联系人名；**通过搜索打开会话**（联系人可能不在消息列表第一页）。见 plan `ihaier_contact_latest_message.json`：激活→最大化→Ctrl+K 搜索→粘贴联系人名→回车选第一条→右侧即该联系人对话→截图+vision 读最新一条。运行：`run_plan.py plans/ihaier_contact_latest_message.json --contact 联系人名`。 |
+| **获取指定联系人的最后一条消息** | 搜索 + 进入会话 + 消息详情 | 不写死联系人名；**通过搜索打开会话**（联系人可能不在消息列表第一页）。见 plan `ihaier_contact_latest_message.json`：激活→最大化→Ctrl+K 搜索→粘贴联系人名→回车选第一条→右侧即该联系人对话→截图+vision 读最新一条。运行：`run_plan.py assets/plans/ihaier_contact_latest_message.json --contact 联系人名`。 |
 | **发消息给某人** | 搜索或联系人 + 进入会话 + 发消息（输入并发送） | 找联系人/会话 → 输入内容 → 发送。 |
 | **绩效达成申报** | 搜索绩效管理 + 进入应用 + 我的绩效 → 目标签订&达成申报 + 选周期 + 达成申报 + 填写表单 + 保存草稿 | 打开绩效管理 → 点击左侧「我的绩效」→ 点击二级「目标签订&达成申报」→ 选前月/季度/年度 → 达成申报 → 可选导入历史 → 填写表单（鼠标点击获焦点、下拉框点击后选）→ 保存草稿。见 plan `ihaier_performance_declaration.json`，`--period 月度|季度|年度`。 |
 | **查看审批** | 审批 | 进入审批模块后截图+vision 看列表或详情。 |
@@ -51,11 +51,11 @@
 
 ## 三、计划与引用
 
-- 获取未读消息、列出未读会话：`plans/example_ihaier_check_messages.json`、`plans/example_ihaier_who_contacted_me.json`（读取消息列表 + vision）。
-- 获取「我的」最新消息：`plans/example_ihaier_my_latest_message.json`（激活 → 截图 → vision 定位圆形头像中心坐标 → **click from_vision_coords** 点击 → 再截图+vision 读最新一条；不写死坐标，适配分辨率和窗口是否最大化）。
-- 获取指定联系人最新消息：`plans/ihaier_contact_latest_message.json`（**通过搜索**：Ctrl+K → 粘贴联系人名 → 回车选第一条 → 读右侧最新消息；计划内 `{{contact}}`，运行时必传 `--contact 联系人名`）。
-- 发消息：`plans/example_ihaier_send_message.json`（激活 ihaier → 点击输入框 → 粘贴剪贴板 → Enter 发送；执行前需设置剪贴板为要发送的内容）。
-- 绩效达成申报：`plans/ihaier_performance_declaration.json`（搜索绩效管理 → 进入应用 → 我的绩效 → 目标签订&达成申报 → 选周期 → 达成申报 → 可选导入历史 → 等待用户填写 → 保存草稿）。运行：`run_plan.py plans/ihaier_performance_declaration.json [--period 月度|季度|年度]`。
+- 获取未读消息、列出未读会话：`assets/plans/example_ihaier_check_messages.json`、`assets/plans/example_ihaier_who_contacted_me.json`（读取消息列表 + vision）。
+- 获取「我的」最新消息：`assets/plans/example_ihaier_my_latest_message.json`（激活 → 截图 → vision 定位圆形头像中心坐标 → **click from_vision_coords** 点击 → 再截图+vision 读最新一条；不写死坐标，适配分辨率和窗口是否最大化）。
+- 获取指定联系人最新消息：`assets/plans/ihaier_contact_latest_message.json`（**通过搜索**：Ctrl+K → 粘贴联系人名 → 回车选第一条 → 读右侧最新消息；计划内 `{{contact}}`，运行时必传 `--contact 联系人名`）。
+- 发消息：`assets/plans/example_ihaier_send_message.json`（激活 ihaier → 点击输入框 → 粘贴剪贴板 → Enter 发送；执行前需设置剪贴板为要发送的内容）。
+- 绩效达成申报：`assets/plans/ihaier_performance_declaration.json`（搜索绩效管理 → 进入应用 → 我的绩效 → 目标签订&达成申报 → 选周期 → 达成申报 → 可选导入历史 → 等待用户填写 → 保存草稿）。运行：`run_plan.py assets/plans/ihaier_performance_declaration.json [--period 月度|季度|年度]`。
 - 其他能力（视频会议、云文档、会议室预约等）：暂无独立 plan，统一走「激活 ihaier → 截图 → vision 定位左侧入口 → click」，后续可按需加命名 plan。
 
 私域与布局细节见 [private_domains.md](private_domains.md)「办公平台 · ihaier」。

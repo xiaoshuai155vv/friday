@@ -1,12 +1,31 @@
 ---
 name: friday-self-evolution
-description:  电脑自动化（鼠标、键盘、截图识别、多模态坐标），依托用户电脑的自我进化技能，形成「主动假设→主动规划→任务追踪→完成校验→主动决策」闭环，满足用户所有需求；未满足不反馈、一直自进化。始终知道当前要干什么，不迷失。宗旨与约束见 SKILL 内「本技能宗旨与约束」。
-  触发：星期五、贾维斯、电脑操作、自我进化、主动假设、任务追踪、闭环生态、技能进化、当前在干什么、私域知识、行为日志溯源。
+description: 电脑自动化（鼠标、键盘、截图识别、多模态坐标），依托用户电脑的自我进化技能，形成「主动假设→主动规划→任务追踪→完成校验→主动决策」闭环，满足用户所有需求；未满足不反馈、一直自进化。始终知道当前要干什么，不迷失。触发：星期五、贾维斯、电脑操作、自我进化、主动假设、任务追踪、闭环生态、技能进化、当前在干什么、私域知识、行为日志溯源。
 ---
 
 # 星期五 · 自我进化技能
 
 **核心信条：始终知道我们当前要干什么。** 在多轮循环中不迷失。
+
+---
+
+## 目录结构（按 skill-creator 规范）
+
+```
+friday-self-evolution/
+├── SKILL.md              # 本文件（必选）
+├── scripts/              # 可执行脚本（鼠标、键盘、截图、vision、run_plan 等）
+├── references/           # 按需加载的文档（capabilities、workflow、私域等）
+├── assets/               # 模板与配置
+│   ├── plans/            # 场景指导 JSON 与可执行计划（run_plan）
+│   ├── friday-ui.html    # 悬浮窗 UI 骨架
+│   └── vision_config.example.json
+├── requirements.txt
+├── VERSION
+└── .gitignore
+```
+
+**运行时生成**（不纳入技能包）：`logs/`、`state/`、`screenshots/`、`python/`（便携环境）
 
 ---
 
@@ -16,7 +35,7 @@ description:  电脑自动化（鼠标、键盘、截图识别、多模态坐标
 
 | 维度 | 可做到的 |
 |------|----------|
-| **主动承接用户需求** | 响应用户场景请求；**场景优先、通用能力次之**：先匹配 `plans/` 场景（triggers）并按 steps 执行，**禁止**跳过场景直接使用截图/多模态；无场景匹配时才走保底（开浏览器+鼠标键盘截图多模态）；执行后记录场景与结果。 |
+| **主动承接用户需求** | 响应用户场景请求；**场景优先、通用能力次之**：先匹配 `assets/plans/` 场景（triggers）并按 steps 执行，**禁止**跳过场景直接使用截图/多模态；无场景匹配时才走保底（开浏览器+鼠标键盘截图多模态）；执行后记录场景与结果。 |
 | **自主决策** | 按进化环（假设 → 规划 → 执行 → 校验 → 反思 → 决策）自主推进；读取 `state/current_mission.json`、`capability_gaps`、`failures`、场景经验等，决定下一步目标与动作；不依赖用户逐步指令，可多轮闭环直至任务达成或能力补齐。 |
 | **进化** | 在闭环中扩展能力（脚本、do、capabilities 文档）；按场景积累成功/失败经验（`scenario_log` / `query_scenario_experiences`）；从失败中写教训（`failures.md`）并在后续规划中规避；支持便携环境与跨机复制，经验与能力随项目迁移。 |
 
@@ -52,7 +71,7 @@ description:  电脑自动化（鼠标、键盘、截图识别、多模态坐标
 
 该文档说明进化环（假设 → 自主决策 → 自主执行 → 自主校验审核 → 自主优化反思 → 回到假设）及每一阶段的输入、输出与执行清单。按其中步骤执行即可形成无限进化循环。读完该文档后再按需查阅本 SKILL 其余能力与脚本说明。
 
-**必守约定**：① **场景优先**：用户话若匹配 `plans/` 中某 JSON 的 triggers（如「放个歌」→play_music），**必须**查阅该 JSON 并按 steps 逐步执行，**禁止**跳过场景直接用截图/多模态；场景 steps 的每一步（如「先获取应用列表」）**必须执行**。② **打开应用勿搜文件系统**：Windows 上**所有已安装应用**均可从**开始菜单**或**任务栏**搜到/看到；用 Win 键（或 Win+R 输入应用名）、开始菜单搜索、任务栏点击即可启动。**不要**去文件系统搜 exe 路径、Program Files 等。③ **看图理解必须用本技能 vision**：运行环境（如 Claude Code）可能**无法直接读取或展示截图/图片**，不要尝试直接读截图文件；一律用 `python scripts/vision_proxy.py <图片路径> "<问题>"`（通用看图）或 `python scripts/vision_coords.py <图片路径> "<问题>"`（**获取点击坐标**，内部多轮取中位数）或 run_plan 中的 vision 步骤。④ **键盘组合键**：`keyboard_tool` 使用**虚拟键码**（如 `keys 17 75` 表示 Ctrl+K），见 capabilities 或 `keyboard_tool shortcut ctrl+k`。⑤ **激活窗口后先最大化再截图/多模态**：窗口未最大化时截图会带入背景、其他窗口，干扰 vision 识别；最大化后能更好截取目标界面内容。计划中 activate 后加 `window_tool maximize "标题"`，再 wait → screenshot。⑥ **ihaier 窗口**：主窗口标题是「**办公平台**」，激活请用 `window_tool activate "办公平台"` 或 `activate_process iHaier2.0`，**不要用** `activate "ihaier"`（会找不到窗口）。⑦ **do.py 不支持时勿放弃**：当 `do.py` 返回「未知意图」，使用**保底能力**（鼠标、键盘、多模态、vision_coords）完成需求；若成功，将最短路径固化为 `plans/<场景>.json`，下次同类需求直接 run_plan。
+**必守约定**：① **场景优先**：用户话若匹配 `assets/plans/` 中某 JSON 的 triggers（如「放个歌」→play_music），**必须**查阅该 JSON 并按 steps 逐步执行，**禁止**跳过场景直接用截图/多模态；场景 steps 的每一步（如「先获取应用列表」）**必须执行**。② **打开应用勿搜文件系统**：Windows 上**所有已安装应用**均可从**开始菜单**或**任务栏**搜到/看到；用 Win 键（或 Win+R 输入应用名）、开始菜单搜索、任务栏点击即可启动。**不要**去文件系统搜 exe 路径、Program Files 等。③ **看图理解必须用本技能 vision**：运行环境（如 Claude Code）可能**无法直接读取或展示截图/图片**，不要尝试直接读截图文件；一律用 `python scripts/vision_proxy.py <图片路径> "<问题>"`（通用看图）或 `python scripts/vision_coords.py <图片路径> "<问题>"`（**获取点击坐标**，内部多轮取中位数）或 run_plan 中的 vision 步骤。④ **键盘组合键**：`keyboard_tool` 使用**虚拟键码**（如 `keys 17 75` 表示 Ctrl+K），见 capabilities 或 `keyboard_tool shortcut ctrl+k`。⑤ **激活窗口后先最大化再截图/多模态**：窗口未最大化时截图会带入背景、其他窗口，干扰 vision 识别；最大化后能更好截取目标界面内容。计划中 activate 后加 `window_tool maximize "标题"`，再 wait → screenshot。⑥ **ihaier 窗口**：主窗口标题是「**办公平台**」，激活请用 `window_tool activate "办公平台"` 或 `activate_process iHaier2.0`，**不要用** `activate "ihaier"`（会找不到窗口）。⑦ **do.py 不支持时勿放弃**：当 `do.py` 返回「未知意图」，使用**保底能力**（鼠标、键盘、多模态、vision_coords）完成需求；若成功，将最短路径固化为 `assets/plans/<场景>.json`，下次同类需求直接 run_plan。
 
 ---
 
@@ -185,7 +204,7 @@ python scripts/launch_friday_floating.py
 | 场景类别 | 摘要（示例） |
 |----------|--------------|
 | 拍照/看 | 自拍、打开摄像头、截图、看图提问 |
-| 打开/启动 | 打开浏览器、记事本、文件管理器、闹钟、日历、设置、任务管理器、计算器、运行(Win+R)；**放个歌**见 `plans/play_music.json`；**绩效达成申报**见 `plans/ihaier_performance_declaration.json` |
+| 打开/启动 | 打开浏览器、记事本、文件管理器、闹钟、日历、设置、任务管理器、计算器、运行(Win+R)；**放个歌**见 `assets/plans/play_music.json`；**绩效达成申报**见 `assets/plans/ihaier_performance_declaration.json` |
 | 输入/剪贴板 | 按键、组合键、键盘输入、中文输入、复制/粘贴、剪贴板读写、剪贴板图片 |
 | 窗口/进程 | 窗口激活、按标题查 PID、结束窗口、进程列表与结束 |
 | 系统 | 时间、主机名/用户名、防休眠、睡眠/休眠、关机/重启、音量、亮度、通知、WLAN/网络接口、注册表、文件读写/列目录 |
@@ -217,7 +236,7 @@ python scripts/launch_friday_floating.py
 
 | 优先级 | 条件 | 做法 |
 |--------|------|------|
-| **0（最高）** | `plans/` 下有 **triggers 匹配** 用户话的 JSON（如「放个歌」→`play_music.json`，「填写绩效达成」→`ihaier_performance_declaration.json`） | **必须**查阅该 JSON，**严格按 steps 逐步执行**，不得跳过任一步。绩效达成直接 `run_plan`；放个歌**必须先**执行 `do 已安装应用` 获取列表再识别播放器，**禁止**跳过应用列表直接猜或截图。 |
+| **0（最高）** | `assets/plans/` 下有 **triggers 匹配** 用户话的 JSON（如「放个歌」→`play_music.json`，「填写绩效达成」→`ihaier_performance_declaration.json`） | **必须**查阅该 JSON，**严格按 steps 逐步执行**，不得跳过任一步。绩效达成直接 `run_plan`；放个歌**必须先**执行 `do 已安装应用` 获取列表再识别播放器，**禁止**跳过应用列表直接猜或截图。 |
 | **1** | 用户需求匹配已有支持的场景（见上表，含保底场景） | 使用该场景对应能力；可查 `query_scenario_experiences.py --keyword <场景>` 参考历史。 |
 | **2** | 用户需求**不匹配**任何场景 | **才**走保底：打开浏览器 → 截图 → 多模态看图 → 点击/输入。 |
 | **3（最低）** | 存在非常明确的单项能力（如「截图」→screenshot_tool） | 直接使用该能力。 |
@@ -239,7 +258,7 @@ python scripts/launch_friday_floating.py
 | 点击 (x,y)、输入文字、中文输入 | `mouse_tool.py click x y`、`keyboard_tool.py type "..."`；`do.py 输入中文 内容`（剪贴板+粘贴）；`run_plan.py` |
 | 看图并问问题 | `python scripts/vision_proxy.py <图片路径> "<问题>"` 或 run_plan 中 `{"do": "vision", ...}` |
 | **获取点击坐标**（多轮取中位数） | `python scripts/vision_coords.py <图片路径> "<问题>"` 或 run_plan 中 `{"do": "vision_coords", ...}` |
-| 按计划执行一系列操作 | `python scripts/run_plan.py plans/xxx.json` |
+| 按计划执行一系列操作 | `python scripts/run_plan.py assets/plans/xxx.json` |
 
 更多脚本与用法见下方「脚本」节；详细需求与能力链见 [references/assumed_demands.md](references/assumed_demands.md)。
 
@@ -269,7 +288,7 @@ python scripts/launch_friday_floating.py
 | [references/evolution_guide.md](references/evolution_guide.md) | 自我进化实施顺序、Git 与版本、多模态与私域。 |
 | [references/assumed_demands.md](references/assumed_demands.md) | 假设的用户需求（打开摄像头、ihaier 发消息、访问网站等）与能力链、状态。 |
 | [references/capabilities.md](references/capabilities.md) | 能力与调用方式一览，供模型在识别意图后选用（本技能不做意图识别）。 |
-| **plans/** | **场景指导 JSON**：用户话匹配 triggers 时**必须**查阅对应 JSON，**严格按 steps 执行**（如 play_music 必须先获取应用列表）；绩效达成直接 `run_plan plans/ihaier_performance_declaration.json`。**禁止**跳过场景用截图/多模态。 |
+| **assets/plans/** | **场景指导 JSON**：用户话匹配 triggers 时**必须**查阅对应 JSON，**严格按 steps 执行**（如 play_music 必须先获取应用列表）；绩效达成直接 `run_plan assets/plans/ihaier_performance_declaration.json`。**禁止**跳过场景用截图/多模态。 |
 | [references/agent_evolution_workflow.md](references/agent_evolution_workflow.md) | **通用智能体进化环**：假设→决策→执行→校验→反思的输入/输出与执行清单，供任何智能体驱动无限进化。 |
 | [references/base_capabilities_analysis.md](references/base_capabilities_analysis.md) | **底座能力盘点与缺口**：按输入/输出/看/执行/窗口/进程等维度盘点已有能力与待补齐项。 |
 | [references/portable_env.md](references/portable_env.md) | **便携运行环境**：如何将 Python+依赖打入项目、复制到别机直接使用。 |
@@ -299,7 +318,7 @@ python scripts/launch_friday_floating.py
 - `scripts/friday_floating_qt.py` — 悬浮窗 Qt 版（需 `pip install PyQt5`）：圆形、透明、托盘图标右键退出、网格球+环+光球。
 - `scripts/launch_friday_floating.py` — 启动 Qt 悬浮球。
 - `scripts/installed_apps_tool.py` — 获取已安装应用列表（从注册表 Uninstall）；`--json` 输出 JSON。
-- `scripts/run_plan.py` — 执行自动化计划；步骤类型：screenshot / **vision**（通用看图）/ **vision_coords**（获取坐标，多轮取中位数）/ click / type / key / paste / scroll / wait / run；计划见 `plans/*.json`。
+- `scripts/run_plan.py` — 执行自动化计划；步骤类型：screenshot / **vision**（通用看图）/ **vision_coords**（获取坐标，多轮取中位数）/ click / type / key / paste / scroll / wait / run；计划见 `assets/plans/*.json`。
 - `scripts/camera_qt.py` — 用 PyQt5 直接打开摄像头窗口；配合截图+vision 可「看到了什么」。
 - `scripts/launch_browser.py` — 用默认浏览器打开 URL；配合截图+vision+run_plan 可访问网站并操作。
 - `scripts/launch_notepad.py`、`scripts/launch_explorer.py` — 打开记事本、文件管理器（可带路径）。

@@ -1,0 +1,10 @@
+# 技能配置（含 API key，勿提交）
+scripts/vision_config.json
+
+# 运行时生成（按 skill-creator 规范，技能仅含 scripts/references/assets）
+logs/
+state/
+screenshots/
+python/
+*.log
+nul

@@ -14,15 +14,18 @@
 | **输出·屏幕** | 全屏截图(BMP)、屏幕宽高 | screenshot_tool、screen_size_tool |
 | **输出·文件** | 文本读/写、列目录 | file_tool read/write/list；do 读文件/写文件/列目录 |
 | **看** | 看图问答(多模态) | vision_proxy；run_plan 中 vision 步骤 |
-| **执行·计划** | 截图→vision→点击→输入→按键→等待→运行脚本 | run_plan + plans/*.json |
+| **执行·计划** | 截图→vision→点击→输入→按键→等待→运行脚本 | run_plan + assets/plans/*.json |
 | **执行·统一入口** | 自拍/摄像头/截图/浏览器/记事本/资源管理器/闹钟/日历/设置/任务管理器/计算器/运行/网络/时间/主机名/剪贴板/防休眠/音量/run 脚本等 | do.py |
 | **系统·时间** | 当前时间(UTC/本地) | time_tool；do 当前时间 |
 | **系统·环境** | 主机名、用户名 | env_tool；do 主机名/用户名 |
-| **系统·网络** | ipconfig 信息 | network_tool；do 网络信息 |
-| **系统·电源** | 防休眠/关屏 N 秒；睡眠/休眠 | power_tool prevent_sleep、sleep、hibernate；do 防休眠/睡眠/休眠 |
-| **系统·音量** | 静音/减/增(模拟键) | keyboard_tool key 173/174/175 |
+| **系统·网络** | ipconfig、WLAN、网络接口 | network_tool ipconfig/wlan/interfaces；do 网络信息/WLAN/网络接口 |
+| **系统·音量** | 静音/减/增；精确 0–100 | keyboard_tool 173/174/175；volume_tool get/set；do 音量值/设置音量 |
+| **系统·电源** | 防休眠/关屏 N 秒；睡眠/休眠；关机/重启 | power_tool prevent_sleep、sleep、hibernate、shutdown、reboot；do 防休眠/睡眠/休眠/关机/重启 |
 | **启动·应用** | 记事本、浏览器、摄像头、资源管理器、闹钟、日历、设置、任务管理器、计算器、运行(Win+R) | 各 launch_*.py 与 do |
-| **窗口·激活** | 按标题（部分匹配）提到前台 | window_tool activate；do 窗口激活 |
+| **窗口·激活** | 按标题提到前台；按标题查 PID、结束窗口 | window_tool activate、pid；do 窗口激活/窗口PID/结束窗口 |
+| **系统·注册表** | 读/写 REG_SZ、REG_DWORD | reg_tool get/set（HKCU/HKLM 等） |
+| **系统·亮度** | 软件伽马 0–100 | brightness_tool get/set；do 亮度/设置亮度 |
+| **系统·通知** | Win10+ Toast | notification_tool show；do 通知 |
 | **闭环·状态** | 当前使命/阶段/轮次 | state_tracker、current_mission.json |
 | **闭环·日志** | 行为记录、近期导出 | behavior_log、export_recent_logs |
 | **闭环·校验** | 能力链自检 | self_verify_capabilities |
@@ -36,11 +39,11 @@
 |------|------|----------|
 | **鼠标·右键/中键** | 已覆盖：mouse_tool right_click、middle_click | — |
 | **鼠标·拖拽** | 已覆盖：mouse_tool drag x1 y1 x2 y2 | — |
-| **键盘·中文/Unicode** | type 主要 ASCII，中文会变成空格 | SendInput Unicode 或 IME 模拟；或依赖剪贴板粘贴中文 |
+| **键盘·中文/Unicode** | 已覆盖：do 输入中文（剪贴板+粘贴）；run_plan 步骤 paste | — |
 | **窗口·前后台** | 已覆盖：window_tool activate "部分标题"；do 窗口激活 | — |
-| **进程·列表/结束** | 已覆盖：process_tool list / kill（tasklist/taskkill） | 按窗口标题查 PID 可扩展 |
+| **进程·列表/结束** | 已覆盖：process_tool list/kill；window_tool pid 按标题查 PID；do 结束窗口 | — |
 | **剪贴板·图片** | 已覆盖：clipboard_tool image_get/image_set（BMP/CF_DIB） | — |
-| **电源·睡眠/休眠** | 已覆盖：power_tool sleep、hibernate；do 睡眠、休眠 | 关机/重启可按需扩展 |
+| **电源·睡眠/休眠/关机/重启** | 已覆盖：power_tool sleep、hibernate、shutdown、reboot；do 睡眠/休眠/关机/重启 | — |
 | **组合键·常用** | Win+E、Ctrl+C/V、Alt+F4 等未在 do/capabilities 显式列出 | capabilities 补充「组合键用 keyboard_tool keys」；do 可加 do 复制/粘贴 等 |
 | **路径·解析** | 无 %USERPROFILE%、%TEMP% 等展开 | env_tool 或 file_tool 支持 expand 路径 |
 
@@ -50,7 +53,7 @@
 
 - **高**（拟人操作常用）：**鼠标右键**、**常用组合键文档化或 do 化**、**窗口激活(可选)**。
 - **中**：鼠标拖拽、进程 taskkill、剪贴板图片。
-- **低**：精确亮度、Toast 推送、关机/休眠 API、Unicode 输入（可先用剪贴板粘贴中文）。
+- **低**：已覆盖—精确亮度（brightness_tool）、Toast（notification_tool）、关机/重启（power_tool）、Unicode（do 输入中文）。
 
 ---
 

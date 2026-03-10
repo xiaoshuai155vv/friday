@@ -28,6 +28,11 @@
 2. **行动后**：更新 `current_goal` / `next_action` / `phase` 并写回。
 3. **长任务**：在会话或文档中显式写出「当前阶段」「本轮目标」「下一步」。
 
+## 常用命令示例
+
+- 推进轮次：`python scripts/state_tracker.py set --mission "RoundN 描述" --phase "assume" --next "plan" --round N`
+- 仅更新阶段：`state_tracker.py set --phase "规划" --next "执行"`
+
 ## 与闭环的关系
 
 - `phase` 与闭环五模块对应，便于知道处在「假设」还是「校验」等。

@@ -1,0 +1,8 @@
+[
+  {"do": "comment", "comment": "ihaier 谁找我、什么事：先激活办公台，再截图看消息列表；可选点进带红字的会话看右侧详情"},
+  {"do": "run", "script": "window_tool", "args": ["activate", "办公平台"]},
+  {"do": "wait", "sec": 1.2},
+  {"do": "screenshot", "path": "screenshots/ihaier_messages.bmp"},
+  {"do": "vision", "image": "screenshots/ihaier_messages.bmp", "question": "图中是电脑桌面，打开的 ihaier 应用，消息界面。输出带红数字或加粗的会话名及未读数，格式「会话名：未读X条」。无未读则输出「当前无未读会话」。"},
+  {"do": "comment", "comment": "若需看具体内容：由调用方根据 vision 输出的会话名，在后续 plan 中 click 该会话位置后再截图+vision 提取右侧详情「谁、什么事」"}
+]

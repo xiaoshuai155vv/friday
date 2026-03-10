@@ -1,6 +1,7 @@
 [
-  {"do": "comment", "comment": "执行前请设置剪贴板为要发送的内容：clipboard_tool set \"内容\" 或 do 输入中文 内容；发送方式：点击输入框→粘贴→回车（或点击右下角发送按钮）"},
+  {"do": "comment", "comment": "执行前设置剪贴板；激活后先最大化再操作，避免背景干扰"},
   {"do": "run", "script": "window_tool", "args": ["activate", "办公平台"]},
+  {"do": "run", "script": "window_tool", "args": ["maximize", "办公平台"]},
   {"do": "wait", "sec": 1.2},
   {"do": "comment", "comment": "点击右侧底部输入框；坐标以 1920x1080 为参考约 (1100,980)，分辨率不同可先截图+vision 取输入框与发送按钮坐标后替换"},
   {"do": "click", "x": 1100, "y": 980},

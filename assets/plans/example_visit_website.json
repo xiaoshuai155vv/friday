@@ -1,0 +1,6 @@
+[
+  {"do": "comment", "comment": "打开浏览器并访问 URL 需由外部或 key 触发；此处为截图+vision 决策链"},
+  {"do": "screenshot", "path": "screenshots/web_current.bmp"},
+  {"do": "vision", "image": "screenshots/web_current.bmp", "question": "描述当前页面内容。若用户要求完成某操作（如填表、点击某按钮），请说明该元素大致位置与下一步建议（点击坐标或输入内容）。"},
+  {"do": "comment", "comment": "后续 step 由 vision 输出解析后追加：click x y / type \"text\""}
+]

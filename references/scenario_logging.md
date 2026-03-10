@@ -1,8 +1,8 @@
 # 场景维度日志（用户请求与执行结果）
 
-## 场景指导（plans/）
+## 场景指导（assets/plans/）
 
-`plans/` 目录下的 JSON 为**场景指导**（含 triggers 的）或**可执行计划**（run_plan 的步骤数组），供通用智能体查阅并按 steps 执行。格式示例：`triggers`（用户话）、`steps`（执行步骤）、`fallback`（保底）。当用户话匹配 triggers 时，**必须**按该 JSON 执行，勿自行发挥。如 `plans/play_music.json` 指导「放个歌」流程；`plans/ihaier_performance_declaration.json` 为绩效达成申报的可执行计划。
+`assets/plans/` 目录下的 JSON 为**场景指导**（含 triggers 的）或**可执行计划**（run_plan 的步骤数组），供通用智能体查阅并按 steps 执行。格式示例：`triggers`（用户话）、`steps`（执行步骤）、`fallback`（保底）。当用户话匹配 triggers 时，**必须**按该 JSON 执行，勿自行发挥。如 `assets/plans/play_music.json` 指导「放个歌」流程；`assets/plans/ihaier_performance_declaration.json` 为绩效达成申报的可执行计划。
 
 ## 目的
 
@@ -49,4 +49,4 @@
 
 - **假设/规划**：可先查 `query_scenario_experiences.py --keyword <场景>`，再结合 `failures.md` 决定如何实现或避免重复失败。
 - **执行后**：用户场景请求执行完毕，必须调用 `scenario_log.py` 写入结果，这样下一轮或别机才有「按场景维度的经验」可用。
-- **do 不支持时的固化**：当 `do.py` 返回「未知意图」且用保底能力（鼠标、键盘、多模态）成功完成时，**必须**将最短正确路径整理为 `plans/<场景名>.json`，并 scenario_log 备注「已固化 plan」，下次同类需求直接 `run_plan`。
+- **do 不支持时的固化**：当 `do.py` 返回「未知意图」且用保底能力（鼠标、键盘、多模态）成功完成时，**必须**将最短正确路径整理为 `assets/plans/<场景名>.json`，并 scenario_log 备注「已固化 plan」，下次同类需求直接 `run_plan`。

@@ -24,7 +24,7 @@
 
 当用户**直接提出场景化请求**（如「帮我打开摄像头给我来个自拍」「截个图」「放个歌」）时：
 
-1. **【必须】先查场景匹配**：若 `plans/` 下有 **triggers 匹配** 用户话的 JSON（如「放个歌」→`play_music.json`，「填写绩效达成」→`ihaier_performance_declaration.json`），**必须**查阅该 JSON 并按 steps **逐步执行**，**禁止**跳过场景直接用截图/多模态。放个歌**必须先** `do 已安装应用` 获取列表，不得跳过。绩效达成直接 `run_plan`。
+1. **【必须】先查场景匹配**：若 `assets/plans/` 下有 **triggers 匹配** 用户话的 JSON（如「放个歌」→`play_music.json`，「填写绩效达成」→`ihaier_performance_declaration.json`），**必须**查阅该 JSON 并按 steps **逐步执行**，**禁止**跳过场景直接用截图/多模态。放个歌**必须先** `do 已安装应用` 获取列表，不得跳过。绩效达成直接 `run_plan`。
 2. **无场景匹配时**：识别意图并尝试 `do.py <意图>` 或对应脚本。
 3. **若 do.py 返回「未知意图」**：不要放弃。**才**使用**保底能力**（截图、vision、鼠标、键盘）完成需求：
    - **打开应用**：Windows 上**所有应用**可从开始菜单/任务栏搜到；用 Win 键、Win+R+type+Enter 或 `do 打开应用 <名>` 即可。**不要**去文件系统搜 exe、Program Files。
@@ -32,9 +32,9 @@
    - **多模态**：`vision_proxy` 看图理解、`vision_coords` 获取点击坐标
    - **流程**：截图 → vision_coords 定位可点击元素 → click 点击；或 Win+R → type 应用名 → Enter。**需截图/多模态时**：激活窗口后**先最大化**再截图，有助于截取目标界面、避免背景干扰。
 4. **若用保底能力成功完成**：**必须固化**为可复用计划：
-   - 将最短正确路径整理为 `plans/<场景名>.json`（如 `plans/open_cloudmusic.json`）
+   - 将最短正确路径整理为 `assets/plans/<场景名>.json`（如 `assets/plans/open_cloudmusic.json`）
    - 调用 `scenario_log.py` 记录成功，备注「已固化 plan」
-   - 下次同类需求可直接 `run_plan plans/<场景名>.json` 快速实现
+   - 下次同类需求可直接 `run_plan assets/plans/<场景名>.json` 快速实现
 5. **执行结束后必须记录**：调用  
    `python scripts/scenario_log.py "<用户输入或场景描述>" "<实际执行的命令>" success|fail [备注]`  
    以便按**场景维度**积累成功/失败经验。
