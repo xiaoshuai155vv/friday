@@ -4,6 +4,10 @@
 
 **场景优先、通用能力次之**：若用户话匹配 `assets/plans/` 中某 JSON 的 triggers（如「放个歌」→`play_music.json`，「填写绩效达成」→`ihaier_performance_declaration.json`），**必须**查阅该 JSON 并按 steps 逐步执行；**禁止**跳过场景直接用截图/多模态。放个歌**必须先** `do 已安装应用` 获取列表，不得跳过。通用能力（鼠标、键盘、截图、vision）**仅在没有场景匹配时**使用。
 
+**打开/激活应用后必须先最大化**：无论是 launch_browser、do 打开应用、window_tool activate，**一律**在应用就绪后先最大化该窗口，再做截图/vision/点击等后续操作。未最大化时截图会带入背景、干扰多模态识别。流程：打开/激活 → `window_tool maximize "标题"`（或 `maximize_process <进程名>`）→ wait → screenshot/后续。
+
+**截图后若未包含用户需求内容**：最大化后截图，若 vision 判断当前可见区域**未包含**用户要找的内容（可能在上方或下方），**应分析截图中的滚动条**：用 vision 问「是否有垂直/水平滚动条？滚动条位置（是否可向下/向上滚）？」；若可滚则 `scroll <delta>`：**内容在下方**→ 正数（如 120）；**内容在上方**→ 负数（如 -120）。光标需在目标窗口内，可用 `scroll delta x y`。后再截图，重复 vision 直到找到或确认无更多。
+
 **do.py 不支持时**：当 `do.py <意图>` 返回「未知意图」，**不要放弃**。使用保底能力完成：① 鼠标（mouse_tool click）、键盘（keyboard_tool、Win+R+type+Enter）；② 多模态：截图 → vision_proxy/vision_coords 定位 → click。若成功，将最短路径固化为 `assets/plans/<场景>.json`，下次直接 `run_plan`。**打开应用**：Windows 上所有应用可从开始菜单/任务栏搜到，用 Win 键、Win+R 或 `do 打开应用 <名>` 即可；**不要**去文件系统搜 exe 路径。
 
 ## 能力与调用
@@ -12,14 +16,14 @@
 |-----------|---------------------------------------------|
 | 自拍 | `python scripts/selfie.py` |
 | 打开摄像头 | `python scripts/camera_qt.py` 或 `do.py 打开摄像头` |
-| 截图 | `python scripts/screenshot_tool.py` 或带路径 |
+| 截图 | `python scripts/screenshot_tool.py` 或带路径。**若截图后 vision 发现未包含用户需求内容**：分析滚动条（vision 问「是否有滚动条、可否向下/向上滚」）→ 可滚则 scroll 后再截图。 |
 | 屏幕尺寸 | `python scripts/screen_size.py` 输出主屏逻辑宽高 W H（与截图/鼠标坐标一致） |
 | 验证点击坐标 | `python scripts/click_verify.py <x> <y> [秒数] [--screenshot path]` 移动鼠标到 (x,y) 并等待，用于核对多模态返回的坐标是否正确 |
-| 打开浏览器/某 URL | `python scripts/launch_browser.py [url]` |
+| 打开浏览器/某 URL | `python scripts/launch_browser.py [url]` 或 `do.py 打开浏览器 [url]`。**launch_browser.py 已内置**：打开后等待 2 秒并自动 maximize_process（msedge/chrome/iexplore/firefox 依次尝试）。若需手动激活/最大化，用 `window_tool activate_process msedge` 或 `maximize_process msedge`（按进程名，勿用标题如 "Microsoft Edge"）。 |
 | 屏幕宽高 | `python scripts/screen_size_tool.py` |
 | 鼠标点击 (x,y) | `mouse_tool.py click x y`；右键 `right_click x y`、中键 `middle_click x y`；拖拽 `drag x1 y1 x2 y2` |
 | 当前光标位置 | `python scripts/mouse_tool.py pos`（输出 x y） |
-| 鼠标滚轮 | `python scripts/mouse_tool.py scroll delta` |
+| 鼠标滚轮 | `python scripts/mouse_tool.py scroll <delta>`；可选 `scroll <delta> <x> <y>` 先移动光标到 (x,y) 再滚。**正负与方向**：正数=向上滚（内容上移，看到下方更多）；负数=向下滚（内容下移，看到上方更多）。120≈1格。 |
 | 常用组合键 | `keyboard_tool.py keys <vk1> <vk2>`（VK 十进制）；或 `keyboard_tool.py shortcut ctrl+k` / `shortcut ctrl+c` / `shortcut ctrl+v` 等（无需记 VK）。Ctrl=17, K=75, 故 Ctrl+K 也可写 `keys 17 75`。 |
 | 键盘输入 | `python scripts/keyboard_tool.py type "内容"` 或 `key <vk>`（type 仅 ASCII） |
 | 中文/Unicode 输入 | `do.py 输入中文 内容`（先写剪贴板再 Ctrl+V 粘贴）；计划中可用 step paste 粘贴剪贴板内容 |
@@ -32,7 +36,7 @@
 | 打开闹钟/日历 | `do.py 打开闹钟`、`do.py 打开日历` |
 | 放个歌/播放音乐 | **查阅** `assets/plans/play_music.json`，**必须**先执行 `do 已安装应用` 获取列表再识别播放器，按 steps 逐步执行。**勿用浏览器**，**勿跳过应用列表** |
 | 填写绩效达成/绩效申报 | **直接** `run_plan assets/plans/ihaier_performance_declaration.json`；若用户提到「三月份/某月代码」先 `git log --since/--until` 统计提交供参考。勿手动截图+vision 逐步操作 |
-| 打开音乐播放器 | 同上，或先 `do 已安装应用` 查列表，识别后 `do 打开应用 <名>`；保底 `do 打开WMP` |
+| 打开音乐播放器 | 同上，或先 `do 已安装应用` 查列表，识别后 `do 打开应用 <名>`；保底 `do 打开WMP`。**打开后须激活并最大化**，再做后续操作。 |
 | 已安装应用列表 | `do.py 已安装应用` 或 `installed_apps_tool.py`；`--json` 输出 JSON（含 name/version/publisher），默认每行一个应用名 |
 | 剪贴板读/写 | `do.py 剪贴板读`、`do.py 剪贴板写 内容`；图片：`clipboard_tool.py image_get <路径>`、`image_set <路径>`；`do.py 剪贴板图片保存 [路径]`、`剪贴板图片写入 <路径>` |
 | 防休眠、音量 | `do.py 防休眠 [秒]`、`do.py 音量静音`、`do.py 音量减`、`do.py 音量增`；精确音量：`volume_tool.py get`、`set <0-100>`；`do.py 音量值`、`do.py 设置音量 50` |
@@ -50,8 +54,8 @@
 | 防止休眠/关屏（N 秒内） | `python scripts/power_tool.py prevent_sleep [秒数]`，0 表示持续到进程结束 |
 | 睡眠/休眠 | `power_tool.py sleep`、`power_tool.py hibernate`；`do.py 睡眠`、`do.py 休眠` |
 | 关机/重启 | `power_tool.py shutdown [秒]`、`power_tool.py reboot [秒]`；`do.py 关机 [秒]`、`do.py 重启 [秒]`（默认立即） |
-| 窗口激活（按标题/按进程名） | `window_tool.py activate "标题"`；`window_tool.py activate_process <进程名>`；`window_tool.py activate_pid <PID>`；按标题查 PID：`window_tool.py pid "标题"`。**ihaier 主窗口标题是「办公平台」**，请用 `activate "办公平台"` 或 `activate_process iHaier2.0`，不要用 `activate "ihaier"`。 |
-| 窗口最大化（激活后先最大化再截图，有助于截取目标界面、避免背景干扰多模态） | `window_tool.py maximize "标题"`（如 `maximize "办公平台"`）；`window_tool.py maximize_process <进程名>`；计划中在 activate 后加一步 run window_tool args ["maximize", "办公平台"] 再 wait → screenshot |
+| 窗口激活（按标题/按进程名） | `window_tool.py activate "标题"`；`window_tool.py activate_process <进程名>`；`window_tool.py activate_pid <PID>`；按标题查 PID：`window_tool.py pid "标题"`。**ihaier 主窗口标题是「办公平台」**，请用 `activate "办公平台"` 或 `activate_process iHaier2.0`，不要用 `activate "ihaier"`。**浏览器**：按标题易失败（页面标题多变），请用 `activate_process msedge` / `chrome` / `iexplore`。**激活后须先 maximize 再做截图/vision**。 |
+| 窗口最大化（打开/激活任何应用后必须先执行） | `window_tool.py maximize "标题"`（如 `maximize "办公平台"`）；`window_tool.py maximize_process <进程名>`。**launch_browser、do 打开应用、activate 后一律先 maximize**，再 wait → screenshot/vision/点击。计划中在 activate 后加 `run window_tool args ["maximize", "标题"]` 再 wait → screenshot |
 | 显示/亮度 | `launch_settings.py display` 或 run_plan+vision；软件亮度：`brightness_tool.py get`、`set <0-100>`；`do.py 亮度`、`do.py 设置亮度 80` |
 | 通知/Toast | `notification_tool.py show "正文"`；`do.py 通知 内容`（Win10+）；通知设置：`launch_settings.py notifications` |
 | 打开运行对话框（Win+R） | `do.py 打开运行` 或 `keyboard_tool.py keys 91 82` |
@@ -60,10 +64,11 @@
 | 网络信息 | `do.py 网络信息`、`do.py 网络信息 all`；`network_tool.py [ipconfig|brief|wlan|interfaces]`；`do.py WLAN`、`do.py 网络接口` |
 | 注册表读/写 | `reg_tool.py get HKCU "Software\\..." [值名]`、`reg_tool.py set HKCU "Software\\..." 值名 sz "内容"` 或 `dword 1`；根键 HKCU/HKLM/HKCR/HKU/HKCC |
 | 文本文件读/写/列目录 | `file_tool.py read/write <路径> [内容]`、`file_tool.py list <目录>`；`do.py 列目录 [路径]` |
-| Vision 坐标校准（维护偏移数据集） | `python scripts/vision_calibrate.py calibrate`：屏幕 5 点红点→截图→多模态识坐标→算偏移写入 state/vision_calibration.json；run_plan/click_from_vision_or_key 会自动加该偏移再点击。换分辨率后需重跑。详见 vision_parse_convention.md。 |
-| 自主校验能力链（截图/鼠标/键盘/启动/vision/剪贴板） | `python scripts/self_verify_capabilities.py`，结果见 `state/self_verify_result.json` |
+| Vision 坐标校准（维护偏移数据集） | `python scripts/vision_calibrate.py calibrate`：屏幕 5 点红点→截图→多模态识坐标→算偏移写入 runtime/state/vision_calibration.json；run_plan/click_from_vision_or_key 会自动加该偏移再点击。换分辨率后需重跑。详见 vision_parse_convention.md。 |
+| 自主校验能力链（截图/鼠标/键盘/启动/vision/剪贴板） | `python scripts/self_verify_capabilities.py`，结果见 `runtime/state/self_verify_result.json` |
 | 闭环跑者（无人时持续推进轮次与日志） | `python scripts/loop_runner.py` 一轮；`loop_runner.py --daemon [--interval 300]` 常驻 |
 | 计划模板（assets/plans/） | `play_music.json`（放个歌，按 steps 执行）、`ihaier_performance_declaration.json`（绩效达成申报，run_plan）、`minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_*.json`、`example_screenshot_vision.json` 等，供 run_plan 或查阅 steps 引用 |
+| **自主进化环（Claude Code）** | 通过 CCR 向 Claude Code 提交进化任务：配置 `runtime/config/evolution_loop.json`（ccr_base_url、ccr_api_key、friday_project_path），悬浮球右键「提交一轮进化环」或命令行 `python scripts/evolution_loop_client.py --once`。详见 `references/evolution_loop_claude_code_integration.md`。 |
 
 ## 说明
 
