@@ -1,0 +1,13 @@
+{
+  "triggers": ["放个歌", "播放音乐", "放歌", "听歌", "打开音乐"],
+  "intent": "播放音乐",
+  "description": "用户要播放音乐时，必须先查已安装应用列表，再识别播放器并打开；保底 WMP。勿用浏览器，勿跳过应用列表。",
+  "steps": [
+    "【必须】先执行 do 已安装应用 或 installed_apps_tool.py 获取已安装应用列表，不得跳过",
+    "从输出中识别音乐播放器（含关键词：网易云、云音乐、QQ音乐、酷狗、酷我、Spotify、Groove、Windows Media Player、媒体播放器）",
+    "若找到：根据应用名用 do 打开应用 <Win+R启动名>，映射：网易云/云音乐→CloudMusic，QQ音乐→QQMusic，酷狗→Kugou，Spotify→Spotify，WMP/媒体播放器→wmplayer",
+    "若未找到：do 打开WMP（Windows 自带保底）",
+    "勿用浏览器打开音乐网站"
+  ],
+  "fallback": "do 打开WMP"
+}

@@ -2,6 +2,8 @@
 
 本技能**不做意图识别**。意图由 Claude Code / Cursor 等运行环境中的模型识别；识别后可从下表选用对应能力并执行。
 
+**场景优先、通用能力次之**：若用户话匹配 `plans/` 中某 JSON 的 triggers（如「放个歌」→`play_music.json`，「填写绩效达成」→`ihaier_performance_declaration.json`），**必须**查阅该 JSON 并按 steps 逐步执行；**禁止**跳过场景直接用截图/多模态。放个歌**必须先** `do 已安装应用` 获取列表，不得跳过。通用能力（鼠标、键盘、截图、vision）**仅在没有场景匹配时**使用。
+
 **do.py 不支持时**：当 `do.py <意图>` 返回「未知意图」，**不要放弃**。使用保底能力完成：① 鼠标（mouse_tool click）、键盘（keyboard_tool、Win+R+type+Enter）；② 多模态：截图 → vision_proxy/vision_coords 定位 → click。若成功，将最短路径固化为 `plans/<场景>.json`，下次直接 `run_plan`。**打开应用**：Windows 上所有应用可从开始菜单/任务栏搜到，用 Win 键、Win+R 或 `do 打开应用 <名>` 即可；**不要**去文件系统搜 exe 路径。
 
 ## 能力与调用
@@ -28,8 +30,8 @@
 | 打开记事本 | `python scripts/launch_notepad.py [文件路径]` 或 `do.py 打开记事本` |
 | 打开文件管理器 | `python scripts/launch_explorer.py [目录]` 或 `do.py 打开文件管理器` |
 | 打开闹钟/日历 | `do.py 打开闹钟`、`do.py 打开日历` |
-| 放个歌/播放音乐 | **查阅** `scenarios/play_music.json` 按步骤执行。**勿用浏览器** |
-| 填写绩效达成/绩效申报 | **查阅** `scenarios/performance_declaration.json`：**直接** `run_plan plans/ihaier_performance_declaration.json`，勿手动截图+vision 逐步操作 |
+| 放个歌/播放音乐 | **查阅** `plans/play_music.json`，**必须**先执行 `do 已安装应用` 获取列表再识别播放器，按 steps 逐步执行。**勿用浏览器**，**勿跳过应用列表** |
+| 填写绩效达成/绩效申报 | **直接** `run_plan plans/ihaier_performance_declaration.json`；若用户提到「三月份/某月代码」先 `git log --since/--until` 统计提交供参考。勿手动截图+vision 逐步操作 |
 | 打开音乐播放器 | 同上，或先 `do 已安装应用` 查列表，识别后 `do 打开应用 <名>`；保底 `do 打开WMP` |
 | 已安装应用列表 | `do.py 已安装应用` 或 `installed_apps_tool.py`；`--json` 输出 JSON（含 name/version/publisher），默认每行一个应用名 |
 | 剪贴板读/写 | `do.py 剪贴板读`、`do.py 剪贴板写 内容`；图片：`clipboard_tool.py image_get <路径>`、`image_set <路径>`；`do.py 剪贴板图片保存 [路径]`、`剪贴板图片写入 <路径>` |
@@ -61,7 +63,7 @@
 | Vision 坐标校准（维护偏移数据集） | `python scripts/vision_calibrate.py calibrate`：屏幕 5 点红点→截图→多模态识坐标→算偏移写入 state/vision_calibration.json；run_plan/click_from_vision_or_key 会自动加该偏移再点击。换分辨率后需重跑。详见 vision_parse_convention.md。 |
 | 自主校验能力链（截图/鼠标/键盘/启动/vision/剪贴板） | `python scripts/self_verify_capabilities.py`，结果见 `state/self_verify_result.json` |
 | 闭环跑者（无人时持续推进轮次与日志） | `python scripts/loop_runner.py` 一轮；`loop_runner.py --daemon [--interval 300]` 常驻 |
-| 计划模板（plans/） | `minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_send_message.json`、`example_ihaier_check_messages.json`、`example_ihaier_who_contacted_me.json`、`example_ihaier_my_latest_message.json`、`ihaier_performance_declaration.json`（绩效达成申报）、`example_screenshot_vision.json`，供 run_plan 引用 |
+| 计划模板（plans/） | `play_music.json`（放个歌，按 steps 执行）、`ihaier_performance_declaration.json`（绩效达成申报，run_plan）、`minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_*.json`、`example_screenshot_vision.json` 等，供 run_plan 或查阅 steps 引用 |
 
 ## 说明
 

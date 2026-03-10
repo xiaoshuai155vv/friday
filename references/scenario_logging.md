@@ -1,5 +1,9 @@
 # 场景维度日志（用户请求与执行结果）
 
+## 场景指导（plans/）
+
+`plans/` 目录下的 JSON 为**场景指导**（含 triggers 的）或**可执行计划**（run_plan 的步骤数组），供通用智能体查阅并按 steps 执行。格式示例：`triggers`（用户话）、`steps`（执行步骤）、`fallback`（保底）。当用户话匹配 triggers 时，**必须**按该 JSON 执行，勿自行发挥。如 `plans/play_music.json` 指导「放个歌」流程；`plans/ihaier_performance_declaration.json` 为绩效达成申报的可执行计划。
+
 ## 目的
 
 当用户说出**场景化请求**（如「帮我打开摄像头给我来个自拍」「截个图」）时，将**用户输入**与**执行结果（成功/失败）**按**场景**记录，便于：
