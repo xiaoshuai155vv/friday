@@ -957,12 +957,23 @@ class EvolutionLoopWorker(QThread):
                     cmd.extend(["--user-hint-file", hint_file])
                 except Exception:
                     pass
+            # 子进程超时须 >= evolution_loop_client 内 HTTP 等待时间，否则 client 未返回就被 kill，状态一直为 timeout
+            sub_timeout = 380
+            try:
+                cfg_path = os.path.join(ROOT, "runtime", "config", "evolution_loop.json")
+                if os.path.isfile(cfg_path):
+                    with open(cfg_path, "r", encoding="utf-8") as f:
+                        cfg = json.load(f)
+                    req_t = max(60, int(cfg.get("request_timeout_seconds") or 300))
+                    sub_timeout = req_t + 120
+            except Exception:
+                pass
             proc = subprocess.run(
                 cmd,
                 cwd=ROOT,
                 capture_output=True,
                 text=True,
-                timeout=320,
+                timeout=sub_timeout,
                 encoding="utf-8",
                 errors="replace",
             )
@@ -1231,6 +1242,9 @@ class FridayBall(QWidget):
         auto_evolution_act = QAction("开启自动进化环" if not self._auto_evolution_enabled else "关闭自动进化环", self)
         auto_evolution_act.triggered.connect(self._toggle_auto_evolution)
         menu.addAction(auto_evolution_act)
+        ack_act = QAction("清除进化环超时状态（CC 已跑完时）", self)
+        ack_act.triggered.connect(self._ack_evolution_timeout)
+        menu.addAction(ack_act)
         menu.addSeparator()
         quit_act = QAction("退出", self)
         quit_act.triggered.connect(self._quit_app)
@@ -1322,6 +1336,28 @@ class FridayBall(QWidget):
         if tray and hasattr(tray, "showMessage"):
             tray.showMessage("Friday", "自动进化环已提交（已带上一轮上下文，减少重复）。", QSystemTrayIcon.Information, 3000)
         QTimer.singleShot(interval * 1000, self._schedule_auto_evolution)
+
+    def _ack_evolution_timeout(self):
+        """上一轮 HTTP 超时但 CC 已在后台跑完时，清除 evolution_last_status 的 timeout，自动环可立即再提交。"""
+        try:
+            r = subprocess.run(
+                [sys.executable, os.path.join(SCRIPTS, "evolution_loop_client.py"), "--ack-complete"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                timeout=15,
+                encoding="utf-8",
+                errors="replace",
+            )
+            tray = getattr(self, "_tray", None)
+            if r.returncode == 0 and tray and hasattr(tray, "showMessage"):
+                tray.showMessage("Friday", "已清除超时状态；自动进化环可正常继续提交。", QSystemTrayIcon.Information, 4000)
+            elif tray and hasattr(tray, "showMessage"):
+                tray.showMessage("Friday", "清除失败，可手动运行: python scripts/evolution_loop_client.py --ack-complete", QSystemTrayIcon.Warning, 5000)
+        except Exception as e:
+            tray = getattr(self, "_tray", None)
+            if tray and hasattr(tray, "showMessage"):
+                tray.showMessage("Friday", "清除超时状态异常: %s" % str(e)[:60], QSystemTrayIcon.Warning, 4000)
 
     def _toggle_auto_evolution(self):
         """开启/关闭自动进化环：定时触发没在工作的 CC 执行进化。"""

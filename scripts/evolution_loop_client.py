@@ -218,7 +218,17 @@ def main():
     ap.add_argument("--message", "-m", type=str, default=None, help="Override evolution_prompt")
     ap.add_argument("--user-hint-file", type=str, default=None, help="Append content as user hint to prompt")
     ap.add_argument("--auto-evolution", action="store_true", help="自动进化环：附带上一轮摘要，减少重复")
+    ap.add_argument(
+        "--ack-complete",
+        action="store_true",
+        help="上一轮在客户端超时但 CC 已跑完时：将 evolution_last_status 标为成功，自动进化环可立即再提交",
+    )
     args = ap.parse_args()
+
+    if getattr(args, "ack_complete", False):
+        _write_last_status("ok", "user_ack: CC 已跑完，清除超时状态")
+        print("OK: evolution_last_status 已标为成功，自动进化环将不再因上一轮超时而跳过。")
+        return 0
 
     user_hint = None
     if args.user_hint_file and os.path.isfile(args.user_hint_file):
