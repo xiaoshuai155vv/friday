@@ -9,6 +9,7 @@ import sys
 import os
 import json
 import glob
+import time
 import subprocess
 import ctypes
 import ctypes.wintypes
@@ -128,10 +129,75 @@ def load_evolution_last_status():
         if os.path.isfile(EVOLUTION_LAST_STATUS_FILE):
             with open(EVOLUTION_LAST_STATUS_FILE, "r", encoding="utf-8") as f:
                 d = json.load(f)
-            return d.get("status"), d.get("at", ""), d.get("message", "")
+            status, at, msg = d.get("status"), d.get("at", ""), d.get("message", "")
+            # 处理「客户端超时但 CC 后台已完成」：若 timeout 后出现 decide 日志，则将状态自动归并为 ok
+            if status == "timeout" and at:
+                try:
+                    if _cc_completed_after_timeout(at):
+                        status = "ok"
+                        msg = "auto_reconcile: decide_seen_after_timeout"
+                        from datetime import timezone
+                        with open(EVOLUTION_LAST_STATUS_FILE, "w", encoding="utf-8") as wf:
+                            json.dump(
+                                {
+                                    "status": "ok",
+                                    "at": datetime.now(timezone.utc).isoformat(),
+                                    "message": msg,
+                                },
+                                wf,
+                                ensure_ascii=False,
+                                indent=2,
+                            )
+                except Exception:
+                    pass
+            return status, at, msg
     except Exception:
         pass
     return None, "", ""
+
+
+def _cc_completed_after_timeout(timeout_at_iso):
+    """启发式：timeout 后若 behavior 日志出现 decide，则认为 CC 已完成该轮。"""
+    try:
+        from datetime import timezone
+
+        s = (timeout_at_iso or "").strip().replace("Z", "+00:00")
+        t0 = datetime.fromisoformat(s)
+        if t0.tzinfo is None:
+            t0 = t0.replace(tzinfo=timezone.utc)
+
+        pattern = os.path.join(LOG_DIR, "behavior_*.log")
+        files = sorted(glob.glob(pattern))
+        if not files:
+            return False
+        # 只看最近 2 个文件的末尾，避免扫描过大
+        for path in reversed(files[-2:]):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    lines = f.readlines()[-400:]
+                for line in reversed(lines):
+                    line = (line or "").strip()
+                    if not line:
+                        continue
+                    parts = line.split("\t", 5)
+                    if len(parts) < 2:
+                        continue
+                    ts, phase = parts[0], parts[1]
+                    if phase != "decide":
+                        continue
+                    try:
+                        dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                        if dt.tzinfo is None:
+                            dt = dt.replace(tzinfo=timezone.utc)
+                        if dt > t0:
+                            return True
+                    except Exception:
+                        continue
+            except Exception:
+                continue
+    except Exception:
+        return False
+    return False
 
 
 def _format_evolution_status_line():
@@ -1052,6 +1118,15 @@ class FridayBall(QWidget):
             "color: rgb(255,180,60); font-size: 10px; font-weight: 500; background: transparent;"
         )
         self._hint.setGeometry(0, CENTER + 36, SIZE, 18)
+        # 自动进化环：下一次倒计时 + 上一轮完成状态（轻量展示）
+        self._auto_info = QLabel("", self)
+        self._auto_info.setAlignment(Qt.AlignCenter)
+        self._auto_info.setStyleSheet(
+            "color: rgb(235,190,85); font-size: 10px; font-weight: 500; background: transparent;"
+        )
+        self._auto_info.setGeometry(0, CENTER + 54, SIZE, 16)
+        self._next_auto_at = None  # epoch seconds
+        self._last_auto_ui_sec = 0
         self._stuck_edge = None
         self._onecall_dialog = None
         # 应用级快捷键（本应用前台时有效）
@@ -1097,6 +1172,7 @@ class FridayBall(QWidget):
         self._mission.show()
         self._round.show()
         self._hint.show()
+        self._auto_info.show()
         self._hint.setText("双击 · 查看过程")
         self._hint.setGeometry(0, CENTER + 36, SIZE, 18)
         screen = QDesktopWidget().availableGeometry()
@@ -1125,6 +1201,7 @@ class FridayBall(QWidget):
                     self._mission.hide()
                     self._round.hide()
                     self._hint.hide()
+                    self._auto_info.hide()
             self._drag_start = None
 
     def mouseDoubleClickEvent(self, event):
@@ -1302,6 +1379,7 @@ class FridayBall(QWidget):
             return
         if self._evolution_worker is not None and self._evolution_worker.isRunning():
             QTimer.singleShot(10000, self._schedule_auto_evolution)
+            self._next_auto_at = time.time() + 10
             return
         # 若上一轮刚超时，本轮自动跳过，避免 CC 侧多会话堆积
         status, at, _ = load_evolution_last_status()
@@ -1315,6 +1393,7 @@ class FridayBall(QWidget):
                 elapsed = (datetime.now(timezone.utc) - dt).total_seconds()
                 if 0 < elapsed < 900:
                     QTimer.singleShot(60000, self._schedule_auto_evolution)  # 1 分钟后再检查
+                    self._next_auto_at = time.time() + 60
                     return
             except Exception:
                 pass
@@ -1336,6 +1415,7 @@ class FridayBall(QWidget):
         if tray and hasattr(tray, "showMessage"):
             tray.showMessage("Friday", "自动进化环已提交（已带上一轮上下文，减少重复）。", QSystemTrayIcon.Information, 3000)
         QTimer.singleShot(interval * 1000, self._schedule_auto_evolution)
+        self._next_auto_at = time.time() + interval
 
     def _ack_evolution_timeout(self):
         """上一轮 HTTP 超时但 CC 已在后台跑完时，清除 evolution_last_status 的 timeout，自动环可立即再提交。"""
@@ -1367,9 +1447,11 @@ class FridayBall(QWidget):
             if tray and hasattr(tray, "showMessage"):
                 tray.showMessage("Friday", "已开启自动进化环，将按配置间隔定时提交进化任务。", QSystemTrayIcon.Information, 4000)
             QTimer.singleShot(2000, self._schedule_auto_evolution)
+            self._next_auto_at = time.time() + 2
         else:
             if tray and hasattr(tray, "showMessage"):
                 tray.showMessage("Friday", "已关闭自动进化环。", QSystemTrayIcon.Information, 2000)
+            self._next_auto_at = None
 
     def _on_evolution_finished(self, ok, result):
         self._evolution_worker = None
@@ -1422,6 +1504,7 @@ class FridayBall(QWidget):
         r = s.get("loop_round") or 0
         self._round.setText("第 {} 轮".format(r) if r > 0 else "")
         self._title.setText("FRIDAY")
+        self._update_auto_info(force=True)
 
     def _tick(self):
         self._angle += 1.2
@@ -1430,7 +1513,37 @@ class FridayBall(QWidget):
         self._pulse += 0.04
         if self._pulse >= 6.28318:
             self._pulse -= 6.28318
+        self._update_auto_info()
         self.update()
+
+    def _update_auto_info(self, force=False):
+        """悬浮球底部小字：自动进化倒计时 + 上一轮状态（每秒刷新一次即可）。"""
+        try:
+            now = int(time.time())
+            if not force and now == getattr(self, "_last_auto_ui_sec", 0):
+                return
+            self._last_auto_ui_sec = now
+            status, _, _ = load_evolution_last_status()
+            status_txt = "上轮:—"
+            if status == "ok":
+                status_txt = "上轮:完成"
+            elif status == "timeout":
+                status_txt = "上轮:超时"
+            elif status == "error":
+                status_txt = "上轮:失败"
+
+            if getattr(self, "_auto_evolution_enabled", False):
+                if self._next_auto_at:
+                    left = int(max(0, self._next_auto_at - time.time()))
+                    mm = left // 60
+                    ss = left % 60
+                    self._auto_info.setText("AUTO %02d:%02d | %s" % (mm, ss, status_txt))
+                else:
+                    self._auto_info.setText("AUTO --:-- | %s" % status_txt)
+            else:
+                self._auto_info.setText(status_txt)
+        except Exception:
+            pass
 
     def paintEvent(self, event):
         p = QPainter(self)
