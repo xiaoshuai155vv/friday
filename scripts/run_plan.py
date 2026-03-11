@@ -52,6 +52,25 @@ except ImportError:
         def clear_interrupted_task(*args, **kwargs):
             pass
 
+# 导入任务执行策略模块（自适应策略）
+try:
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    import task_execution_strategy
+    _TASK_STRATEGY_AVAILABLE = True
+except ImportError:
+    # 如果无法导入，定义空实现
+    _TASK_STRATEGY_AVAILABLE = False
+    class task_execution_strategy:
+        @staticmethod
+        def get_adaptive_strategy(*args, **kwargs):
+            return {"strategy": "standard", "max_retries": 0, "retry_delay": 2.0}
+        @staticmethod
+        def apply_strategy(*args, **kwargs):
+            return args[1] if len(args) > 1 else {}
+        @staticmethod
+        def record_execution(*args, **kwargs):
+            pass
+
 SCRIPTS = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(SCRIPTS)
 STATE_DIR = os.path.join(PROJECT, "runtime", "state")
@@ -634,6 +653,29 @@ def main():
             if img and os.path.normpath(img) == last_screenshot_plan_path:
                 item["image"] = last_screenshot_actual_path
 
+        # 获取自适应执行策略
+        start_time = time.time()
+        adaptive_strategy = {"strategy": "standard", "max_retries": 0, "retry_delay": 2.0}
+        if _TASK_STRATEGY_AVAILABLE:
+            try:
+                task_name = task_id if _TASK_PUSHER_AVAILABLE else "run_plan"
+                adaptive_strategy = task_execution_strategy.get_adaptive_strategy(do, task_name)
+                # 应用策略到步骤数据
+                item = task_execution_strategy.apply_strategy(adaptive_strategy, do, item)
+
+                # 如果策略要求等待，在执行前等待
+                wait_before = adaptive_strategy.get("wait_before", 0)
+                if wait_before > 0:
+                    time.sleep(wait_before)
+
+                # 如果用户没有显式指定重试参数，使用策略中的值
+                if max_retry == 0:  # 用户未指定自定义重试
+                    max_retry = adaptive_strategy.get("max_retries", 0)
+                if retry_delay == 2.0:  # 用户未指定自定义延迟
+                    retry_delay = adaptive_strategy.get("retry_delay", 2.0)
+            except Exception as e:
+                print(f"Warning: Failed to get adaptive strategy: {e}", file=sys.stderr)
+
         # 重试逻辑
         max_retries = max_retry if max_retry > 0 else 0
         retries = 0
@@ -693,6 +735,17 @@ def main():
                 total_steps=total_steps,
                 plan_data=plan
             )
+
+        # 记录执行结果到策略历史
+        if _TASK_STRATEGY_AVAILABLE:
+            execution_time = time.time() - start_time
+            try:
+                task_name = task_id if _TASK_PUSHER_AVAILABLE else "run_plan"
+                task_execution_strategy.record_execution(
+                    task_name, do, adaptive_strategy, execution_time, ok
+                )
+            except Exception as e:
+                print(f"Warning: Failed to record execution: {e}", file=sys.stderr)
 
     _update_floating_state(plan_path, 0, "done", "plan done", "ok")
     # 推送任务完成状态
