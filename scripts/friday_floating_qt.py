@@ -180,7 +180,7 @@ def _cc_completed_after_timeout(timeout_at_iso):
 
 
 def _format_evolution_status_line():
-    """格式化为过程·结果弹框首行：最近进化环请求: 成功/超时/失败 (HH:MM)。"""
+    """格式化为过程·结果弹框首行：最近进化环请求: 成功/超时/失败 (HH:MM)。首行固定为「上次请求状态」，不按时间与下方日志混排。"""
     status, at, msg = load_evolution_last_status()
     if not status:
         return None
@@ -188,6 +188,9 @@ def _format_evolution_status_line():
     if status == "ok":
         return "最近进化环请求: 成功 (本轮已完成)" + (" " + t if t else "")
     if status == "timeout":
+        # 若下方日志中已有超时之后的 decide，说明 CC 已跑完，首行提示可清除超时状态，避免误解「一直是最上面」
+        if at and _cc_completed_after_timeout(at):
+            return "最近进化环请求: 超时(" + t + ")，下方日志显示本轮已完成 — 可右键「清除超时状态」更新"
         return "最近进化环请求: 超时 " + (t + " — CC 可能仍在执行，请勿急于再提交" if t else "— CC 可能仍在执行，请勿急于再提交")
     return "最近进化环请求: 失败 " + (t + " " + (msg or "")[:30] if t or msg else "")
 
@@ -266,6 +269,9 @@ class FridayLogDialog(QWidget):
             "color: rgb(255,200,80); font-size: 16px; letter-spacing: 4px; font-weight: 600; background: transparent;"
         )
         layout.addWidget(title)
+        sub = QLabel("首行 = 最近请求状态（固定置顶），以下 = 行为日志（倒序）")
+        sub.setStyleSheet("color: rgb(200,170,90); font-size: 11px; background: transparent;")
+        layout.addWidget(sub)
         self._scroll = QScrollArea()
         self._scroll.setWidgetResizable(True)
         self._scroll.setFrameShape(QScrollArea.NoFrame)
@@ -1329,7 +1335,7 @@ class FridayBall(QWidget):
                 if dt.tzinfo is None:
                     dt = dt.replace(tzinfo=timezone.utc)
                 elapsed = (datetime.now(timezone.utc) - dt).total_seconds()
-                if 0 < elapsed < 900:  # 15 分钟内
+                if 0 < elapsed < 300:  # 5 分钟内不提交，避免 CC 侧多会话
                     tray = getattr(self, "_tray", None)
                     if tray and hasattr(tray, "showMessage"):
                         tray.showMessage("Friday", "上一轮请求已超时，CC 可能仍在执行；若现在提交会开启新会话。", QSystemTrayIcon.Warning, 5000)
@@ -1360,7 +1366,7 @@ class FridayBall(QWidget):
             # 当前仍在执行：仅做“检查”调度，不改写 _next_auto_at，倒计时继续指向“下次触发”时间（到 0 后保持 00:00）
             QTimer.singleShot(10000, self._schedule_auto_evolution)
             return
-        # 若上一轮刚超时，本轮自动跳过，避免 CC 侧多会话堆积
+        # 若上一轮刚超时，5 分钟内每分钟检查一次；若发现下方日志已有 decide（CC 已跑完）则提前结束冷却并提交下一轮
         status, at, _ = load_evolution_last_status()
         if status == "timeout" and at:
             try:
@@ -1370,12 +1376,26 @@ class FridayBall(QWidget):
                 if dt.tzinfo is None:
                     dt = dt.replace(tzinfo=timezone.utc)
                 elapsed = (datetime.now(timezone.utc) - dt).total_seconds()
-                if 0 < elapsed < 900:
-                    QTimer.singleShot(60000, self._schedule_auto_evolution)  # 1 分钟后再检查
-                    self._next_auto_at = time.time() + 60
-                    return
+                if 0 < elapsed < 300:
+                    if _cc_completed_after_timeout(at):
+                        try:
+                            os.makedirs(os.path.dirname(EVOLUTION_LAST_STATUS_FILE), exist_ok=True)
+                            with open(EVOLUTION_LAST_STATUS_FILE, "w", encoding="utf-8") as f:
+                                json.dump({
+                                    "status": "ok",
+                                    "at": datetime.now(timezone.utc).isoformat(),
+                                    "message": "auto_reconcile: decide_seen_after_timeout",
+                                }, f, ensure_ascii=False, indent=2)
+                        except Exception:
+                            pass
+                        # 不 return，继续往下发起下一轮
+                    else:
+                        QTimer.singleShot(60000, self._schedule_auto_evolution)
+                        self._next_auto_at = time.time() + 60
+                        return
             except Exception:
                 pass
+        # 每次设定下一轮时从配置文件读取间隔（非启动时读一次），0 表示默认 300 秒
         config_path = os.path.join(ROOT, "runtime", "config", "evolution_loop.json")
         interval = 300
         try:
@@ -1456,7 +1476,7 @@ class FridayBall(QWidget):
         except Exception:
             pass
         self._load_state()
-        # 自动进化开启时：下一轮触发时间 = 当前 + interval，倒计时从“下次循环”继续
+        # 自动进化开启时：下一轮在 interval 秒后触发（设定倒计时并真正预约下一轮，否则只靠 10s 轮询会过早触发）
         if getattr(self, "_auto_evolution_enabled", False):
             interval = 300
             try:
@@ -1467,6 +1487,7 @@ class FridayBall(QWidget):
             except Exception:
                 pass
             self._next_auto_at = time.time() + interval
+            QTimer.singleShot(interval * 1000, self._schedule_auto_evolution)
         tray = getattr(self, "_tray", None)
         if tray and hasattr(tray, "showMessage"):
             if ok:

@@ -78,7 +78,7 @@
 - **任务何时算完成**：当前使用 `stream=false` 调用 CCR，即星期五发出一条 HTTP 请求后**等待 CCR 整轮执行完毕**再返回。因此「任务完成」= 该 HTTP 请求返回时（成功或失败）。CCR 不会通过文件或推送主动通知星期五；完成信号就是客户端收到的响应。
 - **悬浮球如何知道完成**：后台线程里 `evolution_loop_client` 返回后，会通过 `finished_signal` 回调到 UI，悬浮球在 `_on_evolution_finished` 中刷新 state、托盘提示「本轮完成」或「进化环失败」；同时写入 `runtime/state/evolution_last_status.json`（status: ok/timeout/error），供**过程·结果**弹框与防重复提交使用。
 - **过程·结果里的进化环状态**：打开「过程 · 结果」弹框时，首行会显示**最近进化环请求**：成功（本轮已完成）、超时（CC 可能仍在执行，请勿急于再提交）、或失败。便于判断上一轮是否在客户端侧已完成，避免误以为没完成又开新会话。
-- **超时说明**：「进化环 Fail: timeout」表示**客户端**等待 CCR 响应超时（默认 300s，可配 `evolution_loop.json` 的 `request_timeout_seconds`）。**CC 端可能仍在执行**，只是我们这边先断开了。超时后：`evolution_last_status.json` 会记为 `timeout`；**自动进化环在 15 分钟内不会再次提交**（每分钟只检查一次，避免 CC 侧多会话堆积）。若你确认 CC 已在后台跑完（例如 behavior 里已有 decide），可：  
+- **超时说明**：「进化环 Fail: timeout」表示**客户端**等待 CCR 响应超时（默认 300s，可配 `evolution_loop.json` 的 `request_timeout_seconds`）。**CC 端可能仍在执行**，只是我们这边先断开了。超时后：`evolution_last_status.json` 会记为 `timeout`；**自动进化环在 5 分钟内不会再次提交**（每分钟只检查一次，避免 CC 侧多会话堆积）。若你确认 CC 已在后台跑完（例如 behavior 里已有 decide），可：  
   - 悬浮球右键 **「清除进化环超时状态（CC 已跑完时）」**，或  
   - 命令行：`python scripts/evolution_loop_client.py --ack-complete`  
   将状态标为成功，自动环即可继续提交。手动再提交仍会弹出提示「上一轮请求已超时…」但不阻止提交。
@@ -93,8 +93,8 @@
 ## 九、风险与注意
 
 - **API Key 安全**：仅存于本机 `runtime/config/`，不要提交到版本库；可加入 .gitignore。
-- **超时**：单轮进化可能较长，客户端默认 300s（`evolution_loop.json` 的 `request_timeout_seconds`），可改为 600/900。超时后 CC 可能仍在跑，过程·结果会显示「最近进化环请求: 超时」，且 15 分钟内再提交会提示、自动进化会跳过。
-- **并发**：同一时间只提交一轮任务；若上一轮超时，自动进化环 15 分钟内不重复提交，避免 CC 侧多会话堆积。
+- **超时**：单轮进化可能较长，客户端默认 300s（`evolution_loop.json` 的 `request_timeout_seconds`），可改为 600/900。超时后 CC 可能仍在跑，过程·结果会显示「最近进化环请求: 超时」，且 5 分钟内再提交会提示、自动进化会跳过。
+- **并发**：同一时间只提交一轮任务；若上一轮超时，自动进化环 5 分钟内不重复提交，避免 CC 侧多会话堆积。
 
 ---
 

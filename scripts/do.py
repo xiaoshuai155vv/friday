@@ -585,6 +585,21 @@ def main():
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 检查是否请求状态仪表板
+    dashboard_keywords = ["状态面板", "系统状态", "进化状态", "dashboard", "仪表板", "状态概览"]
+    for keyword in dashboard_keywords:
+        if keyword in " ".join(sys.argv[1:]):
+            print(f"[状态仪表板] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "dashboard.py")
+            full_flag = "--full" if "详细" in " ".join(sys.argv[1:]) or "完整" in " ".join(sys.argv[1:]) else ""
+            cmd = [full_flag] if full_flag else []
+            result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 检查是否请求告警相关操作
     alert_keywords = {
         "告警状态": ["status"],
