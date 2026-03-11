@@ -174,6 +174,101 @@ def generate_insights(stats, summary):
     return insights
 
 
+def generate_suggestions(stats, summary, insights):
+    """基于分析结果生成可操作的建议"""
+    suggestions = []
+
+    # 成功率相关建议
+    success_rate = summary["overview"]["success_rate"]
+    if success_rate < 70:
+        suggestions.append({
+            "priority": "high",
+            "category": "stability",
+            "message": "系统成功率偏低，建议检查失败原因并优化重试机制",
+            "action": "运行 self_verify_capabilities.py 确认基础能力状态",
+            "script": "python scripts/self_verify_capabilities.py"
+        })
+    elif success_rate < 90:
+        suggestions.append({
+            "priority": "medium",
+            "category": "stability",
+            "message": "系统成功率一般，建议关注高频失败任务",
+            "action": "检查 mission_performance 中的失败任务",
+            "script": None
+        })
+
+    # 高频步骤类型优化建议
+    if stats["steps_by_type"]:
+        top_steps = stats["steps_by_type"].most_common(3)
+        for step_type, count in top_steps:
+            if step_type in ["vision", "vision_coords"]:
+                suggestions.append({
+                    "priority": "medium",
+                    "category": "optimization",
+                    "message": f"高频使用 {step_type} 步骤 ({count} 次)，建议优化坐标校准",
+                    "action": "运行 vision_calibrate.py 校准坐标偏移",
+                    "script": "python scripts/vision_calibrate.py calibrate"
+                })
+            elif step_type in ["click", "activate"]:
+                suggestions.append({
+                    "priority": "medium",
+                    "category": "optimization",
+                    "message": f"高频使用 {step_type} 步骤 ({count} 次)，建议增加激活重试",
+                    "action": "在 run_plan 中使用 --max-retry 2 增加重试",
+                    "script": None
+                })
+
+    # 高频任务优化建议
+    if stats["by_mission"]:
+        top_missions = stats["by_mission"].most_common(3)
+        for mission, count in top_missions:
+            if count > 10:
+                suggestions.append({
+                    "priority": "low",
+                    "category": "efficiency",
+                    "message": f"任务 '{mission}' 执行频繁 ({count} 次)，可考虑优化为可直接调用的脚本",
+                    "action": "将高频任务固化为独立脚本",
+                    "script": None
+                })
+
+    # 失败任务相关建议
+    for mission, perf in summary["mission_performance"].items():
+        if perf["fail"] > 0 and perf["success_rate"] < 80:
+            suggestions.append({
+                "priority": "high",
+                "category": "fix",
+                "message": f"任务 '{mission}' 有 {perf['fail']} 次失败，成功率仅 {perf['success_rate']}%",
+                "action": "检查该任务的场景计划，添加错误处理和重试",
+                "script": f"python scripts/run_plan.py assets/plans/{mission}.json --max-retry 2 --verbose"
+            })
+
+    # 检查健康状态
+    health_check_path = os.path.join(PROJECT_ROOT, "runtime", "state", "health_report.json")
+    if os.path.exists(health_check_path):
+        try:
+            with open(health_check_path, 'r', encoding='utf-8') as f:
+                health_data = json.load(f)
+                if health_data.get("overall_status") != "healthy":
+                    suggestions.append({
+                        "priority": "high",
+                        "category": "maintenance",
+                        "message": f"系统健康检查异常: {health_data.get('overall_status')}",
+                        "action": "运行系统诊断和自动修复",
+                        "script": "python scripts/auto_fixer.py fix --all"
+                    })
+        except Exception:
+            pass
+
+    # 去重：相同类别的建议只保留最高优先级
+    seen = {}
+    for s in suggestions:
+        key = f"{s['category']}_{s.get('message', '')[:30]}"
+        if key not in seen or s["priority"] == "high":
+            seen[key] = s
+
+    return list(seen.values())
+
+
 def main():
     """主函数"""
     # 设置输出编码
@@ -204,6 +299,9 @@ def main():
 
     # 生成洞察
     insights = generate_insights(stats, summary)
+
+    # 生成建议
+    suggestions = generate_suggestions(stats, summary, insights)
 
     # 输出报告
     print("\n" + "=" * 60)
@@ -236,6 +334,22 @@ def main():
         }.get(insight["type"], "[--]")
         print(f"  {icon} {insight['message']}")
 
+    print("\n" + "-" * 40)
+    print("智能建议")
+    print("-" * 40)
+    priority_order = {"high": 0, "medium": 1, "low": 2}
+    sorted_suggestions = sorted(suggestions, key=lambda x: priority_order.get(x["priority"], 3))
+    for sugg in sorted_suggestions:
+        icon = {
+            "high": "[!!]",
+            "medium": "[>>]",
+            "low": "[..]"
+        }.get(sugg["priority"], "[--]")
+        print(f"  {icon} [{sugg['priority'].upper()}] {sugg['message']}")
+        print(f"       -> 建议动作: {sugg['action']}")
+        if sugg.get("script"):
+            print(f"       -> 执行脚本: {sugg['script']}")
+
     # 保存报告
     report_path = os.path.join(PROJECT_ROOT, "runtime", "state", "execution_analysis.json")
     os.makedirs(os.path.dirname(report_path), exist_ok=True)
@@ -243,6 +357,7 @@ def main():
     report = {
         "summary": summary,
         "insights": insights,
+        "suggestions": suggestions,
         "generated_at": datetime.now().isoformat()
     }
 

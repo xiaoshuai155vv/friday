@@ -600,6 +600,19 @@ def main():
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 检查是否请求日志分析与智能建议
+    log_analysis_keywords = ["日志分析", "执行分析", "分析日志", "智能建议", "log analyzer", "execution analysis"]
+    for keyword in log_analysis_keywords:
+        if keyword in " ".join(sys.argv[1:]):
+            print(f"[日志分析] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "execution_log_analyzer.py")
+            result = subprocess.run([sys.executable, script_path], cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 检查是否请求健康检查守护进程
     health_daemon_keywords = {
         "健康检查守护进程": ["--start"],

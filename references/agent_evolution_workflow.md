@@ -170,7 +170,7 @@
 | 项目 | 说明 |
 |------|------|
 | **输入（必读）** | `runtime/state/self_verify_result.json`；`references/failures.md`；本轮 assume/plan/track/verify 的日志或描述 |
-| **输出（必写）** | 若本轮有失败或可改进点，更新 `references/failures.md`；若本轮完成的是 `evolution_self_proposed.md` 中某项，将该条状态改为「已完成」；**必须更新 `references/evolution_auto_last.md`**（路径固定，勿在项目根目录建同名文件）：① 当前核心目录与文件树（一行）；② 本轮影响文件（逗号分隔）；③ 每轮**只写简介概述**（1～2 句话），具体细节可去读 `runtime/logs/behavior_*.log`；可选更新 `references/capability_gaps.md`、`runtime/state/mastery_level.json`；行为日志（decide）；**将 state 推进到下一轮并置 phase 为 假设** |
+| **输出（必写）** | 若本轮有失败或可改进点，更新 `references/failures.md`；若本轮完成的是 `evolution_self_proposed.md` 中某项，将该条状态改为「已完成」；**必须更新 `references/evolution_auto_last.md`**（路径固定，勿在项目根目录建同名文件）：① 当前核心目录与文件树（一行）；② 本轮影响文件（逗号分隔）；③ 每轮**只写简介概述**（1～2 句话），具体细节可去读 `runtime/logs/behavior_*.log`；**必须写入 `runtime/state/evolution_completed_<本任务会话ID>.json`**（会话 ID 由本轮提示词中的【本任务会话 ID】给出），包含 current_goal、做了什么、是否完成、loop_round 等，否则下一轮无法提交；可选更新 `references/capability_gaps.md`、`runtime/state/mastery_level.json`；行为日志（decide）；**将 state 推进到下一轮并置 phase 为 假设** |
 | **日志** | `python scripts/behavior_log.py decide "<决策与下一轮意图>" --mission "<当前使命>"` |
 | **状态** | `state_tracker.py`：`loop_round` +1，`phase` 设为 `假设`，`next_action` 设为 `规划` 或 `决策`，`mission` 更新为新一轮描述 |
 | **日志导出** | `python scripts/export_recent_logs.py 60`，使 UI/悬浮窗能看到近期行为 |
@@ -183,6 +183,7 @@
 ## 状态与日志约定（防迷失）
 
 - **单一状态源**：`runtime/state/current_mission.json`。每轮开始前读一次，每阶段结束后按上表更新。
+- **会话锁（防多会话堆积）**：提交前会写入 `runtime/state/evolution_session_pending.json`（含 session_id）；完成本轮后**必须**写入 `runtime/state/evolution_completed_<session_id>.json`，否则下一轮无法提交。
 - **行为可溯源**：所有 assume/plan/track/verify/decide 均通过 `scripts/behavior_log.py` 写入 `runtime/logs/`，再通过 `export_recent_logs.py` 导出到 `runtime/state/recent_logs.json`。**写入方式**：按 `references/logging.md` 中「Behavior log 写入结构」直接执行对应命令即可，**无需读取 behavior_*.log 文件**查看格式。
 - **轮次**：`current_mission.json` 中的 `loop_round` 每完成一整环（反思结束）加一。
 
@@ -195,7 +196,7 @@
 3. **自主决策**：定 current_goal 与 next_action；写 plan 日志；更新 state（phase=规划/决策，next=执行）。
 4. **自主执行**：执行脚本/改文档；写 track 日志；更新 state。
 5. **自主校验审核**：先跑 `self_verify_capabilities.py`（基线）；再按本轮执行内容做**针对性校验**（见上表）；写 verify 日志。基线可隔轮以省时，**本轮针对性校验不可省**（至少一条结论或说明为何无法自动验）。
-6. **自主优化反思**：必要时更新 failures.md、capability_gaps；**更新 `references/evolution_auto_last.md`**（每轮只写简介概述，具体细节可读 behavior_*.log）；写 decide 日志；state 的 loop_round+1、phase=假设；运行 `export_recent_logs.py`；**运行 `git_commit_evolution.py`**（可选 `--bump-version`）对功能改动做本地提交以便追溯。
+6. **自主优化反思**：必要时更新 failures.md、capability_gaps；**更新 `references/evolution_auto_last.md`**（每轮只写简介概述，具体细节可读 behavior_*.log）；**写入 `runtime/state/evolution_completed_<本任务会话ID>.json`**（会话 ID 见本轮提示词【本任务会话 ID】）；写 decide 日志；state 的 loop_round+1、phase=假设；运行 `export_recent_logs.py`；**运行 `git_commit_evolution.py`**（可选 `--bump-version`）对功能改动做本地提交以便追溯。
 7. **回到步骤 2**（下一轮的假设），形成无限循环。
 
 ---

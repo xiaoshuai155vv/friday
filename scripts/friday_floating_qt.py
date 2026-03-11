@@ -46,6 +46,7 @@ SCRIPTS = os.path.join(ROOT, "scripts")
 STATE_FILE = os.path.join(ROOT, "runtime", "state", "current_mission.json")
 RECENT_LOGS_FILE = os.path.join(ROOT, "runtime", "state", "recent_logs.json")
 EVOLUTION_LAST_STATUS_FILE = os.path.join(ROOT, "runtime", "state", "evolution_last_status.json")
+EVOLUTION_SESSION_PENDING = os.path.join(ROOT, "runtime", "state", "evolution_session_pending.json")
 LOG_DIR = os.path.join(ROOT, "runtime", "logs")
 ONECALL_LOG_FILE = os.path.join(LOG_DIR, "onecall.log")
 SCREENSHOTS_DIR = os.path.join(ROOT, "runtime", "screenshots")
@@ -121,6 +122,22 @@ def load_recent_output(max_entries=6):
     except Exception:
         pass
     return []
+
+
+def can_submit_evolution():
+    """上一轮会话是否已完成（evolution_completed_<session_id>.json 已存在）。未完成则不可提交下一轮，避免多会话堆积。"""
+    try:
+        if not os.path.isfile(EVOLUTION_SESSION_PENDING):
+            return True
+        with open(EVOLUTION_SESSION_PENDING, "r", encoding="utf-8") as f:
+            d = json.load(f)
+        sid = (d.get("session_id") or "").strip()
+        if not sid:
+            return True
+        completed = os.path.join(ROOT, "runtime", "state", "evolution_completed_%s.json" % sid)
+        return os.path.isfile(completed)
+    except Exception:
+        return True
 
 
 def load_evolution_last_status():
@@ -1325,6 +1342,11 @@ class FridayBall(QWidget):
             if tray and hasattr(tray, "showMessage"):
                 tray.showMessage("Friday", "上一轮进化环仍在请求中，请稍候。", QSystemTrayIcon.Warning, 3000)
             return
+        if not can_submit_evolution():
+            tray = getattr(self, "_tray", None)
+            if tray and hasattr(tray, "showMessage"):
+                tray.showMessage("Friday", "上一轮会话尚未完成（evolution_completed 未写入），请等待完成后再提交。", QSystemTrayIcon.Warning, 5000)
+            return
         # 若上一轮刚超时，提示 CC 可能仍在执行，避免误开新会话
         status, at, _ = load_evolution_last_status()
         if status == "timeout" and at:
@@ -1365,6 +1387,10 @@ class FridayBall(QWidget):
         if self._evolution_worker is not None and self._evolution_worker.isRunning():
             # 当前仍在执行：仅做“检查”调度，不改写 _next_auto_at，倒计时继续指向“下次触发”时间（到 0 后保持 00:00）
             QTimer.singleShot(10000, self._schedule_auto_evolution)
+            return
+        if not can_submit_evolution():
+            QTimer.singleShot(60000, self._schedule_auto_evolution)
+            self._next_auto_at = time.time() + 60
             return
         # 若上一轮刚超时，5 分钟内每分钟检查一次；若发现下方日志已有 decide（CC 已跑完）则提前结束冷却并提交下一轮
         status, at, _ = load_evolution_last_status()

@@ -29,6 +29,8 @@ LOG_DIR = os.path.join(ROOT, "runtime", "logs")
 STATE_DIR = os.path.join(ROOT, "runtime", "state")
 EVOLUTION_LOG = os.path.join(LOG_DIR, "evolution_loop.log")
 EVOLUTION_LAST_STATUS_FILE = os.path.join(STATE_DIR, "evolution_last_status.json")
+EVOLUTION_SESSION_PENDING = "evolution_session_pending.json"
+EVOLUTION_COMPLETED_PREFIX = "evolution_completed_"
 
 DEFAULT_EVOLUTION_PROMPT = """请读取本项目 references/agent_evolution_workflow.md，按其中「通用智能体执行清单」执行**一轮**进化环：
 1）读 current_mission.json
@@ -59,6 +61,28 @@ def _log(msg):
         pass
 
 
+def _state_dir(project_path=None):
+    return os.path.join(project_path or ROOT, "runtime", "state")
+
+
+def can_submit_evolution(project_path=None):
+    """上一轮会话是否已完成（已写入 evolution_completed_<session_id>.json）。未完成则不可提交下一轮。"""
+    state_dir = _state_dir(project_path)
+    pending_path = os.path.join(state_dir, EVOLUTION_SESSION_PENDING)
+    if not os.path.isfile(pending_path):
+        return True
+    try:
+        with open(pending_path, "r", encoding="utf-8") as f:
+            d = json.load(f)
+        sid = (d.get("session_id") or "").strip()
+        if not sid:
+            return True
+        completed_path = os.path.join(state_dir, EVOLUTION_COMPLETED_PREFIX + sid + ".json")
+        return os.path.isfile(completed_path)
+    except Exception:
+        return True
+
+
 def load_config():
     if os.path.isfile(CONFIG_FILE):
         try:
@@ -78,15 +102,39 @@ def load_config():
 
 
 def run_once(message=None, config=None, user_hint=None):
+    from datetime import datetime, timezone
+
     config = config or load_config()
     base_url = (config.get("ccr_base_url") or "").rstrip("/")
     api_key = (config.get("ccr_api_key") or "").strip()
-    project_path = config.get("friday_project_path") or ROOT
+    project_path = os.path.abspath(config.get("friday_project_path") or ROOT)
     prompt = message or config.get("evolution_prompt") or DEFAULT_EVOLUTION_PROMPT
     if user_hint:
         uh = user_hint.strip()
         if uh:
             prompt = prompt.rstrip() + "\n\n【用户本轮的补充或优先级】\n" + uh
+
+    # 生成会话 ID，写入 pending，并告知智能体完成时须写 completed 文件
+    session_id = "ev_" + datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    state_dir = _state_dir(project_path)
+    os.makedirs(state_dir, exist_ok=True)
+    pending_path = os.path.join(state_dir, EVOLUTION_SESSION_PENDING)
+    try:
+        with open(pending_path, "w", encoding="utf-8") as f:
+            json.dump({
+                "session_id": session_id,
+                "started_at": datetime.now(timezone.utc).isoformat(),
+                "project_path": project_path,
+            }, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        _log("evolution_loop write pending error: %s" % e)
+    session_block = (
+        "\n\n【本任务会话 ID】%s\n"
+        "完成本轮后（自主优化反思结束时）必须在 runtime/state/ 下写入 evolution_completed_%s.json，"
+        "包含会话详细信息（current_goal、做了什么、是否完成、loop_round 等），否则下一轮无法提交。"
+    ) % (session_id, session_id)
+    prompt = prompt.rstrip() + session_block
+
     timeout = max(60, int(config.get("request_timeout_seconds") or 300))
 
     url = "%s/api/agent" % base_url
@@ -159,10 +207,40 @@ def main():
         action="store_true",
         help="上一轮在客户端超时但 CC 已跑完时：将 evolution_last_status 标为成功，自动进化环可立即再提交",
     )
+    ap.add_argument(
+        "--check-only",
+        action="store_true",
+        help="上一轮会话是否已完成（evolution_completed_<session_id>.json 已存在）；0=可提交，1=不可提交",
+    )
     args = ap.parse_args()
+
+    if getattr(args, "check_only", False):
+        config = load_config()
+        project_path = os.path.abspath(config.get("friday_project_path") or ROOT)
+        ok = can_submit_evolution(project_path)
+        print("ok" if ok else "blocked")
+        return 0 if ok else 1
 
     if getattr(args, "ack_complete", False):
         _write_last_status("ok", "user_ack: CC 已跑完，清除超时状态")
+        config = load_config()
+        project_path = os.path.abspath(config.get("friday_project_path") or ROOT)
+        state_dir = _state_dir(project_path)
+        pending_path = os.path.join(state_dir, EVOLUTION_SESSION_PENDING)
+        if os.path.isfile(pending_path):
+            try:
+                with open(pending_path, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+                sid = (d.get("session_id") or "").strip()
+                if sid:
+                    completed_path = os.path.join(state_dir, EVOLUTION_COMPLETED_PREFIX + sid + ".json")
+                    if not os.path.isfile(completed_path):
+                        from datetime import datetime, timezone
+                        with open(completed_path, "w", encoding="utf-8") as f:
+                            json.dump({"session_id": sid, "message": "user_ack", "completed_at": datetime.now(timezone.utc).isoformat()}, f, ensure_ascii=False, indent=2)
+                        print("OK: 已写入 evolution_completed_%s.json，下一轮可提交。" % sid)
+            except Exception as e:
+                print("WARN: 写入 completed 失败: %s" % e)
         print("OK: evolution_last_status 已标为成功，自动进化环将不再因上一轮超时而跳过。")
         return 0
 
