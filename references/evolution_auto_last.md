@@ -21,6 +21,19 @@
 
 ## 最近一轮（由每轮反思后更新）
 
+## 2026-03-11 round 31
+- **current_goal**：构建异常预测预防机制 - 基于failures.md历史和task_strategy_history.json策略历史，分析失败模式并建立预测规则，在执行任务前主动预防潜在错误
+- **做了什么**：
+  - 创建了 failure_predictor.py 模块，实现异常预测预防功能
+  - 解析 failures.md 中的 17 个历史失败模式，提取关键词建立关联
+  - 分析 task_strategy_history.json 策略执行历史，识别失败率高的步骤类型
+  - 基于高频关键词（vision/坐标、激活/窗口、超时/失败、剪贴板）建立 4 条预测规则
+  - 提供 predict() 函数，可在任务执行前预测潜在风险并返回预防建议
+  - 生成 runtime/state/failure_predictions.json 保存预测规则
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将 failure_predictor 集成到 run_plan.py 中，在执行关键步骤前自动预测风险并给出建议
+- **衔接备注**：本轮完成无遗留项，下一轮从假设阶段开始
+
 ## 2026-03-11 round 30
 - **current_goal**：实现任务执行策略自适应机制：根据任务类型、历史执行情况、当前环境自动选择最佳执行策略
 - **做了什么**：
