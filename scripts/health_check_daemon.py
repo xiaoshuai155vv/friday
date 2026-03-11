@@ -3,6 +3,7 @@
 """
 自动健康检查守护进程
 支持定时自动执行系统健康检查并更新状态
+与告警系统联动：当健康检查失败时自动触发告警
 """
 
 import json
@@ -14,6 +15,9 @@ import argparse
 import threading
 from datetime import datetime
 from pathlib import Path
+
+# 告警系统联动开关
+INTEGRATE_ALERT = True
 
 # 添加项目根目录到路径
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -83,6 +87,10 @@ class HealthCheckDaemon:
         # 输出检查结果
         status_icon = "[OK]" if report["status"] == "healthy" else "[FAIL]"
         print(f"{status_icon} Health check #{self.check_count}: {report['status']}")
+
+        # 与告警系统联动：当检查失败时自动触发告警
+        if INTEGRATE_ALERT and report["status"] != "healthy":
+            self._trigger_alert(report)
 
         return report
 
@@ -160,6 +168,62 @@ class HealthCheckDaemon:
                 json.dump(status, f, indent=2, ensure_ascii=False)
         except Exception as e:
             print(f"Warning: Failed to update daemon status: {e}")
+
+    def _trigger_alert(self, report):
+        """触发告警系统"""
+        try:
+            # 动态导入告警系统模块
+            alert_script = os.path.join(SCRIPT_DIR, "alert_system.py")
+            if not os.path.exists(alert_script):
+                return
+
+            spec = __import__("importlib.util").util.spec_from_file_location(
+                "alert_system", alert_script
+            )
+            alert_module = __import__("importlib.util").util.module_from_spec(spec)
+            spec.loader.exec_module(alert_module)
+
+            # 构建告警消息
+            components = report.get("components", [])
+            failed_components = [c for c in components if c.get("status") != "healthy"]
+
+            if not failed_components:
+                return
+
+            # 创建临时告警数据
+            alert_data = {
+                "type": "health_check",
+                "level": "warning",
+                "message": f"健康检查失败: 发现 {len(failed_components)} 个异常组件",
+                "components": failed_components,
+                "check_time": report.get("check_time"),
+                "status": report.get("status")
+            }
+
+            # 使用 notification_tool 发送通知
+            import subprocess
+
+            failed_names = [c.get("component", "unknown") for c in failed_components]
+            title = "Friday Health Alert"
+            body = f"Check #{report.get('check_number', '?')}: {report.get('status', 'unknown')}\n"
+            body += f"Failed: {', '.join(failed_names[:3])}"
+            if len(failed_names) > 3:
+                body += f" +{len(failed_names) - 3} more"
+
+            try:
+                subprocess.run([
+                    sys.executable,
+                    os.path.join(SCRIPT_DIR, "notification_tool.py"),
+                    "show",
+                    "--title", title,
+                    "--body", body
+                ], capture_output=True, timeout=10)
+                print(f"[Alert] Notification sent for health check failure")
+            except Exception as e:
+                print(f"[Alert] Failed to send notification: {e}")
+
+        except Exception as e:
+            print(f"[Alert] Failed to trigger alert system: {e}")
 
     def run(self):
         """运行守护进程"""

@@ -144,7 +144,7 @@ def build_auto_evolution_hint():
                 parts.append(body[:3200])
     except Exception:
         pass
-    parts.append("（以上为背景信息；请基于本文与 capability_gaps/failures 做尚未完成的下一步，若已全部完成则 decide 说明本轮无新动作。）")
+    parts.append("（以上为背景信息；**以 references/agent_evolution_workflow.md 为准（基线）**。请基于本文与 capability_gaps/failures 做尚未完成的下一步，若已全部完成则 decide 说明本轮无新动作。具体细节可读 runtime/logs/behavior_*.log。）")
     return "\n".join(parts)
 
 

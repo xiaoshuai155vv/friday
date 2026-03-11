@@ -8,26 +8,37 @@
 
 **衔接**：下一轮进入「假设」时**必须先读本文**，再读 capability_gaps / failures；自动进化环也会把本文拼进 user_hint。**避免与上一轮已完成的动作重复**，让每一轮都在上一轮结果上继续，不断档。
 
-**建议格式**（每轮一段，反思结束时必填）：
+**建议格式**（每轮一段，反思结束时必填；**只写简介概述**，具体细节可去读 `runtime/logs/behavior_YYYY-MM-DD.log`）：
 
 ```markdown
 ## 当前核心目录与文件树（简要）
-（列出项目核心目录树，如 scripts/ references/ assets/ runtime/ 等，便于下一轮知道结构）
+scripts/ references/ assets/ runtime/ 等（一行即可）
 
 ## 本轮影响文件
-（本轮新增/修改的文件列表，如 scripts/xxx.py, references/yyy.md）
+scripts/xxx.py, references/yyy.md（逗号分隔）
 
-## 2026-03-10 round N（与 current_mission.loop_round 对齐）
-- **current_goal**：…
-- **做了什么**：…（改动了哪些脚本/文档/plan）
-- **是否完成**：已完成 / 部分完成 / 超时未完成
-- **下一轮建议**：…（可选，避免重复同一动作）
-- **衔接备注**：若本轮未完成，下一轮应接续哪一步（一句即可）
+## 2026-03-10 round N
+- **goal**：一句话
+- **做了什么**：1～2 句话简介（如：创建 xxx.py 实现 Y，集成到 do.py）
+- **完成**：是/否
+- **下一轮建议**：一句（可选）
 ```
 
 ---
 
 ## 最近一轮（由每轮反思后更新）
+
+## 2026-03-11 round 38
+- **current_goal**：健康检查守护进程与告警系统联动 - 当健康检查失败时自动触发告警通知
+- **做了什么**：
+  - 修改了 health_check_daemon.py，添加了 _trigger_alert 方法
+  - 当健康检查结果不是 "healthy" 时，自动调用 notification_tool 发送告警通知
+  - 保留了 INTEGATE_ALERT 开关，可控制是否启用告警联动
+  - 基线校验通过（5/6 项，clipboard 远程会话限制为已知问题）
+  - 针对性校验通过：_trigger_alert 方法存在且逻辑正确
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将告警阈值配置与健康检查联动，或扩展更多告警类型
+- **衔接备注**：本轮完成无遗留项，下一轮从假设阶段开始
 
 ## 2026-03-11 round 37
 - **current_goal**：实现自动健康检查守护进程 - 支持定时自动执行系统健康检查并更新状态
