@@ -34,6 +34,10 @@
 
 新增或改进能力时，**尽量不要影响已有能力**：新脚本、新 plan、新文档应与现有 capabilities 和 run_plan 等**兼容、可叠加**，避免改一处坏一处。这样进化才能**一直累积**，而不是来回修坏。
 
+### 注意整体架构，不破坏 SKILL 架构
+
+实现新能力或进化时，**必须尊重项目既有架构**：`SKILL.md`、`references/` 下的能力与工作流文档、`scripts/` 与 `assets/plans/` 的分工已形成约定。新增或修改能力时，应**融入现有结构**（如新脚本放 scripts/、新场景 plan 放 assets/plans/、文档更新 references/），**不要**随意在根目录新建与 references 同名的文件、不要打乱 SKILL 的模块与引用关系。
+
 ---
 
 ## 用户场景请求的响应与记录（与进化环并行）
@@ -68,7 +72,7 @@
 
 | 项目 | 说明 |
 |------|------|
-| **输入（必读）** | `runtime/state/current_mission.json`（当前轮次、阶段）；**`references/evolution_auto_last.md`（上一轮实际做了什么，避免重复）**；`references/capability_gaps.md`（能力缺口）；`references/failures.md`（历史教训）；`references/capabilities.md`（已有能力）；可选 `references/private_domains.md`、`references/assumed_demands.md`、`references/evolution_self_proposed.md`；**按场景经验**：`python scripts/query_scenario_experiences.py --keyword <场景>` 或 `runtime/state/scenario_experiences.json`；近期 `runtime/logs/behavior_*.log` 与 `runtime/state/recent_logs.json`（做过什么） |
+| **输入（必读）** | `runtime/state/current_mission.json`（当前轮次、阶段）；**`references/evolution_auto_last.md`**（上一轮摘要、核心目录与文件树、本轮影响文件，路径固定，勿读项目根目录同名文件）；`references/capability_gaps.md`（能力缺口）；`references/failures.md`（历史教训）；`references/capabilities.md`（已有能力）；可选 `references/private_domains.md`、`references/assumed_demands.md`、`references/evolution_self_proposed.md`；**按场景经验**：`python scripts/query_scenario_experiences.py --keyword <场景>` 或 `runtime/state/scenario_experiences.json`；近期 `runtime/logs/behavior_*.log` 与 `runtime/state/recent_logs.json`（做过什么） |
 | **输出（必写）** | 将本轮假设结论写入行为日志；若有自主提出的改进项，写入 `references/evolution_self_proposed.md`（或更新 `references/assumed_demands.md`） |
 | **日志** | `python scripts/behavior_log.py assume "<简短描述>" --mission "<当前使命>"` |
 | **状态** | 用 `state_tracker.py` 将 `phase` 设为 `假设`，`next_action` 设为 `决策` 或 `规划` |
@@ -164,7 +168,7 @@
 | 项目 | 说明 |
 |------|------|
 | **输入（必读）** | `runtime/state/self_verify_result.json`；`references/failures.md`；本轮 assume/plan/track/verify 的日志或描述 |
-| **输出（必写）** | 若本轮有失败或可改进点，更新 `references/failures.md`；若本轮完成的是 `evolution_self_proposed.md` 中某项，将该条状态改为「已完成」；**更新 `references/evolution_auto_last.md`**：写清本轮 current_goal、做了什么、是否完成，供下一轮假设直接读、避免重复；可选更新 `references/capability_gaps.md`、`runtime/state/mastery_level.json`；行为日志（decide）；**将 state 推进到下一轮并置 phase 为 假设** |
+| **输出（必写）** | 若本轮有失败或可改进点，更新 `references/failures.md`；若本轮完成的是 `evolution_self_proposed.md` 中某项，将该条状态改为「已完成」；**必须更新 `references/evolution_auto_last.md`**（路径固定，勿在项目根目录建同名文件）：① **当前核心目录与文件树**（简要列出 scripts/、references/、assets/、runtime/ 等结构）；② **本轮影响文件**（本轮新增/修改的文件列表）；③ 本轮 current_goal、做了什么、是否完成、下一轮建议，供下一轮假设直接读、避免重复；可选更新 `references/capability_gaps.md`、`runtime/state/mastery_level.json`；行为日志（decide）；**将 state 推进到下一轮并置 phase 为 假设** |
 | **日志** | `python scripts/behavior_log.py decide "<决策与下一轮意图>" --mission "<当前使命>"` |
 | **状态** | `state_tracker.py`：`loop_round` +1，`phase` 设为 `假设`，`next_action` 设为 `规划` 或 `决策`，`mission` 更新为新一轮描述 |
 | **日志导出** | `python scripts/export_recent_logs.py 60`，使 UI/悬浮窗能看到近期行为 |
@@ -185,11 +189,11 @@
 ## 通用智能体执行清单（每轮）
 
 1. 读 `runtime/state/current_mission.json`，确认当前轮次与 phase。
-2. **假设**：读 **evolution_auto_last.md**（上一轮摘要）、capability_gaps、failures、assumed_demands、evolution_self_proposed；无缺口时自主提出 1～3 条改进项写入 evolution_self_proposed；写 assume 日志；更新 state（phase=假设，next=决策）。
+2. **假设**：读 **`references/evolution_auto_last.md`**（上一轮摘要与目录/文件树/影响文件，路径固定，勿读根目录同名文件）、capability_gaps、failures、assumed_demands、evolution_self_proposed；无缺口时自主提出 1～3 条改进项写入 evolution_self_proposed；写 assume 日志；更新 state（phase=假设，next=决策）。
 3. **自主决策**：定 current_goal 与 next_action；写 plan 日志；更新 state（phase=规划/决策，next=执行）。
 4. **自主执行**：执行脚本/改文档；写 track 日志；更新 state。
 5. **自主校验审核**：先跑 `self_verify_capabilities.py`（基线）；再按本轮执行内容做**针对性校验**（见上表）；写 verify 日志。基线可隔轮以省时，**本轮针对性校验不可省**（至少一条结论或说明为何无法自动验）。
-6. **自主优化反思**：必要时更新 failures.md、capability_gaps；**更新 `evolution_auto_last.md` 本轮摘要**；写 decide 日志；state 的 loop_round+1、phase=假设；运行 `export_recent_logs.py`；**运行 `git_commit_evolution.py`**（可选 `--bump-version`）对功能改动做本地提交以便追溯。
+6. **自主优化反思**：必要时更新 failures.md、capability_gaps；**更新 `references/evolution_auto_last.md`**（须含：当前核心目录与文件树、本轮影响文件、本轮摘要）；写 decide 日志；state 的 loop_round+1、phase=假设；运行 `export_recent_logs.py`；**运行 `git_commit_evolution.py`**（可选 `--bump-version`）对功能改动做本地提交以便追溯。
 7. **回到步骤 2**（下一轮的假设），形成无限循环。
 
 ---

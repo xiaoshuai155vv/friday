@@ -130,85 +130,21 @@ def run_once(message=None, config=None, user_hint=None):
 
 def build_auto_evolution_hint():
     """
-    自动进化环下一轮：生成「上一轮已做过什么 + 勿重复」的补充说明，随 user_hint 发给 CC。
-    优先读 references/evolution_auto_last.md（反思阶段写入的摘要）；再拼 current_mission、track/decide、evolution_self_proposed。
+    自动进化环下一轮：仅附带「本轮总结 + 历史轮次总结」作为背景，避免提示过长。
+    内容来自 references/evolution_auto_last.md（反思阶段写入的摘要与目录/影响文件）。
     """
     parts = []
-    # 轮次衔接：明确「历史 → 本轮」不断档
-    round_hint = ""
-    try:
-        cm = os.path.join(STATE_DIR, "current_mission.json")
-        if os.path.isfile(cm):
-            with open(cm, "r", encoding="utf-8") as f:
-                m = json.load(f)
-            r = m.get("loop_round")
-            ph = m.get("phase", "")
-            if r is not None:
-                round_hint = " current_mission: loop_round=%s phase=%s" % (r, ph)
-    except Exception:
-        pass
-    parts.append("【自动进化环·上下文】定时触发；上一轮与历史已附下，假设阶段请先读再动手，避免重复已完成项。" + round_hint)
-    # 上一轮直接写进仓库的摘要（与 capability_gaps/workflow 同级，下一轮假设必读）
+    parts.append("【自动进化环·背景】以下为上一轮与历史轮次总结（references/evolution_auto_last.md），假设阶段请先读再动手，避免重复。")
     try:
         eal = os.path.join(ROOT, "references", "evolution_auto_last.md")
         if os.path.isfile(eal):
             with open(eal, "r", encoding="utf-8") as f:
                 body = f.read()
-            # 有实质内容再附（占位说明太多则只取后段）
-            if body and len(body.strip()) > 120:
-                parts.append("--- evolution_auto_last.md（上一轮摘要，勿重复）---")
-                parts.append(body[:3500])
+            if body and len(body.strip()) > 80:
+                parts.append(body[:3200])
     except Exception:
         pass
-    # current_mission
-    try:
-        cm = os.path.join(STATE_DIR, "current_mission.json")
-        if os.path.isfile(cm):
-            with open(cm, "r", encoding="utf-8") as f:
-                m = json.load(f)
-            parts.append("current_mission: loop_round=%s phase=%s mission=%s" % (
-                m.get("loop_round", ""), m.get("phase", ""), (m.get("mission") or "")[:120]
-            ))
-    except Exception:
-        pass
-    # 最近 behavior 里 track / decide 摘要（避免重复）
-    try:
-        from datetime import datetime, timezone
-        day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        log_path = os.path.join(LOG_DIR, "behavior_%s.log" % day)
-        if os.path.isfile(log_path):
-            with open(log_path, "r", encoding="utf-8") as f:
-                lines = f.readlines()
-            picks = []
-            for line in reversed(lines[-200:]):
-                line = line.strip()
-                if not line:
-                    continue
-                tab = line.split("\t", 5)
-                if len(tab) >= 3 and tab[1] in ("track", "decide"):
-                    picks.append("%s: %s" % (tab[1], (tab[2] or "")[:100]))
-                if len(picks) >= 8:
-                    break
-            if picks:
-                parts.append("最近 track/decide（勿重复做同一件事）:")
-                parts.extend(reversed(picks))
-    except Exception:
-        pass
-    # evolution_self_proposed 已完成
-    try:
-        esp = os.path.join(ROOT, "references", "evolution_self_proposed.md")
-        if os.path.isfile(esp):
-            n = 0
-            with open(esp, "r", encoding="utf-8") as f:
-                for line in f:
-                    if "已完成" in line and "|" in line:
-                        parts.append("已完成项: " + line.strip()[:150])
-                        n += 1
-                        if n >= 5:
-                            break
-    except Exception:
-        pass
-    parts.append("请基于上述与 behavior_log 全文，只做**尚未完成**的下一步；若已全部完成则写 decide 说明本轮无新动作。")
+    parts.append("（以上为背景信息；请基于本文与 capability_gaps/failures 做尚未完成的下一步，若已全部完成则 decide 说明本轮无新动作。）")
     return "\n".join(parts)
 
 
