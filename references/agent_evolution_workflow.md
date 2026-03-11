@@ -181,7 +181,7 @@
 ## 状态与日志约定（防迷失）
 
 - **单一状态源**：`runtime/state/current_mission.json`。每轮开始前读一次，每阶段结束后按上表更新。
-- **行为可溯源**：所有 assume/plan/track/verify/decide 均通过 `scripts/behavior_log.py` 写入 `runtime/logs/`，再通过 `export_recent_logs.py` 导出到 `runtime/state/recent_logs.json`。
+- **行为可溯源**：所有 assume/plan/track/verify/decide 均通过 `scripts/behavior_log.py` 写入 `runtime/logs/`，再通过 `export_recent_logs.py` 导出到 `runtime/state/recent_logs.json`。**写入方式**：按 `references/logging.md` 中「Behavior log 写入结构」直接执行对应命令即可，**无需读取 behavior_*.log 文件**查看格式。
 - **轮次**：`current_mission.json` 中的 `loop_round` 每完成一整环（反思结束）加一。
 
 ---

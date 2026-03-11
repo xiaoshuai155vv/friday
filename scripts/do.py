@@ -544,6 +544,33 @@ def main():
                 print(result.stderr, file=sys.stderr)
             sys.exit(result.returncode)
 
+    # 检查是否请求趋势分析/预测
+    trend_keywords = ["趋势分析", "趋势预测", "执行趋势", "预测分析", "行为趋势"]
+    for keyword in trend_keywords:
+        if keyword in " ".join(sys.argv[1:]):
+            print(f"[趋势分析] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "trend_predictor.py")
+            result = subprocess.run([sys.executable, script_path], cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            # 读取并输出趋势报告
+            trend_file = os.path.join(PROJECT, "runtime", "state", "trend_predictions.json")
+            if os.path.exists(trend_file):
+                with open(trend_file, "r", encoding="utf-8") as f:
+                    trend_data = json.load(f)
+                    print("\n=== 趋势分析报告 ===", file=sys.stderr)
+                    print(f"分析日志数: {trend_data.get('total_logs', 0)}", file=sys.stderr)
+                    print(f"活跃度趋势: {trend_data.get('time_series', {}).get('trend', 'unknown')}", file=sys.stderr)
+                    print(f"执行成功率: {trend_data.get('success_trend', {}).get('success_rate', 0)}%", file=sys.stderr)
+                    print("\n预测:", file=sys.stderr)
+                    for pred in trend_data.get("predictions", []):
+                        print(f"  - {pred.get('prediction', '')} ({pred.get('confidence', '')}置信度)", file=sys.stderr)
+                        print(f"    {pred.get('detail', '')}", file=sys.stderr)
+                    print(f"\n详细报告: {trend_file}", file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 先解析是否复合指令（除非已在递归执行中）
     if not _SKIP_COMPOUND_CHECK:
         intent_with_args = " ".join(sys.argv[1:])
