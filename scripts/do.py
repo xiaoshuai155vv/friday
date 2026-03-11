@@ -602,11 +602,21 @@ def main():
 
     # 检查是否请求日志分析与智能建议
     log_analysis_keywords = ["日志分析", "执行分析", "分析日志", "智能建议", "log analyzer", "execution analysis"]
+    # 自动修复关键词（触发带 --auto-fix 的分析）
+    auto_fix_keywords = ["自动修复", "自动修复建议", "auto fix", "智能修复"]
+
+    # 检测是否需要自动修复
+    needs_auto_fix = any(kw in " ".join(sys.argv[1:]) for kw in auto_fix_keywords)
+
     for keyword in log_analysis_keywords:
         if keyword in " ".join(sys.argv[1:]):
             print(f"[日志分析] 检测到请求: {keyword}", file=sys.stderr)
             script_path = os.path.join(SCRIPTS, "execution_log_analyzer.py")
-            result = subprocess.run([sys.executable, script_path], cwd=PROJECT, capture_output=True, text=True)
+            cmd = [sys.executable, script_path]
+            if needs_auto_fix:
+                cmd.append("--auto-fix")
+                print(f"[日志分析] 自动修复模式已启用", file=sys.stderr)
+            result = subprocess.run(cmd, cwd=PROJECT, capture_output=True, text=True)
             if result.stdout:
                 print(result.stdout)
             if result.returncode != 0 and result.stderr:

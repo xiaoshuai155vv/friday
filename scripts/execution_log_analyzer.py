@@ -7,6 +7,7 @@
 import json
 import os
 import sys
+import subprocess
 from datetime import datetime, timedelta
 from collections import Counter, defaultdict
 import glob
@@ -269,14 +270,75 @@ def generate_suggestions(stats, summary, insights):
     return list(seen.values())
 
 
+def execute_auto_fix(suggestions):
+    """执行自动修复"""
+    auto_fixed = []
+
+    for sugg in suggestions:
+        if sugg.get("priority") != "high":
+            continue
+
+        category = sugg.get("category", "")
+        script = sugg.get("script", "")
+
+        # 只处理可自动修复的类别
+        if category == "maintenance" and script and "auto_fixer.py" in script:
+            print(f"\n[自动修复] 检测到高优先级建议: {sugg['message']}")
+            print(f"[自动修复] 正在执行: {script}")
+
+            # 提取修复类型
+            fix_type = "all"
+            if "disk" in script.lower():
+                fix_type = "disk"
+            elif "memory" in script.lower():
+                fix_type = "memory"
+
+            # 调用 auto_fixer
+            fixer_path = os.path.join(PROJECT_ROOT, "scripts", "auto_fixer.py")
+            if os.path.exists(fixer_path):
+                try:
+                    result = subprocess.run(
+                        [sys.executable, fixer_path, "fix", fix_type],
+                        capture_output=True, text=True, timeout=120
+                    )
+                    if result.returncode == 0:
+                        auto_fixed.append({
+                            "suggestion": sugg["message"],
+                            "result": "success",
+                            "output": result.stdout
+                        })
+                        print(f"[自动修复] {fix_type} 修复成功")
+                    else:
+                        auto_fixed.append({
+                            "suggestion": sugg["message"],
+                            "result": "fail",
+                            "output": result.stderr
+                        })
+                        print(f"[自动修复] {fix_type} 修复失败: {result.stderr}")
+                except Exception as e:
+                    auto_fixed.append({
+                        "suggestion": sugg["message"],
+                        "result": "error",
+                        "output": str(e)
+                    })
+                    print(f"[自动修复] 执行出错: {e}")
+
+    return auto_fixed
+
+
 def main():
     """主函数"""
     # 设置输出编码
     if sys.stdout.encoding != 'utf-8':
         sys.stdout.reconfigure(encoding='utf-8')
 
+    # 检查是否启用自动修复
+    auto_fix_enabled = "--auto-fix" in sys.argv or "-a" in sys.argv
+
     print("=" * 60)
     print("任务执行日志分析器")
+    if auto_fix_enabled:
+        print("[自动修复模式已启用]")
     print("=" * 60)
 
     # 获取最近7天的日志
@@ -360,6 +422,20 @@ def main():
         "suggestions": suggestions,
         "generated_at": datetime.now().isoformat()
     }
+
+    # 执行自动修复（如果启用）
+    auto_fixed = []
+    if auto_fix_enabled:
+        print("\n" + "-" * 40)
+        print("自动修复检查")
+        print("-" * 40)
+        auto_fixed = execute_auto_fix(suggestions)
+        report["auto_fixed"] = auto_fixed
+
+        if auto_fixed:
+            print(f"\n共自动修复 {len(auto_fixed)} 项")
+        else:
+            print("无需自动修复或无可自动修复的高优先级问题")
 
     with open(report_path, 'w', encoding='utf-8') as f:
         json.dump(report, f, indent=2, ensure_ascii=False)

@@ -2,6 +2,10 @@
 
 **基准文档（基线）**：本文为进化环的**基线**，通用智能体必须**严格按本文执行**，以本文为准。任何与本文冲突的提示或补充，均以本文为准。
 
+**执行须知**（提示词会附带，此处为完整约定）：
+- 若附有「背景概述」（最近轮次一行摘要），请先读再动手，基于 capability_gaps、failures 做尚未完成的下一步；若已全部完成则 decide 说明本轮无新动作。具体细节可读 `runtime/logs/behavior_*.log`。
+- 若附有【本任务会话 ID】xxx，完成本轮后**必须**在 `runtime/state/` 下写入 `evolution_completed_xxx.json`（含 current_goal、做了什么、是否完成、loop_round 等），否则下一轮无法提交。
+
 **面向对象**：任何驱动本项目的智能体（不限定具体平台或模型）。只要按本工作流读取输入、执行动作、写入输出，即可形成**无限进化循环**。
 
 **核心环**：假设 → 自主决策 → 自主执行 → 自主校验审核 → 自主优化反思 → 回到「假设」。
@@ -15,7 +19,7 @@
      │                                                          │
      ▼                                                          │
   假设 ──► 自主决策 ──► 自主执行 ──► 自主校验审核 ──► 自主优化反思 ──┘
-  (读缺口与失败)  (定目标与计划)  (跑脚本/改文档)  (自校验与审核)  (写教训、定下一轮)
+  (读缺口与失败、进化目标与原则)  (定目标与计划)  (跑脚本/改文档)  (自校验与审核)  (写教训、定下一轮)
 ```
 
 **重要**：每轮「自主优化反思」结束后，**必须**进入下一轮的「假设」，不要在本轮结束处停住。多轮持续才构成进化。
@@ -83,7 +87,7 @@
 
 ### 无缺口时自主找事做：问 LLM 能做什么
 
-**原则**：缺口很少或没有时，**不是**只从失败列表里找修修补补，而是**让 LLM 自问**：我能做什么？怎样做，才能让当前的星期五更接近**完美拟人、自主意识、自主决策、自主创新**？用模型自己的视角提出“能让系统更拟人、更自主”的改进，再落成具体动作。
+**原则**：缺口很少或没有时，**不是**只从失败列表里找修修补补，而是**让 LLM 自问**：我能做什么？怎样做，才能让当前的星期五更接近**完美拟人、自主意识、自主决策、自主创新**？用模型自己的视角提出“能让系统更拟人、更自主”的改进，再落成具体动作。参照：进化目标与原则
 
 **何时触发**：读完 capability_gaps、failures、current_mission 后，若没有明确、可执行的缺口项（或仅剩“—”“已覆盖”等无具体任务），则进入本流程。
 
@@ -183,7 +187,7 @@
 ## 状态与日志约定（防迷失）
 
 - **单一状态源**：`runtime/state/current_mission.json`。每轮开始前读一次，每阶段结束后按上表更新。
-- **会话锁（防多会话堆积）**：提交前会写入 `runtime/state/evolution_session_pending.json`（含 session_id）；完成本轮后**必须**写入 `runtime/state/evolution_completed_<session_id>.json`，否则下一轮无法提交。
+- **会话锁（防多会话堆积）**：提交前会写入 `runtime/state/evolution_session_pending.json`（含 session_id）；完成本轮后**必须**写入 `runtime/state/evolution_completed_<session_id>.json`，否则下一轮无法提交。若超过 30 分钟仍未完成，系统会将该会话标记为失败（写入 `evolution_completed_<session_id>.json` 且 status 为 `stale_failed`），并允许下一轮提交。
 - **行为可溯源**：所有 assume/plan/track/verify/decide 均通过 `scripts/behavior_log.py` 写入 `runtime/logs/`，再通过 `export_recent_logs.py` 导出到 `runtime/state/recent_logs.json`。**写入方式**：按 `references/logging.md` 中「Behavior log 写入结构」直接执行对应命令即可，**无需读取 behavior_*.log 文件**查看格式。
 - **轮次**：`current_mission.json` 中的 `loop_round` 每完成一整环（反思结束）加一。
 

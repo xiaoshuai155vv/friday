@@ -32,14 +32,7 @@ EVOLUTION_LAST_STATUS_FILE = os.path.join(STATE_DIR, "evolution_last_status.json
 EVOLUTION_SESSION_PENDING = "evolution_session_pending.json"
 EVOLUTION_COMPLETED_PREFIX = "evolution_completed_"
 
-DEFAULT_EVOLUTION_PROMPT = """请读取本项目 references/agent_evolution_workflow.md，按其中「通用智能体执行清单」执行**一轮**进化环：
-1）读 current_mission.json
-2）假设：读 capability_gaps、failures，写 assume 日志
-3）自主决策：定 current_goal 与 next_action，写 plan 日志
-4）自主执行：执行脚本/改文档，写 track 日志
-5）自主校验：运行 self_verify_capabilities.py（基线）+ 按本轮执行做针对性校验，写 verify 日志
-6）自主反思：更新 failures 等，写 decide 日志，loop_round+1，phase 设回假设。
-请在本项目目录下执行并写入 state 与 behavior_log。"""
+DEFAULT_EVOLUTION_PROMPT = """请读取 references/agent_evolution_workflow.md，按其中「通用智能体执行清单」执行**一轮**进化环。"""
 
 DEFAULT_CONFIG = {
     "ccr_base_url": "http://localhost:3001",
@@ -66,7 +59,7 @@ def _state_dir(project_path=None):
 
 
 def can_submit_evolution(project_path=None):
-    """上一轮会话是否已完成（已写入 evolution_completed_<session_id>.json）。未完成则不可提交下一轮。"""
+    """上一轮会话是否已完成（已写入 evolution_completed_<session_id>.json）。未完成则不可提交下一轮。若超过 30 分钟仍未完成则标记为失败并允许下一轮。"""
     state_dir = _state_dir(project_path)
     pending_path = os.path.join(state_dir, EVOLUTION_SESSION_PENDING)
     if not os.path.isfile(pending_path):
@@ -78,7 +71,30 @@ def can_submit_evolution(project_path=None):
         if not sid:
             return True
         completed_path = os.path.join(state_dir, EVOLUTION_COMPLETED_PREFIX + sid + ".json")
-        return os.path.isfile(completed_path)
+        if os.path.isfile(completed_path):
+            return True
+        started_at = d.get("started_at", "")
+        if started_at:
+            try:
+                from datetime import datetime, timezone
+                s = started_at.replace("Z", "+00:00")
+                dt = datetime.fromisoformat(s)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                elapsed = (datetime.now(timezone.utc) - dt).total_seconds()
+                if elapsed > 1800:
+                    os.makedirs(state_dir, exist_ok=True)
+                    with open(completed_path, "w", encoding="utf-8") as f:
+                        json.dump({
+                            "session_id": sid,
+                            "status": "stale_failed",
+                            "message": "超过30分钟未完成，标记为失败",
+                            "started_at": started_at,
+                        }, f, ensure_ascii=False, indent=2)
+                    return True
+            except Exception:
+                pass
+        return False
     except Exception:
         return True
 
@@ -128,11 +144,7 @@ def run_once(message=None, config=None, user_hint=None):
             }, f, ensure_ascii=False, indent=2)
     except Exception as e:
         _log("evolution_loop write pending error: %s" % e)
-    session_block = (
-        "\n\n【本任务会话 ID】%s\n"
-        "完成本轮后（自主优化反思结束时）必须在 runtime/state/ 下写入 evolution_completed_%s.json，"
-        "包含会话详细信息（current_goal、做了什么、是否完成、loop_round 等），否则下一轮无法提交。"
-    ) % (session_id, session_id)
+    session_block = "\n\n【本任务会话 ID】%s" % session_id
     prompt = prompt.rstrip() + session_block
 
     timeout = max(60, int(config.get("request_timeout_seconds") or 300))
@@ -176,23 +188,77 @@ def run_once(message=None, config=None, user_hint=None):
         return False, {"error": str(e)}
 
 
+def _compact_evolution_summary(body):
+    """将 evolution_auto_last 转为每轮一行概述 + 日志路径，供提示词用。"""
+    import re
+    lines = []
+    round_pat = re.compile(r"^##\s+(?:(\d{4}-\d{2}-\d{2})\s+)?round\s+(\d+)", re.I)
+    current_round = None
+    current_date = ""
+    goal = ""
+    done = ""
+    summary_line = ""
+    next_is_done = False
+
+    def flush_round():
+        if not current_round:
+            return
+        log_path = "runtime/logs/behavior_%s.log" % (current_date or "YYYY-MM-DD") if current_date else "runtime/logs/behavior_*.log"
+        s = "round %s: %s; %s; %s | 详见 %s" % (current_round, (goal or "—")[:80], (done or "—")[:60], summary_line or "", log_path)
+        lines.append(s)
+
+    for line in body.split("\n"):
+        m = round_pat.match(line.strip())
+        if m:
+            flush_round()
+            current_date = m.group(1) or ""
+            current_round = m.group(2)
+            goal = ""
+            done = ""
+            summary_line = ""
+            next_is_done = False
+            continue
+        if not current_round:
+            continue
+        s = line.strip()
+        if s.startswith("- **current_goal**") or s.startswith("- **goal**"):
+            goal = s.split("：", 1)[-1].split(":", 1)[-1].strip()[:100]
+        elif s.startswith("- **做了什么**"):
+            rest = s.split("：", 1)[-1].split(":", 1)[-1].strip()
+            if rest:
+                done = rest[:80]
+            else:
+                next_is_done = True
+        elif next_is_done and (s.startswith("- ") or s.startswith("-")):
+            done = s.lstrip("- ").strip()[:80]
+            next_is_done = False
+        elif "完成" in s or "是否完成" in s:
+            summary_line = "完成" if "已完成" in s or ("是" in s and "未" not in s) else "未完成"
+    flush_round()
+    return "\n".join(lines[-8:]) if lines else ""
+
+
 def build_auto_evolution_hint():
     """
-    自动进化环下一轮：仅附带「本轮总结 + 历史轮次总结」作为背景，避免提示过长。
-    内容来自 references/evolution_auto_last.md（反思阶段写入的摘要与目录/影响文件）。
+    自动进化环下一轮：仅附带「每轮概述 + 日志路径」作为背景，避免提示过长。
+    具体细节由通用智能体按需读 runtime/logs/behavior_*.log。
     """
     parts = []
-    parts.append("【自动进化环·背景】以下为上一轮与历史轮次总结（references/evolution_auto_last.md），假设阶段请先读再动手，避免重复。")
+    parts.append("【自动进化环·背景】以下为最近轮次概述（假设阶段请先读再动手，避免重复）：")
     try:
         eal = os.path.join(ROOT, "references", "evolution_auto_last.md")
         if os.path.isfile(eal):
             with open(eal, "r", encoding="utf-8") as f:
                 body = f.read()
             if body and len(body.strip()) > 80:
-                parts.append(body[:3200])
+                compact = _compact_evolution_summary(body)
+                if compact:
+                    parts.append(compact)
+                else:
+                    parts.append(body[:1200])
     except Exception:
         pass
-    parts.append("（以上为背景信息；**以 references/agent_evolution_workflow.md 为准（基线）**。请基于本文与 capability_gaps/failures 做尚未完成的下一步，若已全部完成则 decide 说明本轮无新动作。具体细节可读 runtime/logs/behavior_*.log。）")
+    parts.append("（以上为概述；其余要求见 references/agent_evolution_workflow.md。）")
     return "\n".join(parts)
 
 

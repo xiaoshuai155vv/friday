@@ -8,7 +8,7 @@
 
 **衔接**：下一轮进入「假设」时**必须先读本文**，再读 capability_gaps / failures；自动进化环也会把本文拼进 user_hint。**避免与上一轮已完成的动作重复**，让每一轮都在上一轮结果上继续，不断档。
 
-**建议格式**（每轮一段，反思结束时必填；**只写简介概述**，具体细节可去读 `runtime/logs/behavior_YYYY-MM-DD.log`）：
+**建议格式**（每轮一段，反思结束时必填；**只写简介概述**，供下一轮提示词用；具体细节写进 behavior_log，下一轮按需读 `runtime/logs/behavior_YYYY-MM-DD.log`）：
 
 ```markdown
 ## 当前核心目录与文件树（简要）
@@ -19,7 +19,7 @@ scripts/xxx.py, references/yyy.md（逗号分隔）
 
 ## 2026-03-10 round N
 - **goal**：一句话
-- **做了什么**：1～2 句话简介（如：创建 xxx.py 实现 Y，集成到 do.py）
+- **做了什么**：1～2 句话简介（如：创建 xxx.py 实现 Y，集成到 do.py）；**勿展开多行**，详情在 behavior_log
 - **完成**：是/否
 - **下一轮建议**：一句（可选）
 ```
@@ -27,6 +27,16 @@ scripts/xxx.py, references/yyy.md（逗号分隔）
 ---
 
 ## 最近一轮（由每轮反思后更新）
+
+## 2026-03-11 round 41
+- **current_goal**：智能建议与自动修复联动 - 在 execution_log_analyzer 中添加 auto_fix 选项，当检测到系统健康问题时自动触发 auto_fixer 修复
+- **做了什么**：
+  - 修改 execution_log_analyzer.py，添加 --auto-fix 参数和 execute_auto_fix 函数
+  - 实现自动修复功能：当检测到高优先级建议（如健康检查异常）时自动调用 auto_fixer.py 修复
+  - 更新 do.py，支持「自动修复」关键词触发带自动修复的分析
+  - 生成的 execution_analysis.json 包含 auto_fixed 字段，记录自动修复结果
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将自动修复与健康检查守护进程联动，实现检测到问题时自动触发修复
 
 ## 2026-03-11 round 40
 - **current_goal**：增强场景计划的执行鲁棒性与错误恢复能力 - 为 execution_log_analyzer 添加智能建议功能

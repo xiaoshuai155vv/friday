@@ -125,7 +125,7 @@ def load_recent_output(max_entries=6):
 
 
 def can_submit_evolution():
-    """上一轮会话是否已完成（evolution_completed_<session_id>.json 已存在）。未完成则不可提交下一轮，避免多会话堆积。"""
+    """上一轮会话是否已完成（evolution_completed_<session_id>.json 已存在）。未完成则不可提交下一轮，避免多会话堆积。若超过 30 分钟仍未完成则标记为失败并允许下一轮。"""
     try:
         if not os.path.isfile(EVOLUTION_SESSION_PENDING):
             return True
@@ -135,7 +135,30 @@ def can_submit_evolution():
         if not sid:
             return True
         completed = os.path.join(ROOT, "runtime", "state", "evolution_completed_%s.json" % sid)
-        return os.path.isfile(completed)
+        if os.path.isfile(completed):
+            return True
+        started_at = d.get("started_at", "")
+        if started_at:
+            try:
+                from datetime import datetime, timezone
+                s = started_at.replace("Z", "+00:00")
+                dt = datetime.fromisoformat(s)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                elapsed = (datetime.now(timezone.utc) - dt).total_seconds()
+                if elapsed > 1800:
+                    os.makedirs(os.path.dirname(completed), exist_ok=True)
+                    with open(completed, "w", encoding="utf-8") as f:
+                        json.dump({
+                            "session_id": sid,
+                            "status": "stale_failed",
+                            "message": "超过30分钟未完成，标记为失败",
+                            "started_at": started_at,
+                        }, f, ensure_ascii=False, indent=2)
+                    return True
+            except Exception:
+                pass
+        return False
     except Exception:
         return True
 
