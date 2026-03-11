@@ -600,6 +600,36 @@ def main():
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 检查是否请求健康检查守护进程
+    health_daemon_keywords = {
+        "健康检查守护进程": ["--start"],
+        "启动健康检查": ["--start"],
+        "自动健康检查": ["--start"],
+        "健康检查状态": ["--status"],
+        "健康检查历史": ["--history"],
+        "执行健康检查": ["--once"],
+        "健康报告": ["--status"],
+    }
+    for keyword, subcmd in health_daemon_keywords.items():
+        if keyword in " ".join(sys.argv[1:]):
+            print(f"[健康检查守护进程] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "health_check_daemon.py")
+            cmd = subcmd if isinstance(subcmd, list) else [subcmd]
+            # 解析额外的参数如 --interval
+            if "--interval" in " ".join(sys.argv[1:]):
+                try:
+                    idx = sys.argv.index("--interval")
+                    if idx + 1 < len(sys.argv):
+                        cmd.extend(["--interval", sys.argv[idx + 1]])
+                except Exception:
+                    pass
+            result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 检查是否请求告警相关操作
     alert_keywords = {
         "告警状态": ["status"],
