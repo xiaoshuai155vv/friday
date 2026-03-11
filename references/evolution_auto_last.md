@@ -21,6 +21,18 @@
 
 ## 最近一轮（由每轮反思后更新）
 
+## 2026-03-11 round 32
+- **current_goal**：将 failure_predictor 集成到 run_plan.py，实现在关键步骤执行前自动预测潜在风险并提供预防建议
+- **做了什么**：
+  - 在 run_plan.py 中导入 FailurePredictor 类
+  - 在关键步骤（vision/vision_coords/click/activate/type/screenshot/scroll/paste）执行前调用 predictor.predict() 获取风险预测
+  - 根据预测结果输出风险等级、风险描述和预防建议到 stderr
+  - 高风险时自动增加重试次数（max_retry=1）
+  - 基线校验通过，针对性校验 failure_predictor 集成成功
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将风险预测功能扩展到更多步骤类型，或将预测结果记录到日志供后续分析
+- **衔接备注**：本轮完成无遗留项，下一轮从假设阶段开始
+
 ## 2026-03-11 round 31
 - **current_goal**：构建异常预测预防机制 - 基于failures.md历史和task_strategy_history.json策略历史，分析失败模式并建立预测规则，在执行任务前主动预防潜在错误
 - **做了什么**：

@@ -71,6 +71,20 @@ except ImportError:
         def record_execution(*args, **kwargs):
             pass
 
+# 导入异常预测预防模块
+try:
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    from failure_predictor import FailurePredictor
+    _FAILURE_PREDICTOR_AVAILABLE = True
+    _failure_predictor_instance = None  # 延迟初始化
+except ImportError:
+    # 如果无法导入，定义空实现
+    _FAILURE_PREDICTOR_AVAILABLE = False
+    class FailurePredictor:
+        @staticmethod
+        def predict(*args, **kwargs):
+            return {"risk_level": "low", "risks": [], "preventions": []}
+
 SCRIPTS = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(SCRIPTS)
 STATE_DIR = os.path.join(PROJECT, "runtime", "state")
@@ -675,6 +689,30 @@ def main():
                     retry_delay = adaptive_strategy.get("retry_delay", 2.0)
             except Exception as e:
                 print(f"Warning: Failed to get adaptive strategy: {e}", file=sys.stderr)
+
+        # 风险预测：在关键步骤执行前预测潜在风险并给出预防建议
+        if _FAILURE_PREDICTOR_AVAILABLE and do in ("vision", "vision_coords", "click", "activate", "type", "screenshot", "scroll", "paste"):
+            try:
+                # 延迟初始化实例
+                global _failure_predictor_instance
+                if _failure_predictor_instance is None:
+                    _failure_predictor_instance = FailurePredictor()
+
+                prediction = _failure_predictor_instance.predict(do)
+                if prediction.get("risk_level") in ("medium", "high"):
+                    print(f"[风险预测] 步骤 {i+1} ({do}): 风险等级={prediction.get('risk_level')}", file=sys.stderr)
+                    if prediction.get("risks"):
+                        for risk in prediction.get("risks", []):
+                            print(f"  - 风险: {risk}", file=sys.stderr)
+                    if prediction.get("preventions"):
+                        for prev in prediction.get("preventions", []):
+                            print(f"  - 预防: {prev}", file=sys.stderr)
+                    # 根据预测结果自动调整策略
+                    if prediction.get("risk_level") == "high" and max_retry == 0:
+                        max_retry = 1
+                        print(f"[风险预测] 自动增加重试次数: max_retry=1", file=sys.stderr)
+            except Exception as e:
+                print(f"Warning: Failed to predict risk: {e}", file=sys.stderr)
 
         # 重试逻辑
         max_retries = max_retry if max_retry > 0 else 0
