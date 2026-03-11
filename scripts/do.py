@@ -545,6 +545,7 @@ def main():
             sys.exit(result.returncode)
 
     # 检查是否请求趋势分析/预测
+    import json as _json_module  # 确保 json 在局部作用域可用
     trend_keywords = ["趋势分析", "趋势预测", "执行趋势", "预测分析", "行为趋势"]
     for keyword in trend_keywords:
         if keyword in " ".join(sys.argv[1:]):
@@ -559,7 +560,7 @@ def main():
             trend_file = os.path.join(PROJECT, "runtime", "state", "trend_predictions.json")
             if os.path.exists(trend_file):
                 with open(trend_file, "r", encoding="utf-8") as f:
-                    trend_data = json.load(f)
+                    trend_data = _json_module.loads(f.read())
                     print("\n=== 趋势分析报告 ===", file=sys.stderr)
                     print(f"分析日志数: {trend_data.get('total_logs', 0)}", file=sys.stderr)
                     print(f"活跃度趋势: {trend_data.get('time_series', {}).get('trend', 'unknown')}", file=sys.stderr)
