@@ -653,6 +653,38 @@ def main():
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 检查是否请求系统自动修复
+    auto_fixer_keywords = {
+        "系统诊断": ["diagnose"],
+        "自动修复": ["fix", "all"],
+        "磁盘修复": ["fix", "disk"],
+        "内存修复": ["fix", "memory"],
+        "进程修复": ["fix", "process"],
+        "修复历史": ["history"],
+        "修复状态": ["status"],
+        "系统健康": ["diagnose"],
+    }
+    for keyword, subcmd in auto_fixer_keywords.items():
+        if keyword in " ".join(sys.argv[1:]):
+            print(f"[系统自动修复] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "auto_fixer.py")
+            cmd = subcmd if isinstance(subcmd, list) else [subcmd]
+            # 解析额外的参数
+            if "磁盘" in " ".join(sys.argv[1:]):
+                cmd = ["fix", "disk"]
+            elif "内存" in " ".join(sys.argv[1:]):
+                cmd = ["fix", "memory"]
+            elif "进程" in " ".join(sys.argv[1:]):
+                cmd = ["fix", "process"]
+            elif "全部" in " ".join(sys.argv[1:]) or "所有" in " ".join(sys.argv[1:]):
+                cmd = ["fix", "all"]
+            result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 先解析是否复合指令（除非已在递归执行中）
     if not _SKIP_COMPOUND_CHECK:
         intent_with_args = " ".join(sys.argv[1:])

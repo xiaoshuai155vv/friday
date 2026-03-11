@@ -11,6 +11,7 @@
 | 扩展场景计划库：增加看新闻、刷知乎等生活娱乐场景的自动化计划 | 1) 创建 assets/plans/read_news.json（看新闻场景）；2) 创建 assets/plans/browse_zhihu.json（刷知乎场景）；3) 按照现有 plan 格式定义 triggers 和 steps | 已完成 |
 | 增强长期记忆与用户偏好学习机制：让系统跨会话记住用户习惯，提升任务执行的个性化程度 | 1) 创建 user_preferences.json 存储用户偏好；2) 修改 do.py 在执行任务时自动加载和利用用户偏好；3) 添加用户偏好自动学习功能（记录用户选择并应用到后续任务） | 已完成 |
 | 主动状态自检与健康报告：让系统具备主动自检能力，定期检查核心功能状态，生成健康报告，增强自主意识 | 1) 创建 system_health_check.py 脚本检查核心能力状态；2) 修改 self_verify_capabilities.py 输出结构化健康报告；3) 将健康状态写入 runtime/state/health_report.json | 已完成 |
+| 系统健康诊断与自动修复引擎：在健康检查基础上实现自动修复能力，对常见问题（磁盘满、内存高、进程卡死等）提供自动诊断与修复操作 | 1) 创建 auto_fixer.py 模块，实现常见问题的自动修复；2) 支持磁盘清理、进程清理、内存优化等修复操作；3) 集成到 do.py 支持关键词触发；4) 保存修复历史到 runtime/state/fix_history.json | 已完成 |
 | 智能场景推荐机制：根据用户历史行为和偏好，智能推荐可能需要的场景计划，提升拟人化交互体验 | 1) 分析用户历史行为模式；2) 修改 do.py 添加场景推荐功能；3) 在用户意图不明确时推荐相关计划 | 已完成 |
 | 增强主动状态推送与进度通知 | 1) 创建任务状态推送模块，将 run_plan 进度写入 runtime/state/task_status.json；2) 修改 run_plan.py 集成该模块 | 已完成
 | 探索新场景计划：扩展场景计划库覆盖更多「用电脑」场景，如看电影、视频会议、文件批量处理等 | 1) 创建 assets/plans/watch_movie.json（看电影场景）；2) 创建 video_conference.json（视频会议场景）；3) 创建 batch_file_operation.json（文件批量处理场景） | 已完成 |
