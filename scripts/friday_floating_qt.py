@@ -129,28 +129,7 @@ def load_evolution_last_status():
         if os.path.isfile(EVOLUTION_LAST_STATUS_FILE):
             with open(EVOLUTION_LAST_STATUS_FILE, "r", encoding="utf-8") as f:
                 d = json.load(f)
-            status, at, msg = d.get("status"), d.get("at", ""), d.get("message", "")
-            # 处理「客户端超时但 CC 后台已完成」：若 timeout 后出现 decide 日志，则将状态自动归并为 ok
-            if status == "timeout" and at:
-                try:
-                    if _cc_completed_after_timeout(at):
-                        status = "ok"
-                        msg = "auto_reconcile: decide_seen_after_timeout"
-                        from datetime import timezone
-                        with open(EVOLUTION_LAST_STATUS_FILE, "w", encoding="utf-8") as wf:
-                            json.dump(
-                                {
-                                    "status": "ok",
-                                    "at": datetime.now(timezone.utc).isoformat(),
-                                    "message": msg,
-                                },
-                                wf,
-                                ensure_ascii=False,
-                                indent=2,
-                            )
-                except Exception:
-                    pass
-            return status, at, msg
+            return d.get("status"), d.get("at", ""), d.get("message", "")
     except Exception:
         pass
     return None, "", ""
@@ -1378,8 +1357,8 @@ class FridayBall(QWidget):
         if not getattr(self, "_auto_evolution_enabled", False):
             return
         if self._evolution_worker is not None and self._evolution_worker.isRunning():
+            # 当前仍在执行：仅做“检查”调度，不改写 _next_auto_at，倒计时继续指向“下次触发”时间（到 0 后保持 00:00）
             QTimer.singleShot(10000, self._schedule_auto_evolution)
-            self._next_auto_at = time.time() + 10
             return
         # 若上一轮刚超时，本轮自动跳过，避免 CC 侧多会话堆积
         status, at, _ = load_evolution_last_status()
@@ -1413,7 +1392,7 @@ class FridayBall(QWidget):
         self._phase.setText("自动进化环提交中…")
         tray = getattr(self, "_tray", None)
         if tray and hasattr(tray, "showMessage"):
-            tray.showMessage("Friday", "自动进化环已提交（已带上一轮上下文，减少重复）。", QSystemTrayIcon.Information, 3000)
+            tray.showMessage("Friday", "【自动进化】已提交一轮；倒计时为下次循环触发时间。", QSystemTrayIcon.Information, 3000)
         QTimer.singleShot(interval * 1000, self._schedule_auto_evolution)
         self._next_auto_at = time.time() + interval
 
@@ -1445,7 +1424,7 @@ class FridayBall(QWidget):
         tray = getattr(self, "_tray", None)
         if self._auto_evolution_enabled:
             if tray and hasattr(tray, "showMessage"):
-                tray.showMessage("Friday", "已开启自动进化环，将按配置间隔定时提交进化任务。", QSystemTrayIcon.Information, 4000)
+                tray.showMessage("Friday", "已开启自动进化环；倒计时为下次触发时间（首轮约 2 秒后提交）。", QSystemTrayIcon.Information, 4000)
             QTimer.singleShot(2000, self._schedule_auto_evolution)
             self._next_auto_at = time.time() + 2
         else:
@@ -1477,10 +1456,21 @@ class FridayBall(QWidget):
         except Exception:
             pass
         self._load_state()
+        # 自动进化开启时：下一轮触发时间 = 当前 + interval，倒计时从“下次循环”继续
+        if getattr(self, "_auto_evolution_enabled", False):
+            interval = 300
+            try:
+                cfg_path = os.path.join(ROOT, "runtime", "config", "evolution_loop.json")
+                if os.path.isfile(cfg_path):
+                    with open(cfg_path, "r", encoding="utf-8") as f:
+                        interval = max(60, int(json.load(f).get("auto_interval_seconds") or 300))
+            except Exception:
+                pass
+            self._next_auto_at = time.time() + interval
         tray = getattr(self, "_tray", None)
         if tray and hasattr(tray, "showMessage"):
             if ok:
-                tray.showMessage("Friday", "本轮进化环已完成。", QSystemTrayIcon.Information, 4000)
+                tray.showMessage("Friday", "【自动进化】本轮已完成；下一轮将按间隔倒计时触发。", QSystemTrayIcon.Information, 4000)
             elif is_timeout:
                 tray.showMessage("Friday", "进化环请求超时，CC 可能仍在执行，请勿急于再提交。", QSystemTrayIcon.Warning, 6000)
             else:
@@ -1523,17 +1513,30 @@ class FridayBall(QWidget):
             if not force and now == getattr(self, "_last_auto_ui_sec", 0):
                 return
             self._last_auto_ui_sec = now
+            # CC 是否仍在执行：以当前 worker 线程是否在跑为准
+            is_running = bool(self._evolution_worker is not None and self._evolution_worker.isRunning())
             status, _, _ = load_evolution_last_status()
-            status_txt = "上轮:—"
-            if status == "ok":
-                status_txt = "上轮:完成"
-            elif status == "timeout":
-                status_txt = "上轮:超时"
-            elif status == "error":
-                status_txt = "上轮:失败"
+            if is_running:
+                status_txt = "上轮:进行中"
+            else:
+                status_txt = "上轮:—"
+                if status == "ok":
+                    status_txt = "上轮:完成"
+                elif status == "timeout":
+                    status_txt = "上轮:超时"
+                elif status == "error":
+                    status_txt = "上轮:失败"
 
             if getattr(self, "_auto_evolution_enabled", False):
-                if self._next_auto_at:
+                if is_running:
+                    # 运行中仍显示“下次触发”倒计时（到 0 后显示 00:00），不改为 10s 回跳
+                    if self._next_auto_at:
+                        left = int(max(0, self._next_auto_at - time.time()))
+                        mm, ss = left // 60, left % 60
+                        self._auto_info.setText("AUTO %02d:%02d | %s" % (mm, ss, status_txt))
+                    else:
+                        self._auto_info.setText("AUTO 运行中 | %s" % status_txt)
+                elif self._next_auto_at:
                     left = int(max(0, self._next_auto_at - time.time()))
                     mm = left // 60
                     ss = left % 60
