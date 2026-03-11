@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-自包含全屏截图（Windows GDI），输出 BMP 到指定路径或默认 screenshots/ 目录。
+自包含全屏截图（Windows GDI），输出 BMP 到指定路径或默认 runtime/screenshots/ 目录。
 用法: python screenshot_tool.py [out_path]
 """
 import sys
@@ -21,7 +21,7 @@ DIB_RGB_COLORS = 0
 def main():
     out = sys.argv[1] if len(sys.argv) >= 2 else None
     if not out:
-        base = os.path.join(os.path.dirname(__file__), "..", "screenshots")
+        base = os.path.join(os.path.dirname(__file__), "..", "runtime", "screenshots")
         os.makedirs(base, exist_ok=True)
         from datetime import datetime
         out = os.path.join(base, f"capture_{datetime.now().strftime('%Y%m%d_%H%M%S')}.bmp")
@@ -75,8 +75,9 @@ def main():
         f.write((0).to_bytes(4, "little"))
         f.write((raw_size).to_bytes(4, "little"))
         f.write((0).to_bytes(4, "little") * 4)
+        mv = memoryview(buf)
         for y in range(h - 1, -1, -1):
-            f.write(buf[y * row : (y + 1) * row])
+            f.write(mv[y * row : (y + 1) * row].tobytes())
             f.write(b"\x00" * pad)
     print(out)
 

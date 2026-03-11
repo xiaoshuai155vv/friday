@@ -25,7 +25,7 @@
 
 ## 防迷失检查点
 
-- 每轮开始：读 `state/current_mission.json`，确认「当前使命」与「当前阶段」。
+- 每轮开始：读 `runtime/state/current_mission.json`，确认「当前使命」与「当前阶段」。
 - 每轮结束：写回状态与日志，便于下一轮或其它智能体接续。
 
 ## 多轮连续执行

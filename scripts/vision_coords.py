@@ -39,7 +39,7 @@ def _get_image_size(img_path):
 
 
 def _parse_xy(text):
-    """从文本解析单个 (x,y)，多候选时取 x 最小的（如左侧列表项）。"""
+    """从文本解析单个 (x,y)，多候选时取 x 最小的（如左侧列表项）。支持 x=495 y=205、中心(495,205) 等。"""
     if not text or not text.strip():
         return None
     candidates = []
@@ -52,6 +52,13 @@ def _parse_xy(text):
         if 0 <= x <= 5000 and 0 <= y <= 3000:
             candidates.append((x, y))
     if not candidates:
+        xm = re.search(r"[xX]\s*[=≈:]\s*(\d+)", text)
+        ym = re.search(r"[yY]\s*[=≈:]\s*(\d+)", text)
+        if xm and ym:
+            x, y = int(xm.group(1)), int(ym.group(1))
+            if 0 <= x <= 5000 and 0 <= y <= 3000:
+                candidates.append((x, y))
+    if not candidates:
         return None
     if len(candidates) == 1:
         return candidates[0]
@@ -59,7 +66,7 @@ def _parse_xy(text):
 
 
 def _parse_normalized_xy(text):
-    """解析归一化坐标 (0-1)，返回 (nx, ny) 或 None。支持 0.5 0.5、.5 .5、1.0 0 等格式。"""
+    """解析归一化坐标 (0-1)，返回 (nx, ny) 或 None。支持 0.5 0.5、.5 .5、x=0.26 y=0.19 等。"""
     if not text or not text.strip():
         return None
     candidates = []
@@ -77,6 +84,16 @@ def _parse_normalized_xy(text):
                 candidates.append((nx, ny))
         except ValueError:
             pass
+    if not candidates:
+        xm = re.search(r"[xX]\s*[=≈:]\s*(\d*\.?\d+)", text)
+        ym = re.search(r"[yY]\s*[=≈:]\s*(\d*\.?\d+)", text)
+        if xm and ym:
+            try:
+                nx, ny = float(xm.group(1)), float(ym.group(1))
+                if 0 <= nx <= 1 and 0 <= ny <= 1:
+                    candidates.append((nx, ny))
+            except (ValueError, TypeError):
+                pass
     if not candidates:
         return None
     if len(candidates) == 1:

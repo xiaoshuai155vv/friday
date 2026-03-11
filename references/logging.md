@@ -7,7 +7,7 @@
 ## 实现
 
 - **脚本**：`scripts/behavior_log.py`
-- **目录**：`logs/`，按日或按任务分文件均可。
+- **目录**：`runtime/logs/`，按日或按任务分文件均可。
 - **每条记录建议字段**：时间（ISO8601）、动作类型（如 assume/plan/track/verify/decide）、简要描述、关联 mission/task_id、可选 result。格式为 TAB 分隔：`时间\t类型\t描述\tmission=...\ttask_id=...\tresult=...`，便于 export_recent_logs 与弹框解析。
 
 ## 用途

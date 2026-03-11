@@ -9,11 +9,11 @@
   {"do": "run", "script": "keyboard_tool", "args": ["type", "{{contact}}"]},
   {"do": "wait", "sec": 3.0},
   {"do": "comment", "comment": "截图，vision 获取第一条可点击结果的坐标，并点击"},
-  {"do": "screenshot", "path": "screenshots/ihaier_search_results.bmp"},
-  {"do": "vision_coords", "image": "screenshots/ihaier_search_results.bmp", "question": "图中是电脑桌面，打开的 ihaier 应用，综合搜索结果列表。输出第一条可点击结果的坐标，仅 x y。无法识别则返回：否", "normalized": true},
-  {"do": "run", "script": "click_from_vision_or_key", "args": ["13", "50", "0"]},
+  {"do": "screenshot", "path": "runtime/screenshots/ihaier_search_results.bmp"},
+  {"do": "vision_coords", "image": "runtime/screenshots/ihaier_search_results.bmp", "question": "图中是电脑桌面，打开的 ihaier 应用，综合搜索结果列表。输出第一条可点击结果的坐标，仅 x y。无法识别则返回：否", "normalized": true},
+  {"do": "run", "script": "click_from_vision_or_key", "args": ["13", "210", "0"]},
   {"do": "wait", "sec": 2},
   {"do": "comment", "comment": "已进入该联系人对话，右侧为对话内容"},
-  {"do": "screenshot", "path": "screenshots/ihaier_contact_chat.bmp"},
-  {"do": "vision", "image": "screenshots/ihaier_contact_chat.bmp", "question": "图中是电脑桌面，打开的 ihaier 应用，与「{{contact}}」的聊天界面。输出右侧对话最下面一条（最新）消息的发送方、内容和时间。"}
+  {"do": "screenshot", "path": "runtime/screenshots/ihaier_contact_chat.bmp"},
+  {"do": "vision", "image": "runtime/screenshots/ihaier_contact_chat.bmp", "question": "图中是电脑桌面，打开的 ihaier 应用，与「{{contact}}」的聊天界面。输出右侧对话最下面一条（最新）消息的发送方、内容和时间。"}
 ]

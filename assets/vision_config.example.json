@@ -1,7 +1,14 @@
 {
-  "model_type": "openai_chat",
-  "model_name": "qwen3-vl-30b-a3b-instruct",
-  "api_key": "YOUR_API_KEY",
-  "base_url": "https://mgallery.haier.net/v1",
-  "_comment": "多模态备用：复制为 scripts/vision_config.json 或项目根 vision_config.json，填写 api_key；本技能 scripts/vision_proxy.py 自包含调用"
+  "provider": "glm",
+  "qwen": {
+    "base_url": "https://mgallery.haier.net/v1",
+    "api_key": "YOUR_QWEN_API_KEY",
+    "model_name": "Qwen2.5-VL-7B-Instruct"
+  },
+  "glm": {
+    "base_url": "https://modelapi-test.haier.net/model/v1",
+    "api_key": "YOUR_GLM_API_KEY",
+    "model_name": "GLM-4.5V"
+  },
+  "_comment": "provider 选 qwen 或 glm；GLM 若 401 可去掉 auth_header 改用 Bearer；错误详情见 runtime/state/vision_last_error.txt"
 }

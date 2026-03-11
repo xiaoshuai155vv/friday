@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-维护 state/current_mission.json，读写「当前要干什么」。
+维护 runtime/state/current_mission.json，读写「当前要干什么」。
 用法:
   python state_tracker.py read
   python state_tracker.py set --mission "..." [--phase ...] [--goal ...] [--next ...]
@@ -13,7 +13,7 @@ import json
 import os
 from datetime import datetime, timezone
 
-STATE_DIR = os.path.join(os.path.dirname(__file__), "..", "state")
+STATE_DIR = os.path.join(os.path.dirname(__file__), "..", "runtime", "state")
 STATE_FILE = os.path.join(STATE_DIR, "current_mission.json")
 
 DEFAULT_STATE = {
@@ -22,6 +22,7 @@ DEFAULT_STATE = {
     "current_goal": "",
     "next_action": "",
     "task_id": "",
+    "loop_round": 0,
     "updated_at": "",
 }
 
@@ -59,6 +60,7 @@ def main():
     p_set.add_argument("--goal", default=None, dest="current_goal")
     p_set.add_argument("--next", default=None, dest="next_action")
     p_set.add_argument("--task-id", default=None, dest="task_id")
+    p_set.add_argument("--round", type=int, default=None, dest="loop_round")
     args = ap.parse_args()
 
     if args.cmd in ("read", "get"):
@@ -78,6 +80,8 @@ def main():
             s["next_action"] = args.next_action
         if args.task_id is not None:
             s["task_id"] = args.task_id
+        if args.loop_round is not None:
+            s["loop_round"] = args.loop_round
         write_state(s)
         print("OK:", json.dumps(read_state(), ensure_ascii=False, indent=2))
         return

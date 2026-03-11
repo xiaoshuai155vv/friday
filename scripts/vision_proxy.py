@@ -17,7 +17,7 @@ import ctypes
 
 SCRIPTS = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(SCRIPTS)
-STATE_DIR = os.path.join(PROJECT, "state")
+STATE_DIR = os.path.join(PROJECT, "runtime", "state")
 VISION_LAST_ERROR = os.path.join(STATE_DIR, "vision_last_error.txt")
 
 def load_config():
@@ -182,13 +182,21 @@ def main():
         )
         with urllib.request.urlopen(req, timeout=90) as r:
             out = json.loads(r.read().decode("utf-8"))
-        text = (out.get("choices") or [{}])[0].get("message", {}).get("content", "")
+        msg = (out.get("choices") or [{}])[0].get("message") or {}
+        raw_content = msg.get("content")
+        raw_reasoning = msg.get("reasoning")
+        text = raw_content if isinstance(raw_content, str) else (str(raw_content) if raw_content is not None else "")
+        if not text and raw_reasoning:
+            text = raw_reasoning if isinstance(raw_reasoning, str) else str(raw_reasoning)
         m = re.search(r"<\|begin_of_box\|>(.*?)<\|end_of_box\|>", text, re.DOTALL)
         if m:
             text = m.group(1).strip()
         if verbose:
             print("--- vision_proxy 模型原始输出 ---", file=sys.stderr)
             print(text or "(空)", file=sys.stderr)
+        if verbose and not text and out.get("choices"):
+            print("--- API 原始 choices[0] ---", file=sys.stderr)
+            print(json.dumps((out.get("choices") or [{}])[0], ensure_ascii=False, indent=2)[:800], file=sys.stderr)
         print(text or "")
     except urllib.error.HTTPError as e:
         err_body = e.read().decode("utf-8", errors="replace")

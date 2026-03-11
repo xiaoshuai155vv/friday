@@ -1,0 +1,73 @@
+{
+  "name": "video_conference",
+  "description": "视频会议场景",
+  "triggers": [
+    "开视频会议",
+    "加入会议",
+    "发起会议",
+    "视频会议"
+  ],
+  "steps": [
+    {
+      "do": "已安装应用",
+      "description": "获取已安装的应用列表"
+    },
+    {
+      "do": "vision",
+      "description": "识别用户想要使用的视频会议工具",
+      "prompt": "从已安装的应用列表中，识别出用户想要使用的视频会议应用。常见的视频会议工具包括：Zoom、腾讯会议、钉钉、Microsoft Teams、飞书、企业微信等。如果列表中没有这些应用，建议用户先打开网页版。"
+    },
+    {
+      "do": "打开应用",
+      "app": "{{conference_app}}",
+      "description": "打开选定的视频会议应用"
+    },
+    {
+      "do": "窗口激活",
+      "title": "{{conference_app}}",
+      "description": "激活视频会议窗口"
+    },
+    {
+      "do": "窗口最大化",
+      "title": "{{conference_app}}",
+      "description": "最大化视频会议窗口"
+    },
+    {
+      "do": "等待",
+      "seconds": 2,
+      "description": "等待应用完全启动"
+    },
+    {
+      "do": "截图",
+      "description": "截图视频会议应用界面"
+    },
+    {
+      "do": "vision",
+      "description": "识别界面上的会议功能按钮",
+      "prompt": "在视频会议应用截图中，识别出以下关键元素的位置：\n1. 加入会议/加入按钮\n2. 发起会议/创建会议按钮\n3. 会议号输入框\n4. 静音/取消静音按钮\n5. 开启/关闭视频按钮\n请用中文描述当前界面状态。"
+    },
+    {
+      "do": "type",
+      "text": "用户提供的会议号",
+      "description": "如果用户提供了会议号，输入会议号"
+    },
+    {
+      "do": "按回车",
+      "description": "确认加入会议"
+    },
+    {
+      "do": "等待",
+      "seconds": 3,
+      "description": "等待进入会议"
+    },
+    {
+      "do": "截图",
+      "description": "截图当前会议界面"
+    },
+    {
+      "do": "vision",
+      "description": "确认是否成功加入会议",
+      "prompt": "在会议界面截图中，判断用户是否已成功加入会议。描述当前会议状态。"
+    }
+  ]
+}

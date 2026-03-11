@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-行为日志：写入 logs/ 目录，便于溯源。
+行为日志：写入 runtime/logs/ 目录，便于溯源。
 用法:
   python behavior_log.py <action_type> "<description>" [--mission ...] [--task-id ...] [--result ...]
   action_type: assume | plan | track | verify | decide | other
@@ -11,7 +11,7 @@ import argparse
 import os
 from datetime import datetime, timezone
 
-LOG_DIR = os.path.join(os.path.dirname(__file__), "..", "logs")
+LOG_DIR = os.path.join(os.path.dirname(__file__), "..", "runtime", "logs")
 
 
 def _ensure_dir():

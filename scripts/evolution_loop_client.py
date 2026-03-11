@@ -26,14 +26,16 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 CONFIG_DIR = os.path.join(ROOT, "runtime", "config")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "evolution_loop.json")
 LOG_DIR = os.path.join(ROOT, "runtime", "logs")
+STATE_DIR = os.path.join(ROOT, "runtime", "state")
 EVOLUTION_LOG = os.path.join(LOG_DIR, "evolution_loop.log")
+EVOLUTION_LAST_STATUS_FILE = os.path.join(STATE_DIR, "evolution_last_status.json")
 
 DEFAULT_EVOLUTION_PROMPT = """请读取本项目 references/agent_evolution_workflow.md，按其中「通用智能体执行清单」执行**一轮**进化环：
 1）读 current_mission.json
 2）假设：读 capability_gaps、failures，写 assume 日志
 3）自主决策：定 current_goal 与 next_action，写 plan 日志
 4）自主执行：执行脚本/改文档，写 track 日志
-5）自主校验：可选运行 self_verify_capabilities.py，写 verify 日志
+5）自主校验：运行 self_verify_capabilities.py（基线）+ 按本轮执行做针对性校验，写 verify 日志
 6）自主反思：更新 failures 等，写 decide 日志，loop_round+1，phase 设回假设。
 请在本项目目录下执行并写入 state 与 behavior_log。"""
 
@@ -75,12 +77,16 @@ def load_config():
     return DEFAULT_CONFIG.copy()
 
 
-def run_once(message=None, config=None):
+def run_once(message=None, config=None, user_hint=None):
     config = config or load_config()
     base_url = (config.get("ccr_base_url") or "").rstrip("/")
     api_key = (config.get("ccr_api_key") or "").strip()
     project_path = config.get("friday_project_path") or ROOT
     prompt = message or config.get("evolution_prompt") or DEFAULT_EVOLUTION_PROMPT
+    if user_hint:
+        uh = user_hint.strip()
+        if uh:
+            prompt = prompt.rstrip() + "\n\n【用户本轮的补充或优先级】\n" + uh
     timeout = max(60, int(config.get("request_timeout_seconds") or 300))
 
     url = "%s/api/agent" % base_url
@@ -126,14 +132,41 @@ def main():
     ap = argparse.ArgumentParser(description="Submit one evolution loop task to CCR /api/agent")
     ap.add_argument("--once", action="store_true", default=True, help="Run once (default)")
     ap.add_argument("--message", "-m", type=str, default=None, help="Override evolution_prompt")
+    ap.add_argument("--user-hint-file", type=str, default=None, help="Append content as user hint to prompt")
     args = ap.parse_args()
 
-    ok, result = run_once(message=args.message)
+    user_hint = None
+    if args.user_hint_file and os.path.isfile(args.user_hint_file):
+        try:
+            with open(args.user_hint_file, "r", encoding="utf-8") as f:
+                user_hint = f.read()
+        except Exception:
+            pass
+    ok, result = run_once(message=args.message, user_hint=user_hint)
+    err = result.get("error") or ""
     if ok:
+        _write_last_status("ok", "")
         print("OK:", result.get("sessionId", ""), result.get("tokens", {}))
         return 0
-    print("FAIL:", result.get("error", result), file=sys.stderr)
+    status = "timeout" if (err == "timeout" or "timed out" in str(err).lower()) else "error"
+    _write_last_status(status, err)
+    print("FAIL:", err or result, file=sys.stderr)
     return 1
+
+
+def _write_last_status(status, message):
+    """写入最近一次进化环请求状态，供过程·结果与防重复提交判断。"""
+    try:
+        os.makedirs(STATE_DIR, exist_ok=True)
+        from datetime import datetime, timezone
+        with open(EVOLUTION_LAST_STATUS_FILE, "w", encoding="utf-8") as f:
+            json.dump({
+                "status": status,
+                "at": datetime.now(timezone.utc).isoformat(),
+                "message": (message or "")[:200],
+            }, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":

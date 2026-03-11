@@ -1,0 +1,51 @@
+{
+  "name": "read_news.json",
+  "description": "阅读新闻自动化计划",
+  "triggers": ["看新闻", "读新闻", "浏览新闻"],
+  "steps": [
+    {
+      "do": "打开浏览器",
+      "url": "https://news.baidu.com"
+    },
+    {
+      "do": "wait",
+      "seconds": 3
+    },
+    {
+      "do": "screenshot"
+    },
+    {
+      "do": "vision",
+      "query": "找到新闻列表区域"
+    },
+    {
+      "do": "scroll",
+      "delta": 200
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "screenshot"
+    },
+    {
+      "do": "vision_coords",
+      "query": "点击第一条新闻标题"
+    },
+    {
+      "do": "click"
+    },
+    {
+      "do": "wait",
+      "seconds": 2
+    },
+    {
+      "do": "screenshot"
+    },
+    {
+      "do": "vision",
+      "query": "文章标题是什么？"
+    }
+  ]
+}

@@ -59,7 +59,7 @@
 ### 步骤 4：默认进化提示词
 
 - 在 config 或脚本内写死一段默认 `evolution_prompt`，例如：
-  - 「请读取本项目 references/agent_evolution_workflow.md，按其中「通用智能体执行清单」执行**一轮**进化环：1）读 current_mission.json 2）假设：读 capability_gaps、failures，写 assume 日志 3）自主决策：定 current_goal 与 next_action，写 plan 日志 4）自主执行：执行脚本/改文档，写 track 日志 5）自主校验：可选运行 self_verify_capabilities.py，写 verify 日志 6）自主反思：更新 failures 等，写 decide 日志，loop_round+1，phase 设回假设。请在本项目目录下执行并写入 state 与 behavior_log。」
+  - 「请读取本项目 references/agent_evolution_workflow.md，按其中「通用智能体执行清单」执行**一轮**进化环：1）读 current_mission.json 2）假设：读 capability_gaps、failures，写 assume 日志 3）自主决策：定 current_goal 与 next_action，写 plan 日志 4）自主执行：执行脚本/改文档，写 track 日志 5）自主校验：运行 self_verify_capabilities.py（基线）+ 按本轮执行内容做针对性校验，写 verify 日志（见 workflow「自主校验审核」两层） 6）自主反思：更新 failures 等，写 decide 日志，loop_round+1，phase 设回假设。请在本项目目录下执行并写入 state 与 behavior_log。」
 - 用户可在 config 中覆盖 `evolution_prompt` 以自定义任务说明。
 
 ### 步骤 5：文档与自检
@@ -73,11 +73,25 @@
 - **API Key**：在 CCR 的 API Keys 管理中创建 Key，并将该 Key 填入星期五的 `evolution_loop.json` 的 `ccr_api_key`。
 - **Python**：星期五脚本运行环境需具备 `requests`（或标准库 `urllib.request`）以便发 HTTP；若用 `urllib` 则无额外 pip 依赖。
 
-## 七、风险与注意
+## 七、任务完成与进度
+
+- **任务何时算完成**：当前使用 `stream=false` 调用 CCR，即星期五发出一条 HTTP 请求后**等待 CCR 整轮执行完毕**再返回。因此「任务完成」= 该 HTTP 请求返回时（成功或失败）。CCR 不会通过文件或推送主动通知星期五；完成信号就是客户端收到的响应。
+- **悬浮球如何知道完成**：后台线程里 `evolution_loop_client` 返回后，会通过 `finished_signal` 回调到 UI，悬浮球在 `_on_evolution_finished` 中刷新 state、托盘提示「本轮完成」或「进化环失败」；同时写入 `runtime/state/evolution_last_status.json`（status: ok/timeout/error），供**过程·结果**弹框与防重复提交使用。
+- **过程·结果里的进化环状态**：打开「过程 · 结果」弹框时，首行会显示**最近进化环请求**：成功（本轮已完成）、超时（CC 可能仍在执行，请勿急于再提交）、或失败。便于判断上一轮是否在客户端侧已完成，避免误以为没完成又开新会话。
+- **超时说明**：「进化环 Fail: timeout」表示**客户端**（或 Worker 子进程）等待 CCR 响应超时（默认 300s，可配 `evolution_loop.json` 的 `request_timeout_seconds`）。**CC 端可能仍在执行**，只是我们这边先断开了。超时后：手动再提交会弹出提示「上一轮请求已超时，CC 可能仍在执行；若现在提交会开启新会话」；自动进化环会在 15 分钟内跳过本轮再检查，减少多会话堆积。
+- **是否有流式进度**：当前无。若将来改用 `stream=true`，可解析 SSE 流并在悬浮球上展示「执行中」的阶段性进度（需额外实现 SSE 解析与 UI 更新）。
+
+## 八、自主假设与用户参与
+
+- **进化环的「假设」从哪来**：按 `agent_evolution_workflow.md`，每轮**假设**阶段会**自主**读取 `references/capability_gaps.md`、`references/failures.md` 以及 `current_mission.json` 等，形成本轮「待满足需求 / 待补齐能力」。即：**是否优化、优化什么方向，由能力缺口与历史失败驱动**，不需要用户每轮都下指令。
+- **用户如何参与**：点击「提交一轮进化环」时会弹出**可选输入框**，用户可填写「本轮补充需求或优先级」（如「优先改进 vision 校准」「本轮重点补截图相关能力」）。留空则完全按 workflow 自主假设。填写内容会以「【用户本轮的补充或优先级】」追加到发给 CCR 的 message 中，供 Claude Code 在本轮决策时参考。
+- **自动进化环**：悬浮球菜单提供「开启自动进化环」/「关闭自动进化环」。开启后，会按 `evolution_loop.json` 中的 `auto_interval_seconds`（默认 300）**定时**触发一轮进化环（仅当当前没有任务在跑时），实现「主动定时触发没在工作的 CC 来进化自己」。
+
+## 九、风险与注意
 
 - **API Key 安全**：仅存于本机 `runtime/config/`，不要提交到版本库；可加入 .gitignore。
-- **超时**：单轮进化可能较长，客户端请求需设置合理超时（如 300s）并提示用户「任务已提交，可能需数分钟」。
-- **并发**：同一时间只提交一轮任务，避免重叠执行导致 state 竞争；若上一轮未结束可跳过或排队（由实现决定）。
+- **超时**：单轮进化可能较长，客户端默认 300s（`evolution_loop.json` 的 `request_timeout_seconds`），可改为 600/900。超时后 CC 可能仍在跑，过程·结果会显示「最近进化环请求: 超时」，且 15 分钟内再提交会提示、自动进化会跳过。
+- **并发**：同一时间只提交一轮任务；若上一轮超时，自动进化环 15 分钟内不重复提交，避免 CC 侧多会话堆积。
 
 ---
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""自拍：直接启动 camera_qt，等几秒后截屏保存到 screenshots/selfie_YYYYMMDD_HHMMSS.bmp"""
+"""自拍：直接启动 camera_qt，等几秒后截屏保存到 runtime/screenshots/selfie_YYYYMMDD_HHMMSS.bmp"""
 import os
 import sys
 import subprocess
@@ -9,7 +9,7 @@ from datetime import datetime
 
 SCRIPTS = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(SCRIPTS)
-OUT_DIR = os.path.join(PROJECT, "screenshots")
+OUT_DIR = os.path.join(PROJECT, "runtime", "screenshots")
 CAMERA_QT = os.path.join(SCRIPTS, "camera_qt.py")
 
 WAIT_CAMERA_READY = 4.0   # 摄像头窗口启动后等待画面就绪

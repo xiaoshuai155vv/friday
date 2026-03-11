@@ -36,8 +36,8 @@
 
 ## 存储位置
 
-- **按日日志**：`logs/scenario_YYYY-MM-DD.log`（TAB 分隔：时间、场景、命令、结果、备注）
-- **近期汇总**：`state/scenario_experiences.json`（最近 N 条，供快速查询与 UI）
+- **按日日志**：`runtime/logs/scenario_YYYY-MM-DD.log`（TAB 分隔：时间、场景、命令、结果、备注）
+- **近期汇总**：`runtime/state/scenario_experiences.json`（最近 N 条，供快速查询与 UI）
 
 ## 如何查阅
 

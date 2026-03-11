@@ -93,6 +93,35 @@ def key_down(vk): u.keybd_event(vk, 0, 0, 0)
 def key_up(vk):   u.keybd_event(vk, 0, KEYEVENTF_KEYUP, 0)
 def tap(vk): key_down(vk); key_up(vk)
 
+KEYEVENTF_SCANCODE = 0x0008
+
+def tap_sendinput(vk):
+    """用 SendInput 发送单键，比 keybd_event 更可靠。搜狗等输入法可能拦截 VK，故 Enter(13) 用扫描码发送。"""
+    # Enter 主键扫描码 0x1C，用扫描码可减少被 IME 拦截
+    SCAN_ENTER = 0x1C
+    if vk == 0x0D:  # VK_RETURN
+        inp = INPUT()
+        inp.type = INPUT_KEYBOARD
+        inp.union.ki.wVk = 0
+        inp.union.ki.wScan = SCAN_ENTER
+        inp.union.ki.dwFlags = KEYEVENTF_SCANCODE
+        inp.union.ki.time = 0
+        inp.union.ki.dwExtraInfo = 0
+        u.SendInput(1, ctypes.byref(inp), ctypes.sizeof(INPUT))
+        inp.union.ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP
+        u.SendInput(1, ctypes.byref(inp), ctypes.sizeof(INPUT))
+        return
+    inp = INPUT()
+    inp.type = INPUT_KEYBOARD
+    inp.union.ki.wVk = vk & 0xFFFF
+    inp.union.ki.wScan = 0
+    inp.union.ki.dwFlags = 0
+    inp.union.ki.time = 0
+    inp.union.ki.dwExtraInfo = 0
+    u.SendInput(1, ctypes.byref(inp), ctypes.sizeof(INPUT))
+    inp.union.ki.dwFlags = KEYEVENTF_KEYUP
+    u.SendInput(1, ctypes.byref(inp), ctypes.sizeof(INPUT))
+
 def main():
     if len(sys.argv) < 2:
         print("usage: key <vk>  |  keys <vk1> [vk2...]  |  shortcut <组合>  |  type \"text\" (ASCII+中文)", file=sys.stderr)
@@ -117,7 +146,9 @@ def main():
         for vk in reversed(vks):
             key_up(vk)
     elif cmd == "key" and len(sys.argv) >= 3:
-        tap(int(sys.argv[2]))
+        vk = int(sys.argv[2])
+        # 默认用 SendInput，对 ihaier 等应用更可靠；keybd_event 可能被 IME 或部分窗口忽略
+        tap_sendinput(vk)
     elif cmd == "keys" and len(sys.argv) >= 3:
         vks = [int(x, 0) for x in sys.argv[2:]]  # 0 allows 0x13
         for vk in vks:

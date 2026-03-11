@@ -5,18 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Friday</title>
   <script>
-    if (window.location.search.indexOf('transparent') !== -1) {
-      document.documentElement.classList.add('transparent-mode');
-      document.documentElement.style.background = 'transparent';
-      if (document.body) document.body.style.background = 'transparent';
-    }
+    (function() {
+      if (window.location.search.indexOf('transparent') !== -1) {
+        var d = document.documentElement;
+        d.classList.add('transparent-mode');
+        // Windows 上 WebView2 透明不生效会露出白底，改用深色与 UI 一致
+        var dark = '#0a0a0f';
+        d.style.background = dark;
+        d.style.setProperty('--page-bg', dark);
+        if (document.body) {
+          document.body.style.background = dark;
+          document.body.style.backgroundColor = dark;
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+          document.body.style.setProperty('background', dark, 'important');
+          document.body.style.setProperty('background-color', dark, 'important');
+        });
+      }
+    })();
   </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    .transparent-mode body { background: transparent !important; }
+    .transparent-mode body,
+    .transparent-mode { background: #0a0a0f !important; background-color: #0a0a0f !important; overflow: hidden !important; }
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #030306;
+      background: var(--page-bg, #030306);
+      background-color: var(--page-bg, #030306);
       color: rgba(255,255,255,0.92);
       min-height: 100vh;
       overflow: hidden;
@@ -43,10 +58,10 @@
       animation: spin 32s linear infinite;
     }
     .transparent-mode .grid-sphere {
-      width: 92vmax;
-      height: 92vmax;
-      margin-left: -46vmax;
-      margin-top: -46vmax;
+      width: 68vmax;
+      height: 68vmax;
+      margin-left: -34vmax;
+      margin-top: -34vmax;
     }
     .grid-sphere::before,
     .grid-sphere::after {
@@ -92,10 +107,10 @@
     .ring-1 { width: 220px; height: 220px; margin-left: -110px; margin-top: -110px; animation: spin 20s linear infinite reverse; }
     .ring-2 { width: 280px; height: 280px; margin-left: -140px; margin-top: -140px; animation: spin 25s linear infinite; }
     .ring-3 { width: 340px; height: 340px; margin-left: -170px; margin-top: -170px; animation: spin 30s linear infinite reverse; }
-    .transparent-mode .ring-1 { width: 180px; height: 180px; margin-left: -90px; margin-top: -90px; }
-    .transparent-mode .ring-2 { width: 230px; height: 230px; margin-left: -115px; margin-top: -115px; }
-    .transparent-mode .ring-3 { width: 280px; height: 280px; margin-left: -140px; margin-top: -140px; }
-    .transparent-mode .orb { width: 140px; height: 140px; margin-left: -70px; margin-top: -70px; }
+    .transparent-mode .ring-1 { width: 130px; height: 130px; margin-left: -65px; margin-top: -65px; }
+    .transparent-mode .ring-2 { width: 175px; height: 175px; margin-left: -87.5px; margin-top: -87.5px; }
+    .transparent-mode .ring-3 { width: 220px; height: 220px; margin-left: -110px; margin-top: -110px; }
+    .transparent-mode .orb { width: 90px; height: 90px; margin-left: -45px; margin-top: -45px; }
     @keyframes spin {
       from { transform: rotateZ(0deg); }
       to { transform: rotateZ(360deg); }

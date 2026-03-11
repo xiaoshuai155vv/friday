@@ -65,10 +65,11 @@
 | 注册表读/写 | `reg_tool.py get HKCU "Software\\..." [值名]`、`reg_tool.py set HKCU "Software\\..." 值名 sz "内容"` 或 `dword 1`；根键 HKCU/HKLM/HKCR/HKU/HKCC |
 | 文本文件读/写/列目录 | `file_tool.py read/write <路径> [内容]`、`file_tool.py list <目录>`；`do.py 列目录 [路径]` |
 | Vision 坐标校准（维护偏移数据集） | `python scripts/vision_calibrate.py calibrate`：屏幕 5 点红点→截图→多模态识坐标→算偏移写入 runtime/state/vision_calibration.json；run_plan/click_from_vision_or_key 会自动加该偏移再点击。换分辨率后需重跑。详见 vision_parse_convention.md。 |
-| 自主校验能力链（截图/鼠标/键盘/启动/vision/剪贴板） | `python scripts/self_verify_capabilities.py`，结果见 `runtime/state/self_verify_result.json` |
+| 自主校验能力链（基线烟测：截图/鼠标/键盘/子进程链/vision/剪贴板；不弹记事本） | `python scripts/self_verify_capabilities.py`，结果见 `runtime/state/self_verify_result.json`；**本轮产出需另做针对性校验**，见 `references/agent_evolution_workflow.md` 自主校验审核 |
 | 闭环跑者（无人时持续推进轮次与日志） | `python scripts/loop_runner.py` 一轮；`loop_runner.py --daemon [--interval 300]` 常驻 |
 | 计划模板（assets/plans/） | `play_music.json`（放个歌，按 steps 执行）、`ihaier_performance_declaration.json`（绩效达成申报，run_plan）、`minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_*.json`、`example_screenshot_vision.json` 等，供 run_plan 或查阅 steps 引用 |
 | **自主进化环（Claude Code）** | 通过 CCR 向 Claude Code 提交进化任务：配置 `runtime/config/evolution_loop.json`（ccr_base_url、ccr_api_key、friday_project_path），悬浮球右键「提交一轮进化环」或命令行 `python scripts/evolution_loop_client.py --once`。详见 `references/evolution_loop_claude_code_integration.md`。 |
+| **功能改动 git 追溯** | 进化或手工改代码/文档后运行 `python scripts/git_commit_evolution.py`（可选 `--bump-version`），对 scripts/、references/、assets/、VERSION、SKILL.md 做本地提交；不提交 runtime/。反思阶段建议执行以便追溯。 |
 
 ## 说明
 

@@ -1,0 +1,16 @@
+{
+  "triggers": ["听音乐", "播放音乐", "放首歌", "播放一首歌", "听首歌", "打开音乐播放器"],
+  "intent": "听音乐",
+  "description": "用户想要听音乐，系统应自动识别并启动合适的音乐播放器，最大化窗口并播放音乐。支持多种播放器如网易云音乐、QQ音乐、酷狗、Spotify等。",
+  "steps": [
+    "do 已安装应用",
+    "从输出中识别音乐播放器（包含关键词：网易云、云音乐、QQ音乐、酷狗、酷我、Spotify、Groove、Windows Media Player、媒体播放器）",
+    "若找到播放器：do 打开应用 <播放器名称>",
+    "若未找到：do 打开WMP（Windows 自带保底）",
+    "window_tool activate \"播放器窗口标题\"",
+    "window_tool maximize \"播放器窗口标题\"",
+    "若播放器支持快捷键：keyboard_tool key 32（空格键）开始播放",
+    "等待播放器窗口最大化并激活"
+  ],
+  "fallback": "do 打开WMP"
+}

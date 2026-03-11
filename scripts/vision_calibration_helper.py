@@ -8,7 +8,7 @@ import sys
 
 _SCRIPTS = os.path.dirname(os.path.abspath(__file__))
 _PROJECT = os.path.dirname(_SCRIPTS)
-_STATE_DIR = os.path.join(_PROJECT, "state")
+_STATE_DIR = os.path.join(_PROJECT, "runtime", "state")
 _CALIBRATION_JSON = os.path.join(_STATE_DIR, "vision_calibration.json")
 
 

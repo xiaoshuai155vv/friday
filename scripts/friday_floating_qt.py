@@ -44,6 +44,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SCRIPTS = os.path.join(ROOT, "scripts")
 STATE_FILE = os.path.join(ROOT, "runtime", "state", "current_mission.json")
 RECENT_LOGS_FILE = os.path.join(ROOT, "runtime", "state", "recent_logs.json")
+EVOLUTION_LAST_STATUS_FILE = os.path.join(ROOT, "runtime", "state", "evolution_last_status.json")
 LOG_DIR = os.path.join(ROOT, "runtime", "logs")
 ONECALL_LOG_FILE = os.path.join(LOG_DIR, "onecall.log")
 SCREENSHOTS_DIR = os.path.join(ROOT, "runtime", "screenshots")
@@ -88,7 +89,7 @@ try:
         QApplication, QWidget, QLabel, QSystemTrayIcon,
         QMenu, QAction, QDesktopWidget, QScrollArea,
         QPushButton, QVBoxLayout, QHBoxLayout, QFrame,
-        QPlainTextEdit, QComboBox, QShortcut, QFileDialog,
+        QPlainTextEdit, QComboBox, QShortcut, QFileDialog, QInputDialog,
     )
     from PyQt5.QtCore import Qt, QTimer, QPoint, QRect, QEvent, QThread, pyqtSignal
     from PyQt5.QtGui import (
@@ -121,6 +122,50 @@ def load_recent_output(max_entries=6):
     return []
 
 
+def load_evolution_last_status():
+    """读最近一次进化环请求状态，用于过程·结果展示与防重复提示。"""
+    try:
+        if os.path.isfile(EVOLUTION_LAST_STATUS_FILE):
+            with open(EVOLUTION_LAST_STATUS_FILE, "r", encoding="utf-8") as f:
+                d = json.load(f)
+            return d.get("status"), d.get("at", ""), d.get("message", "")
+    except Exception:
+        pass
+    return None, "", ""
+
+
+def _format_evolution_status_line():
+    """格式化为过程·结果弹框首行：最近进化环请求: 成功/超时/失败 (HH:MM)。"""
+    status, at, msg = load_evolution_last_status()
+    if not status:
+        return None
+    t = _format_log_time(at) if at else ""
+    if status == "ok":
+        return "最近进化环请求: 成功 (本轮已完成)" + (" " + t if t else "")
+    if status == "timeout":
+        return "最近进化环请求: 超时 " + (t + " — CC 可能仍在执行，请勿急于再提交" if t else "— CC 可能仍在执行，请勿急于再提交")
+    return "最近进化环请求: 失败 " + (t + " " + (msg or "")[:30] if t or msg else "")
+
+
+def _format_log_time(iso_ts):
+    """将 behavior_log 的 ISO 时间戳格式化为本地简短时间 [HH:MM:SS] 或 [MM-DD HH:MM]"""
+    if not iso_ts or not iso_ts.strip():
+        return ""
+    try:
+        from datetime import datetime
+        s = iso_ts.strip()
+        if "T" in s:
+            dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+            try:
+                local = dt.astimezone()
+            except Exception:
+                local = dt
+            return local.strftime("%H:%M:%S")
+        return s[:19] if len(s) >= 19 else s
+    except Exception:
+        return iso_ts[:12] if len(iso_ts) > 12 else iso_ts
+
+
 def load_recent_output_all(max_entries=80):
     """弹框用：直接从 runtime/logs/behavior_*.log 读最近条目，与当前进程同源，不依赖 recent_logs.json"""
     rows = []
@@ -137,6 +182,7 @@ def load_recent_output_all(max_entries=80):
                         parts = line.split("\t", 5)
                         if len(parts) >= 3:
                             rows.append({
+                                "ts": parts[0],
                                 "phase": parts[1],
                                 "desc": parts[2],
                             })
@@ -148,9 +194,9 @@ def load_recent_output_all(max_entries=80):
     return []
 
 
-# 弹框尺寸
-LOG_DIALOG_W = 380
-LOG_DIALOG_H = 420
+# 弹框尺寸（放大以便阅读，行距与字体在 FridayLogDialog 内设置）
+LOG_DIALOG_W = 560
+LOG_DIALOG_H = 680
 
 
 class FridayLogDialog(QWidget):
@@ -167,12 +213,12 @@ class FridayLogDialog(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self._drag_start = None
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(16, 14, 16, 14)
-        layout.setSpacing(10)
+        layout.setContentsMargins(20, 18, 20, 18)
+        layout.setSpacing(12)
         title = QLabel("过程 · 结果")
         title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet(
-            "color: rgb(255,200,80); font-size: 14px; letter-spacing: 4px; font-weight: 600; background: transparent;"
+            "color: rgb(255,200,80); font-size: 16px; letter-spacing: 4px; font-weight: 600; background: transparent;"
         )
         layout.addWidget(title)
         self._scroll = QScrollArea()
@@ -181,8 +227,8 @@ class FridayLogDialog(QWidget):
         self._scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self._scroll.setStyleSheet(
             "QScrollArea { background: rgba(65,65,80,0.95); border: 1px solid rgb(255,170,50); border-radius: 8px; }"
-            "QScrollBar:vertical { width: 8px; background: rgba(45,45,55,0.95); border: none; border-radius: 4px; margin: 0; }"
-            "QScrollBar::handle:vertical { background: rgb(255,170,50); border-radius: 4px; min-height: 24px; }"
+            "QScrollBar:vertical { width: 10px; background: rgba(45,45,55,0.95); border: none; border-radius: 4px; margin: 0; }"
+            "QScrollBar::handle:vertical { background: rgb(255,170,50); border-radius: 4px; min-height: 28px; }"
             "QScrollBar::handle:vertical:hover { background: rgb(255,195,80); }"
             "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }"
         )
@@ -190,9 +236,14 @@ class FridayLogDialog(QWidget):
         self._log_label.setWordWrap(True)
         self._log_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self._log_label.setStyleSheet(
-            "color: rgb(255,200,90); font-size: 11px; font-weight: 500; background: transparent; padding: 8px;"
+            "color: rgb(255,210,100); font-size: 14px; font-weight: 500; background: transparent; padding: 12px;"
         )
-        self._log_label.setMinimumWidth(LOG_DIALOG_W - 50)
+        self._log_label.setMinimumWidth(LOG_DIALOG_W - 60)
+        self._log_label.setMinimumHeight(320)
+        font = self._log_label.font()
+        font.setPointSize(13)
+        font.setStyleHint(font.SansSerif)
+        self._log_label.setFont(font)
         self._scroll.setWidget(self._log_label)
         layout.addWidget(self._scroll, 1)
         close_btn = QPushButton("关闭")
@@ -207,15 +258,20 @@ class FridayLogDialog(QWidget):
         self._refresh()
 
     def _refresh(self):
-        # 直接从本进程同源的 runtime/logs/ 读 behavior_*.log，保证与悬浮球同目录、显示最新轮次
+        # 首行：最近进化环请求状态（成功/超时/失败），便于判断上一轮是否完成
+        evolution_line = _format_evolution_status_line()
         entries = load_recent_output_all(80)
         lines = []
+        if evolution_line:
+            lines.append(evolution_line)
         for e in reversed(entries):
+            ts = _format_log_time(e.get("ts") or "")
             ph = (e.get("phase") or "").strip()
             desc = (e.get("desc") or "").strip()
             if desc:
-                lines.append((ph + " · " + desc))
-        self._log_label.setText("\n".join(lines) if lines else "—")
+                prefix = ("[" + ts + "] ") if ts else ""
+                lines.append(prefix + ph + " · " + desc)
+        self._log_label.setText("\n\n".join(lines) if lines else "—")
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -876,16 +932,28 @@ class EvolutionLoopWorker(QThread):
     """后台线程：调用 evolution_loop_client 向 CCR 提交一轮进化环，不阻塞悬浮球。"""
     finished_signal = pyqtSignal(bool, object)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, user_hint=None):
         super().__init__(parent)
+        self._user_hint = (user_hint or "").strip()
 
     def run(self):
+        hint_file = None
         try:
             cmd = [
                 sys.executable,
                 os.path.join(SCRIPTS, "evolution_loop_client.py"),
                 "--once",
             ]
+            if self._user_hint:
+                config_dir = os.path.join(ROOT, "runtime", "config")
+                os.makedirs(config_dir, exist_ok=True)
+                hint_file = os.path.join(config_dir, "evolution_user_hint.txt")
+                try:
+                    with open(hint_file, "w", encoding="utf-8") as f:
+                        f.write(self._user_hint)
+                    cmd.extend(["--user-hint-file", hint_file])
+                except Exception:
+                    pass
             proc = subprocess.run(
                 cmd,
                 cwd=ROOT,
@@ -902,6 +970,12 @@ class EvolutionLoopWorker(QThread):
             self.finished_signal.emit(False, {"error": "timeout"})
         except Exception as e:
             self.finished_signal.emit(False, {"error": str(e)})
+        finally:
+            if hint_file and os.path.isfile(hint_file):
+                try:
+                    os.remove(hint_file)
+                except Exception:
+                    pass
 
 
 class FridayBall(QWidget):
@@ -930,6 +1004,7 @@ class FridayBall(QWidget):
         self._state_timer.timeout.connect(self._load_state)
         self._state_timer.start(1000)
         self._evolution_worker = None
+        self._auto_evolution_enabled = False
         self._title = QLabel("FRIDAY", self)
         self._title.setAlignment(Qt.AlignCenter)
         self._title.setStyleSheet(
@@ -1148,8 +1223,11 @@ class FridayBall(QWidget):
         menu.addAction(onecall_act)
         menu.addSeparator()
         evolution_act = QAction("提交一轮进化环", self)
-        evolution_act.triggered.connect(self._trigger_evolution_loop)
+        evolution_act.triggered.connect(lambda: self._trigger_evolution_loop(None))
         menu.addAction(evolution_act)
+        auto_evolution_act = QAction("开启自动进化环" if not self._auto_evolution_enabled else "关闭自动进化环", self)
+        auto_evolution_act.triggered.connect(self._toggle_auto_evolution)
+        menu.addAction(auto_evolution_act)
         menu.addSeparator()
         quit_act = QAction("退出", self)
         quit_act.triggered.connect(self._quit_app)
@@ -1161,11 +1239,39 @@ class FridayBall(QWidget):
         d.move(self._dialog_pos(LOG_DIALOG_W, LOG_DIALOG_H))
         d.show()
 
-    def _trigger_evolution_loop(self):
-        """提交一轮进化环：在后台线程调用 CCR /api/agent，不阻塞 UI。"""
+    def _trigger_evolution_loop(self, user_hint=None):
+        """提交一轮进化环：可选用户补充需求，在后台线程调用 CCR /api/agent，不阻塞 UI。"""
         if self._evolution_worker is not None and self._evolution_worker.isRunning():
+            tray = getattr(self, "_tray", None)
+            if tray and hasattr(tray, "showMessage"):
+                tray.showMessage("Friday", "上一轮进化环仍在请求中，请稍候。", QSystemTrayIcon.Warning, 3000)
             return
-        self._evolution_worker = EvolutionLoopWorker(self)
+        # 若上一轮刚超时，提示 CC 可能仍在执行，避免误开新会话
+        status, at, _ = load_evolution_last_status()
+        if status == "timeout" and at:
+            try:
+                from datetime import datetime, timezone
+                s = at.replace("Z", "+00:00")
+                dt = datetime.fromisoformat(s)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                elapsed = (datetime.now(timezone.utc) - dt).total_seconds()
+                if 0 < elapsed < 900:  # 15 分钟内
+                    tray = getattr(self, "_tray", None)
+                    if tray and hasattr(tray, "showMessage"):
+                        tray.showMessage("Friday", "上一轮请求已超时，CC 可能仍在执行；若现在提交会开启新会话。", QSystemTrayIcon.Warning, 5000)
+            except Exception:
+                pass
+        if user_hint is None:
+            text, ok = QInputDialog.getText(
+                self,
+                "进化环",
+                "本轮补充需求（可选，留空则完全按 workflow 自主假设）：",
+            )
+            if not ok:
+                return
+            user_hint = (text or "").strip()
+        self._evolution_worker = EvolutionLoopWorker(self, user_hint=user_hint or None)
         self._evolution_worker.finished_signal.connect(self._on_evolution_finished)
         self._evolution_worker.start()
         self._phase.setText("进化环提交中…")
@@ -1173,16 +1279,85 @@ class FridayBall(QWidget):
         if tray and hasattr(tray, "showMessage"):
             tray.showMessage("Friday", "已向 Claude Code 提交一轮进化环，请稍候。", QSystemTrayIcon.Information, 3000)
 
+    def _schedule_auto_evolution(self):
+        """定时触发一轮进化环（仅当已开启自动进化环且当前无任务时）。"""
+        if not getattr(self, "_auto_evolution_enabled", False):
+            return
+        if self._evolution_worker is not None and self._evolution_worker.isRunning():
+            QTimer.singleShot(10000, self._schedule_auto_evolution)
+            return
+        # 若上一轮刚超时，本轮自动跳过，避免 CC 侧多会话堆积
+        status, at, _ = load_evolution_last_status()
+        if status == "timeout" and at:
+            try:
+                from datetime import datetime, timezone
+                s = at.replace("Z", "+00:00")
+                dt = datetime.fromisoformat(s)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                elapsed = (datetime.now(timezone.utc) - dt).total_seconds()
+                if 0 < elapsed < 900:
+                    QTimer.singleShot(60000, self._schedule_auto_evolution)  # 1 分钟后再检查
+                    return
+            except Exception:
+                pass
+        config_path = os.path.join(ROOT, "runtime", "config", "evolution_loop.json")
+        interval = 300
+        try:
+            if os.path.isfile(config_path):
+                with open(config_path, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                interval = max(60, int(cfg.get("auto_interval_seconds") or 300))
+        except Exception:
+            pass
+        self._trigger_evolution_loop("")
+        QTimer.singleShot(interval * 1000, self._schedule_auto_evolution)
+
+    def _toggle_auto_evolution(self):
+        """开启/关闭自动进化环：定时触发没在工作的 CC 执行进化。"""
+        self._auto_evolution_enabled = not self._auto_evolution_enabled
+        tray = getattr(self, "_tray", None)
+        if self._auto_evolution_enabled:
+            if tray and hasattr(tray, "showMessage"):
+                tray.showMessage("Friday", "已开启自动进化环，将按配置间隔定时提交进化任务。", QSystemTrayIcon.Information, 4000)
+            QTimer.singleShot(2000, self._schedule_auto_evolution)
+        else:
+            if tray and hasattr(tray, "showMessage"):
+                tray.showMessage("Friday", "已关闭自动进化环。", QSystemTrayIcon.Information, 2000)
+
     def _on_evolution_finished(self, ok, result):
         self._evolution_worker = None
+        err = result.get("error") or ""
+        stderr = (result.get("stderr") or "").lower()
+        is_timeout = (
+            err == "timeout"
+            or "timed out" in str(err).lower()
+            or "timed out" in stderr
+            or (not ok and "timeout" in stderr)
+        )
+        # 写入最近状态（含 worker 侧超时，因客户端被 kill 时不会写）
+        try:
+            from datetime import datetime, timezone
+            os.makedirs(os.path.dirname(EVOLUTION_LAST_STATUS_FILE), exist_ok=True)
+            status = "ok" if ok else ("timeout" if is_timeout else "error")
+            with open(EVOLUTION_LAST_STATUS_FILE, "w", encoding="utf-8") as f:
+                json.dump({
+                    "status": status,
+                    "at": datetime.now(timezone.utc).isoformat(),
+                    "message": (err or result.get("stderr") or "")[:200],
+                }, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
         self._load_state()
         tray = getattr(self, "_tray", None)
         if tray and hasattr(tray, "showMessage"):
             if ok:
                 tray.showMessage("Friday", "本轮进化环已完成。", QSystemTrayIcon.Information, 4000)
+            elif is_timeout:
+                tray.showMessage("Friday", "进化环请求超时，CC 可能仍在执行，请勿急于再提交。", QSystemTrayIcon.Warning, 6000)
             else:
-                err = result.get("error") or (result.get("stderr") or "")[:80]
-                tray.showMessage("Friday", "进化环失败: %s" % err, QSystemTrayIcon.Warning, 5000)
+                err_display = err or (result.get("stderr") or "")[:80]
+                tray.showMessage("Friday", "进化环失败: %s" % err_display, QSystemTrayIcon.Warning, 5000)
 
     def _quit_app(self):
         QApplication.quit()

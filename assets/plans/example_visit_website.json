@@ -1,6 +1,7 @@
 [
-  {"do": "comment", "comment": "打开浏览器并访问 URL 需由外部或 key 触发；此处为截图+vision 决策链"},
-  {"do": "screenshot", "path": "screenshots/web_current.bmp"},
-  {"do": "vision", "image": "screenshots/web_current.bmp", "question": "描述当前页面内容。若用户要求完成某操作（如填表、点击某按钮），请说明该元素大致位置与下一步建议（点击坐标或输入内容）。"},
-  {"do": "comment", "comment": "后续 step 由 vision 输出解析后追加：click x y / type \"text\""}
+  {"do": "comment", "comment": "打开浏览器并访问 URL 需由外部或 launch_browser 触发；打开后须先激活并最大化浏览器窗口，再做截图/vision"},
+  {"do": "comment", "comment": "若浏览器已打开：window_tool activate 浏览器标题或 activate_process 进程名 → maximize → wait 1.5"},
+  {"do": "screenshot", "path": "runtime/screenshots/web_current.bmp"},
+  {"do": "vision", "image": "runtime/screenshots/web_current.bmp", "question": "描述当前页面内容。若用户要求完成某操作（如填表、点击某按钮），请说明该元素大致位置与下一步建议（点击坐标或输入内容）。若当前可见区未包含用户需求内容，请判断：是否有垂直/水平滚动条？可否向下或向上滚动？"},
+  {"do": "comment", "comment": "若 vision 判断可向下/向上滚：scroll -120 或 scroll 120（光标在窗口内），wait 0.5，再 screenshot+vision。后续 step 由 vision 输出解析后追加：click x y / type \"text\""}
 ]

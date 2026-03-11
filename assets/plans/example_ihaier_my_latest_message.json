@@ -3,10 +3,10 @@
   {"do": "run", "script": "window_tool", "args": ["activate", "办公平台"]},
   {"do": "run", "script": "window_tool", "args": ["maximize", "办公平台"]},
   {"do": "wait", "sec": 1.2},
-  {"do": "screenshot", "path": "screenshots/ihaier_my_latest.bmp"},
-  {"do": "vision_coords", "image": "screenshots/ihaier_my_latest.bmp", "question": "图中是电脑桌面，打开的 ihaier 应用，消息列表。输出中间列表最上方圆形头像（「我的」）的中间坐标，仅一行 x y。", "normalized": true},
+  {"do": "screenshot", "path": "runtime/screenshots/ihaier_my_latest.bmp"},
+  {"do": "vision_coords", "image": "runtime/screenshots/ihaier_my_latest.bmp", "question": "图中是电脑桌面，打开的 ihaier 应用，消息列表。输出中间列表最上方圆形头像（「我的」）的中间坐标，仅一行 x y。", "normalized": true},
   {"do": "click", "from_vision_coords": true},
   {"do": "wait", "sec": 0.8},
-  {"do": "screenshot", "path": "screenshots/ihaier_my_latest.bmp"},
-  {"do": "vision", "image": "screenshots/ihaier_my_latest.bmp", "question": "图中是电脑桌面，打开的 ihaier 应用，与「我的」的聊天界面。输出右侧最下面一条消息的发送方、内容和时间。"}
+  {"do": "screenshot", "path": "runtime/screenshots/ihaier_my_latest.bmp"},
+  {"do": "vision", "image": "runtime/screenshots/ihaier_my_latest.bmp", "question": "图中是电脑桌面，打开的 ihaier 应用，与「我的」的聊天界面。输出右侧最下面一条消息的发送方、内容和时间。"}
 ]

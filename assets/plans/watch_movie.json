@@ -1,0 +1,80 @@
+{
+  "name": "watch_movie",
+  "description": "观看电影场景",
+  "triggers": [
+    "看电影",
+    "看个电影",
+    "播放电影"
+  ],
+  "steps": [
+    {
+      "do": "已安装应用",
+      "description": "获取已安装的应用列表"
+    },
+    {
+      "do": "vision",
+      "description": "识别用户想要使用的视频播放器",
+      "prompt": "根据用户需求，从已安装的应用列表中选择一个适合观看电影的播放器。如果列表中包含常见的播放器如 VLC、PotPlayer、Windows Media Player，请选择其中一个。如果没有合适的播放器，建议用户先安装一个。"
+    },
+    {
+      "do": "打开应用",
+      "app": "{{video_player}}",
+      "description": "打开选定的视频播放器"
+    },
+    {
+      "do": "窗口激活",
+      "title": "{{video_player}}",
+      "description": "激活播放器窗口"
+    },
+    {
+      "do": "窗口最大化",
+      "title": "{{video_player}}",
+      "description": "最大化播放器窗口"
+    },
+    {
+      "do": "等待",
+      "seconds": 2,
+      "description": "等待播放器完全启动"
+    },
+    {
+      "do": "截图",
+      "description": "截图播放器界面"
+    },
+    {
+      "do": "vision",
+      "description": "识别播放器界面中的打开文件按钮",
+      "prompt": "在播放器界面截图中，找到并识别出打开文件/添加文件的按钮。如果找不到，说明播放器可能已经准备好可以直接播放。"
+    },
+    {
+      "do": "点击",
+      "x": "{{click_x}}",
+      "y": "{{click_y}}",
+      "description": "点击打开文件按钮"
+    },
+    {
+      "do": "等待",
+      "seconds": 1,
+      "description": "等待文件选择对话框出现"
+    },
+    {
+      "do": "截图",
+      "description": "截图文件选择对话框"
+    },
+    {
+      "do": "vision",
+      "description": "识别用户想要播放的电影文件",
+      "prompt": "在文件选择对话框截图中，找到并识别出用户想要播放的电影文件。如果有多部电影，请选择最近播放的一部。"
+    },
+    {
+      "do": "点击",
+      "x": "{{click_x}}",
+      "y": "{{click_y}}",
+      "description": "点击选择的电影文件"
+    },
+    {
+      "do": "等待",
+      "seconds": 1,
+      "description": "等待电影开始播放"
+    }
+  ]
+}

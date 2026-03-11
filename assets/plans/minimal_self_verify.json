@@ -1,5 +1,5 @@
 [
-  {"do": "screenshot", "path": "screenshots/plan_minimal.bmp"},
+  {"do": "screenshot", "path": "runtime/screenshots/plan_minimal.bmp"},
   {"do": "wait", "sec": 0.5},
   {"do": "comment", "note": "minimal run_plan self-verify"}
 ]

@@ -5,7 +5,7 @@
 与 screenshot_tool、mouse_tool 使用同一套屏幕逻辑分辨率（GetSystemMetrics）。
 用法: python click_verify.py <x> <y> [等待秒数] [--screenshot 截图路径]
 示例: python click_verify.py 200 200 3
-      python click_verify.py 260 240 5 --screenshot screenshots/verify.bmp
+      python click_verify.py 260 240 5 --screenshot runtime/screenshots/verify.bmp
 """
 import sys
 import os

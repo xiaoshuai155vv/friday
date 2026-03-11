@@ -6,7 +6,7 @@
 
 ## 状态文件
 
-- **路径**：`state/current_mission.json`
+- **路径**：`runtime/state/current_mission.json`
 - **维护**：`scripts/state_tracker.py` 读写。
 
 ## 建议字段

@@ -1,0 +1,51 @@
+{
+  "name": "browse_zhihu.json",
+  "description": "刷知乎自动化计划",
+  "triggers": ["刷知乎", "浏览知乎", "看知乎"],
+  "steps": [
+    {
+      "do": "打开浏览器",
+      "url": "https://www.zhihu.com"
+    },
+    {
+      "do": "wait",
+      "seconds": 3
+    },
+    {
+      "do": "screenshot"
+    },
+    {
+      "do": "vision",
+      "query": "找到推荐内容区域"
+    },
+    {
+      "do": "scroll",
+      "delta": 300
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "screenshot"
+    },
+    {
+      "do": "vision_coords",
+      "query": "点击第一篇推荐内容"
+    },
+    {
+      "do": "click"
+    },
+    {
+      "do": "wait",
+      "seconds": 2
+    },
+    {
+      "do": "screenshot"
+    },
+    {
+      "do": "vision",
+      "query": "当前页面主要内容是什么？"
+    }
+  ]
+}
