@@ -85,7 +85,7 @@
 
 - **进化环的「假设」从哪来**：按 `agent_evolution_workflow.md`，每轮**假设**阶段会**自主**读取 `references/capability_gaps.md`、`references/failures.md` 以及 `current_mission.json` 等，形成本轮「待满足需求 / 待补齐能力」。即：**是否优化、优化什么方向，由能力缺口与历史失败驱动**，不需要用户每轮都下指令。
 - **用户如何参与**：点击「提交一轮进化环」时会弹出**可选输入框**，用户可填写「本轮补充需求或优先级」（如「优先改进 vision 校准」「本轮重点补截图相关能力」）。留空则完全按 workflow 自主假设。填写内容会以「【用户本轮的补充或优先级】」追加到发给 CCR 的 message 中，供 Claude Code 在本轮决策时参考。
-- **自动进化环**：悬浮球菜单提供「开启自动进化环」/「关闭自动进化环」。开启后，会按 `evolution_loop.json` 中的 `auto_interval_seconds`（默认 300）**定时**触发一轮进化环（仅当当前没有任务在跑时），实现「主动定时触发没在工作的 CC 来进化自己」。
+- **自动进化环**：悬浮球菜单提供「开启自动进化环」/「关闭自动进化环」。开启后，会按 `evolution_loop.json` 中的 `auto_interval_seconds`（默认 300）**定时**触发一轮进化环（仅当当前没有任务在跑时）。**自动提交时客户端会带 `--auto-evolution`**：在发给 CC 的 message 末尾自动拼接「上一轮」上下文——`current_mission.json` 的轮次/阶段、最近 behavior 中的 track/decide 摘要、`evolution_self_proposed.md` 里已标「已完成」的项，并明确要求**不要做与上一轮已完成的同一件事**，减少重复劳动。
 
 ## 九、风险与注意
 

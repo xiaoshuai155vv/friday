@@ -932,9 +932,10 @@ class EvolutionLoopWorker(QThread):
     """后台线程：调用 evolution_loop_client 向 CCR 提交一轮进化环，不阻塞悬浮球。"""
     finished_signal = pyqtSignal(bool, object)
 
-    def __init__(self, parent=None, user_hint=None):
+    def __init__(self, parent=None, user_hint=None, auto_evolution=False):
         super().__init__(parent)
         self._user_hint = (user_hint or "").strip()
+        self._auto_evolution = bool(auto_evolution)
 
     def run(self):
         hint_file = None
@@ -944,6 +945,8 @@ class EvolutionLoopWorker(QThread):
                 os.path.join(SCRIPTS, "evolution_loop_client.py"),
                 "--once",
             ]
+            if self._auto_evolution:
+                cmd.append("--auto-evolution")
             if self._user_hint:
                 config_dir = os.path.join(ROOT, "runtime", "config")
                 os.makedirs(config_dir, exist_ok=True)
@@ -1310,7 +1313,14 @@ class FridayBall(QWidget):
                 interval = max(60, int(cfg.get("auto_interval_seconds") or 300))
         except Exception:
             pass
-        self._trigger_evolution_loop("")
+        # 自动进化环带 --auto-evolution：客户端会拼上一轮 track/decide 与已完成项，减少重复
+        self._evolution_worker = EvolutionLoopWorker(self, user_hint=None, auto_evolution=True)
+        self._evolution_worker.finished_signal.connect(self._on_evolution_finished)
+        self._evolution_worker.start()
+        self._phase.setText("自动进化环提交中…")
+        tray = getattr(self, "_tray", None)
+        if tray and hasattr(tray, "showMessage"):
+            tray.showMessage("Friday", "自动进化环已提交（已带上一轮上下文，减少重复）。", QSystemTrayIcon.Information, 3000)
         QTimer.singleShot(interval * 1000, self._schedule_auto_evolution)
 
     def _toggle_auto_evolution(self):
