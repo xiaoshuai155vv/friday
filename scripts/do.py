@@ -572,6 +572,42 @@ def main():
                     print(f"\n详细报告: {trend_file}", file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 检查是否请求趋势可视化
+    viz_keywords = ["趋势可视化", "可视化趋势", "查看趋势图表", "趋势图表", "趋势状态"]
+    for keyword in viz_keywords:
+        if keyword in " ".join(sys.argv[1:]):
+            print(f"[趋势可视化] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "trend_visualizer.py")
+            result = subprocess.run([sys.executable, script_path], cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
+    # 检查是否请求告警相关操作
+    alert_keywords = {
+        "告警状态": ["status"],
+        "告警配置": ["config"],
+        "查看告警": ["config"],
+        "设置告警": ["config"],
+        "告警检查": ["check"],
+        "告警设置": ["config"],
+        "启用告警": ["enable"],
+        "关闭告警": ["disable"],
+    }
+    for keyword, subcmd in alert_keywords.items():
+        if keyword in " ".join(sys.argv[1:]):
+            print(f"[告警系统] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "alert_system.py")
+            cmd = subcmd if isinstance(subcmd, list) else [subcmd]
+            result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 先解析是否复合指令（除非已在递归执行中）
     if not _SKIP_COMPOUND_CHECK:
         intent_with_args = " ".join(sys.argv[1:])
