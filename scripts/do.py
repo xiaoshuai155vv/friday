@@ -894,6 +894,16 @@ def main():
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "power_plan_tool.py"), "switch", "节能"], cwd=PROJECT)
     elif intent in ("平衡", "平衡模式"):
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "power_plan_tool.py"), "switch", "平衡"], cwd=PROJECT)
+    elif intent in ("快速预览", "预览文件", "文档预览", "查看文件", "quick_look"):
+        # 快速预览文件内容（QuickLook风格）
+        file_path = sys.argv[2] if len(sys.argv) > 2 else ""
+        if file_path:
+            max_lines = sys.argv[3] if len(sys.argv) > 3 else "100"
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "quick_look.py"), file_path, max_lines], cwd=PROJECT)
+        else:
+            print("用法: do.py 快速预览 <文件路径> [行数限制]")
+            print("示例: do.py 快速预览 test.txt")
+            print("       do.py 预览文件 data.json 50")
     elif intent in ("窗口激活", "激活窗口", "前置窗口"):
         title = sys.argv[2] if len(sys.argv) > 2 else ""
         if title:
