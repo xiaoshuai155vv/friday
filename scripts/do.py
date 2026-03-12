@@ -531,6 +531,25 @@ def main():
             ret = _run_autonomous_decision()
             sys.exit(ret)
 
+    # 检查是否请求自然语言自动化
+    nl_automation_keywords = ["自然语言", "自然自动化", "描述任务", "帮我做", "帮我执行", "执行自然语言"]
+    if any(keyword in intent_with_args for keyword in nl_automation_keywords):
+        # 提取任务描述（去掉关键词）
+        task_description = intent_with_args
+        for kw in nl_automation_keywords:
+            task_description = task_description.replace(kw, "").strip()
+        if not task_description:
+            task_description = " ".join(sys.argv[2:]) if len(sys.argv) > 2 else ""
+        if task_description:
+            print(f"[自然语言自动化] 解析任务: {task_description}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "nl_automation.py")
+            result = subprocess.run([sys.executable, script_path, task_description], cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(result.returncode)
+
     # 检查是否请求主动任务执行
     proactive_keywords = ["主动任务", "生成任务建议", "执行主动任务", "智能任务推荐"]
     for keyword in proactive_keywords:
@@ -1117,6 +1136,17 @@ def main():
             subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "rest", "reminder", "stop"], cwd=PROJECT)
         else:
             subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "status"], cwd=PROJECT)
+    # 智能模块联动推理引擎
+    elif "模块联动" in intent or "智能联动" in intent or "联动引擎" in intent or "module_linkage" in intent.lower():
+        print(f"[智能模块联动引擎] 正在分析并协调多个智能模块...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "module_linkage_engine.py")
+        user_input = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else "有啥好玩的"
+        result = subprocess.run([sys.executable, script_path, "execute", user_input], cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能任务协调中心
     elif "协调中心" in intent or "智能处理" in intent or "coordinator" in intent.lower():
         print(f"[智能任务协调中心] 正在协调处理您的任务...", file=sys.stderr)
