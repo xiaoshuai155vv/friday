@@ -89,6 +89,38 @@ def check_clipboard_capability():
     except Exception as e:
         return False, f"剪贴板功能异常: {str(e)}"
 
+def check_focus_reminder_status():
+    """检查番茄钟状态"""
+    try:
+        # 检查番茄钟状态文件
+        state_file = os.path.join(PROJECT_ROOT, "runtime", "state", "focus_reminder_status.json")
+        if os.path.exists(state_file):
+            with open(state_file, 'r', encoding='utf-8') as f:
+                state = json.load(f)
+
+            # 检查是否正在工作
+            if state.get("pomodoro_active", False):
+                # 检查工作时间是否过长
+                start_time = state.get("pomodoro_start_time")
+                if start_time:
+                    from datetime import datetime
+                    start_dt = datetime.fromisoformat(start_time)
+                    elapsed = datetime.now() - start_dt
+                    minutes = int(elapsed.total_seconds() / 60)
+
+                    if minutes >= 20:  # 工作超过20分钟
+                        return True, f"番茄钟正在运行中，已工作 {minutes} 分钟，建议休息"
+                    else:
+                        return True, f"番茄钟正在运行中，已工作 {minutes} 分钟"
+                else:
+                    return True, "番茄钟正在运行中"
+            else:
+                return True, "番茄钟未启动"
+        else:
+            return True, "番茄钟状态文件不存在"
+    except Exception as e:
+        return False, f"番茄钟状态检查异常: {str(e)}"
+
 def run_health_check():
     """运行完整的健康检查"""
     health_report = {
@@ -103,7 +135,8 @@ def run_health_check():
         ("键盘", check_keyboard_capability),
         ("应用启动", check_launch_capability),
         ("视觉识别", check_vision_capability),
-        ("剪贴板", check_clipboard_capability)
+        ("剪贴板", check_clipboard_capability),
+        ("番茄钟", check_focus_reminder_status)
     ]
 
     for component_name, check_func in checks:
