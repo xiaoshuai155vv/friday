@@ -1486,6 +1486,28 @@ def main():
             print(f"最后轮次: {analysis['summary']['last_round']}")
             print(f"有目标的轮次: {analysis['summary']['rounds_with_goals']}")
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 进化环自我评估
+    elif "进化评估" in intent or "自我评估" in intent or "进化健康" in intent or "evolution self" in intent.lower() or "evaluation" in intent.lower():
+        print(f"[进化环自我评估] 正在评估进化环状态...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_evaluator.py")
+        result = subprocess.run([sys.executable, script_path, "evaluate"], cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        # 显示评估结果的摘要
+        json_path = os.path.join(PROJECT, "runtime/state/evolution_self_evaluation.json")
+        if os.path.exists(json_path):
+            with open(json_path, 'r', encoding='utf-8') as f:
+                evaluation = json.load(f)
+            print("\n=== 进化环自我评估摘要 ===")
+            print(f"健康分数: {evaluation.get('health_score', 0)}")
+            print(f"总体评级: {evaluation.get('overall_grade', 'N/A')}")
+            print(f"本周完成轮次: {evaluation.get('efficiency_metrics', {}).get('rounds_completed_this_week', 0)}")
+            print(f"进化速度: {evaluation.get('efficiency_metrics', {}).get('evolution_velocity', 'N/A')}")
+            print(f"完成率: {evaluation.get('success_metrics', {}).get('completion_rate', 0):.1f}%")
+            print(f"稳定性分数: {evaluation.get('stability_metrics', {}).get('stability_score', 0)}")
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
