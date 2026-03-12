@@ -1627,6 +1627,23 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能系统健康监控与自适应优化引擎
+    elif "系统监控" in intent or "健康监控" in intent or "系统健康" in intent or "性能监控" in intent or "系统状态" in intent or "system health" in intent.lower() or "health monitor" in intent.lower() or "monitor" in intent.lower() or "系统优化" in intent or "auto optimize" in intent.lower():
+        print(f"[智能系统健康监控引擎] 正在监控和分析系统状态...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "system_health_monitor.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["系统监控", "健康监控", "系统健康", "性能监控", "系统状态", "system health", "health monitor", "monitor", "系统优化", "auto optimize"]]
+        if not filtered_args:
+            # 如果没有额外参数，显示健康报告
+            filtered_args = ["report"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化策略引擎
     elif "进化策略" in intent or "策略分析" in intent or "evolution strategy" in intent.lower():
         print(f"[进化策略引擎] 正在分析进化方向...", file=sys.stderr)
