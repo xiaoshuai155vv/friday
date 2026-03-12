@@ -1513,6 +1513,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能工作流引擎
+    elif "工作流" in intent or "任务规划" in intent or "复杂任务" in intent or "workflow" in intent.lower() or "task plan" in intent.lower() or "plan task" in intent.lower():
+        print(f"[智能工作流引擎] 正在处理工作流请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "workflow_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--help"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["工作流", "任务规划", "复杂任务", "workflow", "task plan", "plan task"]]
+        if not filtered_args:
+            filtered_args = ["templates"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化策略引擎
     elif "进化策略" in intent or "策略分析" in intent or "evolution strategy" in intent.lower():
         print(f"[进化策略引擎] 正在分析进化方向...", file=sys.stderr)

@@ -2,7 +2,21 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 ## 本轮影响文件
-scripts/file_manager_engine.py, scripts/do.py, references/evolution_auto_last.md
+scripts/workflow_engine.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md
+
+## 2026-03-12 round 86
+- **current_goal**：创建智能工作流引擎 - 让星期五能够理解复杂用户意图，自动规划并执行多步骤任务链，实现从「单命令执行」到「复杂任务闭环」的进化
+- **做了什么**：
+  - 创建 workflow_engine.py 模块，实现智能工作流功能
+  - 实现 IntentParser 意图解析器，支持多种意图类型（organize_and_send、search_and_open、backup_and_notify、collect_and_summary、monitor_and_alert）
+  - 实现 TaskPlanner 任务规划器，根据意图生成任务步骤链
+  - 实现 WorkflowExecutor 工作流执行器，支持步骤执行、条件分支和循环
+  - 集成到 do.py，支持「工作流」「任务规划」「复杂任务」「workflow」等关键词触发
+  - 基线校验通过（5/6项，clipboard远程限制为已知问题）
+  - 针对性校验通过：workflow_engine.py 模块成功导入并创建实例，意图解析正确识别，任务规划生成步骤计划，执行状态completed
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将工作流引擎与场景推荐引擎结合，实现基于用户习惯的智能工作流推荐；或与定时任务结合，实现周期性自动化任务执行
+
 ## 2026-03-12 round 85
 - **current_goal**：创建智能文件管理引擎 - 让星期五能够自动按类型/时间整理文件，提供文件搜索、分析、智能分类功能
 - **做了什么**：
