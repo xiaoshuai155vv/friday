@@ -7,6 +7,7 @@
 - 识别用户输入中的情感状态（如疲惫、无聊、开心、焦虑等）
 - 根据情感状态生成情感化的回应
 - 支持多种情感类型的关心、鼓励、安慰等回应
+- 结合用户行为偏好生成更个性化的回应
 - 输出情感分析结果到 runtime/state/emotional_analysis.json
 """
 
@@ -21,6 +22,14 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).parent
 RUNTIME_DIR = SCRIPT_DIR.parent / "runtime"
 STATE_DIR = RUNTIME_DIR / "state"
+
+# 尝试导入用户行为学习模块
+try:
+    sys.path.insert(0, str(SCRIPT_DIR))
+    from user_behavior_learner import get_recommendations as get_behavior_recommendations, load_behavior_data
+    BEHAVIOR_LEARNER_AVAILABLE = True
+except ImportError:
+    BEHAVIOR_LEARNER_AVAILABLE = False
 
 # 情感模式定义：情感类型 -> 关键词 + 回应模板
 EMOTION_PATTERNS = {
@@ -168,12 +177,59 @@ def detect_emotion(text):
     return detected_emotions[0]
 
 
-def generate_response(emotion_data):
+def get_user_behavior_suggestions(emotion_type):
     """
-    根据情感数据生成回应
+    根据用户行为偏好获取个性化建议
+
+    Args:
+        emotion_type: 情感类型
+
+    Returns:
+        list: 个性化建议列表
+    """
+    if not BEHAVIOR_LEARNER_AVAILABLE:
+        return []
+
+    try:
+        # 获取用户行为推荐
+        recommendations = get_behavior_recommendations(limit=3)
+
+        if not recommendations:
+            return []
+
+        # 将行为推荐转换为建议
+        # 根据情感类型过滤相关推荐
+        relevant_tasks = []
+        for rec in recommendations:
+            task = rec.get("task", "").lower()
+
+            # 根据情感类型关联任务
+            if emotion_type == "无聊":
+                if any(k in task for k in ["音乐", "电影", "新闻", "知乎"]):
+                    relevant_tasks.append(rec["task"])
+            elif emotion_type == "疲惫":
+                if any(k in task for k in ["音乐", "休息"]):
+                    relevant_tasks.append(rec["task"])
+            elif emotion_type == "焦虑":
+                if any(k in task for k in ["绩效", "消息", "申报"]):
+                    relevant_tasks.append(rec["task"])
+            elif emotion_type == "迷茫":
+                if any(k in task for k in ["绩效", "消息", "任务"]):
+                    relevant_tasks.append(rec["task"])
+
+        return relevant_tasks[:2]  # 最多返回2个个性化建议
+    except Exception as e:
+        print(f"获取用户行为建议失败: {e}")
+        return []
+
+
+def generate_response(emotion_data, context=None):
+    """
+    根据情感数据和用户行为偏好生成回应
 
     Args:
         emotion_data: detect_emotion 返回的情感数据
+        context: 可选的上下文信息（如用户行为偏好）
 
     Returns:
         str: 生成的回应文本
@@ -185,31 +241,48 @@ def generate_response(emotion_data):
     if not responses:
         return None
 
+    emotion_type = emotion_data.get("type", "")
+
     # 根据时间和情感类型选择回应
     hour = datetime.now().hour
 
     # 疲惫时如果是工作时间之外，优先推荐休息
-    if emotion_data["type"] == "疲惫" and (hour < 9 or hour > 18):
+    if emotion_type == "疲惫" and (hour < 9 or hour > 18):
         # 优先选择关于休息的回应
         rest_responses = [r for r in responses if "休息" in r or "放松" in r]
         if rest_responses:
             return rest_responses[0 % len(rest_responses)]
 
     # 开心时工作时间优先选择简洁的回应
-    if emotion_data["type"] == "开心" and 9 <= hour <= 18:
+    if emotion_type == "开心" and 9 <= hour <= 18:
         return responses[1] if len(responses) > 1 else responses[0]
+
+    # 尝试结合用户行为偏好生成更个性化的回应
+    if BEHAVIOR_LEARNER_AVAILABLE:
+        user_suggestions = get_user_behavior_suggestions(emotion_type)
+        if user_suggestions:
+            # 在回应中加入个性化建议
+            import random
+            base_response = random.choice(responses)
+
+            # 根据用户偏好定制回应
+            if emotion_type == "无聊" and "音乐" in user_suggestions[0]:
+                return f"{base_response} 我记得你平时喜欢听音乐，要不要来一首？"
+            elif emotion_type == "迷茫" and user_suggestions:
+                return f"{base_response} 根据你之前的习惯，也许可以试试{user_suggestions[0]}？"
 
     # 随机选择一个回应
     import random
     return random.choice(responses)
 
 
-def analyze_emotion(text):
+def analyze_emotion(text, include_behavior=True):
     """
     完整的情感分析函数
 
     Args:
         text: 用户输入文本
+        include_behavior: 是否包含用户行为偏好
 
     Returns:
         dict: 完整的情感分析结果
@@ -221,16 +294,30 @@ def analyze_emotion(text):
         "emotion_type": None,
         "confidence": 0,
         "response": None,
-        "suggestions": []
+        "suggestions": [],
+        "personalized": False
     }
 
     emotion_data = detect_emotion(text)
     if emotion_data:
+        emotion_type = emotion_data["type"]
         result["detected"] = True
-        result["emotion_type"] = emotion_data["type"]
+        result["emotion_type"] = emotion_type
         result["confidence"] = emotion_data["confidence"]
         result["response"] = generate_response(emotion_data)
-        result["suggestions"] = emotion_data.get("suggestions", [])
+
+        # 获取基础建议
+        suggestions = emotion_data.get("suggestions", [])
+
+        # 整合用户行为偏好到建议
+        if include_behavior and BEHAVIOR_LEARNER_AVAILABLE:
+            user_suggestions = get_user_behavior_suggestions(emotion_type)
+            if user_suggestions:
+                # 将用户行为建议添加到建议列表
+                suggestions.extend(user_suggestions)
+                result["personalized"] = True
+
+        result["suggestions"] = suggestions
 
     return result
 
@@ -252,18 +339,31 @@ def save_result(result, filepath=None):
 
 def main():
     """主函数：处理命令行参数"""
-    if len(sys.argv) < 2:
-        print("用法: python emotional_interaction.py <文本>")
+    # 解析参数
+    include_behavior = True
+    text_args = []
+
+    for arg in sys.argv[1:]:
+        if arg == "--no-behavior":
+            include_behavior = False
+        else:
+            text_args.append(arg)
+
+    if not text_args:
+        print("用法: python emotional_interaction.py [--no-behavior] <文本>")
         print("示例: python emotional_interaction.py \"我好累啊\"")
+        print("       python emotional_interaction.py --no-behavior \"我好累啊\"")
         sys.exit(1)
 
-    text = " ".join(sys.argv[1:])
-    result = analyze_emotion(text)
+    text = " ".join(text_args)
+    result = analyze_emotion(text, include_behavior=include_behavior)
 
     # 打印结果
     if result["detected"]:
         print(f"检测到情感: {result['emotion_type']} (置信度: {result['confidence']})")
         print(f"回应: {result['response']}")
+        if result.get("personalized"):
+            print(f"[个性化建议已整合]")
         if result["suggestions"]:
             print(f"建议: {', '.join(result['suggestions'])}")
     else:

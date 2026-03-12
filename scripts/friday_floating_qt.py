@@ -347,6 +347,9 @@ class FridayLogDialog(QWidget):
         close_btn.clicked.connect(self.close)
         layout.addWidget(close_btn, 0, Qt.AlignCenter)
         self._refresh()
+        self._refresh_timer = QTimer(self)
+        self._refresh_timer.timeout.connect(self._refresh)
+        self._refresh_timer.start(10000)
 
     def _refresh(self):
         # 首行：最近进化环请求状态（成功/超时/失败），便于判断上一轮是否完成
@@ -615,6 +618,36 @@ class ImagePreviewWindow(QWidget):
             self._zoom_out()
         else:
             super().keyPressEvent(event)
+
+
+class OneCallWorker(QThread):
+    """后台执行 vision 调用，不阻塞主线程，便于悬浮球显示等待动画。"""
+    finished_signal = pyqtSignal(bool, str, str, int)
+
+    def __init__(self, script_path, args, cwd):
+        super().__init__()
+        self._script_path = script_path
+        self._args = args
+        self._cwd = cwd
+
+    def run(self):
+        try:
+            r = subprocess.run(
+                self._args,
+                cwd=self._cwd,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=90,
+            )
+            out = (r.stdout or "").strip()
+            err = (r.stderr or "").strip()
+            self.finished_signal.emit(r.returncode == 0, out, err, r.returncode)
+        except subprocess.TimeoutExpired:
+            self.finished_signal.emit(False, "", "timeout", -1)
+        except Exception as e:
+            self.finished_signal.emit(False, "", str(e), -1)
 
 
 class FridayMultimodalDialog(QWidget):
@@ -972,31 +1005,36 @@ class FridayMultimodalDialog(QWidget):
         is_coords = "坐标" in self._mode.currentText()
         script = "vision_coords.py" if is_coords else "vision_proxy.py"
         args = [sys.executable, os.path.join(SCRIPTS, script), self._image_path, q]
-        # 不再清空结果区，只在按钮上显示执行中
         self._exec_btn.setText("执行中…")
         self._exec_btn.setEnabled(False)
-        QApplication.processEvents()
-        try:
-            r = subprocess.run(args, cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=90)
-            out = (r.stdout or "").strip()
-            err = (r.stderr or "").strip()
-            if r.returncode != 0:
-                out = "错误: " + (err or str(r.returncode))
-            self._call_history.append({"q": q[:50], "out": out, "mode": "coords" if is_coords else "proxy"})
-            lines = []
-            for h in reversed(self._call_history[-10:]):
-                lines.append("【%s】%s" % (h["mode"], h["q"]))
-                lines.append(h["out"])
-                lines.append("—")
-            self._result_label.setText("\n".join(lines) if lines else out)
-            sb = self._result_scroll.verticalScrollBar()
-            sb.setValue(sb.maximum())
-        except Exception as e:
-            self._result_label.setText("异常: " + str(e))
-        finally:
-            if hasattr(self, "_exec_btn") and self._exec_btn:
-                self._exec_btn.setText("执行 OneCall")
-                self._exec_btn.setEnabled(True)
+        self._onecall_pending_q = q
+        self._onecall_pending_coords = is_coords
+        if self._ball and hasattr(self._ball, "_set_spinning"):
+            self._ball._set_spinning(True)
+        self._onecall_worker = OneCallWorker(os.path.join(SCRIPTS, script), args, ROOT)
+        self._onecall_worker.finished_signal.connect(self._on_onecall_finished)
+        self._onecall_worker.start()
+
+    def _on_onecall_finished(self, ok, out, err, returncode):
+        self._onecall_worker = None
+        if self._ball and hasattr(self._ball, "_set_spinning"):
+            self._ball._set_spinning(False)
+        q = getattr(self, "_onecall_pending_q", "")
+        is_coords = getattr(self, "_onecall_pending_coords", False)
+        if not ok and out == "":
+            out = "错误: " + (err or str(returncode))
+        self._call_history.append({"q": q[:50], "out": out, "mode": "coords" if is_coords else "proxy"})
+        lines = []
+        for h in reversed(self._call_history[-10:]):
+            lines.append("【%s】%s" % (h["mode"], h["q"]))
+            lines.append(h["out"])
+            lines.append("—")
+        self._result_label.setText("\n".join(lines) if lines else out)
+        sb = self._result_scroll.verticalScrollBar()
+        sb.setValue(sb.maximum())
+        if hasattr(self, "_exec_btn") and self._exec_btn:
+            self._exec_btn.setText("执行 OneCall")
+            self._exec_btn.setEnabled(True)
 
     def paintEvent(self, event):
         p = QPainter(self)
@@ -1098,9 +1136,10 @@ class FridayBall(QWidget):
         self._drag_start = None  # 左键拖拽移动
         # 圆形裁剪
         self.setMask(QRegion(0, 0, SIZE, SIZE, QRegion.Ellipse))
-        # 动画
+        # 动画：平时不转，仅等待时转（进化环、OneCall 等）
         self._angle = 0.0
         self._pulse = 0.0
+        self._spinning = False
         self._state = load_state()
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._tick)
@@ -1398,6 +1437,7 @@ class FridayBall(QWidget):
         self._evolution_worker = EvolutionLoopWorker(self, user_hint=user_hint or None)
         self._evolution_worker.finished_signal.connect(self._on_evolution_finished)
         self._evolution_worker.start()
+        self._set_spinning(True)
         self._phase.setText("进化环提交中…")
         tray = getattr(self, "_tray", None)
         if tray and hasattr(tray, "showMessage"):
@@ -1458,6 +1498,7 @@ class FridayBall(QWidget):
         self._evolution_worker = EvolutionLoopWorker(self, user_hint=None, auto_evolution=True)
         self._evolution_worker.finished_signal.connect(self._on_evolution_finished)
         self._evolution_worker.start()
+        self._set_spinning(True)
         self._phase.setText("自动进化环提交中…")
         tray = getattr(self, "_tray", None)
         if tray and hasattr(tray, "showMessage"):
@@ -1503,6 +1544,7 @@ class FridayBall(QWidget):
 
     def _on_evolution_finished(self, ok, result):
         self._evolution_worker = None
+        self._set_spinning(False)
         err = result.get("error") or ""
         stderr = (result.get("stderr") or "").lower()
         is_timeout = (
@@ -1566,13 +1608,18 @@ class FridayBall(QWidget):
         self._title.setText("FRIDAY")
         self._update_auto_info(force=True)
 
+    def _set_spinning(self, on):
+        """控制悬浮球是否旋转：仅等待时转（进化环、OneCall 等）。"""
+        self._spinning = bool(on)
+
     def _tick(self):
-        self._angle += 1.2
-        if self._angle >= 360:
-            self._angle -= 360
-        self._pulse += 0.04
-        if self._pulse >= 6.28318:
-            self._pulse -= 6.28318
+        if self._spinning:
+            self._angle += 1.2
+            if self._angle >= 360:
+                self._angle -= 360
+            self._pulse += 0.04
+            if self._pulse >= 6.28318:
+                self._pulse -= 6.28318
         self._update_auto_info()
         self.update()
 

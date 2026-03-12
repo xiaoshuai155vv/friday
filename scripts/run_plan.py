@@ -798,6 +798,26 @@ def main():
     if _TASK_STATE_MANAGER_AVAILABLE and plan_path:
         task_state_manager.clear_interrupted_task(plan_path)
 
+    # 记录用户行为（自动学习）
+    try:
+        script_dir = Path(__file__).parent
+        user_behavior_script = script_dir / "user_behavior_learner.py"
+        if user_behavior_script.exists():
+            # 从 plan_path 提取场景名作为上下文
+            scene_name = ""
+            if plan_path:
+                scene_name = Path(plan_path).stem
+            # 调用 user_behavior_learner 记录任务
+            subprocess.run(
+                [sys.executable, str(user_behavior_script), "record", scene_name or "run_plan", "true", scene_name],
+                cwd=script_dir.parent,
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+    except Exception as e:
+        pass  # 不阻断主流程
+
     print("plan done")
 
 if __name__ == "__main__":

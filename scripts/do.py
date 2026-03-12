@@ -997,6 +997,51 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 用户行为自动学习与适应
+    elif "行为" in intent or "学习" in intent or "习惯" in intent or "偏好" in intent or "用户行为" in intent or "我的习惯" in intent:
+        print(f"[用户行为学习] 正在分析您的行为模式...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "user_behavior_learner.py")
+        # 参数处理
+        cmd_args = []
+        if "高频" in intent or "频繁" in intent or "最常用" in intent:
+            cmd_args = ["frequent"]
+        elif "推荐" in intent and ("建议" in intent or "智能" in intent):
+            cmd_args = ["recommend"]
+        elif "时间" in intent and "偏好" in intent:
+            # 提取具体时间段
+            for period in ["凌晨", "早晨", "上午", "中午", "下午", "傍晚", "晚上"]:
+                if period in intent:
+                    cmd_args = ["preference", period]
+                    break
+            if not cmd_args:
+                cmd_args = ["preference"]
+        elif "最近" in intent or "历史" in intent:
+            limit = 5
+            if any(str(i) in intent for i in range(1, 10)):
+                for i in range(1, 10):
+                    if str(i) in intent:
+                        limit = i
+                        break
+            cmd_args = ["recent", str(limit)]
+        elif "统计" in intent or "成功率" in intent:
+            cmd_args = ["stats"]
+        elif "摘要" in intent or "总结" in intent or "概览" in intent:
+            cmd_args = ["summary"]
+        elif "清除" in intent or "重置" in intent:
+            cmd_args = ["clear"]
+        elif "开启" in intent or "启用" in intent:
+            cmd_args = ["enable"]
+        elif "关闭" in intent or "停用" in intent:
+            cmd_args = ["disable"]
+        else:
+            cmd_args = []  # 默认显示摘要
+
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能任务编排与工作流自动化
     elif "工作流" in intent or "编排" in intent or "workflow" in intent.lower() or "执行多个任务" in intent or "一系列任务" in intent:
         print(f"[智能任务编排] 正在处理您的工作流请求...", file=sys.stderr)
