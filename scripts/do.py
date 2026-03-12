@@ -519,7 +519,7 @@ def main():
     global _SKIP_COMPOUND_CHECK
 
     if len(sys.argv) < 2:
-        print("用法: do.py 自拍|打开摄像头|截图|已安装应用|打开网易云音乐|...|剪贴板读|防休眠|...|run <脚本名> [参数...]", file=sys.stderr)
+        print("用法: do.py 自拍|打开摄像头|截图|已安装应用|打开网易云音乐|...|剪贴板读|电源计划|防休眠|...|run <脚本名> [参数...]", file=sys.stderr)
         sys.exit(1)
 
     # 检查是否请求自主决策/系统建议
@@ -878,6 +878,22 @@ def main():
             subprocess.run([sys.executable, os.path.join(SCRIPTS, "clipboard_history.py"), "restore", index], cwd=PROJECT)
         else:
             print("用法: do.py 恢复剪贴板 <索引>")
+    elif intent in ("电源计划", "电源计划列表", "查看电源计划"):
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "power_plan_tool.py"), "list"], cwd=PROJECT)
+    elif intent in ("切换电源计划", "电源计划切换"):
+        # 如果提供了电源计划名称，则切换
+        plan_name = sys.argv[2] if len(sys.argv) > 2 else ""
+        if plan_name:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "power_plan_tool.py"), "switch", plan_name], cwd=PROJECT)
+        else:
+            print("用法: do.py 切换电源计划 <计划名称>")
+            print("可用计划: 平衡, 高性能, 节能")
+    elif intent in ("高性能", "高性能模式"):
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "power_plan_tool.py"), "switch", "高性能"], cwd=PROJECT)
+    elif intent in ("节能", "节能模式", "省电模式"):
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "power_plan_tool.py"), "switch", "节能"], cwd=PROJECT)
+    elif intent in ("平衡", "平衡模式"):
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "power_plan_tool.py"), "switch", "平衡"], cwd=PROJECT)
     elif intent in ("窗口激活", "激活窗口", "前置窗口"):
         title = sys.argv[2] if len(sys.argv) > 2 else ""
         if title:
