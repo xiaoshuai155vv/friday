@@ -1534,6 +1534,31 @@ def main():
                 for i, rec in enumerate(plan.get('recommendations', [])[:3], 1):
                     print(f"  {i}. {rec}")
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 进化学习引擎
+    elif "进化学习" in intent or "学习进化" in intent or "evolution learning" in intent.lower() or ("进化" in intent and "智能" in intent) or ("学习" in intent and "策略" in intent):
+        print(f"[进化学习引擎] 正在从历史数据中学习...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_learning_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["learn"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化学习", "学习进化"]]
+        if not filtered_args:
+            filtered_args = ["learn"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        # 显示学习结果的摘要
+        json_path = os.path.join(PROJECT, "runtime/state/evolution_learning_recommendations.json")
+        if os.path.exists(json_path):
+            with open(json_path, 'r', encoding='utf-8') as f:
+                recommendations = json.load(f)
+            print("\n=== 进化学习引擎推荐摘要 ===")
+            print(f"推荐数: {len(recommendations.get('recommendations', []))}")
+            for i, rec in enumerate(recommendations.get('recommendations', [])[:3], 1):
+                print(f"  {i}. [{rec.get('priority', 'N/A')}] {rec.get('title', 'N/A')}: {rec.get('description', 'N/A')[:50]}...")
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化环定时触发器
     elif "进化定时" in intent or "定时进化" in intent or "进化调度" in intent or "evolution scheduler" in intent.lower() or "schedule evolution" in intent.lower():
         script_path = os.path.join(SCRIPTS, "evolution_scheduler.py")

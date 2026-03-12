@@ -1,5 +1,18 @@
 ## 当前核心目录与文件树（简要）
 scripts/ references/ assets/ runtime/ 等（一行即可）
+## 2026-03-12 round 77
+- **current_goal**：增强进化策略的学习能力 - 让策略引擎能够从历史进化结果中学习，不断优化进化方向选择
+- **做了什么**：
+  - 创建 evolution_learning_engine.py 模块，实现从历史数据中学习的功能
+  - 支持特征提取、模式识别、学习洞察生成
+  - 计算学习权重（meta_evolution, capability_expansion 等）
+  - 生成基于学习的增强推荐
+  - 集成到 do.py，支持「进化学习」「学习进化」「进化智能」等关键词触发
+  - 基线校验通过（5/6项，clipboard为远程会话已知问题）
+  - 针对性校验通过：evolution_learning_engine.py 模块功能正常
+- **是否完成**：已完成
+- **下一轮建议**：可将学习引擎与策略引擎更深度集成，实现基于学习结果的自动策略调整
+
 ## 2026-03-12 round 76
 - **current_goal**：建立进化历史数据库 - 将每次进化过程和结果持久化存储，为未来的进化策略提供数据支持
 - **做了什么**：
@@ -26,7 +39,7 @@ scripts/ references/ assets/ runtime/ 等（一行即可）
 
 
 ## 本轮影响文件
-scripts/evolution_loop_automation.py, scripts/do.py, references/evolution_auto_last.md
+scripts/evolution_learning_engine.py, scripts/do.py, references/evolution_auto_last.md, references/evolution_self_proposed.md
 
 ## 2026-03-12 round 73
 - **current_goal**：创建进化闭环自动化引擎 - 将 evolution_strategy_engine、evolution_log_analyzer、evolution_self_evaluator 三个模块联动，实现自动化的分析→决策→执行→评估循环
