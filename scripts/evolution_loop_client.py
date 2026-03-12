@@ -188,9 +188,31 @@ def run_once(message=None, config=None, user_hint=None):
         return False, {"error": str(e)}
 
 
+def _round_to_completed_path():
+    """扫描 evolution_completed_*.json，建立 loop_round -> 文件路径 映射。"""
+    state_dir = _state_dir(ROOT)
+    mapping = {}
+    try:
+        import glob as _glob
+        for path in _glob.glob(os.path.join(state_dir, EVOLUTION_COMPLETED_PREFIX + "*.json")):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+                r = d.get("loop_round")
+                if r is not None:
+                    rel = os.path.relpath(path, ROOT).replace("\\", "/")
+                    mapping[str(int(r))] = rel
+            except Exception:
+                continue
+    except Exception:
+        pass
+    return mapping
+
+
 def _compact_evolution_summary(body):
-    """将 evolution_auto_last 转为每轮一行概述 + 日志路径，供提示词用。"""
+    """将 evolution_auto_last 转为每轮一行概述 + 详情路径；优先关联 evolution_completed_*.json（更全），否则 behavior_log。"""
     import re
+    round_to_path = _round_to_completed_path()
     lines = []
     round_pat = re.compile(r"^##\s+(?:(\d{4}-\d{2}-\d{2})\s+)?round\s+(\d+)", re.I)
     current_round = None
@@ -203,8 +225,10 @@ def _compact_evolution_summary(body):
     def flush_round():
         if not current_round:
             return
-        log_path = "runtime/logs/behavior_%s.log" % (current_date or "YYYY-MM-DD") if current_date else "runtime/logs/behavior_*.log"
-        s = "round %s: %s; %s; %s | 详见 %s" % (current_round, (goal or "—")[:80], (done or "—")[:60], summary_line or "", log_path)
+        detail_path = round_to_path.get(current_round)
+        if not detail_path:
+            detail_path = "runtime/logs/behavior_%s.log" % (current_date or "YYYY-MM-DD") if current_date else "runtime/logs/behavior_*.log"
+        s = "round %s: %s; %s; %s | 详见 %s" % (current_round, (goal or "—")[:80], (done or "—")[:60], summary_line or "", detail_path)
         lines.append(s)
 
     for line in body.split("\n"):
@@ -258,7 +282,7 @@ def build_auto_evolution_hint():
                     parts.append(body[:1200])
     except Exception:
         pass
-    parts.append("（以上为概述；其余要求见 references/agent_evolution_workflow.md。）")
+    parts.append("（以上为概述；有 evolution_completed_*.json 的轮次已关联该文件，更全；其余要求见 references/agent_evolution_workflow.md。）")
     return "\n".join(parts)
 
 
