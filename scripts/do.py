@@ -1465,6 +1465,27 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 进化日志分析与可视化
+    elif "进化日志" in intent or "日志分析" in intent or "进化分析" in intent or "evolution log" in intent.lower() or "evolution analysis" in intent.lower():
+        print(f"[进化日志分析] 正在分析进化日志...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_log_analyzer.py")
+        result = subprocess.run([sys.executable, script_path], cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        # 显示分析结果的JSON摘要
+        json_path = os.path.join(PROJECT, "runtime/state/evolution_analysis.json")
+        if os.path.exists(json_path):
+            with open(json_path, 'r', encoding='utf-8') as f:
+                analysis = json.load(f)
+            print("\n=== 进化日志分析摘要 ===")
+            print(f"总轮次: {analysis['summary']['total_rounds']}")
+            print(f"总行动数: {analysis['summary']['total_actions']}")
+            print(f"首次轮次: {analysis['summary']['first_round']}")
+            print(f"最后轮次: {analysis['summary']['last_round']}")
+            print(f"有目标的轮次: {analysis['summary']['rounds_with_goals']}")
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
