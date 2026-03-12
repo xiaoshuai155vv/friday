@@ -1651,6 +1651,19 @@ def main():
         else:
             print(f"执行出错: {result.stderr}", file=sys.stderr)
         sys.exit(0)
+    # 进化 CLI 统一入口
+    elif "进化cli" in intent or "统一入口" in intent or "进化命令" in intent or "evolution cli" in intent.lower() or ("进化" in intent and "命令行" in intent):
+        print(f"[进化环 CLI] 正在执行...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cli.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化cli", "统一入口", "进化命令", "命令行"]]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        print(result.stdout)
+        if result.stderr:
+            print(f"执行出错: {result.stderr}", file=sys.stderr)
+        sys.exit(result.returncode)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:

@@ -2,7 +2,17 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 ## 本轮影响文件
-scripts/evolution_dashboard.py, scripts/do.py, references/evolution_auto_last.md
+scripts/evolution_cli.py, scripts/do.py, references/evolution_auto_last.md
+
+## 2026-03-12 round 80
+- **current_goal**：创建统一的进化环 CLI 入口（evolution_cli.py），整合各模块功能，提供一站式操作体验
+- **做了什么**：
+  - 创建 evolution_cli.py 模块，提供统一的 CLI 接口
+  - 支持 status、analyze、run、scheduler、history、health、dashboard、learn、evaluate 等命令
+  - 集成到 do.py，支持"进化cli"、"统一入口"等关键词触发
+  - 针对性校验通过：evolution_cli.py 模块功能正常，status/health/history 命令均正常工作
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将 CLI 接口与图形界面结合，实现更丰富的交互体验
 
 ## 2026-03-12 round 79
 - **current_goal**：创建进化环可视化监控面板(evolution_dashboard)，实现进化状态、各模块健康度、历史趋势的实时展示
@@ -24,6 +34,8 @@ scripts/evolution_dashboard.py, scripts/do.py, references/evolution_auto_last.md
   - 统一调用 evolution_strategy_engine、evolution_log_analyzer、evolution_self_evaluator、evolution_loop_automation、evolution_history_db、evolution_learning_engine
   - 集成到 do.py，支持"进化协调""协调进化""统一进化"等关键词触发
   - 提供统一的进化状态查看和执行接口
+  - 基线校验通过（5/6项，clipboard为远程会话已知问题）
+  - 针对性校验通过：evolution_coordinator.py 模块功能正常，do.py 集成成功
 - **是否完成**：已完成
 - **下一轮建议**：可考虑将进化协调器与定时任务结合，实现周期性自动运行
 
@@ -62,23 +74,6 @@ scripts/evolution_dashboard.py, scripts/do.py, references/evolution_auto_last.md
   - 针对性校验通过：所有进化模块输出正确JSON
 - **是否完成**：已完成
 - **下一轮建议**：可考虑将修复后的自动化引擎与定时任务结合，实现周期性自动运行
-
-
-
-## 本轮影响文件
-scripts/evolution_coordinator.py, scripts/do.py, references/evolution_auto_last.md
-
-## 2026-03-12 round 78
-- **current_goal**：创建智能进化协调器(evolution_coordinator)：统一现有进化模块接口，增强整体智能联动
-- **做了什么**：
-  - 创建 evolution_coordinator.py 模块，实现统一进化模块接口
-  - 统一调用 evolution_strategy_engine、evolution_log_analyzer、evolution_self_evaluator、evolution_loop_automation、evolution_history_db、evolution_learning_engine
-  - 集成到 do.py，支持"进化协调""协调进化""统一进化"等关键词触发
-  - 提供统一的进化状态查看和执行接口
-  - 基线校验通过（5/6项，clipboard为远程会话已知问题）
-  - 针对性校验通过：evolution_coordinator.py 模块功能正常，do.py 集成成功
-- **是否完成**：已完成
-- **下一轮建议**：可考虑将进化协调器与定时任务结合，实现周期性自动运行
 
 ## 2026-03-12 round 73
 - **current_goal**：创建进化闭环自动化引擎 - 将 evolution_strategy_engine、evolution_log_analyzer、evolution_self_evaluator 三个模块联动，实现自动化的分析→决策→执行→评估循环
