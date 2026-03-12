@@ -865,6 +865,19 @@ def main():
         path = sys.argv[2] if len(sys.argv) > 2 else ""
         if path:
             subprocess.run([sys.executable, os.path.join(SCRIPTS, "clipboard_tool.py"), "image_set", path], cwd=PROJECT)
+    elif intent in ("剪贴板历史", "剪贴板记录"):
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "clipboard_history.py"), "list"], cwd=PROJECT)
+    elif intent in ("剪贴板历史清空", "清空剪贴板历史"):
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "clipboard_history.py"), "clear"], cwd=PROJECT)
+    elif intent in ("剪贴板添加", "添加剪贴板到历史"):
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "clipboard_history.py"), "add"], cwd=PROJECT)
+    elif intent in ("剪贴板恢复", "恢复剪贴板"):
+        # 如果提供了索引，则恢复该索引的项目
+        index = sys.argv[2] if len(sys.argv) > 2 else ""
+        if index.isdigit():
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "clipboard_history.py"), "restore", index], cwd=PROJECT)
+        else:
+            print("用法: do.py 恢复剪贴板 <索引>")
     elif intent in ("窗口激活", "激活窗口", "前置窗口"):
         title = sys.argv[2] if len(sys.argv) > 2 else ""
         if title:
