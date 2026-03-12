@@ -1,5 +1,17 @@
 ## 当前核心目录与文件树（简要）
 scripts/ references/ assets/ runtime/ 等（一行即可）
+## 2026-03-12 round 76
+- **current_goal**：建立进化历史数据库 - 将每次进化过程和结果持久化存储，为未来的进化策略提供数据支持
+- **做了什么**：
+  - 创建 evolution_history_db.py 模块，实现进化历史的 SQLite 持久化存储
+  - 支持存储进化轮次、动作、性能指标等数据
+  - 提供查询接口（get_evolution_round、get_all_evolution_rounds、get_latest_evolution_round 等）
+  - 模块功能测试通过
+  - 基线校验通过（5/6项，clipboard为远程会话已知问题）
+  - 针对性校验通过：evolution_history_db.py 模块功能正常
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将该数据库与进化策略引擎集成，实现基于历史数据的智能进化
+
 ## 2026-03-12 round 74
 - **current_goal**：增强进化环智能决策能力 - 修复并优化现有进化模块间的JSON解析和数据格式问题
 - **做了什么**：
