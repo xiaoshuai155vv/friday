@@ -70,7 +70,7 @@
 | 计划模板（assets/plans/） | `play_music.json`（放个歌，按 steps 执行）、`ihaier_performance_declaration.json`（绩效达成申报，run_plan）、`minimal_self_verify.json`、`example_visit_website.json`、`example_ihaier_*.json`、`example_screenshot_vision.json` 等，供 run_plan 或查阅 steps 引用 |
 | **自主进化环（Claude Code）** | 通过 CCR 向 Claude Code 提交进化任务：配置 `runtime/config/evolution_loop.json`（ccr_base_url、ccr_api_key、friday_project_path），悬浮球右键「提交一轮进化环」或命令行 `python scripts/evolution_loop_client.py --once`。详见 `references/evolution_loop_claude_code_integration.md`。 |
 | **功能改动 git 追溯** | 进化或手工改代码/文档后运行 `python scripts/git_commit_evolution.py`（可选 `--bump-version`），对 scripts/、references/、assets/、VERSION、SKILL.md 做本地提交；不提交 runtime/。反思阶段建议执行以便追溯。 |
-| **上一轮进化摘要（防重复）** | `references/evolution_auto_last.md`：每轮反思后写入本轮做了什么；下一轮假设阶段必读，与 capability_gaps、workflow 一起读，避免重复劳动。 |
+| **上一轮进化摘要（防重复）** | `references/evolution_auto_last.md`：**只存最后一条**（本轮），覆盖写入；历史详情在 `runtime/state/evolution_completed_<session_id>.json`；下一轮假设阶段必读，与 capability_gaps、workflow 一起读，避免重复劳动。 |
 
 ## 说明
 

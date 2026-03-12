@@ -1705,7 +1705,7 @@ def main():
         sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化闭环自动化引擎
     elif "进化闭环" in intent or "闭环自动化" in intent or "evolution loop" in intent.lower() or "evolution automation" in intent.lower() or ("进化" in intent and "自动" in intent):
-        print(f"[进化闭环自动化引擎] 正在联动三个进化模块...", file=sys.stderr)
+        print(f"[进化闭环自动化引擎] 正在联动三个进化模块（增强版：智能预测+优先级排序）...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_loop_automation.py")
         result = subprocess.run([sys.executable, script_path], cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
@@ -1725,7 +1725,21 @@ def main():
                 print(f"策略输入: {list(plan.get('strategy_input', {}).keys())}")
                 print(f"分析输入: {list(plan.get('analysis_input', {}).keys())}")
                 print(f"评估输入: {list(plan.get('evaluation_input', {}).keys())}")
-                print(f"推荐行动数: {len(plan.get('recommendations', []))}")
+                # 显示预测结果
+                prediction = plan.get("prediction", {})
+                if prediction.get("predicted_direction") != "unknown":
+                    print(f"\n=== 智能预测 ===")
+                    print(f"预测进化方向: {prediction.get('predicted_direction', 'N/A')}")
+                    print(f"置信度: {prediction.get('confidence', 0.0):.1%}")
+                    for reason in prediction.get("reasoning", [])[:2]:
+                        print(f"  - {reason}")
+                # 显示优先级排序后的任务
+                priority_ranked = plan.get("priority_ranked", [])
+                if priority_ranked:
+                    print(f"\n=== 优先级排序任务 ===")
+                    for i, task in enumerate(priority_ranked[:3], 1):
+                        print(f"  {i}. {task.get('description', task.get('action', 'N/A'))} (优先级: {task.get('priority', 5)})")
+                print(f"\n推荐行动数: {len(plan.get('recommendations', []))}")
                 for i, rec in enumerate(plan.get('recommendations', [])[:3], 1):
                     print(f"  {i}. {rec}")
         sys.exit(0 if result.returncode == 0 else result.returncode)

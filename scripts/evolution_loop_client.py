@@ -209,8 +209,39 @@ def _round_to_completed_path():
     return mapping
 
 
+def _compact_from_completed_jsons():
+    """从 runtime/state/evolution_completed_*.json 构建轮次概述，每轮一行；历史详情在各会话 json 中。"""
+    import glob as _glob
+    state_dir = _state_dir(ROOT)
+    by_round = {}  # round -> (line, session_id) 同轮取 session_id 最新的
+    try:
+        for path in _glob.glob(os.path.join(state_dir, EVOLUTION_COMPLETED_PREFIX + "*.json")):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+                r = d.get("loop_round")
+                if r is None:
+                    continue
+                goal = d.get("current_goal") or d.get("goal") or "—"
+                done_raw = d.get("做了什么") or d.get("did") or d.get("actions_taken") or []
+                done = (done_raw[0][:60] if isinstance(done_raw, list) and done_raw else str(done_raw)[:60]) if done_raw else "—"
+                ok = d.get("是否完成") or d.get("is_completed") or d.get("completed")
+                summary = "完成" if ok else "未完成"
+                rel = os.path.relpath(path, ROOT).replace("\\", "/")
+                line = "round %s: %s; %s; %s | 详见 %s" % (r, (goal or "—")[:80], (done or "—")[:60], summary, rel)
+                sid = d.get("session_id") or ""
+                if r not in by_round or sid > by_round[r][1]:
+                    by_round[r] = (line, sid)
+            except Exception:
+                continue
+    except Exception:
+        pass
+    sorted_entries = sorted(by_round.items(), key=lambda x: x[0], reverse=True)[:500]
+    return "\n".join(e[1][0] for e in sorted_entries) if sorted_entries else ""
+
+
 def _compact_evolution_summary(body):
-    """将 evolution_auto_last 转为每轮一行概述 + 详情路径；优先关联 evolution_completed_*.json（更全），否则 behavior_log。"""
+    """将 evolution_auto_last 转为每轮一行（仅当无 evolution_completed 时作兜底）。"""
     import re
     round_to_path = _round_to_completed_path()
     lines = []
@@ -225,9 +256,7 @@ def _compact_evolution_summary(body):
     def flush_round():
         if not current_round:
             return
-        detail_path = round_to_path.get(current_round)
-        if not detail_path:
-            detail_path = "runtime/logs/behavior_%s.log" % (current_date or "YYYY-MM-DD") if current_date else "runtime/logs/behavior_*.log"
+        detail_path = round_to_path.get(current_round) or ("runtime/logs/behavior_%s.log" % (current_date or "YYYY-MM-DD") if current_date else "runtime/logs/behavior_*.log")
         s = "round %s: %s; %s; %s | 详见 %s" % (current_round, (goal or "—")[:80], (done or "—")[:60], summary_line or "", detail_path)
         lines.append(s)
 
@@ -237,9 +266,7 @@ def _compact_evolution_summary(body):
             flush_round()
             current_date = m.group(1) or ""
             current_round = m.group(2)
-            goal = ""
-            done = ""
-            summary_line = ""
+            goal = done = summary_line = ""
             next_is_done = False
             continue
         if not current_round:
@@ -249,46 +276,42 @@ def _compact_evolution_summary(body):
             goal = s.split("：", 1)[-1].split(":", 1)[-1].strip()[:100]
         elif s.startswith("- **做了什么**"):
             rest = s.split("：", 1)[-1].split(":", 1)[-1].strip()
-            if rest:
-                done = rest[:80]
-            else:
-                next_is_done = True
+            done = rest[:80] if rest else ""
+            next_is_done = not rest
         elif next_is_done and (s.startswith("- ") or s.startswith("-")):
             done = s.lstrip("- ").strip()[:80]
             next_is_done = False
         elif "完成" in s or "是否完成" in s:
-            summary_line = "完成" if "已完成" in s or ("是" in s and "未" not in s) else "未完成"
+            summary_line = "完成" if ("已完成" in s or ("是" in s and "未" not in s)) else "未完成"
     flush_round()
-    # 取最近 500 轮：按 round 号降序排序，全部包含（小于 500 条）
-    def _round_key(s):
-        import re as _re
-        m = _re.search(r"round\s+(\d+)", s, _re.I)
-        return int(m.group(1)) if m else 0
-    sorted_lines = sorted(lines, key=_round_key, reverse=True)
-    return "\n".join(sorted_lines[:1000]) if sorted_lines else ""
+    return "\n".join(sorted(lines, key=lambda x: int(re.search(r"round\s+(\d+)", x, re.I).group(1)) if re.search(r"round\s+(\d+)", x, re.I) else 0, reverse=True)[:500]) if lines else ""
 
 
 def build_auto_evolution_hint():
     """
-    自动进化环下一轮：仅附带「每轮概述 + 日志路径」作为背景，避免提示过长。
-    具体细节由通用智能体按需读 runtime/logs/behavior_*.log。
+    自动进化环下一轮：从 evolution_completed_*.json 构建轮次概述作为背景；
+    历史详情在各会话 json 中，evolution_auto_last 只存最后一条。
     """
     parts = []
     parts.append("【自动进化环·背景】以下为最近轮次概述（假设阶段请先读再动手，避免重复）：")
-    try:
-        eal = os.path.join(ROOT, "references", "evolution_auto_last.md")
-        if os.path.isfile(eal):
-            with open(eal, "r", encoding="utf-8") as f:
-                body = f.read()
-            if body and len(body.strip()) > 80:
-                compact = _compact_evolution_summary(body)
-                if compact:
-                    parts.append(compact)
-                else:
-                    parts.append(body[:1200])
-    except Exception:
-        pass
-    parts.append("（以上为概述；有 evolution_completed_*.json 的轮次已关联该文件，更全；其余要求见 references/agent_evolution_workflow.md。）")
+    compact = _compact_from_completed_jsons()
+    if compact:
+        parts.append(compact)
+    else:
+        try:
+            eal = os.path.join(ROOT, "references", "evolution_auto_last.md")
+            if os.path.isfile(eal):
+                with open(eal, "r", encoding="utf-8") as f:
+                    body = f.read()
+                if body and len(body.strip()) > 80:
+                    compact = _compact_evolution_summary(body)
+                    if compact:
+                        parts.append(compact)
+                    else:
+                        parts.append(body[:1200])
+        except Exception:
+            pass
+    parts.append("（以上为概述；详情见各轮对应的 runtime/state/evolution_completed_*.json；evolution_auto_last 只存最后一条；其余要求见 references/agent_evolution_workflow.md。）")
     return "\n".join(parts)
 
 
