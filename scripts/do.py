@@ -1260,6 +1260,69 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能任务记忆与预测中心
+    elif intent in ("任务记忆", "任务历史", "任务回顾", "任务统计", "任务分析"):
+        print(f"[任务记忆] 正在处理您的请求...", file=sys.stderr)
+        # 加载任务记忆模块
+        from scripts.task_memory import TaskMemory
+        tm = TaskMemory()
+        if "历史" in intent or "回顾" in intent:
+            # 查看任务历史
+            history = tm.get_task_history(10)
+            if history:
+                print("最近任务历史:")
+                for task in history:
+                    print(f"  - {task['id']} ({task['timestamp']}): {task['info']}")
+            else:
+                print("暂无任务历史记录")
+        elif "统计" in intent or "分析" in intent:
+            # 查看任务统计
+            stats = tm.get_statistics()
+            print("任务统计信息:")
+            print(f"  总任务数: {stats['total_tasks']}")
+            print(f"  成功任务数: {stats['completed_tasks']}")
+            print(f"  失败任务数: {stats['failed_tasks']}")
+            print(f"  完成率: {stats['completion_rate']:.2%}")
+            if stats['intent_distribution']:
+                print("任务意图分布:")
+                for intent, count in stats['intent_distribution'].items():
+                    print(f"  - {intent}: {count} 次")
+        else:
+            # 默认显示任务历史
+            history = tm.get_task_history(5)
+            if history:
+                print("最近任务历史:")
+                for task in history:
+                    print(f"  - {task['id']} ({task['timestamp']}): {task['info']}")
+            else:
+                print("暂无任务历史记录")
+    elif intent in ("意图预测", "预测意图", "主动任务", "主动规划", "智能规划"):
+        print(f"[智能规划] 正在处理您的请求...", file=sys.stderr)
+        # 加载任务记忆模块进行意图预测和主动规划
+        from scripts.task_memory import TaskMemory
+        tm = TaskMemory()
+        if "预测" in intent or "意图" in intent:
+            # 预测用户意图
+            context = " ".join(sys.argv[2:]) if len(sys.argv) > 2 else ""
+            prediction = tm.predict_user_intent(context)
+            print("用户意图预测:")
+            print(f"  预测结果: {prediction['predicted_intent']}")
+            if prediction['suggestions']:
+                print("  建议:")
+                for suggestion in prediction['suggestions']:
+                    print(f"    - {suggestion}")
+        elif "主动" in intent or "规划" in intent:
+            # 主动规划任务
+            context = " ".join(sys.argv[2:]) if len(sys.argv) > 2 else ""
+            plan = tm.plan_active_task(context)
+            print("主动任务规划:")
+            print(f"  时间戳: {plan['timestamp']}")
+            print(f"  上下文: {plan['context']}")
+            print(f"  优先级: {plan['priority']}")
+            if plan['suggested_tasks']:
+                print("  建议任务:")
+                for task in plan['suggested_tasks']:
+                    print(f"    - {task['description']} (优先级: {task['priority']})")
     # 智能任务编排与工作流自动化
     elif "工作流" in intent or "编排" in intent or "workflow" in intent.lower() or "执行多个任务" in intent or "一系列任务" in intent or "智能规划" in intent:
         print(f"[智能任务编排] 正在处理您的工作流请求...", file=sys.stderr)
