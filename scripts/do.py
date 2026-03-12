@@ -1534,6 +1534,47 @@ def main():
                 for i, rec in enumerate(plan.get('recommendations', [])[:3], 1):
                     print(f"  {i}. {rec}")
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 进化环定时触发器
+    elif "进化定时" in intent or "定时进化" in intent or "进化调度" in intent or "evolution scheduler" in intent.lower() or "schedule evolution" in intent.lower():
+        script_path = os.path.join(SCRIPTS, "evolution_scheduler.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化定时", "定时进化", "进化调度"]]
+
+        # 确定子命令
+        if "状态" in intent or "status" in intent.lower():
+            subprocess.run([sys.executable, script_path, "status"], cwd=PROJECT, capture_output=True, text=True)
+        elif "启动" in intent or "start" in intent.lower() or "开启" in intent:
+            if "守护" in intent or "daemon" in intent.lower():
+                subprocess.run([sys.executable, script_path, "start", "--daemon"], cwd=PROJECT, capture_output=True, text=True)
+            else:
+                subprocess.run([sys.executable, script_path, "start"], cwd=PROJECT, capture_output=True, text=True)
+        elif "停止" in intent or "stop" in intent.lower() or "关闭" in intent:
+            subprocess.run([sys.executable, script_path, "stop"], cwd=PROJECT, capture_output=True, text=True)
+        elif "立即运行" in intent or "run" in intent.lower():
+            subprocess.run([sys.executable, script_path, "run"], cwd=PROJECT, capture_output=True, text=True)
+        elif "启用" in intent or "enable" in intent.lower():
+            subprocess.run([sys.executable, script_path, "enable"], cwd=PROJECT, capture_output=True, text=True)
+        elif "禁用" in intent or "disable" in intent.lower():
+            subprocess.run([sys.executable, script_path, "disable"], cwd=PROJECT, capture_output=True, text=True)
+        else:
+            # 默认显示状态
+            subprocess.run([sys.executable, script_path, "status"], cwd=PROJECT, capture_output=True, text=True)
+
+        # 显示调度器配置摘要
+        config_path = os.path.join(PROJECT, "runtime/state/evolution_scheduler_config.json")
+        if os.path.exists(config_path):
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            print("\n=== 进化环定时触发器配置 ===")
+            print(f"启用状态: {'已启用' if config.get('enabled') else '已禁用'}")
+            print(f"运行间隔: {config.get('interval_hours')} 小时 {config.get('interval_minutes')} 分钟")
+            print(f"上次运行: {config.get('last_run', 'N/A')}")
+            print(f"下次运行: {config.get('next_run', 'N/A')}")
+            print(f"总运行次数: {config.get('total_runs', 0)}")
+        sys.exit(0)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
