@@ -282,7 +282,6 @@ def main():
         result = engine.analyze()
         engine.save_strategy(result)
         print(json.dumps(result, ensure_ascii=False, indent=2))
-        print(f"\n策略已保存到: {engine.strategy_file}")
 
     elif command == "recommend":
         result = engine.recommend()

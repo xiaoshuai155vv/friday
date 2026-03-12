@@ -378,7 +378,6 @@ def main():
         result = evaluator.evaluate()
         evaluator.save_evaluation(result)
         print(json.dumps(result, ensure_ascii=False, indent=2))
-        print(f"\n评估结果已保存到: {evaluator.evaluation_file}")
 
     elif command == "report":
         result = evaluator.report()
