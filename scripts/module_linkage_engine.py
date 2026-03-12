@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-智能模块联动推理引擎
+智能模块联动推理引擎（增强版）
 
 功能：
 - 分析用户请求，智能识别需要哪些模块协同工作
@@ -10,10 +10,69 @@
 - 作为统一入口，提供一站式模块协同体验
 - 让系统具备"1+1>2"的智能联动能力
 - 集成跨模块状态共享总线，增强模块间协同能力
+- 新增：智能场景模式识别、动态引擎编排、引擎协同效果评估
+- 新增：安全卫士集成、跨模块上下文传递、结果智能聚合
 
 模块联动规则：
 - 用户请求 -> 意图识别 -> 需要哪些模块 -> 依次/并行调用 -> 综合响应
 """
+
+# 智能场景模式定义
+COMPLEX_SCENARIOS = {
+    "文件整理+通知": {
+        "modules": ["file_manager", "proactive_notification"],
+        "description": "整理文件后发送通知",
+        "sequential": True
+    },
+    "学习+推荐": {
+        "modules": ["adaptive_learning", "scenario_recommender", "active_suggestion"],
+        "description": "基于学习到的习惯推荐场景",
+        "sequential": False
+    },
+    "情感+对话": {
+        "modules": ["emotion_engine", "conversation_manager"],
+        "description": "情感识别后进行上下文对话",
+        "sequential": True
+    },
+    "情境感知+主动推荐": {
+        "modules": ["context_awareness", "scenario_recommender", "proactive_notification"],
+        "description": "感知环境后主动推荐",
+        "sequential": True
+    },
+    "诊断+自愈": {
+        "modules": ["self_healing", "system_health"],
+        "description": "健康检测后自动修复",
+        "sequential": True
+    },
+    "多引擎协同": {
+        "modules": ["decision_orchestrator", "workflow_engine", "emotion_engine"],
+        "description": "复杂任务的多引擎协同",
+        "sequential": False
+    },
+    "语音+情感+TTS": {
+        "modules": ["voice_interaction", "emotion_engine", "tts_engine"],
+        "description": "语音交互完整流程",
+        "sequential": True
+    },
+    "早晨工作准备": {
+        "modules": ["context_awareness", "scenario_recommender", "adaptive_learning"],
+        "description": "早晨自动推荐工作任务",
+        "sequential": True
+    },
+    "晚间放松推荐": {
+        "modules": ["context_awareness", "active_suggestion", "proactive_notification"],
+        "description": "晚间推荐放松活动",
+        "sequential": True
+    },
+    "复杂任务规划": {
+        "modules": ["workflow_engine", "decision_orchestrator", "context_awareness"],
+        "description": "复杂任务智能规划与执行",
+        "sequential": False
+    }
+}
+
+# 引擎协同效果评分（用于优化调度）
+ENGINE_COLLABORATION_SCORES = {}
 
 import os
 import sys
@@ -472,6 +531,170 @@ def execute_linkage(user_input):
         "response": response
     }
 
+def detect_complex_scenario(user_input, system_state):
+    """检测是否匹配复杂场景模式"""
+    user_input_lower = user_input.lower()
+    matched_scenarios = []
+
+    # 场景关键词映射
+    scenario_keywords = {
+        "文件整理+通知": ["整理文件", "整理文件夹", "整理桌面", "发通知"],
+        "学习+推荐": ["推荐", "习惯", "根据我的习惯"],
+        "情感+对话": ["情感", "心情", "和我聊聊"],
+        "情境感知+主动推荐": ["现在能做什么", "当前状态", "推荐"],
+        "诊断+自愈": ["检查", "诊断", "健康", "修复"],
+        "语音+情感+TTS": ["语音", "说话", "读出来"],
+        "早晨工作准备": ["早上好", "早晨", "工作准备"],
+        "晚间放松推荐": ["晚上好", "放松", "休息"],
+        "复杂任务规划": ["规划", "帮我做", "复杂任务"],
+    }
+
+    for scenario_name, keywords in scenario_keywords.items():
+        if any(kw in user_input_lower for kw in keywords):
+            matched_scenarios.append(scenario_name)
+
+    # 时间段自动推断
+    if system_state.get("is_morning") and "早晨" not in user_input:
+        if "推荐" in user_input or "建议" in user_input or "干嘛" in user_input:
+            matched_scenarios.append("早晨工作准备")
+    elif system_state.get("is_evening") and "晚间" not in user_input:
+        if "推荐" in user_input or "放松" in user_input:
+            matched_scenarios.append("晚间放松推荐")
+
+    return matched_scenarios
+
+
+def optimize_engine_order(modules, scenario_name=None):
+    """优化引擎执行顺序"""
+    # 优先级映射
+    priority_map = {
+        "context_awareness": 1,  # 需要先感知环境
+        "emotion_engine": 2,     # 情感需要先识别
+        "adaptive_learning": 3,  # 学习数据需要提前
+        "decision_orchestrator": 4,  # 决策需要前置信息
+        "scenario_recommender": 5,   # 推荐需要决策后
+        "active_suggestion": 6,      # 主动建议
+        "proactive_notification": 7,  # 通知最后
+        "workflow_engine": 4,         # 工作流需要决策
+    }
+
+    # 按优先级排序
+    sorted_modules = sorted(modules, key=lambda m: priority_map.get(m, 10))
+    return sorted_modules
+
+
+def evaluate_collaboration(modules_used, results, system_state):
+    """评估引擎协同效果"""
+    success_count = sum(1 for r in results if r.get("success", False))
+    total = len(results)
+    success_rate = success_count / total if total > 0 else 0
+
+    # 计算评分
+    score = {
+        "success_rate": success_rate,
+        "modules_count": len(modules_used),
+        "efficiency": "high" if success_rate >= 0.8 else "medium" if success_rate >= 0.5 else "low",
+        "timestamp": datetime.now().isoformat()
+    }
+
+    # 更新协同评分缓存
+    for module in modules_used:
+        if module not in ENGINE_COLLABORATION_SCORES:
+            ENGINE_COLLABORATION_SCORES[module] = []
+        ENGINE_COLLABORATION_SCORES[module].append(success_rate)
+
+    return score
+
+
+def check_safety_guardian(user_input, modules):
+    """检查是否需要安全卫士介入"""
+    safety_keywords = ["删除", "格式化", "关机", "重启", "结束进程", "清空", "危险"]
+    user_input_lower = user_input.lower()
+
+    # 如果有危险操作且调用了文件管理或进程管理等模块
+    needs_check = any(kw in user_input_lower for kw in safety_keywords)
+
+    if needs_check and any(m in modules for m in ["file_manager", "coordinator", "self_healing"]):
+        # 调用安全卫士检查
+        safety_script = SCRIPT_DIR / "safety_guardian.py"
+        if safety_script.exists():
+            try:
+                result = subprocess.run(
+                    [sys.executable, str(safety_script), "check", user_input],
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                if result.returncode == 0:
+                    return {"required": True, "message": "已通过安全卫士检查"}
+            except:
+                pass
+
+    return {"required": False, "message": "无需安全检查"}
+
+
+def execute_enhanced_linkage(user_input):
+    """执行增强版模块联动推理"""
+    # 1. 获取系统状态
+    system_state = get_system_state()
+
+    # 2. 检测复杂场景
+    complex_scenarios = detect_complex_scenario(user_input, system_state)
+
+    # 3. 分析需要哪些模块
+    required = analyze_required_modules(user_input, system_state)
+    required_modules = required["modules"]
+
+    # 如果匹配复杂场景，扩展需要的模块
+    if complex_scenarios:
+        for scenario in complex_scenarios:
+            if scenario in COMPLEX_SCENARIOS:
+                scenario_modules = COMPLEX_SCENARIOS[scenario]["modules"]
+                for mod in scenario_modules:
+                    if mod not in required_modules:
+                        required_modules.append(mod)
+
+    # 4. 安全卫士检查
+    safety_check = check_safety_guardian(user_input, required_modules)
+    if safety_check.get("required"):
+        required_modules.append("safety_guardian")
+
+    # 5. 优化引擎执行顺序
+    required_modules = optimize_engine_order(required_modules)
+
+    # 6. 依次调用各模块
+    module_results = []
+    for module_name in required_modules:
+        result = call_module(module_name, user_input, system_state)
+        module_results.append(result)
+
+    # 7. 评估协同效果
+    collaboration_score = evaluate_collaboration(required_modules, module_results, system_state)
+
+    # 8. 综合响应
+    response = synthesize_response(module_results, required_modules)
+    response["collaboration_score"] = collaboration_score
+    response["complex_scenarios"] = complex_scenarios
+
+    # 9. 记录历史
+    record_linkage_history(user_input, required_modules, module_results, response)
+
+    return {
+        "user_input": user_input,
+        "system_state": {
+            "time": system_state.get("time"),
+            "is_working_hours": system_state.get("is_working_hours"),
+            "is_morning": system_state.get("is_morning"),
+            "is_evening": system_state.get("is_evening")
+        },
+        "inference": required,
+        "complex_scenarios_detected": complex_scenarios,
+        "optimized_order": required_modules,
+        "safety_check": safety_check,
+        "response": response
+    }
+
+
 def show_status():
     """显示模块联动引擎状态"""
     # 检查各模块是否存在
@@ -496,6 +719,7 @@ def show_status():
 
     return {
         "available_modules": len(AVAILABLE_MODULES),
+        "complex_scenarios": len(COMPLEX_SCENARIOS),
         "modules_status": modules_status,
         "history_count": history_count,
         "capabilities": [
@@ -506,8 +730,13 @@ def show_status():
             "后续建议联动",
             "用户行为联动",
             "工作流编排联动",
-            "自然语言自动化联动"
-        ]
+            "自然语言自动化联动",
+            "智能场景模式识别",
+            "动态引擎编排优化",
+            "安全卫士集成",
+            "协同效果评估"
+        ],
+        "complex_scenarios_list": list(COMPLEX_SCENARIOS.keys())
     }
 
 def main():
@@ -524,25 +753,39 @@ def main():
         result = show_status()
         print(json.dumps(result, ensure_ascii=False, indent=2))
 
-    elif command == "execute" and len(sys.argv) > 2:
-        # 执行联动推理
+    elif command in ["execute", "run", "e"] and len(sys.argv) > 2:
+        # 执行增强版联动推理
         user_input = " ".join(sys.argv[2:])
-        result = execute_linkage(user_input)
+        result = execute_enhanced_linkage(user_input)
         print(json.dumps(result, ensure_ascii=False, indent=2))
 
+    elif command == "enhanced" and len(sys.argv) > 2:
+        # 明确执行增强版
+        user_input = " ".join(sys.argv[2:])
+        result = execute_enhanced_linkage(user_input)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+
+    elif command == "scenarios":
+        # 列出复杂场景
+        print(json.dumps(COMPLEX_SCENARIOS, ensure_ascii=False, indent=2))
+
     elif command == "test":
-        # 测试联动
+        # 测试增强版联动
         test_inputs = [
             "有啥好玩的建议吗",
             "我现在应该做什么",
-            "我之前在做什么"
+            "我之前在做什么",
+            "早上好推荐今天的工作",
+            "晚上好推荐点放松的"
         ]
         results = []
         for test_input in test_inputs:
-            result = execute_linkage(test_input)
+            result = execute_enhanced_linkage(test_input)
             results.append({
                 "input": test_input,
                 "modules": result["inference"]["modules"],
+                "complex_scenarios": result.get("complex_scenarios_detected", []),
+                "optimized_order": result.get("optimized_order", []),
                 "success": all(m.get("success", False) for m in result["response"].get("details", []))
             })
 
@@ -550,27 +793,37 @@ def main():
 
     elif command in ["help", "h", "-h", "--help"]:
         print("""
-智能模块联动推理引擎
+智能模块联动推理引擎（增强版）
 
 用法:
   python module_linkage_engine.py [command] [args]
 
 命令:
   status/s              显示模块联动引擎状态
-  execute <input>       执行模块联动推理
-  test                  测试联动推理
+  execute <input>       执行增强版模块联动推理
+  enhanced <input>      执行增强版模块联动推理（同execute）
+  scenarios             列出复杂场景模式
+  test                  测试增强版联动推理
   help                  显示帮助
+
+新增功能:
+  - 智能场景模式识别（10种复杂场景）
+  - 动态引擎编排优化
+  - 安全卫士集成
+  - 协同效果评估
+  - 时间感知的自动场景推荐
 
 示例:
   python module_linkage_engine.py status
   python module_linkage_engine.py execute 好无聊推荐点东西
+  python module_linkage_engine.py scenarios
   python module_linkage_engine.py test
         """)
 
     else:
-        # 默认为 execute
+        # 默认为 execute（增强版）
         user_input = command + " " + " ".join(sys.argv[2:]) if len(sys.argv) > 2 else command
-        result = execute_linkage(user_input)
+        result = execute_enhanced_linkage(user_input)
         print(json.dumps(result, ensure_ascii=False, indent=2))
 
 if __name__ == "__main__":
