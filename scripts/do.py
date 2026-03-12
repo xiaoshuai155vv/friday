@@ -938,6 +938,34 @@ def main():
     elif intent in ("通知", "Toast", "弹窗通知"):
         msg = " ".join(sys.argv[2:]) if len(sys.argv) > 2 else "FRIDAY"
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "notification_tool.py"), "show", msg], cwd=PROJECT)
+    # 番茄钟功能
+    elif "番茄钟" in intent or "pomodoro" in intent.lower() or "专注" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else []
+        if "开始" in intent or "启动" in intent or "start" in intent.lower():
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "pomodoro", "start"] + cmd, cwd=PROJECT)
+        elif "停止" in intent or "结束" in intent or "stop" in intent.lower():
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "pomodoro", "stop"], cwd=PROJECT)
+        elif "状态" in intent or "status" in intent.lower():
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "pomodoro", "status"], cwd=PROJECT)
+        else:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "pomodoro", "status"], cwd=PROJECT)
+    # 休息提醒功能
+    elif "休息提醒" in intent or "休息" in intent and "提醒" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else []
+        if "开始" in intent or "启动" in intent or "设置" in intent:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "rest", "reminder"] + cmd, cwd=PROJECT)
+        elif "停止" in intent or "结束" in intent or "取消" in intent:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "rest", "reminder", "stop"], cwd=PROJECT)
+        else:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "status"], cwd=PROJECT)
+    # 专注模式
+    elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
+        if "开始" in intent or "启动" in intent or "开启" in intent:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "focus", "mode", "start"], cwd=PROJECT)
+        elif "停止" in intent or "结束" in intent or "关闭" in intent:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "focus", "mode", "stop"], cwd=PROJECT)
+        else:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "status"], cwd=PROJECT)
     elif intent in ("当前时间", "时间", "time"):
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "time_tool.py")], cwd=PROJECT)
     elif intent in ("主机名", "计算机名", "COMPUTERNAME"):
