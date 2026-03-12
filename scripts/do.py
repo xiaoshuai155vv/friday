@@ -653,6 +653,34 @@ def main():
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 检查是否请求进化环（定时触发 CC 的能力，独立于悬浮球）
+    evolution_keywords = {
+        "提交进化环": ["evolution_loop_client", "--once", "--auto-evolution"],
+        "进化环": ["evolution_loop_client", "--once", "--auto-evolution"],
+        "自动进化": ["evolution_loop_client", "--once", "--auto-evolution"],
+        "进化环守护": ["evolution_loop_daemon"],
+        "进化环循环": ["evolution_loop_daemon"],
+        "启动进化环守护": ["evolution_loop_daemon"],
+    }
+    for keyword, subcmd in evolution_keywords.items():
+        if keyword in " ".join(sys.argv[1:]):
+            script_name = subcmd[0]
+            args = subcmd[1:] if len(subcmd) > 1 else []
+            print(f"[进化环] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, script_name + ".py")
+            # 守护进程模式：后台运行，不阻塞
+            if script_name == "evolution_loop_daemon":
+                kw = {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if sys.platform == "win32" else {}
+                subprocess.Popen([sys.executable, script_path] + args, cwd=PROJECT, **kw)
+                print("进化环守护进程已后台启动，按配置间隔定时触发。", file=sys.stderr)
+                sys.exit(0)
+            result = subprocess.run([sys.executable, script_path] + args, cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 检查是否请求告警相关操作
     alert_keywords = {
         "告警状态": ["status"],
@@ -1038,6 +1066,19 @@ def main():
             print("用法: do.py 后续建议 <场景名>", file=sys.stderr)
             print("示例: do.py 后续建议 看电影", file=sys.stderr)
             sys.exit(1)
+    # 情感交互
+    elif "情感" in intent or "心情" in intent or "好累" in intent or "好困" in intent or "开心" in intent or "难过" in intent or "焦虑" in intent or "emotion" in intent.lower() or "feeling" in intent.lower() or "疲惫" in intent:
+        print(f"[情感交互] 正在分析您的情感状态...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "emotional_interaction.py")
+        # 传递用户的完整输入作为参数
+        user_input = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
+        if user_input:
+            result = subprocess.run([sys.executable, script_path, user_input], cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
     # 意图智能识别与推荐
     elif "推荐" in intent or "有啥" in intent or "干嘛" in intent or "干什么" in intent or "无聊" in intent or "suggest" in intent.lower() or "recommend" in intent.lower():
         print(f"[意图识别] 正在分析您的意图并生成推荐...", file=sys.stderr)
@@ -1089,9 +1130,24 @@ def main():
             sys.exit(1)
         subprocess.run([sys.executable, path] + sys.argv[3:], cwd=PROJECT)
     else:
-        # 未知意图时，使用智能推荐系统 + 前台窗口感知
+        # 未知意图时，先检查是否包含情感关键词
         import json
         import glob
+
+        # 检查是否包含情感关键词，如果是则触发情感交互
+        emotion_keywords = ["累", "好累", "疲惫", "困", "好困", "无聊", "开心", "难过", "焦虑", "烦", "伤心", "郁闷", "迷茫"]
+        user_input_full = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
+        has_emotion = any(kw in user_input_full for kw in emotion_keywords)
+
+        if has_emotion:
+            print(f"[情感交互] 检测到您可能有些情绪，尝试理解您的感受...", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "emotional_interaction.py")
+            result = subprocess.run([sys.executable, script_path, user_input_full], cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
 
         # 获取用户偏好
         user_prefs = _get_user_preferences()

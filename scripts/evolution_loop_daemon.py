@@ -27,8 +27,10 @@ import subprocess
 from datetime import datetime, timezone
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-SCRIPTS = os.path.join(ROOT, "scripts")
-CONFIG_FILE = os.path.join(ROOT, "runtime", "config", "evolution_loop.json")
+
+
+def _scripts_dir(project_path=None):
+    return os.path.join(project_path or ROOT, "scripts")
 STATE_DIR = os.path.join(ROOT, "runtime", "state")
 LOG_DIR = os.path.join(ROOT, "runtime", "logs")
 EVOLUTION_LAST_STATUS_FILE = os.path.join(STATE_DIR, "evolution_last_status.json")

@@ -95,6 +95,17 @@ python scripts/launch_friday_floating.py
 
 **通用智能体驱动闭环**：按上文「通用智能体：驱动本技能请先读此文档」指向的 **references/agent_evolution_workflow.md** 执行进化环即可。
 
+**进化环定时触发能力（独立于悬浮球）**：悬浮球内的「开启自动进化环」已提取为独立脚本，**无 PyQt 依赖**，供通用智能体、cron、Windows 计划任务等在无 GUI 环境下使用。
+
+| 能力 | 用法 | 说明 |
+|------|------|------|
+| 提交一轮进化环 | `python scripts/evolution_loop_client.py --once --auto-evolution` | 向 CCR 提交一轮，带上一轮概述，阻塞至完成 |
+| 定时触发守护进程 | `python scripts/evolution_loop_daemon.py` | 按 `runtime/config/evolution_loop.json` 的 `auto_interval_seconds` 循环触发，无 GUI |
+| 仅触发一轮后退出 | `python scripts/evolution_loop_daemon.py --once` | 单次提交后退出，适合 cron/计划任务 |
+| 指定间隔 | `python scripts/evolution_loop_daemon.py --interval 600` | 覆盖配置的间隔（秒） |
+
+**通用智能体如何使用**：① 需定时触发进化环时，启动 `evolution_loop_daemon.py`（可后台运行）；② 需立即提交一轮时，调用 `evolution_loop_client.py --once --auto-evolution`；③ 也可通过 `do.py` 触发：`do 提交进化环`、`do 进化环守护`。配置见 `runtime/config/evolution_loop.json`（ccr_base_url、ccr_api_key、auto_interval_seconds）。
+
 **场景记录**：当用户提出**场景化请求**（如「帮我打开摄像头给我来个自拍」）时，在响应该请求并执行完对应能力后，**必须**调用 `scripts/scenario_log.py` 记录场景与结果（成功/失败），从而按**场景维度**积累经验；规划时可使用 `scripts/query_scenario_experiences.py --keyword <场景>` 查阅历史。详见 `references/scenario_logging.md`。
 
 ## 依赖与安装
