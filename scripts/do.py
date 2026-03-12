@@ -948,6 +948,32 @@ def main():
     elif intent in ("列出所有标签", "list_tags", "所有标签"):
         # 列出所有标签
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "file_metadata.py"), "list-tags"], cwd=PROJECT)
+    elif intent in ("文件夹监控", "文件监控", "监控文件夹", "watch_folder"):
+        # 文件夹监控
+        folder_path = sys.argv[2] if len(sys.argv) > 2 else ""
+        if folder_path:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "file_watcher.py"), "start", folder_path], cwd=PROJECT)
+        else:
+            print("用法: do.py 文件夹监控 <文件夹路径>")
+            print("示例: do.py 文件夹监控 C:\\Users\\Downloads")
+    elif intent in ("监控规则", "文件监控规则", "列出监控规则", "watch_rules"):
+        # 列出监控规则
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "file_watcher.py"), "list-rules"], cwd=PROJECT)
+    elif intent in ("添加监控规则", "add_watch_rule"):
+        # 添加监控规则（需要JSON格式的规则）
+        rule_json = sys.argv[2] if len(sys.argv) > 2 else ""
+        if rule_json:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "file_watcher.py"), "add-rule", rule_json], cwd=PROJECT)
+        else:
+            print("用法: do.py 添加监控规则 <JSON规则>")
+            print("示例: do.py 添加监控规则 '{\"name\":\"test\",\"trigger_events\":[\"created\"],\"actions\":[{\"type\":\"log\",\"message\":\"新文件\"}]}'")
+    elif intent in ("移除监控规则", "remove_watch_rule"):
+        # 移除监控规则
+        rule_name = sys.argv[2] if len(sys.argv) > 2 else ""
+        if rule_name:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "file_watcher.py"), "remove-rule", rule_name], cwd=PROJECT)
+        else:
+            print("用法: do.py 移除监控规则 <规则名称>")
     elif intent in ("窗口激活", "激活窗口", "前置窗口"):
         title = sys.argv[2] if len(sys.argv) > 2 else ""
         if title:
