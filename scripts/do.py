@@ -1465,6 +1465,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 语音合成引擎 (TTS)
+    elif "语音合成" in intent or "语音回复" in intent or "tts" in intent.lower() or "text to speech" in intent.lower() or "读出来" in intent or "读一下" in intent:
+        print(f"[语音合成引擎] 正在合成语音...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "tts_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--help"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["语音合成", "语音回复", "tts", "text to speech", "读出来", "读一下"]]
+        if not filtered_args:
+            filtered_args = ["--help"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能场景推荐
     elif "场景推荐" in intent or "推荐场景" in intent or "推荐计划" in intent or "场景计划" in intent or "recommend" in intent.lower() or "suggestion" in intent.lower():
         print(f"[智能场景推荐] 正在为您生成个性化场景推荐...", file=sys.stderr)

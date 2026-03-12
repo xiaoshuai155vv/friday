@@ -2,7 +2,18 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 ## 本轮影响文件
-scripts/voice_interaction_engine.py, scripts/do.py, references/evolution_auto_last.md, references/evolution_self_proposed.md
+scripts/tts_engine.py, scripts/do.py, references/evolution_auto_last.md
+## 2026-03-12 round 84
+- **current_goal**：创建智能语音合成引擎(TTS) - 让星期五能够用语音回复用户，实现完整的人机语音交互闭环
+- **做了什么**：
+  - 创建 tts_engine.py 模块，实现语音合成功能
+  - 支持多种语音引擎（pyttsx3、gTTS、SAPI）
+  - 集成到 do.py，支持「语音合成」「语音回复」「tts」「text to speech」「读出来」等关键词触发
+  - 基线校验通过（5/6项，clipboard远程限制为已知问题）
+  - 针对性校验通过：tts_engine.py 模块成功导入并创建引擎实例，功能完整
+- **是否完成**：已完成
+- **下一轮建议**：可考虑集成语音识别和语音合成，实现真正的语音交互闭环；可添加更多语音参数控制（语调、语速等）
+
 ## 2026-03-12 round 83
 - **current_goal**：创建智能语音交互引擎 - 让星期五能够响应语音输入，实现真正拟人化的语音交互体验
 - **做了什么**：
