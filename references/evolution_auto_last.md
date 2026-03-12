@@ -208,3 +208,26 @@ scripts/xxx.py, references/yyy.md（逗号分隔）
   - 针对性校验通过：active_suggestion_engine.py 功能正常，do.py 集成成功
 - **是否完成**：已完成
 - **下一轮建议**：可考虑将建议内容与用户偏好学习结合，实现个性化建议推送
+
+## 2026-03-12 round 46
+- **current_goal**：实现意图智能识别与推荐系统 - 让系统能理解用户的模糊意图并智能推荐
+- **做了什么**：
+  - 创建 intent_recognition.py 模块，实现意图分类与智能推荐功能
+  - 支持识别模糊意图（有啥好玩的、推荐个东西、无聊等）
+  - 根据时间、系统状态智能调整推荐权重
+  - 输出推荐结果到 runtime/state/intent_recommendations.json
+  - 集成到 do.py，支持「推荐」「有啥好玩的」「无聊」等关键词触发
+  - 基线校验通过（5/6项，clipboard远程限制为已知问题）
+  - 针对性校验通过：intent_recognition.py 功能正常
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将用户历史行为纳入推荐权重，实现更个性化的推荐
+
+## 2026-03-12 round 45
+- **current_goal**：实现场景执行后的智能后续建议系统
+- **做了什么**：
+  - 创建 scenario_followup_recommender.py 模块，实现场景执行后的智能后续建议功能
+  - 集成到 do.py，支持 '后续建议' 关键词触发
+  - 支持多种场景（看电影、听音乐、刷知乎等）的后续建议生成
+  - 建议结果保存到 runtime/state/scenario_followup_suggestions.json
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将场景建议与用户偏好学习结合，实现个性化建议推送

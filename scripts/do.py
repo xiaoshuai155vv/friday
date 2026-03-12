@@ -968,6 +968,44 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 场景后续建议
+    elif "后续建议" in intent or "场景建议" in intent or "任务建议" in intent or "followup" in intent.lower():
+        # 从参数中获取场景名称
+        scenario_name = None
+        if len(sys.argv) > 2:
+            scenario_name = sys.argv[2]
+        if not scenario_name:
+            # 尝试从 intent 中提取场景名
+            for kw in ["看电影", "听音乐", "刷知乎", "看新闻", "iHaier", "绩效", "消息"]:
+                if kw in intent:
+                    scenario_name = kw
+                    break
+
+        if scenario_name:
+            print(f"[场景后续建议] 正在为场景 '{scenario_name}' 生成后续建议...", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "scenario_followup_recommender.py")
+            result = subprocess.run([sys.executable, script_path, scenario_name], cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+        else:
+            print("用法: do.py 后续建议 <场景名>", file=sys.stderr)
+            print("示例: do.py 后续建议 看电影", file=sys.stderr)
+            sys.exit(1)
+    # 意图智能识别与推荐
+    elif "推荐" in intent or "有啥" in intent or "干嘛" in intent or "干什么" in intent or "无聊" in intent or "suggest" in intent.lower() or "recommend" in intent.lower():
+        print(f"[意图识别] 正在分析您的意图并生成推荐...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "intent_recognition.py")
+        # 传递用户的完整输入作为参数
+        user_input = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else "有啥好玩的"
+        result = subprocess.run([sys.executable, script_path, user_input], cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
