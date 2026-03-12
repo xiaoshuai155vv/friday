@@ -1677,6 +1677,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 进化解释引擎
+    elif "进化解释" in intent or "可解释性" in intent or "解释进化" in intent or "evolution explain" in intent.lower() or "explain evolution" in intent.lower():
+        print(f"[进化解释引擎] 正在解释进化决策...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_explainer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["report"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化解释", "可解释性", "解释进化"]]
+        if not filtered_args:
+            filtered_args = ["report"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化日志分析与可视化
     elif "进化日志" in intent or "日志分析" in intent or "进化分析" in intent or "evolution log" in intent.lower() or "evolution analysis" in intent.lower():
         print(f"[进化日志分析] 正在分析进化日志...", file=sys.stderr)
