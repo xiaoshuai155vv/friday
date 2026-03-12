@@ -1173,6 +1173,53 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 上下文记忆与意图预测
+    elif "上下文" in intent or "记忆" in intent or "历史记录" in intent or "意图预测" in intent or "预测意图" in intent or "上下文记忆" in intent:
+        print(f"[上下文记忆] 正在处理您的请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "context_memory.py")
+        # 参数处理
+        cmd_args = []
+        if "添加" in intent or "记录" in intent or "记住" in intent or "记录" in intent:
+            # 提取要记录的内容 - 跳过关键词后的内容
+            skip_words = ["添加", "记录", "记住", "上下文", "记忆", "历史记录", "意图预测", "预测意图", "上下文记忆"]
+            content_parts = [arg for arg in sys.argv[1:] if not any(sw in arg for sw in skip_words)]
+            if content_parts:
+                cmd_args = ["add", " ".join(content_parts)]
+            else:
+                cmd_args = ["add", intent]
+        elif "预测" in intent or "下一个" in intent:
+            cmd_args = ["predict"]
+            if "当前" in intent:
+                skip_words = ["上下文", "记忆", "历史记录", "意图预测", "预测意图", "上下文记忆", "当前", "预测", "下一个"]
+                content_parts = [arg for arg in sys.argv[1:] if not any(sw in arg for sw in skip_words)]
+                if content_parts:
+                    cmd_args = ["predict", "--current", content_parts[0]]
+        elif "最近" in intent or "历史" in intent:
+            cmd_args = ["recent"]
+            for i in range(1, 10):
+                if str(i) in intent:
+                    cmd_args = ["recent", "--count", str(i)]
+                    break
+        elif "搜索" in intent or "查找" in intent:
+            skip_words = ["上下文", "记忆", "历史记录", "意图预测", "预测意图", "上下文记忆", "搜索", "查找"]
+            content_parts = [arg for arg in sys.argv[1:] if not any(sw in arg for sw in skip_words)]
+            if content_parts:
+                cmd_args = ["search", content_parts[0]]
+            else:
+                cmd_args = ["search", intent]
+        elif "清空" in intent or "清除" in intent:
+            cmd_args = ["clear"]
+        elif "统计" in intent:
+            cmd_args = ["stats"]
+        else:
+            cmd_args = ["stats"]
+
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能任务编排与工作流自动化
     elif "工作流" in intent or "编排" in intent or "workflow" in intent.lower() or "执行多个任务" in intent or "一系列任务" in intent or "智能规划" in intent:
         print(f"[智能任务编排] 正在处理您的工作流请求...", file=sys.stderr)
