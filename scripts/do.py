@@ -1593,6 +1593,23 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 跨模块状态共享总线
+    elif "状态总线" in intent or "模块共享" in intent or "共享状态" in intent or "module_bus" in intent.lower() or "state bus" in intent.lower():
+        print(f"[跨模块状态共享总线] 正在处理状态共享...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "module_bus.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["状态总线", "模块共享", "共享状态", "module_bus", "state bus"]]
+        if not filtered_args:
+            # 如果没有额外参数，显示状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能决策编排中心
     elif "决策" in intent or "编排" in intent or "协同" in intent or "最佳方案" in intent or "智能调度" in intent or "multi-engine" in intent.lower() or "decision" in intent.lower() or "orchestrate" in intent.lower() or "协调" in intent:
         print(f"[智能决策编排中心] 正在分析并调度引擎...", file=sys.stderr)

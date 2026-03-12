@@ -9,6 +9,7 @@
 - 记录模块联动历史到 runtime/state/module_linkage_history.json
 - 作为统一入口，提供一站式模块协同体验
 - 让系统具备"1+1>2"的智能联动能力
+- 集成跨模块状态共享总线，增强模块间协同能力
 
 模块联动规则：
 - 用户请求 -> 意图识别 -> 需要哪些模块 -> 依次/并行调用 -> 综合响应
@@ -34,7 +35,7 @@ def ensure_dir(path):
         path.mkdir(parents=True, exist_ok=True)
     return path
 
-# 可用智能模块注册表
+# 可用智能模块注册表（增强版 - 增加更多引擎联动）
 AVAILABLE_MODULES = {
     # 核心智能模块
     "intent_recognition": {
@@ -81,6 +82,82 @@ AVAILABLE_MODULES = {
         "script": "nl_automation.py",
         "purpose": "自然语言自动化",
         "keywords": ["自动", "帮我", "做", "执行"]
+    },
+    # 增强协同能力 - 新增模块联动
+    "decision_orchestrator": {
+        "script": "decision_orchestrator.py",
+        "purpose": "决策编排中心 - 多引擎协同调度",
+        "keywords": ["决策", "编排", "协同", "调度", "智能调度", "multi-engine"]
+    },
+    "self_healing": {
+        "script": "self_healing_engine.py",
+        "purpose": "问题诊断与自愈",
+        "keywords": ["诊断", "自愈", "问题检测", "健康检测", "修复"]
+    },
+    "proactive_notification": {
+        "script": "proactive_notification_engine.py",
+        "purpose": "主动通知引擎",
+        "keywords": ["通知", "提醒", "主动建议", "提醒我"]
+    },
+    "adaptive_learning": {
+        "script": "adaptive_learning_engine.py",
+        "purpose": "学习与适应引擎",
+        "keywords": ["学习", "适应", "个性化", "习惯"]
+    },
+    "workflow_engine": {
+        "script": "workflow_engine.py",
+        "purpose": "智能工作流引擎",
+        "keywords": ["工作流", "任务规划", "复杂任务"]
+    },
+    "file_manager": {
+        "script": "file_manager_engine.py",
+        "purpose": "智能文件管理引擎",
+        "keywords": ["文件管理", "整理文件", "搜索文件", "分析文件"]
+    },
+    "scenario_recommender": {
+        "script": "scenario_recommender.py",
+        "purpose": "智能场景推荐引擎",
+        "keywords": ["场景推荐", "推荐场景", "推荐计划"]
+    },
+    "voice_interaction": {
+        "script": "voice_interaction_engine.py",
+        "purpose": "语音交互引擎",
+        "keywords": ["语音", "语音交互", "语音命令", "voice"]
+    },
+    "tts_engine": {
+        "script": "tts_engine.py",
+        "purpose": "语音合成引擎",
+        "keywords": ["语音合成", "语音回复", "tts", "读出来"]
+    },
+    "conversation_manager": {
+        "script": "conversation_manager.py",
+        "purpose": "智能对话管理引擎",
+        "keywords": ["对话", "多轮对话", "上下文", "对话历史"]
+    },
+    "emotion_engine": {
+        "script": "emotion_engine.py",
+        "purpose": "智能情感识别与响应引擎",
+        "keywords": ["情感识别", "情绪感知", "情感分析"]
+    },
+    "context_awareness": {
+        "script": "context_awareness_engine.py",
+        "purpose": "智能情境感知引擎",
+        "keywords": ["情境感知", "环境感知", "当前状态", "主动推荐"]
+    },
+    "system_health": {
+        "script": "system_health_monitor.py",
+        "purpose": "系统健康监控引擎",
+        "keywords": ["系统监控", "健康监控", "系统状态", "性能监控"]
+    },
+    "evolution_coordinator": {
+        "script": "evolution_coordinator.py",
+        "purpose": "进化协调器",
+        "keywords": ["进化", "协调进化", "统一进化"]
+    },
+    "evolution_strategy": {
+        "script": "evolution_strategy_engine.py",
+        "purpose": "进化策略引擎",
+        "keywords": ["进化策略", "策略分析"]
     },
 }
 
