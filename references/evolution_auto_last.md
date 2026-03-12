@@ -1,5 +1,32 @@
 ## 当前核心目录与文件树（简要）
 scripts/ references/ assets/ runtime/ 等（一行即可）
+
+## 本轮影响文件
+scripts/evolution_dashboard.py, scripts/do.py, references/evolution_auto_last.md
+
+## 2026-03-12 round 79
+- **current_goal**：创建进化环可视化监控面板(evolution_dashboard)，实现进化状态、各模块健康度、历史趋势的实时展示
+- **做了什么**：
+  - 创建 evolution_dashboard.py 模块，实现进化环可视化监控功能
+  - 展示当前进化状态（当前轮次、阶段、目标）
+  - 展示各模块健康度（8个模块）
+  - 展示进化统计（总轮次、已完成、成功率、近期趋势）
+  - 展示最近进化轮次历史
+  - 集成到 do.py，支持「进化监控」「进化面板」「进化状态」等关键词触发
+  - 支持 JSON 和 Markdown 格式导出
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将监控面板与定时任务结合，实现周期性自动生成报告；或增加邮件/通知推送功能
+
+## 2026-03-12 round 78
+- **current_goal**：创建智能进化协调器(evolution_coordinator)：统一现有进化模块接口，增强整体智能联动
+- **做了什么**：
+  - 创建 evolution_coordinator.py 模块，实现统一进化模块接口
+  - 统一调用 evolution_strategy_engine、evolution_log_analyzer、evolution_self_evaluator、evolution_loop_automation、evolution_history_db、evolution_learning_engine
+  - 集成到 do.py，支持"进化协调""协调进化""统一进化"等关键词触发
+  - 提供统一的进化状态查看和执行接口
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将进化协调器与定时任务结合，实现周期性自动运行
+
 ## 2026-03-12 round 77
 - **current_goal**：增强进化策略的学习能力 - 让策略引擎能够从历史进化结果中学习，不断优化进化方向选择
 - **做了什么**：

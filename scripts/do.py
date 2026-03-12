@@ -1624,6 +1624,33 @@ def main():
                 print(f"模块数量: {status.get('health', {}).get('modules_ready', 0)}/{status.get('health', {}).get('modules_total', 0)}")
                 print(f"可用模块: {', '.join(status.get('modules', []))}")
         sys.exit(0)
+    # 进化环可视化监控面板
+    elif "进化监控" in intent or "进化面板" in intent or "evolution dashboard" in intent.lower() or "进化状态" in intent:
+        print(f"[进化环监控面板] 正在生成监控数据...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_dashboard.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化监控", "进化面板", "进化状态"]]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.returncode == 0:
+            json_path = os.path.join(PROJECT, "runtime", "state", "evolution_dashboard.json")
+            if os.path.exists(json_path):
+                import json as json_module
+                with open(json_path, 'r', encoding='utf-8') as f:
+                    dashboard = json_module.load(f)
+                print("\n=== 进化环监控面板 ===")
+                mission = dashboard.get("current_mission", {})
+                print(f"当前轮次: Round {mission.get('round', 0)}")
+                print(f"当前阶段: {mission.get('phase', 'N/A')}")
+                health = dashboard.get("modules_health", {})
+                print(f"模块健康度: {health.get('healthy_count', 0)}/{health.get('total_count', 0)} ({health.get('health_score', 0)}%)")
+                stats = dashboard.get('statistics', {})
+                print(f"进化统计: {stats.get('completed_rounds', 0)}/{stats.get('total_rounds', 0)} 轮 ({stats.get('success_rate', 0)}% 成功率)")
+                print(f"详细报告已保存至: {json_path}")
+        else:
+            print(f"执行出错: {result.stderr}", file=sys.stderr)
+        sys.exit(0)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
