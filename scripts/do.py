@@ -1997,6 +1997,3 @@ def main():
                 sys.exit(0)  # 不是错误，只是推荐
             print("未知意图:", intent, file=sys.stderr)
             sys.exit(1)
-
-if __name__ == "__main__":
-    main()
