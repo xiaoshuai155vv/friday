@@ -2,7 +2,20 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 ## 本轮影响文件
-scripts/workflow_engine.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md
+scripts/proactive_notification_engine.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md
+
+## 2026-03-12 round 88
+- **current_goal**：创建智能主动通知引擎 - 让系统能够主动向用户推送有价值的信息和建议，实现从被动响应到主动服务的进化
+- **做了什么**：
+  - proactive_notification_engine.py 模块已存在并实现完整功能
+  - 支持定时提醒（schedule_reminder）、推荐通知（send_recommendation）、习惯提醒（send_habit_reminder）
+  - 基于时间生成推荐（上午/下午/晚上）
+  - 支持基于用户习惯的智能提醒
+  - 集成到 do.py，支持「通知」「提醒」「主动建议」「notification」「reminder」等关键词触发
+  - 基线校验通过（5/6项，clipboard远程限制为已知问题）
+  - 针对性校验通过：proactive_notification_engine.py 模块功能正常，可导入并执行
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将主动通知引擎与场景推荐引擎结合，实现基于场景的主动推荐；或与定时任务结合，实现周期性主动服务
 
 ## 2026-03-12 round 86
 - **current_goal**：创建智能工作流引擎 - 让星期五能够理解复杂用户意图，自动规划并执行多步骤任务链，实现从「单命令执行」到「复杂任务闭环」的进化

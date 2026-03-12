@@ -1545,6 +1545,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能主动通知引擎
+    elif "通知" in intent or "提醒" in intent or "主动建议" in intent or "notification" in intent.lower() or "reminder" in intent.lower() or "proactive" in intent.lower() or "智能提醒" in intent or "主动通知" in intent:
+        print(f"[智能主动通知引擎] 正在处理通知请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "proactive_notification_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["通知", "提醒", "主动建议", "notification", "reminder", "proactive", "智能提醒", "主动通知"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化策略引擎
     elif "进化策略" in intent or "策略分析" in intent or "evolution strategy" in intent.lower():
         print(f"[进化策略引擎] 正在分析进化方向...", file=sys.stderr)
