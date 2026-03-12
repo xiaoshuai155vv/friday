@@ -904,6 +904,50 @@ def main():
             print("用法: do.py 快速预览 <文件路径> [行数限制]")
             print("示例: do.py 快速预览 test.txt")
             print("       do.py 预览文件 data.json 50")
+    elif intent in ("文件元数据", "获取元数据", "metadata"):
+        # 获取文件元数据
+        file_path = sys.argv[2] if len(sys.argv) > 2 else ""
+        if file_path:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "file_metadata.py"), "metadata", file_path], cwd=PROJECT)
+        else:
+            print("用法: do.py 文件元数据 <文件路径>")
+            print("示例: do.py 文件元数据 test.txt")
+    elif intent in ("文件标签", "添加标签", "add_tag"):
+        # 为文件添加标签
+        file_path = sys.argv[2] if len(sys.argv) > 2 else ""
+        tag = sys.argv[3] if len(sys.argv) > 3 else ""
+        if file_path and tag:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "file_metadata.py"), "add-tag", file_path, tag], cwd=PROJECT)
+        else:
+            print("用法: do.py 文件标签 <文件路径> <标签>")
+            print("示例: do.py 文件标签 test.txt 重要")
+    elif intent in ("查看标签", "获取标签", "get_tags"):
+        # 获取文件标签
+        file_path = sys.argv[2] if len(sys.argv) > 2 else ""
+        if file_path:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "file_metadata.py"), "get-tags", file_path], cwd=PROJECT)
+        else:
+            print("用法: do.py 查看标签 <文件路径>")
+            print("示例: do.py 查看标签 test.txt")
+    elif intent in ("搜索标签", "find_tag", "search_tag"):
+        # 根据标签搜索文件
+        tag = sys.argv[2] if len(sys.argv) > 2 else ""
+        if tag:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "file_metadata.py"), "search-tag", tag], cwd=PROJECT)
+        else:
+            print("用法: do.py 搜索标签 <标签>")
+            print("示例: do.py 搜索标签 重要")
+    elif intent in ("文件分类", "classify"):
+        # 智能分类文件
+        file_path = sys.argv[2] if len(sys.argv) > 2 else ""
+        if file_path:
+            subprocess.run([sys.executable, os.path.join(SCRIPTS, "file_metadata.py"), "classify", file_path], cwd=PROJECT)
+        else:
+            print("用法: do.py 文件分类 <文件路径>")
+            print("示例: do.py 文件分类 test.txt")
+    elif intent in ("列出所有标签", "list_tags", "所有标签"):
+        # 列出所有标签
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "file_metadata.py"), "list-tags"], cwd=PROJECT)
     elif intent in ("窗口激活", "激活窗口", "前置窗口"):
         title = sys.argv[2] if len(sys.argv) > 2 else ""
         if title:
