@@ -969,6 +969,39 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能任务编排与工作流自动化
+    elif "工作流" in intent or "编排" in intent or "workflow" in intent.lower() or "执行多个任务" in intent or "一系列任务" in intent:
+        print(f"[智能任务编排] 正在处理您的工作流请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "workflow_orchestrator.py")
+        # 参数映射：中文 -> 英文
+        param_mapping = {
+            "列表": "list", "查看列表": "list", "列出": "list",
+            "状态": "status", "查看状态": "status",
+            "执行": "run", "运行": "run",
+            "创建": "create",
+            "预览": "--dry-run", "dry-run": "--dry-run", "干跑": "--dry-run"
+        }
+        # 过滤掉触发关键词
+        skip_keywords = ["工作流", "编排", "workflow", "执行多个任务", "一系列任务"]
+        cmd_args = []
+        for arg in sys.argv[1:]:
+            if arg in skip_keywords:
+                continue  # 跳过触发关键词
+            mapped = param_mapping.get(arg)
+            if mapped:
+                cmd_args.append(mapped)
+            elif arg.startswith("-"):
+                cmd_args.append(arg)  # 保留原始参数如 --intent
+            else:
+                cmd_args.append(arg)
+        if not cmd_args:
+            cmd_args = ["list"]  # 默认列出工作流
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 主动建议引擎
     elif "主动建议" in intent or "智能建议" in intent or "获取建议" in intent or "active suggestion" in intent.lower():
         print(f"[主动建议引擎] 正在生成主动建议...", file=sys.stderr)
