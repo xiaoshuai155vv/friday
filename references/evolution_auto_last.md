@@ -8,15 +8,14 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 ## 本轮影响文件
-scripts/evolution_explainer.py, scripts/do.py, references/evolution_auto_last.md, references/evolution_self_proposed.md
+scripts/safety_guardian.py, scripts/do.py, references/evolution_auto_last.md
 
-## 2026-03-12 round 98
-- **current_goal**：增加进化环的可解释性 - 提高进化策略和决策过程的透明度
+## 2026-03-12 round 99
+- **current_goal**：创建智能操作安全卫士引擎 - 主动识别危险操作、提供安全确认、防止误操作
 - **做了什么**：
-  - 创建 evolution_explainer.py 模块，实现进化决策可解释性功能
-  - 支持 explain、history、report、trace 四个子命令
-  - 提供决策链路追踪、进化历史分析、可解释报告生成功能
-  - 集成到 do.py，支持「进化解释」「可解释性」等关键词触发
-  - 针对性校验通过：evolution_explainer.py 模块功能正常（report/history 命令测试通过）
+  - 创建 safety_guardian.py 模块，实现危险操作检测、安全确认、误操作预防功能
+  - 支持检测文件删除、格式化、进程终止等危险操作
+  - 集成到 do.py，支持"安全"、"安全卫士"、"操作安全"等关键词触发
+  - 实现关键进程保护和安全评分机制
 - **是否完成**：已完成
-- **下一轮建议**：可考虑增强进化解释的可视化展示；或继续深化其他进化模块的功能
+- **下一轮建议**：可考虑增强安全卫士的AI推理能力，结合用户历史行为预测潜在危险操作
