@@ -2,7 +2,20 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 ## 本轮影响文件
-scripts/tts_engine.py, scripts/do.py, references/evolution_auto_last.md
+scripts/file_manager_engine.py, scripts/do.py, references/evolution_auto_last.md
+## 2026-03-12 round 85
+- **current_goal**：创建智能文件管理引擎 - 让星期五能够自动按类型/时间整理文件，提供文件搜索、分析、智能分类功能
+- **做了什么**：
+  - 创建 file_manager_engine.py 模块，实现智能文件管理功能
+  - 支持文件搜索（按名称、类型、日期、大小）
+  - 支持目录分析（按类型统计、大文件、最近文件）
+  - 支持文件整理（按类型/日期/大小自动分类）
+  - 集成到 do.py，支持「文件管理」「整理文件」「搜索文件」「分析文件」等关键词触发
+  - 基线校验通过（5/6项，clipboard远程限制为已知问题）
+  - 针对性校验通过：file_manager_engine.py 模块功能正常，可分析目录、搜索文件、整理文件
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将文件管理引擎与定时任务结合，实现周期性自动整理；或与通知系统结合，主动推送文件整理建议
+
 ## 2026-03-12 round 84
 - **current_goal**：创建智能语音合成引擎(TTS) - 让星期五能够用语音回复用户，实现完整的人机语音交互闭环
 - **做了什么**：
