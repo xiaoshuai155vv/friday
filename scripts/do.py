@@ -1168,6 +1168,17 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能模块协同调度中心
+    elif "模块协同" in intent or "智能协同" in intent or "模块调度" in intent or "module_coordinator" in intent.lower():
+        print(f"[智能模块协同调度中心] 正在分析并调度相关模块...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "intelligent_module_coordinator.py")
+        user_input = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else "有啥好玩的"
+        result = subprocess.run([sys.executable, script_path, "execute", user_input], cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 用户行为自动学习与适应
     elif "行为" in intent or "学习" in intent or "习惯" in intent or "偏好" in intent or "用户行为" in intent or "我的习惯" in intent:
         print(f"[用户行为学习] 正在分析您的行为模式...", file=sys.stderr)
