@@ -15,6 +15,7 @@
 
 import json
 import os
+import re
 import sys
 import subprocess
 from datetime import datetime
@@ -64,6 +65,172 @@ def load_plans():
             except Exception:
                 pass
     return plans
+
+
+def get_available_modules():
+    """获取所有可用的脚本模块"""
+    scripts_dir = PROJECT_ROOT / "scripts"
+    modules = []
+
+    if scripts_dir.exists():
+        for f in scripts_dir.glob("*.py"):
+            if f.stem not in ["__init__", "workflow_orchestrator"]:
+                modules.append(f.stem)
+
+    return modules
+
+
+def analyze_dependencies(steps):
+    """
+    分析步骤之间的依赖关系，确定执行顺序
+
+    Args:
+        steps: 步骤列表
+
+    Returns:
+        排序后的步骤列表（已解决依赖顺序）
+    """
+    # 定义常见的依赖关系规则
+    dependencies = {
+        "activate": ["screenshot", "vision", "click", "type"],
+        "maximize": ["screenshot", "vision", "click"],
+        "screenshot": ["vision", "vision_coords"],
+    }
+
+    # 简单的依赖分析：检查步骤类型
+    sorted_steps = []
+    executed_types = set()
+
+    for step in steps:
+        step_type = step.get("type", "")
+        # 检查是否有未满足的依赖
+        if step_type in dependencies:
+            required = dependencies[step_type]
+            if not any(dep in executed_types for dep in required):
+                # 插入需要的步骤
+                for req in required:
+                    if req not in executed_types and req in [s.get("type", "") for s in steps]:
+                        # 找到对应步骤并添加
+                        for s in steps:
+                            if s.get("type") == req and s not in sorted_steps:
+                                sorted_steps.append(s)
+                                executed_types.add(req)
+
+        if step not in sorted_steps:
+            sorted_steps.append(step)
+            executed_types.add(step_type)
+
+    return sorted_steps if sorted_steps else steps
+
+
+def auto_generate_steps(user_intent):
+    """
+    根据用户意图自动生成执行步骤
+
+    Args:
+        user_intent: 用户意图描述
+
+    Returns:
+        步骤列表
+    """
+    intent_lower = user_intent.lower()
+    steps = []
+    modules = get_available_modules()
+
+    # 意图到模块的映射
+    intent_module_map = {
+        # 文件操作
+        ("文件", "文件夹", "管理"): ["file_tool", "file_metadata", "file_watcher"],
+        ("监控", "文件夹监控"): ["file_watcher"],
+        ("元数据", "标签"): ["file_metadata"],
+        ("预览", "查看"): ["quick_look"],
+
+        # 系统操作
+        ("电源", "节能", "高性能"): ["power_plan_tool"],
+        ("剪贴板", "复制", "粘贴"): ["clipboard_tool", "clipboard_history"],
+        ("托盘", "图标"): ["tray_icon_tool"],
+        ("任务", "调度", "定时"): ["task_scheduler"],
+
+        # 健康与状态
+        ("健康", "检查", "诊断"): ["system_health_check", "health_check_daemon", "auto_fixer"],
+        ("趋势", "预测"): ["trend_predictor"],
+        ("日志", "分析"): ["execution_log_analyzer"],
+        ("仪表板", "状态"): ["dashboard"],
+
+        # 情感与交互
+        ("情感", "心情"): ["emotional_interaction"],
+        ("意图", "推荐"): ["intent_recognition"],
+        ("行为", "习惯", "学习"): ["user_behavior_learner"],
+        ("建议", "主动"): ["active_suggestion_engine"],
+
+        # 协调与工作流
+        ("协调", "中心"): ["coordinator"],
+        ("编排", "工作流"): ["workflow_orchestrator"],
+
+        # 专注与时间
+        ("番茄", "专注", "提醒"): ["focus_reminder"],
+
+        # 拍照与摄像头
+        ("自拍", "摄像头", "拍照"): ["selfie", "camera_qt"],
+
+        # iHaier
+        ("消息", "邮件", "联系人"): ["window_tool", "launch_browser"],
+
+        # 浏览器
+        ("浏览器", "打开网页", "访问"): ["launch_browser"],
+    }
+
+    # 检测意图关键词并添加对应步骤
+    for keywords, target_modules in intent_module_map.items():
+        if any(kw in intent_lower for kw in keywords):
+            for mod in target_modules:
+                if mod in modules:
+                    steps.append({
+                        "type": "execute",
+                        "module": mod,
+                        "description": f"执行{mod}模块"
+                    })
+
+    # 如果没有匹配到任何模块，添加默认步骤
+    if not steps:
+        steps = [
+            {"type": "execute", "module": "intent_recognition", "description": "解析用户意图"},
+            {"type": "execute", "module": "coordinator", "description": "智能协调处理"}
+        ]
+
+    return steps
+
+
+def smart_plan_task(user_intent, intent_recognition_module=None):
+    """
+    智能规划任务：将用户意图自动拆分为多个子任务并生成执行计划
+
+    Args:
+        user_intent: 用户意图描述
+        intent_recognition_module: 可选的意图识别模块
+
+    Returns:
+        包含智能规划结果的工作流定义
+    """
+    # 1. 首先尝试使用内置工作流模板
+    workflow = parse_intent_to_workflow(user_intent, intent_recognition_module)
+
+    # 2. 如果工作流只有默认步骤，则尝试智能生成
+    if len(workflow.get("steps", [])) <= 2:
+        generated_steps = auto_generate_steps(user_intent)
+        if generated_steps:
+            workflow["steps"] = generated_steps
+
+    # 3. 分析依赖并优化执行顺序
+    if workflow.get("steps"):
+        workflow["steps"] = analyze_dependencies(workflow["steps"])
+
+    # 4. 添加元数据
+    workflow["smart_planned"] = True
+    workflow["planned_at"] = datetime.now().isoformat()
+    workflow["intent"] = user_intent
+
+    return workflow
 
 
 def parse_intent_to_workflow(user_intent, intent_recognition_module=None):
@@ -303,15 +470,97 @@ def status():
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="智能任务编排与工作流自动化模块")
-    parser.add_argument("action", nargs="?", choices=["list", "run", "status", "create"], help="操作类型")
+    parser.add_argument("action", nargs="?", choices=["list", "run", "status", "create", "plan", "analyze"], help="操作类型")
     parser.add_argument("--intent", "-i", help="用户意图描述")
     parser.add_argument("--workflow", "-w", help="工作流名称")
     parser.add_argument("--dry-run", "-d", action="store_true", help="仅预览不执行")
     parser.add_argument("--steps", "-s", help="工作流步骤（JSON 数组）")
+    parser.add_argument("--smart", action="store_true", help="启用智能规划模式")
 
     args = parser.parse_args()
 
-    if args.action == "list" or args.action is None and not args.intent:
+    if args.action == "analyze":
+        # 智能分析用户意图
+        if not args.intent:
+            print("错误: --analyze 需要 --intent 参数")
+            return
+
+        print(f"=== 智能分析: {args.intent} ===\n")
+
+        # 智能规划任务
+        workflow = smart_plan_task(args.intent)
+        steps = workflow.get("steps", [])
+
+        print(f"工作流名称: {workflow.get('name', '未命名')}")
+        print(f"描述: {workflow.get('description', '')}")
+        print(f"智能规划: {'是' if workflow.get('smart_planned') else '否'}")
+        print(f"生成步骤数: {len(steps)}")
+        print()
+
+        # 依赖分析
+        print("--- 步骤详情 ---")
+        for i, step in enumerate(steps, 1):
+            step_type = step.get("type", "unknown")
+            desc = step.get("description", "")
+            module = step.get("module", "")
+            plan = step.get("plan", "")
+            cmd = step.get("command", "")
+
+            print(f"\n步骤 {i}:")
+            print(f"  类型: {step_type}")
+            print(f"  描述: {desc}")
+
+            if module:
+                print(f"  模块: {module}")
+            if plan:
+                print(f"  计划: {plan}")
+            if cmd:
+                print(f"  命令: {cmd}")
+
+        # 输出为 JSON 格式供程序使用
+        print("\n--- JSON 输出 ---")
+        print(json.dumps(workflow, ensure_ascii=False, indent=2))
+
+    elif args.action == "plan" or args.smart:
+        # 智能规划模式
+        if not args.intent:
+            print("错误: --plan 或 --smart 需要 --intent 参数")
+            return
+
+        print(f"=== 智能规划任务: {args.intent} ===\n")
+
+        # 使用智能规划
+        workflow = smart_plan_task(args.intent)
+
+        print(f"工作流名称: {workflow.get('name', '未命名')}")
+        print(f"描述: {workflow.get('description', '')}")
+        print(f"智能规划: {'是' if workflow.get('smart_planned') else '否'}")
+        print(f"步骤数: {len(workflow.get('steps', []))}")
+        print()
+
+        # 预览步骤
+        print("--- 执行步骤预览 ---")
+        for i, step in enumerate(workflow.get("steps", []), 1):
+            step_type = step.get("type", "unknown")
+            desc = step.get("description", "")
+
+            if step_type == "execute":
+                module = step.get("module", "")
+                print(f"  {i}. [{step_type}] {desc} → 执行模块: {module}")
+            elif step_type == "plan":
+                plan = step.get("plan", "")
+                print(f"  {i}. [{step_type}] {desc} → 运行计划: {plan}")
+            elif step_type == "command":
+                cmd = step.get("command", "")
+                print(f"  {i}. [{step_type}] {desc} → 命令: {cmd}")
+            else:
+                print(f"  {i}. [{step_type}] {desc}")
+
+        # 询问是否执行
+        if not args.dry_run:
+            print("\n使用 --dry-run 参数可仅预览不执行")
+
+    elif args.action == "list" or args.action is None and not args.intent:
         # 列出可用工作流
         workflows = list_workflows()
         print("=== 可用工作流 ===")

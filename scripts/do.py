@@ -1174,7 +1174,7 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能任务编排与工作流自动化
-    elif "工作流" in intent or "编排" in intent or "workflow" in intent.lower() or "执行多个任务" in intent or "一系列任务" in intent:
+    elif "工作流" in intent or "编排" in intent or "workflow" in intent.lower() or "执行多个任务" in intent or "一系列任务" in intent or "智能规划" in intent:
         print(f"[智能任务编排] 正在处理您的工作流请求...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "workflow_orchestrator.py")
         # 参数映射：中文 -> 英文
@@ -1183,10 +1183,13 @@ def main():
             "状态": "status", "查看状态": "status",
             "执行": "run", "运行": "run",
             "创建": "create",
-            "预览": "--dry-run", "dry-run": "--dry-run", "干跑": "--dry-run"
+            "预览": "--dry-run", "dry-run": "--dry-run", "干跑": "--dry-run",
+            "分析": "analyze", "智能分析": "analyze",
+            "规划": "plan", "智能规划": "plan",
+            "smart": "--smart"
         }
         # 过滤掉触发关键词
-        skip_keywords = ["工作流", "编排", "workflow", "执行多个任务", "一系列任务"]
+        skip_keywords = ["工作流", "编排", "workflow", "执行多个任务", "一系列任务", "智能规划"]
         cmd_args = []
         for arg in sys.argv[1:]:
             if arg in skip_keywords:
