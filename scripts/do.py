@@ -1957,6 +1957,69 @@ def main():
                 print(f"  - {rec}")
 
         sys.exit(0)
+    elif "进化元学习" in intent or "元学习进化" in intent or "evolution meta" in intent.lower() or ("进化" in intent and "元学习" in intent):
+        print(f"[进化元学习引擎] 正在分析进化历史...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_learning_engine.py")
+        result = subprocess.run([sys.executable, script_path, "--analyze"], cwd=PROJECT, capture_output=True, text=True)
+        print(result.stdout)
+        if result.stderr:
+            print(f"执行出错: {result.stderr}", file=sys.stderr)
+
+        # 读取并显示分析结果
+        result_path = os.path.join(PROJECT, "runtime/state/evolution_meta_learning_result.json")
+        if os.path.exists(result_path):
+            with open(result_path, 'r', encoding='utf-8') as f:
+                result_data = json.load(f)
+            print("\n=== 进化元学习分析结果 ===")
+            patterns = result_data.get("patterns", {})
+            print(f"总进化轮次: {patterns.get('total_evolution_rounds', 'N/A')}")
+            print(f"完成轮次: {patterns.get('completed_rounds', 'N/A')}")
+            if patterns.get('success_rate'):
+                print(f"成功率: {patterns.get('success_rate', 0):.1%}")
+
+            recommendations = result_data.get("recommendations", {}).get("next_evolution_suggestions", [])
+            if recommendations:
+                print("\n进化建议:")
+                for rec in recommendations[:5]:  # 只显示前5条
+                    print(f"  - {rec}")
+        sys.exit(0)
+    elif "进化预测" in intent or "高级预测" in intent or "预测增强" in intent or "多维度预测" in intent or ("进化" in intent and ("预测" in intent or "高级" in intent)):
+        print(f"[进化高级预测引擎] 正在分析并生成预测...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "advanced_evolution_predictor.py")
+        result = subprocess.run([sys.executable, script_path, "--predict"], cwd=PROJECT, capture_output=True, text=True)
+        print(result.stdout)
+        if result.stderr:
+            print(f"执行出错: {result.stderr}", file=sys.stderr)
+
+        # 读取并显示预测结果
+        result_path = os.path.join(PROJECT, "runtime/state/advanced_evolution_prediction_result.json")
+        if os.path.exists(result_path):
+            with open(result_path, 'r', encoding='utf-8') as f:
+                result_data = json.load(f)
+            print("\n=== 进化高级预测结果 ===")
+
+            summary = result_data.get("summary", {})
+            print(f"综合置信度: {summary.get('overall_confidence', 0):.1%}")
+
+            recommended = summary.get("recommended_primary_direction")
+            if recommended:
+                print(f"推荐方向: {recommended.get('direction', 'N/A')}")
+                print(f"描述: {recommended.get('description', 'N/A')}")
+
+            timeline = result_data.get("predictions", {}).get("timeline", {})
+            if timeline.get("next_evolution_estimate"):
+                print(f"预计下次进化: {timeline['next_evolution_estimate']}")
+            print(f"趋势分析: {timeline.get('trend_analysis', 'N/A')}")
+
+            # 显示详细推荐
+            directions = result_data.get("predictions", {}).get("next_direction", {}).get("recommended_directions", [])
+            if directions:
+                print("\n详细推荐:")
+                for i, d in enumerate(directions[:3], 1):
+                    print(f"  {i}. {d.get('direction', 'N/A')}")
+                    print(f"     置信度: {d.get('confidence', 0):.1%}")
+                    print(f"     {d.get('description', '')}")
+        sys.exit(0)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
