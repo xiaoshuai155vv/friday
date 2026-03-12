@@ -795,6 +795,28 @@ def main():
     elif intent == "打开摄像头":
         interp = os.environ.get("FRIDAY_INVOKER_PYTHON") or sys.executable
         subprocess.run([interp, os.path.join(SCRIPTS, "camera_qt.py")], cwd=PROJECT)
+    elif intent == "托盘图标列表":
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "tray_icon_tool.py"), "list"], cwd=PROJECT)
+    elif intent == "点击托盘图标":
+        index = sys.argv[2] if len(sys.argv) > 2 else "0"
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "tray_icon_tool.py"), "click", index], cwd=PROJECT)
+    elif intent == "右键托盘图标":
+        index = sys.argv[2] if len(sys.argv) > 2 else "0"
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "tray_icon_tool.py"), "right-click", index], cwd=PROJECT)
+    elif intent == "点击托盘图标标题":
+        if len(sys.argv) < 3:
+            print("请指定图标标题", file=sys.stderr)
+            sys.exit(1)
+        title = sys.argv[2]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "tray_icon_tool.py"), "click-title", title], cwd=PROJECT)
+    elif intent == "右键托盘图标标题":
+        if len(sys.argv) < 3:
+            print("请指定图标标题", file=sys.stderr)
+            sys.exit(1)
+        title = sys.argv[2]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "tray_icon_tool.py"), "right-click-title", title], cwd=PROJECT)
+    elif intent == "托盘图标信息":
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "tray_icon_tool.py"), "info"], cwd=PROJECT)
     elif intent in ("截图", "截屏"):
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "screenshot_tool.py")], cwd=PROJECT)
     elif intent == "打开浏览器":
@@ -1080,6 +1102,24 @@ def main():
         print(f"[主动建议引擎] 正在生成主动建议...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "active_suggestion_engine.py")
         result = subprocess.run([sys.executable, script_path], cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 定时任务调度器
+    elif "定时任务" in intent or "任务调度" in intent or "schedule" in intent.lower() or "scheduler" in intent.lower():
+        print(f"[定时任务调度器] 正在处理您的定时任务请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "task_scheduler.py")
+        # 参数处理
+        cmd_args = []
+        for arg in sys.argv[1:]:
+            if arg in ["定时任务", "任务调度", "schedule", "scheduler"]:
+                continue  # 跳过触发关键词
+            cmd_args.append(arg)
+        if not cmd_args:
+            cmd_args = ["--list"]  # 默认列出任务
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
