@@ -1600,6 +1600,30 @@ def main():
             print(f"下次运行: {config.get('next_run', 'N/A')}")
             print(f"总运行次数: {config.get('total_runs', 0)}")
         sys.exit(0)
+    # 智能进化协调器
+    elif "进化协调" in intent or "协调进化" in intent or "evolution coordinator" in intent.lower() or "统一进化" in intent:
+        print(f"[智能进化协调器] 正在协调各进化模块...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_coordinator.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化协调", "协调进化", "统一进化"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.returncode == 0:
+            json_path = os.path.join(PROJECT, "runtime", "state", "evolution_coordinator_status.json")
+            if os.path.exists(json_path):
+                import json as json_module
+                with open(json_path, 'r', encoding='utf-8') as f:
+                    status = json_module.load(f)
+                print("\n=== 智能进化协调器状态 ===")
+                print(f"协调器状态: {status.get('status', 'N/A')}")
+                print(f"健康分数: {status.get('health', {}).get('score', 0):.1f}%")
+                print(f"健康状态: {status.get('health', {}).get('status', 'N/A')}")
+                print(f"模块数量: {status.get('health', {}).get('modules_ready', 0)}/{status.get('health', {}).get('modules_total', 0)}")
+                print(f"可用模块: {', '.join(status.get('modules', []))}")
+        sys.exit(0)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
