@@ -2,7 +2,16 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 ## 本轮影响文件
-scripts/evolution_cli.py, scripts/do.py, references/evolution_auto_last.md
+scripts/evolution_api_server.py, scripts/do.py, references/evolution_auto_last.md
+## 2026-03-12 round 81
+- **current_goal**：创建 evolution_api_server.py 模块，提供 REST API 访问进化环功能
+- **做了什么**：
+  - 创建 evolution_api_server.py 模块，提供 REST API 访问进化环功能
+  - 支持以下 API 端点：/api/health、/api/status、/api/modules、/api/dashboard、/api/history、/api/strategy、/api/evaluate、/api/run
+  - 集成到 do.py，支持"进化api"、"api服务"等关键词触发
+  - 针对性校验通过：evolution_api_server.py 模块功能正常，10/10 进化模块可访问
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将 API 服务与 Web 界面结合，实现图形化管理和监控
 
 ## 2026-03-12 round 80
 - **current_goal**：创建统一的进化环 CLI 入口（evolution_cli.py），整合各模块功能，提供一站式操作体验

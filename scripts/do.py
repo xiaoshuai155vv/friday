@@ -1664,6 +1664,19 @@ def main():
         if result.stderr:
             print(f"执行出错: {result.stderr}", file=sys.stderr)
         sys.exit(result.returncode)
+    # 进化环 REST API 服务
+    elif "进化api" in intent or "api服务" in intent or "evolution api" in intent.lower() or ("进化" in intent and "接口" in intent):
+        print(f"[进化环 API 服务] 正在执行...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_api_server.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化api", "api服务", "接口"]]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        print(result.stdout)
+        if result.stderr:
+            print(f"执行出错: {result.stderr}", file=sys.stderr)
+        sys.exit(result.returncode)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
