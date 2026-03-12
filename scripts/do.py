@@ -1508,6 +1508,32 @@ def main():
             print(f"完成率: {evaluation.get('success_metrics', {}).get('completion_rate', 0):.1f}%")
             print(f"稳定性分数: {evaluation.get('stability_metrics', {}).get('stability_score', 0)}")
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 进化闭环自动化引擎
+    elif "进化闭环" in intent or "闭环自动化" in intent or "evolution loop" in intent.lower() or "evolution automation" in intent.lower() or ("进化" in intent and "自动" in intent):
+        print(f"[进化闭环自动化引擎] 正在联动三个进化模块...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_loop_automation.py")
+        result = subprocess.run([sys.executable, script_path], cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        # 显示自动化计划的摘要
+        json_path = os.path.join(PROJECT, "runtime/state/evolution_automation_status.json")
+        if os.path.exists(json_path):
+            with open(json_path, 'r', encoding='utf-8') as f:
+                automation = json.load(f)
+            print("\n=== 进化闭环自动化摘要 ===")
+            print(f"运行时间: {automation.get('last_run', 'N/A')}")
+            print(f"状态: {automation.get('status', 'N/A')}")
+            if automation.get("plan"):
+                plan = automation["plan"]
+                print(f"策略输入: {list(plan.get('strategy_input', {}).keys())}")
+                print(f"分析输入: {list(plan.get('analysis_input', {}).keys())}")
+                print(f"评估输入: {list(plan.get('evaluation_input', {}).keys())}")
+                print(f"推荐行动数: {len(plan.get('recommendations', []))}")
+                for i, rec in enumerate(plan.get('recommendations', [])[:3], 1):
+                    print(f"  {i}. {rec}")
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
