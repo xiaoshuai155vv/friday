@@ -1935,6 +1935,28 @@ def main():
         if result.stderr:
             print(f"执行出错: {result.stderr}", file=sys.stderr)
         sys.exit(result.returncode)
+    # 进化决策增强器
+    elif "进化决策增强" in intent or "增强进化决策" in intent or "evolution decision" in intent.lower() or ("进化" in intent and "决策" in intent):
+        print(f"[进化决策增强器] 正在将智能预测应用到进化决策...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_decision_enhancer.py")
+        result = subprocess.run([sys.executable, script_path], cwd=PROJECT, capture_output=True, text=True)
+        print(result.stdout)
+        if result.stderr:
+            print(f"执行出错: {result.stderr}", file=sys.stderr)
+
+        # 读取并显示增强报告
+        report_path = os.path.join(PROJECT, "runtime/state/evolution_decision_enhancement_report.json")
+        if os.path.exists(report_path):
+            with open(report_path, 'r', encoding='utf-8') as f:
+                report = json.load(f)
+            print("\n=== 进化决策增强报告 ===")
+            print(f"预测方向: {report.get('enhancement_summary', {}).get('prediction_used', 'N/A')}")
+            print(f"置信度: {report.get('enhancement_summary', {}).get('confidence', 0):.1%}")
+            print("\n建议:")
+            for rec in report.get("recommendations", []):
+                print(f"  - {rec}")
+
+        sys.exit(0)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
