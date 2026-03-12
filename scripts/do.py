@@ -1449,6 +1449,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 进化策略引擎
+    elif "进化策略" in intent or "策略分析" in intent or "evolution strategy" in intent.lower():
+        print(f"[进化策略引擎] 正在分析进化方向...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_strategy_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["analyze"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化策略", "策略分析"]]
+        if not filtered_args:
+            filtered_args = ["analyze"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
