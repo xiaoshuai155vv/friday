@@ -2,7 +2,42 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 ## 本轮影响文件
-scripts/proactive_notification_engine.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md
+scripts/decision_orchestrator.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md, runtime/state/decision_orchestrator_history.json
+
+## 2026-03-12 round 91
+- **current_goal**：创建智能决策编排中心 - 让系统能够综合分析用户意图和系统状态，智能选择并调度多个引擎协同工作，实现从单引擎到多引擎联动的工作模式
+- **做了什么**：
+  - 创建 decision_orchestrator.py 模块，实现智能决策编排功能
+  - 支持多引擎协同场景识别（如文件整理+通知、学习+推荐、诊断+修复等）
+  - 提供可解释的决策过程
+  - 记录决策历史到 runtime/state/decision_orchestrator_history.json
+  - 集成到 do.py，支持「决策」「编排」「协同」「智能调度」等关键词触发
+  - 基线校验通过（5/6项，clipboard远程限制为已知问题）
+  - 针对性校验通过：decision_orchestrator.py 模块功能正常，do.py 集成成功，意图分析功能正常
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将决策编排中心与学习引擎结合，实现基于历史决策的智能优化；或与工作流引擎结合，实现更复杂的多引擎协同任务
+
+## 2026-03-12 round 90
+- **current_goal**：创建智能问题诊断与自愈引擎 - 让系统能够自动检测常见问题、分析原因并尝试自动修复，提升系统稳定性和自主性
+- **做了什么**：
+  - 创建 self_healing_engine.py 模块，实现问题检测、原因分析、自动修复功能
+  - 支持关键文件检查、网络连接检查、配置文件检查等
+  - 集成到 do.py，支持「诊断」「自愈」「问题检测」「健康检测」等关键词触发
+  - 基线校验通过（5/6项，clipboard远程限制为已知问题）
+  - 针对性校验通过：self_healing_engine.py 模块功能正常，do.py 集成成功
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将问题诊断引擎与进化策略引擎集成，实现基于诊断结果的自动优化；或与通知引擎结合，主动推送诊断报告
+
+## 2026-03-12 round 89
+- **current_goal**：创建智能记忆系统 - 让系统能够跨会话持久化存储和检索用户偏好、重要信息、历史交互，实现真正的个性化记忆助手
+- **做了什么**：
+  - 创建 memory_engine.py 模块，实现智能记忆系统功能
+  - 支持存储、检索、搜索、列出记忆
+  - 集成到 do.py，支持「记忆」「记住」「存储」「memory」等关键词触发
+  - 基线校验通过（5/6项，clipboard远程限制为已知问题）
+  - 针对性校验通过：memory_engine.py 模块功能正常，支持存储、检索、搜索、列出记忆等操作，集成到 do.py 支持 'memory' 关键词触发
+- **是否完成**：已完成
+- **下一轮建议**：可考虑将记忆系统与学习引擎结合，实现基于历史记忆的个性化推荐；或与工作流引擎结合，实现记忆辅助的智能任务规划
 
 ## 2026-03-12 round 88
 - **current_goal**：创建智能主动通知引擎 - 让系统能够主动向用户推送有价值的信息和建议，实现从被动响应到主动服务的进化

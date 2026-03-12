@@ -1561,6 +1561,55 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能记忆引擎
+    elif "记忆" in intent or "记住" in intent or "存储" in intent or "memory" in intent.lower() or "记住" in intent or "存储信息" in intent or "记住偏好" in intent:
+        print(f"[智能记忆引擎] 正在处理记忆请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "memory_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["stats"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["记忆", "记住", "存储", "memory", "存储信息", "记住偏好"]]
+        if not filtered_args:
+            filtered_args = ["stats"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能问题诊断与自愈引擎
+    elif "诊断" in intent or "自愈" in intent or "问题检测" in intent or "diagnose" in intent.lower() or "heal" in intent.lower() or "self-heal" in intent.lower() or "健康检测" in intent:
+        print(f"[智能问题诊断与自愈引擎] 正在处理诊断请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "self_healing_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["diagnose", "--check-all"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["诊断", "自愈", "问题检测", "健康检测", "diagnose", "heal", "self-heal"]]
+        if not filtered_args:
+            filtered_args = ["diagnose", "--check-all"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能决策编排中心
+    elif "决策" in intent or "编排" in intent or "协同" in intent or "最佳方案" in intent or "智能调度" in intent or "multi-engine" in intent.lower() or "decision" in intent.lower() or "orchestrate" in intent.lower() or "协调" in intent:
+        print(f"[智能决策编排中心] 正在分析并调度引擎...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "decision_orchestrator.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["决策", "编排", "协同", "最佳方案", "智能调度", "multi-engine", "decision", "orchestrate", "协调"]]
+        if not filtered_args:
+            # 如果没有额外参数，显示状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化策略引擎
     elif "进化策略" in intent or "策略分析" in intent or "evolution strategy" in intent.lower():
         print(f"[进化策略引擎] 正在分析进化方向...", file=sys.stderr)
