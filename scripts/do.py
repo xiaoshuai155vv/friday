@@ -958,6 +958,17 @@ def main():
             subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "rest", "reminder", "stop"], cwd=PROJECT)
         else:
             subprocess.run([sys.executable, os.path.join(SCRIPTS, "focus_reminder.py"), "status"], cwd=PROJECT)
+    # 智能任务协调中心
+    elif "协调中心" in intent or "智能处理" in intent or "coordinator" in intent.lower():
+        print(f"[智能任务协调中心] 正在协调处理您的任务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "coordinator.py")
+        user_input = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else "有啥好玩的"
+        result = subprocess.run([sys.executable, script_path, user_input], cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 主动建议引擎
     elif "主动建议" in intent or "智能建议" in intent or "获取建议" in intent or "active suggestion" in intent.lower():
         print(f"[主动建议引擎] 正在生成主动建议...", file=sys.stderr)
