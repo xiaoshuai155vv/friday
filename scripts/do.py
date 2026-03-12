@@ -1114,6 +1114,16 @@ def main():
         if val:
             subprocess.run([sys.executable, os.path.join(SCRIPTS, "brightness_tool.py"), "set", val], cwd=PROJECT)
     elif intent in ("通知", "Toast", "弹窗通知"):
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "notification_tool.py"), "show", " ".join(sys.argv[2:])])
+    elif intent in ("智能进化", "进化分析", "进化引擎", "evolution"):
+        # 调用智能进化引擎
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "intelligent_evolution_engine.py"), "analyze"])
+    elif intent in ("进化报告", "进化状态", "进化查看"):
+        # 查看进化状态
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "intelligent_evolution_engine.py"), "status"])
+    elif intent in ("进化优化", "优化建议", "进化建议"):
+        # 获取进化优化建议
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "intelligent_evolution_engine.py"), "suggest"])
         msg = " ".join(sys.argv[2:]) if len(sys.argv) > 2 else "FRIDAY"
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "notification_tool.py"), "show", msg], cwd=PROJECT)
     # 番茄钟功能
