@@ -1449,6 +1449,38 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 语音交互引擎
+    elif "语音交互" in intent or "语音命令" in intent or "voice" in intent.lower() or "语音识别" in intent:
+        print(f"[语音交互引擎] 正在启动语音交互...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "voice_interaction_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--help"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["语音交互", "语音命令", "语音识别", "voice"]]
+        if not filtered_args:
+            filtered_args = ["--help"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能场景推荐
+    elif "场景推荐" in intent or "推荐场景" in intent or "推荐计划" in intent or "场景计划" in intent or "recommend" in intent.lower() or "suggestion" in intent.lower():
+        print(f"[智能场景推荐] 正在为您生成个性化场景推荐...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "scenario_recommender.py")
+        # 传递参数给推荐引擎
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["get"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["场景推荐", "推荐场景", "推荐计划", "场景计划"]]
+        if not filtered_args:
+            filtered_args = ["get"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化策略引擎
     elif "进化策略" in intent or "策略分析" in intent or "evolution strategy" in intent.lower():
         print(f"[进化策略引擎] 正在分析进化方向...", file=sys.stderr)

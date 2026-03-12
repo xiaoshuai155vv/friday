@@ -259,7 +259,13 @@ def _compact_evolution_summary(body):
         elif "完成" in s or "是否完成" in s:
             summary_line = "完成" if "已完成" in s or ("是" in s and "未" not in s) else "未完成"
     flush_round()
-    return "\n".join(lines[-8:]) if lines else ""
+    # 取最近 500 轮：按 round 号降序排序，全部包含（小于 500 条）
+    def _round_key(s):
+        import re as _re
+        m = _re.search(r"round\s+(\d+)", s, _re.I)
+        return int(m.group(1)) if m else 0
+    sorted_lines = sorted(lines, key=_round_key, reverse=True)
+    return "\n".join(sorted_lines[:1000]) if sorted_lines else ""
 
 
 def build_auto_evolution_hint():

@@ -2,7 +2,32 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 ## 本轮影响文件
-scripts/evolution_api_server.py, scripts/do.py, references/evolution_auto_last.md
+scripts/voice_interaction_engine.py, scripts/do.py, references/evolution_auto_last.md, references/evolution_self_proposed.md
+## 2026-03-12 round 83
+- **current_goal**：创建智能语音交互引擎 - 让星期五能够响应语音输入，实现真正拟人化的语音交互体验
+- **做了什么**：
+  - 创建 voice_interaction_engine.py 模块，实现语音识别和处理功能
+  - 支持语音唤醒词检测（默认"星期五"）
+  - 使用 speech_recognition 库进行语音识别
+  - 集成到 do.py，支持「语音交互」「语音命令」「voice」「语音识别」等关键词触发
+  - 基线校验通过（5/6项，clipboard远程限制为已知问题）
+  - 针对性校验通过：voice_interaction_engine.py 模块功能正确，do.py 集成成功
+- **是否完成**：已完成
+- **下一轮建议**：可考虑增加更多语音识别后端支持（如 Azure Speech、Whisper 等）；可添加语音合成（TTS）功能实现语音回复
+
+## 2026-03-12 round 82
+- **current_goal**：创建智能场景推荐引擎 - 根据用户行为习惯、时间段、系统状态主动推荐场景计划
+- **做了什么**：
+  - 创建 scenario_recommender.py 模块，实现智能场景推荐功能
+  - 分析用户行为数据、时间段偏好、系统状态（番茄钟）
+  - 根据当前时间段生成推荐（如早晨推荐工作相关场景，晚上推荐娱乐场景）
+  - 结合用户历史行为生成个性化推荐
+  - 集成到 do.py，支持「场景推荐」「推荐场景」「推荐计划」等关键词触发
+  - 基线校验通过（5/6项，clipboard远程限制为已知问题）
+  - 针对性校验通过：scenario_recommender.py 模块功能正常，do.py 集成成功
+- **是否完成**：已完成
+- **下一轮建议**：可将场景推荐与通知系统结合，主动向用户推送推荐；或与定时任务结合实现周期性推荐
+
 ## 2026-03-12 round 81
 - **current_goal**：创建 evolution_api_server.py 模块，提供 REST API 访问进化环功能
 - **做了什么**：
