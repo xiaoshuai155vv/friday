@@ -622,6 +622,35 @@ def main():
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 检查是否请求智能全系统洞察与预测引擎
+    system_insight_keywords = ["系统洞察", "全系统洞察", "系统预测", "洞察引擎", "预测引擎", "系统分析", "system insight", "predictive insight", "跨引擎分析", "系统趋势"]
+    for keyword in system_insight_keywords:
+        if keyword in " ".join(sys.argv[1:]):
+            print(f"[智能全系统洞察与预测引擎] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "system_insight_engine.py")
+            cmd = [sys.executable, script_path]
+            # 解析子命令
+            if "overview" in " ".join(sys.argv[1:]) or "概览" in " ".join(sys.argv[1:]):
+                cmd.append("overview")
+            elif "performance" in " ".join(sys.argv[1:]) or "性能" in " ".join(sys.argv[1:]):
+                cmd.append("performance")
+            elif "predictions" in " ".join(sys.argv[1:]) or "预测" in " ".join(sys.argv[1:]):
+                cmd.append("predictions")
+            elif "insights" in " ".join(sys.argv[1:]) or "洞察" in " ".join(sys.argv[1:]):
+                cmd.append("insights")
+            elif "patterns" in " ".join(sys.argv[1:]) or "模式" in " ".join(sys.argv[1:]):
+                cmd.append("patterns")
+            elif "json" in " ".join(sys.argv[1:]):
+                cmd.append("--json")
+            else:
+                cmd.append("report")  # 默认输出完整报告
+            result = subprocess.run(cmd, cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 检查是否请求状态仪表板
     dashboard_keywords = ["状态面板", "系统状态", "进化状态", "dashboard", "仪表板", "状态概览"]
     for keyword in dashboard_keywords:
