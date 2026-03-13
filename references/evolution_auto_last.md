@@ -2,18 +2,18 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/multi_dimension_fusion_engine.py, scripts/do.py, references/evolution_auto_last.md
+scripts/dynamic_engine_orchestrator.py, scripts/do.py, references/evolution_self_proposed.md
 
-## 2026-03-13 round 195
-- **current_goal**：智能多维融合智能分析引擎 - 集成系统自检、主动服务、预测预防等引擎的洞察，实现统一的智能态势感知与跨引擎协同增强
+## 2026-03-13 round 196
+- **current_goal**：智能跨引擎动态协同编排引擎 - 让系统根据实时任务需求动态选择和编排引擎组合，实现自适应任务执行策略
 - **做了什么**：
-  1. 创建 multi_dimension_fusion_engine.py 模块，实现智能多维融合智能分析引擎功能
-  2. 实现多引擎洞察聚合（集成 system_diagnosis, proactive_service, prediction_prevention, health_assurance, operations, recommendations）
-  3. 实现统一态势感知（综合健康评分、风险等级、主动预测计数）
-  4. 实现跨引擎协同分析（识别预测→服务、诊断→运维、健康→推荐等协同机会）
-  5. 实现智能建议融合（整合多引擎建议为统一行动指南）
-  6. 在 do.py 中添加「多维融合」「融合分析」「统一态势」「态势感知」「跨引擎协同」等关键词触发支持
+  1. 创建 dynamic_engine_orchestrator.py 模块，实现智能跨引擎动态协同编排引擎功能
+  2. 实现任务上下文感知分析（任务类型识别、引擎类别匹配）
+  3. 实现引擎能力动态匹配（根据任务需求自动选择最优引擎组合）
+  4. 实现执行策略自适应调整（sequential_simple/parallel_coordination 等）
+  5. 实现多引擎协同效果追踪与评估
+  6. 在 do.py 中添加动态编排、引擎协同、自适应执行、智能编排等关键词触发支持
   7. 基线验证 5/6 通过（剪贴板远程限制为已知问题）
-  8. 针对性验证通过 - 成功聚合4个引擎洞察，识别1个跨引擎协同机会，生成2条融合建议
+  8. 针对性验证通过 - status/suggestions/plan 命令均可正常工作，成功匹配相关引擎并生成编排计划
 - **是否完成**：已完成
-- **下一轮建议**：可增强与更多引擎的集成，或实现跨引擎协同的自动执行
+- **下一轮建议**：可增强与更多引擎的深度集成，或实现自动执行编排计划的能力

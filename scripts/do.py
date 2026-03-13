@@ -1404,6 +1404,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能跨引擎动态协同编排引擎
+    elif "动态编排" in intent or "引擎协同" in intent or "自适应执行" in intent or "智能编排" in intent or "dynamic_orchestrator" in intent.lower():
+        print(f"[智能跨引擎动态协同编排引擎] 正在动态分析并编排引擎组合...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "dynamic_engine_orchestrator.py")
+        user_input = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
+        cmd = ["status"]
+        if user_input:
+            cmd = ["suggestions", "--task", user_input]
+        result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能任务协调中心
     elif "协调中心" in intent or "智能处理" in intent or "coordinator" in intent.lower():
         print(f"[智能任务协调中心] 正在协调处理您的任务...", file=sys.stderr)
