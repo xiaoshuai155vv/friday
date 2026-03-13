@@ -4017,6 +4017,34 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能统一服务中枢引擎 (Round 202)
+    elif "统一服务" in intent or "服务中枢" in intent or "统一入口" in intent or "服务聚合" in intent or "unified service" in intent.lower() or "service hub" in intent.lower() or "服务统计" in intent or "服务历史" in intent:
+        print(f"[智能统一服务中枢引擎] 正在处理服务请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "unified_service_hub.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "查询" in intent or "query" in intent.lower() or "服务" in intent and "推荐" in intent:
+            action = "query"
+        elif "统计" in intent or "stats" in intent.lower():
+            action = "stats"
+        elif "历史" in intent or "history" in intent.lower():
+            action = "history"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        # 过滤掉意图关键词
+        filter_words = ["统一服务", "服务中枢", "统一入口", "服务聚合", "unified service", "service hub", "服务统计", "服务历史", "查询", "统计", "状态"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     else:
         # 未知意图时，先检查是否包含情感关键词
         import json
