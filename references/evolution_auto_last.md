@@ -2,16 +2,17 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/feedback_learning_engine.py, scripts/unified_recommender.py, scripts/do.py
+scripts/system_diagnostic_engine.py, scripts/do.py
 
-## 2026-03-13 round 121
-- **current_goal**：创建智能推荐反馈学习系统 - 让推荐引擎能够根据用户接受/拒绝行为自动学习和优化推荐策略
+## 2026-03-13 round 122
+- **current_goal**：创建智能系统综合诊断引擎 - 实现跨模块的问题追踪和综合诊断能力，融合多个引擎的诊断信息生成统一诊断报告和解决方案
 - **做了什么**：
-  1. 创建 feedback_learning_engine.py 模块，实现基于用户反馈的学习和推荐优化
-  2. 扩展 unified_recommender.py，集成反馈学习引擎
-  3. 添加 learn-stats 和 learn-insights CLI 命令
-  4. 集成到 do.py 支持"推荐学习统计""推荐洞察"等关键词触发
-  5. 基线验证通过（5/6，剪贴板远程限制为已知问题）
-  6. 针对性验证通过（feedback_learning_engine 模块和 unified_recommender 集成正常）
+  1. 创建 system_diagnostic_engine.py 模块，实现跨模块问题追踪和综合诊断功能
+  2. 集成现有诊断能力：self_healing_engine、predictive_prevention_engine、system_health_monitor、evolution_health
+  3. 实现跨模块问题关联分析和根因分析
+  4. 生成综合诊断报告和智能修复建议
+  5. 集成到 do.py 支持"系统诊断""综合诊断""诊断报告"等关键词触发
+  6. 基线验证通过（5/6，剪贴板远程限制为已知问题）
+  7. 针对性验证通过（system_diagnostic_engine 模块功能正常）
 - **是否完成**：已完成
-- **下一轮建议**：可以继续增强智能服务的其他方面，如基于上下文的主动推荐、跨引擎协作增强等
+- **下一轮建议**：可以继续增强智能服务的其他方面，如多模态理解增强、个性化深度学习等

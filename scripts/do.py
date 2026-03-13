@@ -2208,6 +2208,31 @@ def main():
                 print(f"  - {rec}")
 
         sys.exit(0)
+    # 智能系统综合诊断引擎 - 跨模块问题追踪和综合诊断
+    elif "系统诊断" in intent or "综合诊断" in intent or "诊断报告" in intent or "diagnostic" in intent.lower() or "diagnose" in intent.lower() or "system diagnose" in intent.lower():
+        print(f"[智能系统综合诊断引擎] 正在运行综合诊断...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "system_diagnostic_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "diagnose"
+        if "快速" in intent or "quick" in intent.lower() or "状态" in intent:
+            action = "quick"
+        elif "历史" in intent or "history" in intent.lower():
+            action = "history"
+        # 过滤掉意图关键词
+        filter_words = ["系统诊断", "综合诊断", "诊断报告", "diagnostic", "diagnose", "system diagnose", "快速", "quick", "状态", "历史"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action not in ["diagnose", "history"]:
+            filtered_args.insert(0, f"--{action}")
+        if not filtered_args:
+            filtered_args = ["--diagnose"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     elif "进化元学习" in intent or "元学习进化" in intent or "evolution meta" in intent.lower() or ("进化" in intent and "元学习" in intent):
         print(f"[进化元学习引擎] 正在分析进化历史...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_meta_learning_engine.py")
