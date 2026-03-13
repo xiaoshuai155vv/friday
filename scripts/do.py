@@ -1501,6 +1501,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自适应进化策略动态调优引擎（round 237）
+    elif "进化自适应调优" in intent or "自适应优化" in intent or "策略动态调整" in intent or "adaptive optimize" in intent.lower() or "进化优化" in intent or "策略调优" in intent:
+        print(f"[智能自适应进化策略动态调优引擎] 正在执行策略动态调优...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_adaptive_optimizer.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd_args:
+            cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能决策可解释性增强器
     elif "解释决策" in intent or "为什么推荐" in intent or "执行解释" in intent or "决策解释" in intent or "explain" in intent.lower():
         print(f"[智能决策可解释性增强器] 正在解释决策原因...", file=sys.stderr)
