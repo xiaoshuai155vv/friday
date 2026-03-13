@@ -4743,6 +4743,40 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能跨代进化知识传承引擎 (Round 240)
+    elif "进化知识传承" in intent or "知识传承" in intent or "跨代知识" in intent or "knowledge inheritance" in intent.lower() or "进化知识" in intent or "传承进化" in intent:
+        print(f"[智能跨代进化知识传承引擎] 正在处理知识传承...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_inheritance_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "提取" in intent or "extract" in intent.lower():
+            action = "extract"
+        elif "图谱" in intent or "graph" in intent.lower():
+            action = "graph"
+        elif "查询" in intent or "query" in intent.lower() or "搜索" in intent:
+            action = "query"
+            # 从参数中提取查询词
+            for arg in cmd_args:
+                if not any(kw in arg for kw in ["进化知识传承", "知识传承", "跨代知识", "knowledge inheritance", "进化知识", "传承进化", "提取", "extract", "图谱", "graph", "查询", "query", "搜索", "推荐", "recommend", "缺口", "gaps", "状态", "status"]):
+                    action_arg = arg
+                    break
+        elif "推荐" in intent or "recommend" in intent.lower():
+            action = "recommend"
+        elif "缺口" in intent or "gaps" in intent.lower():
+            action = "gaps"
+        # 过滤掉意图关键词
+        filter_words = ["进化知识传承", "知识传承", "跨代知识", "knowledge inheritance", "进化知识", "传承进化", "提取", "extract", "图谱", "graph", "查询", "query", "搜索", "推荐", "recommend", "缺口", "gaps", "状态", "status"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path, action] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能系统自检与健康报告引擎 (Round 203) - 放在 system_health_monitor 之前
     elif "健康检查" in intent or "健康报告" in intent or "系统自检" in intent or "health check" in intent.lower() or "health report" in intent.lower() or "系统诊断" in intent:
         print(f"[智能系统自检与健康报告引擎] 正在运行健康检查...", file=sys.stderr)
