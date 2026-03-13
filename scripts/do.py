@@ -1355,6 +1355,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "record", "predict", "evolve", "suggest", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "behavior_sequence_prediction_engine.py")] + cmd, cwd=PROJECT)
+    # 智能主动服务预热引擎
+    elif "服务预热" in intent or "预热服务" in intent or "主动预热" in intent or "preheat" in intent.lower() or "service_preheat" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "predict", "predict_with_preheat", "preheat", "history", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "service_preheat_engine.py")] + cmd, cwd=PROJECT)
     # 智能意图深度推理引擎
     elif "意图深度" in intent or "深层意图" in intent or "意图推理" in intent or "intent_reasoning" in intent.lower() or "deep_intent" in intent.lower() or "分析意图" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
