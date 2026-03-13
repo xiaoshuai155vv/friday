@@ -1579,6 +1579,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化新引擎实用化引擎（round 246）
+    elif "practical" in intent.lower() or "实用化" in intent or "引擎实用化" in intent or "engine practical" in intent.lower() or "真正创造" in intent or "新引擎实用" in intent:
+        print(f"[智能进化新引擎实用化引擎] 正在将自动创造能力实用化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_engine_practicalizer.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd_args:
+            cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能决策可解释性增强器
     elif "解释决策" in intent or "为什么推荐" in intent or "执行解释" in intent or "决策解释" in intent or "explain" in intent.lower():
         print(f"[智能决策可解释性增强器] 正在解释决策原因...", file=sys.stderr)
@@ -4974,3 +4987,8 @@ def main():
                 sys.exit(0)  # 不是错误，只是推荐
             print("未知意图:", intent, file=sys.stderr)
             sys.exit(1)
+
+
+# 入口点
+if __name__ == '__main__':
+    main()
