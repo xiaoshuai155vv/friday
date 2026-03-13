@@ -1566,6 +1566,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化新引擎自动创造引擎（round 245）
+    elif "创造新引擎" in intent or "自动创造引擎" in intent or "生成新能力" in intent or "engine creator" in intent.lower() or "auto create" in intent.lower() or "创造能力" in intent or "自动生成模块" in intent:
+        print(f"[智能进化新引擎自动创造引擎] 正在分析并创造新引擎...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_engine_auto_creator.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd_args:
+            cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能决策可解释性增强器
     elif "解释决策" in intent or "为什么推荐" in intent or "执行解释" in intent or "决策解释" in intent or "explain" in intent.lower():
         print(f"[智能决策可解释性增强器] 正在解释决策原因...", file=sys.stderr)
