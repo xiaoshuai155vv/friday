@@ -1545,8 +1545,41 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能统一推荐引擎 - 自动执行
+    elif "自动执行推荐" in intent or "自动执行" in intent or "auto execute" in intent.lower() or "auto run" in intent.lower():
+        print(f"[智能统一推荐引擎] 正在执行自动推荐...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "unified_recommender.py")
+        cmd_args = ["auto"]
+        # 如果用户明确确认执行，添加 --confirm 参数
+        if "确认" in intent or "yes" in intent.lower() or "是" in intent:
+            cmd_args.append("--confirm")
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能统一推荐引擎 - 执行指定推荐
+    elif "执行推荐" in intent or "execute recommend" in intent.lower():
+        print(f"[智能统一推荐引擎] 正在执行推荐...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "unified_recommender.py")
+        # 尝试从参数中获取推荐ID
+        rec_id = None
+        for arg in sys.argv[1:]:
+            if arg.startswith("rec_") or arg.startswith("scene_") or arg.startswith("workflow_") or arg.startswith("action_"):
+                rec_id = arg
+                break
+        cmd_args = ["execute"]
+        if rec_id:
+            cmd_args.extend(["--rec-id", rec_id])
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎
-    elif "统一推荐" in intent or "综合推荐" in intent or "智能推荐" in intent or "unified recommend" in intent.lower() or "all recommend" in intent.lower() or "推荐" in intent and "场景" not in intent and "工作流" not in intent:
+    elif "统一推荐" in intent or "综合推荐" in intent or "智能推荐" in intent or "unified recommend" in intent.lower() or "all recommend" in intent.lower() or "推荐" in intent and "场景" not in intent and "工作流" not in intent and "执行" not in intent:
         print(f"[智能统一推荐引擎] 正在整合多引擎推荐能力...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "unified_recommender.py")
         # 解析命令参数

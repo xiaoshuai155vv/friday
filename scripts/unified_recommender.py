@@ -42,6 +42,13 @@ try:
 except ImportError:
     WORKFLOW_RECOMMENDER_AVAILABLE = False
 
+# 尝试导入决策编排中心
+try:
+    from decision_orchestrator import DecisionOrchestrator
+    DECISION_ORCHESTRATOR_AVAILABLE = True
+except ImportError:
+    DECISION_ORCHESTRATOR_AVAILABLE = False
+
 
 @dataclass
 class UnifiedRecommendation:
@@ -68,6 +75,7 @@ class UnifiedRecommenderEngine:
         # 初始化子引擎
         self.scenario_engine = None
         self.workflow_engine = None
+        self.orchestrator = None
 
         if SCENARIO_RECOMMENDER_AVAILABLE:
             try:
@@ -80,6 +88,12 @@ class UnifiedRecommenderEngine:
                 self.workflow_engine = WorkflowSmartRecommenderEngine()
             except Exception as e:
                 print(f"工作流推荐引擎初始化失败: {e}")
+
+        if DECISION_ORCHESTRATOR_AVAILABLE:
+            try:
+                self.orchestrator = DecisionOrchestrator()
+            except Exception as e:
+                print(f"决策编排中心初始化失败: {e}")
 
     def get_all_recommendations(self, context: Dict[str, Any] = None, limit: int = 10) -> List[UnifiedRecommendation]:
         """获取所有类型的推荐（统一入口）"""
@@ -343,6 +357,173 @@ class UnifiedRecommenderEngine:
             print(f"获取推荐历史失败: {e}")
         return []
 
+    def execute_recommendation(self, recommendation_id: str = None, recommendation: Dict[str, Any] = None) -> Dict[str, Any]:
+        """执行推荐 - 通过决策编排中心执行推荐的操作
+
+        实现推荐→决策→执行的自动闭环。
+
+        Args:
+            recommendation_id: 推荐ID（如果已知）
+            recommendation: 推荐对象（包含 action 等字段）
+
+        Returns:
+            执行结果字典
+        """
+        result = {
+            "success": False,
+            "recommendation_id": recommendation_id,
+            "execution_result": None,
+            "message": ""
+        }
+
+        try:
+            # 获取推荐信息
+            rec = recommendation
+
+            # 如果只提供了 ID，需要先获取推荐
+            if not rec and recommendation_id:
+                recommendations = self.get_all_recommendations()
+                for r in recommendations:
+                    if r.recommendation_id == recommendation_id:
+                        rec = {
+                            'name': r.name,
+                            'action': r.action,
+                            'type': r.recommendation_type,
+                            'metadata': r.metadata
+                        }
+                        break
+
+            if not rec:
+                result["message"] = "未找到指定的推荐"
+                return result
+
+            # 根据推荐类型执行不同的动作
+            action = rec.get('action', '')
+            rec_type = rec.get('type', '')
+            rec_name = rec.get('name', '')
+
+            # 使用决策编排中心执行（如果可用）
+            if self.orchestrator and action:
+                # 将推荐动作转换为用户输入，交给决策编排中心处理
+                user_input = action
+                if rec_type == 'scene' or rec_type == 'workflow':
+                    # 执行场景或工作流
+                    execution = self.orchestrator.orchestrate(user_input)
+                    result["success"] = execution.get("success", False)
+                    result["execution_result"] = execution
+                    result["message"] = f"通过决策编排中心执行推荐「{rec_name}」: {'成功' if result['success'] else '失败'}"
+                else:
+                    # 其他类型通过 do.py 或直接执行
+                    result["execution_result"] = {"action": action, "type": rec_type}
+                    result["success"] = True
+                    result["message"] = f"推荐「{rec_name}」可直接执行: {action}"
+            else:
+                # 如果没有决策编排中心，直接返回可执行的动作
+                result["success"] = True
+                result["execution_result"] = {"action": action, "type": rec_type}
+                result["message"] = f"推荐「{rec_name}」: {action}"
+
+            # 记录执行历史
+            self._save_execution_history(rec, result)
+
+        except Exception as e:
+            result["message"] = f"执行推荐失败: {str(e)}"
+            print(f"[UnifiedRecommender] 执行推荐失败: {e}")
+
+        return result
+
+    def execute_auto(self, auto_confirm: bool = False) -> Dict[str, Any]:
+        """自动执行最高置信度的推荐
+
+        根据当前上下文获取推荐，并自动执行最高置信度的推荐。
+        适用于用户授权后的自动化场景。
+
+        Args:
+            auto_confirm: 是否自动确认执行（需要用户预先授权）
+
+        Returns:
+            执行结果
+        """
+        result = {
+            "success": False,
+            "recommendations": [],
+            "executed": None,
+            "message": ""
+        }
+
+        try:
+            # 获取当前推荐
+            recommendations = self.get_all_recommendations()
+            result["recommendations"] = [
+                {
+                    'id': r.recommendation_id,
+                    'name': r.name,
+                    'confidence': r.confidence,
+                    'action': r.action
+                }
+                for r in recommendations[:5]
+            ]
+
+            if not recommendations:
+                result["message"] = "当前无推荐可执行"
+                return result
+
+            # 选择最高置信度的推荐
+            best_rec = recommendations[0]
+
+            if auto_confirm:
+                # 自动执行
+                exec_result = self.execute_recommendation(
+                    recommendation_id=best_rec.recommendation_id,
+                    recommendation={
+                        'name': best_rec.name,
+                        'action': best_rec.action,
+                        'type': best_rec.recommendation_type,
+                        'metadata': best_rec.metadata
+                    }
+                )
+                result["executed"] = exec_result
+                result["success"] = exec_result.get("success", False)
+                result["message"] = f"已自动执行推荐「{best_rec.name}」"
+            else:
+                # 返回推荐供用户确认
+                result["success"] = True
+                result["message"] = f"最高置信度推荐：「{best_rec.name}」(置信度 {int(best_rec.confidence*100)}%)"
+
+        except Exception as e:
+            result["message"] = f"自动执行失败: {str(e)}"
+            print(f"[UnifiedRecommender] 自动执行失败: {e}")
+
+        return result
+
+    def _save_execution_history(self, recommendation: Dict[str, Any], result: Dict[str, Any]):
+        """保存执行历史"""
+        try:
+            history_file = os.path.join(STATE_DIR, 'recommendation_execution_history.json')
+            history_data = {"executions": []}
+
+            if os.path.exists(history_file):
+                with open(history_file, 'r', encoding='utf-8') as f:
+                    history_data = json.load(f)
+
+            if "executions" not in history_data:
+                history_data["executions"] = []
+
+            history_data["executions"].append({
+                "recommendation": recommendation,
+                "result": result,
+                "timestamp": datetime.now().isoformat()
+            })
+
+            # 只保留最近 100 条
+            history_data["executions"] = history_data["executions"][-100:]
+
+            with open(history_file, 'w', encoding='utf-8') as f:
+                json.dump(history_data, f, ensure_ascii=False, indent=2)
+
+        except Exception as e:
+            print(f"[UnifiedRecommender] 保存执行历史失败: {e}")
+
 
 def get_unified_recommendations(context: Dict[str, Any] = None, limit: int = 10) -> List[Dict[str, Any]]:
     """获取统一推荐（主入口函数）"""
@@ -372,14 +553,15 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='智能统一推荐引擎')
     parser.add_argument('action', nargs='?', default='recommend',
-                       choices=['recommend', 'history', 'feedback'],
-                       help='动作: recommend 获取推荐, history 查看历史, feedback 记录反馈')
+                       choices=['recommend', 'history', 'feedback', 'execute', 'auto'],
+                       help='动作: recommend 获取推荐, history 查看历史, feedback 记录反馈, execute 执行推荐, auto 自动执行')
     parser.add_argument('--limit', '-l', type=int, default=10, help='推荐数量')
     parser.add_argument('--query', '-q', help='用户查询/意图')
     parser.add_argument('--json', '-j', action='store_true', help='输出JSON格式')
-    parser.add_argument('--rec-id', help='推荐ID（用于反馈）')
+    parser.add_argument('--rec-id', help='推荐ID（用于反馈或执行）')
     parser.add_argument('--feedback', '-f', choices=['accepted', 'rejected', 'ignored'],
                        help='反馈类型')
+    parser.add_argument('--confirm', '-c', action='store_true', help='自动确认执行（用于 auto 命令）')
 
     args = parser.parse_args()
 
@@ -426,5 +608,28 @@ if __name__ == '__main__':
         if args.rec_id and args.feedback:
             engine.record_feedback(args.rec_id, args.feedback)
             print(f"已记录反馈: {args.feedback} -> {args.rec_id}")
+
+    elif args.action == 'execute':
+        if args.rec_id:
+            result = engine.execute_recommendation(recommendation_id=args.rec_id)
+            if args.json:
+                print(json.dumps(result, ensure_ascii=False, indent=2))
+            else:
+                print(f"执行推荐: {result.get('message', '')}")
+                if result.get('execution_result'):
+                    print(f"执行结果: {result['execution_result']}")
         else:
-            print("请提供 --rec-id 和 --feedback 参数")
+            print("请提供 --rec-id 参数指定要执行的推荐")
+
+    elif args.action == 'auto':
+        result = engine.execute_auto(auto_confirm=args.confirm)
+        if args.json:
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        else:
+            print(f"自动执行: {result.get('message', '')}")
+            if result.get('recommendations'):
+                print("\n当前推荐列表:")
+                for i, rec in enumerate(result['recommendations'], 1):
+                    print(f"  {i}. {rec['name']} (置信度: {int(rec['confidence']*100)}%)")
+            if result.get('executed'):
+                print(f"\n已执行结果: {result['executed'].get('message', '')}")
