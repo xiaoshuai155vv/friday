@@ -1860,6 +1860,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自动化场景测试引擎
+    elif "场景测试" in intent or "测试场景" in intent or "scene test" in intent.lower() or "测试计划" in intent or "plan test" in intent.lower() or "场景计划测试" in intent or "测试守护进程" in intent:
+        print(f"[智能自动化场景测试引擎] 正在测试场景计划...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "scene_test_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--full"]
+        # 过滤掉意图关键词
+        filter_kw = ["场景测试", "测试场景", "scene test", "测试计划", "plan test", "场景计划测试", "测试守护进程"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_kw]
+        if not filtered_args:
+            filtered_args = ["--full"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 自动执行
     elif "自动执行推荐" in intent or "自动执行" in intent or "auto execute" in intent.lower() or "auto run" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行自动推荐...", file=sys.stderr)

@@ -18,5 +18,8 @@
       "command": "proactive_notification_engine notify",
       "description": "发送通知"
     }
+  ],
+  "triggers": [
+    "从预测到主动行动的完整服务链，当预测到问"
   ]
 }

@@ -18,5 +18,8 @@
       "command": "proactive_operations_engine optimize",
       "description": "执行优化"
     }
+  ],
+  "triggers": [
+    "从主动运维到自动修复的智能闭环"
   ]
 }
