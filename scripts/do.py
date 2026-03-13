@@ -1845,6 +1845,23 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能跨引擎深度协同闭环增强器
+    elif "深度协同" in intent or "闭环增强" in intent or "引擎集成" in intent or "深度集成" in intent or "跨引擎" in intent or "integration" in intent.lower() or "闭环" in intent or "集成" in intent:
+        print(f"[智能跨引擎深度协同闭环增强器] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "deep_integration_orchestrator.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["深度协同", "闭环增强", "引擎集成", "深度集成", "跨引擎", "integration", "闭环", "集成"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能长期记忆与主动规划引擎
     elif "长期记忆" in intent or "目标跟踪" in intent or "主动规划" in intent or "我的目标" in intent or "待办" in intent or "long term memory" in intent.lower() or "目标" in intent or "待办" in intent:
         print(f"[智能长期记忆与主动规划引擎] 正在处理...", file=sys.stderr)
