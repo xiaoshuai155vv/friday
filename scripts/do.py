@@ -1175,6 +1175,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["track", "analyze", "optimize", "recommend", "stats"]):
             cmd = ["recommend"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "execution_enhancement_engine.py")] + cmd, cwd=PROJECT)
+    # 智能工作流执行策略自动学习增强器
+    elif "策略学习" in intent or "执行优化" in intent or "工作流优化" in intent or "学习策略" in intent or "workflow_strategy" in intent.lower() or "strategy_learner" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else []
+        if not cmd or (cmd and cmd[0] not in ["learn", "analyze", "apply", "stats", "recommend", "clear"]):
+            cmd = ["stats"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "workflow_strategy_learner.py")] + cmd, cwd=PROJECT)
     # 智能知识进化引擎
     elif "知识进化" in intent or "知识更新" in intent or "知识提取" in intent or "knowledge" in intent.lower() or "knowledge_evolution" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
