@@ -1,0 +1,22 @@
+{
+  "name": "智能运维自愈",
+  "description": "从主动运维到自动修复的智能闭环",
+  "trigger": "auto:智能运维自愈",
+  "steps": [
+    {
+      "action": "run",
+      "command": "proactive_operations_engine check",
+      "description": "检查运维状态"
+    },
+    {
+      "action": "run",
+      "command": "self_healing_engine diagnose",
+      "description": "诊断问题"
+    },
+    {
+      "action": "run",
+      "command": "proactive_operations_engine optimize",
+      "description": "执行优化"
+    }
+  ]
+}
