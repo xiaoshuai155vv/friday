@@ -1562,6 +1562,23 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能工作流质量保障与自动优化引擎
+    elif "工作流质量" in intent or "质量分析" in intent or "质量监控" in intent or "工作流统计" in intent or "workflow quality" in intent.lower() or "质量建议" in intent or "自动优化工作流" in intent:
+        print(f"[智能工作流质量保障与自动优化引擎] 正在分析工作流质量...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "workflow_quality_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filter_kw = ["工作流质量", "质量分析", "质量监控", "工作流统计", "workflow quality", "质量建议", "自动优化工作流"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_kw]
+        if not filtered_args:
+            # 默认显示统计
+            filtered_args = ["stats"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 自动执行
     elif "自动执行推荐" in intent or "自动执行" in intent or "auto execute" in intent.lower() or "auto run" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行自动推荐...", file=sys.stderr)
