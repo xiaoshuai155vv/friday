@@ -1642,6 +1642,50 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自我进化优化器 - 系统状态
+    elif "自我进化状态" in intent or "进化优化器状态" in intent or "self evolution status" in intent.lower() or "evolution optimizer status" in intent.lower():
+        print(f"[智能自我进化优化器] 正在获取系统状态...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_optimizer.py")
+        cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自我进化优化器 - 分析优化机会
+    elif "自我进化分析" in intent or "进化优化分析" in intent or "self evolution analyze" in intent.lower() or "evolution optimize analyze" in intent.lower() or "优化机会" in intent or "识别优化" in intent:
+        print(f"[智能自我进化优化器] 正在分析优化机会...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_optimizer.py")
+        cmd_args = ["analyze"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自我进化优化器 - 生成建议
+    elif "自我进化建议" in intent or "进化优化建议" in intent or "self evolution recommend" in intent.lower() or "evolution optimize recommend" in intent.lower() or "进化建议" in intent or "优化建议" in intent:
+        print(f"[智能自我进化优化器] 正在生成优化建议...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_optimizer.py")
+        cmd_args = ["recommend"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自我进化优化器 - 执行优化
+    elif "执行优化" in intent or "自我优化" in intent or "execute optimize" in intent.lower() or "do optimize" in intent.lower() or "执行进化优化" in intent:
+        print(f"[智能自我进化优化器] 正在执行优化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_optimizer.py")
+        cmd_args = ["optimize"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 执行指定推荐
     elif "执行推荐" in intent or "execute recommend" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行推荐...", file=sys.stderr)
