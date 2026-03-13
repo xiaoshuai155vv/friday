@@ -1581,6 +1581,50 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能个性化深度学习引擎 - 用户洞察
+    elif "个性化洞察" in intent or "深度学习" in intent or "用户洞察" in intent or "personalization insights" in intent.lower() or "深度个性化" in intent or "用户画像" in intent:
+        print(f"[智能个性化深度学习引擎] 正在获取用户洞察...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "deep_personalization_engine.py")
+        cmd_args = ["insights"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能个性化深度学习引擎 - 个性化推荐
+    elif "个性化推荐" in intent or "个性化建议" in intent or "personalized recommend" in intent.lower() or "个人推荐" in intent or "深度推荐" in intent:
+        print(f"[智能个性化深度学习引擎] 正在生成个性化推荐...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "deep_personalization_engine.py")
+        cmd_args = ["recommend"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能个性化深度学习引擎 - 行为预测
+    elif "行为预测" in intent or "预测下一步" in intent or "predict next" in intent.lower() or "预测我的" in intent:
+        print(f"[智能个性化深度学习引擎] 正在预测用户行为...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "deep_personalization_engine.py")
+        cmd_args = ["predict"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能个性化深度学习引擎 - 时间模式分析
+    elif "时间模式" in intent or "使用时段" in intent or "time pattern" in intent.lower() or "使用习惯" in intent:
+        print(f"[智能个性化深度学习引擎] 正在分析时间模式...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "deep_personalization_engine.py")
+        cmd_args = ["analyze-time"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 执行指定推荐
     elif "执行推荐" in intent or "execute recommend" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行推荐...", file=sys.stderr)
