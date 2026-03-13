@@ -1702,6 +1702,42 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能长期记忆与主动规划引擎
+    elif "长期记忆" in intent or "目标跟踪" in intent or "主动规划" in intent or "我的目标" in intent or "待办" in intent or "long term memory" in intent.lower() or "目标" in intent or "待办" in intent:
+        print(f"[智能长期记忆与主动规划引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "long_term_memory_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["长期记忆", "目标跟踪", "主动规划", "我的目标", "待办", "long term memory", "目标", "记忆"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            # 默认显示状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能数据洞察与可视化引擎
+    elif "数据洞察" in intent or "data insight" in intent.lower() or "洞察报告" in intent or "可视化报告" in intent or "数据统计" in intent:
+        print(f"[智能数据洞察与可视化引擎] 正在分析数据并生成洞察报告...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "data_insight_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["数据洞察", "数据统计", "洞察报告", "可视化报告", "data insight"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            # 默认显示状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 执行指定推荐
     elif "执行推荐" in intent or "execute recommend" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行推荐...", file=sys.stderr)
