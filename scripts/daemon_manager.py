@@ -78,6 +78,14 @@ DAEMON_REGISTRY = {
         "restart_on_failure": True,
         "check_interval": 300,  # 5分钟检查一次
     },
+    "daemon_linkage": {
+        "name": "daemon_linkage",
+        "description": "守护进程间联动引擎 - 实现跨守护进程的任务传递和自动触发，形成多守护进程协同的主动服务体系",
+        "script": "daemon_linkage_engine.py",
+        "auto_start": False,
+        "restart_on_failure": True,
+        "check_interval": 30,  # 30秒检查一次
+    },
 }
 
 

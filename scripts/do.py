@@ -716,7 +716,7 @@ def main():
             # 尝试提取守护进程名称
             daemon_name = None
             argv_str = " ".join(sys.argv[1:])
-            for name in ["health_check", "evolution_loop", "health_assurance"]:
+            for name in ["health_check", "evolution_loop", "health_assurance", "daemon_linkage"]:
                 if name in argv_str:
                     daemon_name = name
                     break
@@ -731,6 +731,36 @@ def main():
             if result.returncode != 0 and result.stderr:
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
+
+    # 检查是否请求守护进程间联动引擎
+    linkage_keywords = ["联动", "linkage", "守护进程联动", "daemon_linkage"]
+    if any(kw in " ".join(sys.argv[1:]) for kw in linkage_keywords):
+        # 提取子命令
+        subcmd = None
+        argv_str = " ".join(sys.argv[1:])
+        for cmd in ["list", "status", "add", "remove", "enable", "disable", "trigger", "run"]:
+            if cmd in argv_str:
+                subcmd = cmd
+                break
+        if subcmd is None:
+            subcmd = "status"  # 默认显示状态
+
+        # 提取参数
+        cmd_args = []
+        if subcmd == "add" or subcmd == "remove" or subcmd == "enable" or subcmd == "disable" or subcmd == "trigger":
+            # 提取额外参数
+            args = argv_str.replace(subcmd, "").strip().split()
+            cmd_args = [a for a in args if a and not any(kw in a for kw in linkage_keywords)]
+
+        print(f"[守护进程间联动] 检测到请求: {subcmd}", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "daemon_linkage_engine.py")
+        cmd = [subcmd] + cmd_args
+        result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
 
     # 检查是否请求告警相关操作
     alert_keywords = {
