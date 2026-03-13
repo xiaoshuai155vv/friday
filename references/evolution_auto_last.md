@@ -2,17 +2,16 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/meta_evolution_engine.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md
+scripts/engine_capability_activator.py, scripts/do.py, references/evolution_auto_last.md
 
-## 2026-03-13 round 190
-- **current_goal**：智能统一元进化引擎 - 创建统一的元进化层，集成所有进化引擎的能力，实现从「单引擎独立进化」到「全系统协同元进化」的范式升级
+## 2026-03-13 round 191
+- **current_goal**：智能引擎能力激活与自适应推荐引擎 - 让系统能够根据当前上下文（时间、任务类型、历史行为）主动推荐被忽视但可能非常有用的引擎能力，实现从「被动等待调用」到「主动价值发现」的范式升级
 - **做了什么**：
-  1. 创建 meta_evolution_engine.py 模块，实现智能统一元进化引擎功能
-  2. 实现多维度引擎状态分析（扫描 205 个引擎，分析执行频率、功能完整性、协同效果）
-  3. 实现进化机会智能评估（识别 10 个高优先级进化机会）
-  4. 实现自动修复检查（发现 181 个问题，主要是未在 capabilities.md 中记录的引擎）
-  5. 实现进化效果追踪功能
-  6. 在 do.py 中添加「元进化」「统一进化」「meta evolution」「引擎状态」「进化机会」「进化追踪」等关键词触发支持
-  7. 基线验证 5/6 通过（剪贴板远程限制为已知问题）
+  1. 创建 engine_capability_activator.py 模块，实现智能引擎能力激活与自适应推荐引擎功能
+  2. 扫描并分类 208 个引擎（按类型：general/evolution/automation/execution/system/learning/vision/monitoring/interaction/service）
+  3. 实现基于上下文的推荐功能（时间、星期、引擎使用状态）
+  4. 生成 8 个基于上下文的引擎推荐
+  5. 在 do.py 中添加「引擎能力激活」「能力激活」「激活引擎」「engine capability」等关键词触发支持
+  6. 基线验证 5/6 通过（剪贴板远程限制为已知问题）
 - **是否完成**：已完成
-- **下一轮建议**：可基于元进化引擎分析结果推进具体进化任务，或探索新的创新方向
+- **下一轮建议**：可基于推荐结果引导用户使用被忽视的引擎，或进一步增强推荐算法的精准度

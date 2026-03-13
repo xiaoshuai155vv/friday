@@ -3705,6 +3705,34 @@ def main():
             print("脚本不存在:", path, file=sys.stderr)
             sys.exit(1)
         subprocess.run([sys.executable, path] + sys.argv[3:], cwd=PROJECT)
+    # 智能引擎能力激活与自适应推荐引擎
+    elif ("引擎能力激活" in intent or "能力激活" in intent or "引擎推荐" in intent or "激活引擎" in intent or "engine activator" in intent.lower() or "engine capability" in intent.lower() or "引擎仪表盘" in intent or "能力发现" in intent):
+        print(f"[Smart Engine Capability Activator] Scanning and recommending engines...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "engine_capability_activator.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "dashboard"
+        if "扫描" in intent or "scan" in intent.lower():
+            action = "scan"
+        elif "推荐" in intent or "recommend" in intent.lower():
+            action = "recommend"
+        elif "测试" in intent or "test" in intent.lower():
+            action = "test"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        # 过滤掉意图关键词
+        filter_words = ["引擎能力激活", "能力激活", "引擎推荐", "激活引擎", "engine activator", "engine capability", "引擎仪表盘", "能力发现", "推荐", "扫描", "测试", "状态"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一元进化引擎
     elif "元进化" in intent or "统一进化" in intent or "meta evolution" in intent.lower() or ("进化" in intent and "协调" in intent) or ("进化" in intent and "引擎" in intent and "状态" in intent) or ("进化" in intent and "机会" in intent) or "进化追踪" in intent or "进化评估" in intent:
         print(f"[智能统一元进化引擎] 正在处理元进化任务...", file=sys.stderr)
