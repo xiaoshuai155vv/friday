@@ -64,6 +64,12 @@ REGISTERED_ENGINES = {
         "class": "ScenarioRecommender",
         "triggers": ["场景推荐", "推荐场景", "推荐计划"],
     },
+    # 集成预测与预防引擎
+    "predictive_prevention": {
+        "module": "predictive_prevention_engine",
+        "class": "PredictivePreventionEngine",
+        "triggers": ["预测", "预防", "预警", "风险", "系统扫描", "健康扫描", "主动预防", "predictive", "prevention"],
+    },
 }
 
 
@@ -77,6 +83,16 @@ class DecisionOrchestrator:
 
     def _load_engines(self):
         """加载已注册的引擎模块"""
+        import sys
+        from importlib import import_module
+        from importlib.util import spec_from_file_location, module_from_spec
+        import os
+
+        # 添加 scripts 目录到 Python 路径
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        if script_dir not in sys.path:
+            sys.path.insert(0, script_dir)
+
         # 动态加载引擎模块
         for engine_name, engine_config in REGISTERED_ENGINES.items():
             try:
@@ -85,13 +101,20 @@ class DecisionOrchestrator:
                 class_name = engine_config['class']
 
                 # 尝试直接导入
-                import sys
                 if module_name in sys.modules:
                     module = sys.modules[module_name]
                 else:
-                    # 使用 importlib
-                    from importlib import import_module
-                    module = import_module(module_name)
+                    # 尝试从文件加载
+                    module_file = os.path.join(script_dir, f"{module_name}.py")
+                    if os.path.exists(module_file):
+                        spec = spec_from_file_location(module_name, module_file)
+                        if spec and spec.loader:
+                            module = module_from_spec(spec)
+                            sys.modules[module_name] = module
+                            spec.loader.exec_module(module)
+                    else:
+                        # 使用 importlib
+                        module = import_module(module_name)
 
                 engine_class = getattr(module, class_name)
                 self.engines[engine_name] = engine_class()
@@ -271,36 +294,230 @@ class DecisionOrchestrator:
         suggestions.sort(key=lambda x: x["relevance"], reverse=True)
         return suggestions[:5]
 
+    def get_predictive_service(self) -> Dict[str, Any]:
+        """获取基于预测的主动服务 - 整合预测引擎与决策编排
+
+        Returns:
+            包含预测结果和主动建议的字典
+        """
+        result = {
+            "timestamp": datetime.now().isoformat(),
+            "status": "no_predictive_engine",
+            "prediction": None,
+            "recommended_actions": [],
+            "auto_action_needed": False,
+        }
+
+        # 尝试加载并调用预测引擎
+        try:
+            from predictive_prevention_engine import PredictivePreventionEngine
+            predictor = PredictivePreventionEngine()
+            prediction = predictor.scan_and_predict()
+            result["prediction"] = prediction
+            result["status"] = "success"
+
+            # 分析预测结果，生成推荐行动
+            if prediction.get("risk_level") in ["critical", "high"]:
+                # 高风险：生成紧急行动建议
+                result["auto_action_needed"] = True
+                result["recommended_actions"] = [
+                    {
+                        "priority": "urgent",
+                        "action": "通知用户",
+                        "detail": f"系统风险等级: {prediction.get('risk_level')}",
+                        "engines": ["notification"],
+                    }
+                ]
+
+                # 如果有具体问题，添加对应的引擎建议
+                for issue in prediction.get("detected_issues", []):
+                    result["recommended_actions"].append({
+                        "priority": "high",
+                        "action": "问题修复",
+                        "detail": f"{issue.get('description')}: {issue.get('prevention')}",
+                        "engines": ["self_healing"],
+                    })
+
+            # 基于用户需求预测生成建议
+            for pred in prediction.get("predictions", []):
+                result["recommended_actions"].append({
+                    "priority": "medium",
+                    "action": "主动服务",
+                    "detail": f"{pred.get('description')} (置信度: {pred.get('confidence', 0):.0%})",
+                    "suggested_actions": pred.get("suggested_actions", []),
+                    "engines": ["scenario", "notification"],
+                })
+
+            # 预防建议
+            for suggestion in prediction.get("prevention_suggestions", []):
+                if suggestion.get("action_type") != "none":
+                    result["recommended_actions"].append({
+                        "priority": "low" if suggestion.get("severity") == "low" else "medium",
+                        "action": "预防建议",
+                        "detail": suggestion.get("suggestion"),
+                        "engines": ["notification"],
+                    })
+
+        except Exception as e:
+            result["status"] = "error"
+            result["error"] = str(e)
+
+        return result
+
+    def proactive_service_from_prediction(self) -> str:
+        """基于预测执行主动服务，返回格式化报告
+
+        Returns:
+            格式化的主动服务报告
+        """
+        service_result = self.get_predictive_service()
+
+        if service_result["status"] != "success":
+            return f"预测服务暂不可用: {service_result.get('error', '未知错误')}"
+
+        prediction = service_result.get("prediction", {})
+        risk_level = prediction.get("risk_level", "unknown")
+
+        report_lines = [
+            "=" * 50,
+            f"基于预测的主动服务报告 - {service_result['timestamp']}",
+            "=" * 50,
+            "",
+            f"【系统风险等级】{risk_level.upper()}",
+            "",
+        ]
+
+        # 系统指标
+        metrics = prediction.get("system_metrics", {})
+        if metrics:
+            report_lines.append("【系统状态】")
+            if "memory_percent" in metrics:
+                report_lines.append(f"  内存: {metrics['memory_percent']:.1f}%")
+            if "cpu_percent" in metrics:
+                report_lines.append(f"  CPU: {metrics['cpu_percent']:.1f}%")
+            if "disk_percent" in metrics:
+                report_lines.append(f"  磁盘: {metrics['disk_percent']:.1f}%")
+            report_lines.append("")
+
+        # 检测的问题
+        issues = prediction.get("detected_issues", [])
+        if issues:
+            report_lines.append("【检测到的问题】")
+            for issue in issues:
+                report_lines.append(f"  [{issue.get('severity', 'unknown').upper()}] {issue.get('description')}")
+                report_lines.append(f"    当前: {issue.get('current_value')} | 阈值: {issue.get('threshold')}")
+                report_lines.append(f"    建议: {issue.get('prevention')}")
+            report_lines.append("")
+
+        # 预测的用户需求
+        predictions = prediction.get("predictions", [])
+        if predictions:
+            report_lines.append("【预测的用户需求】")
+            for pred in predictions:
+                report_lines.append(f"  {pred.get('description')} (置信度: {pred.get('confidence', 0):.0%})")
+                actions = pred.get("suggested_actions", [])
+                if actions:
+                    report_lines.append(f"    建议操作: {', '.join(actions)}")
+            report_lines.append("")
+
+        # 推荐的行动
+        if service_result["recommended_actions"]:
+            report_lines.append("【推荐行动】")
+            for action in service_result["recommended_actions"]:
+                priority_marker = "!" if action["priority"] == "urgent" else "!"
+                report_lines.append(f"  [{action['priority'].upper()}{priority_marker}] {action['action']}")
+                report_lines.append(f"    {action['detail']}")
+            report_lines.append("")
+
+        # 是否需要自动执行
+        if service_result["auto_action_needed"]:
+            report_lines.append("【自动执行】检测到高风险，需要主动干预")
+        else:
+            report_lines.append("【自动执行】系统运行正常，无需干预")
+
+        report_lines.append("=" * 50)
+
+        return "\n".join(report_lines)
+
 
 # 单元测试
 if __name__ == "__main__":
-    print("=== 智能决策编排中心测试 ===")
+    import argparse
+
+    parser = argparse.ArgumentParser(description="智能决策编排中心")
+    parser.add_argument("command", nargs="?", default="test", help="命令: status, orchestrate, predictive-service, proactive, test")
+    parser.add_argument("--input", "-i", help="用户输入（用于 orchestrate 命令）")
+    parser.add_argument("--json", "-j", action="store_true", help="JSON 格式输出")
+
+    args = parser.parse_args()
 
     orchestrator = DecisionOrchestrator()
 
-    # 测试状态获取
-    print("\n1. 获取状态:")
-    status = orchestrator.get_status()
-    print(f"   已加载引擎: {status['loaded_engines']}")
-    print(f"   注册引擎: {status['registered_engines']}")
+    if args.command in ["predictive-service", "proactive", "预测服务", "主动服务"]:
+        # 基于预测的主动服务
+        if args.json:
+            result = orchestrator.get_predictive_service()
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        else:
+            report = orchestrator.proactive_service_from_prediction()
+            print(report)
 
-    # 测试意图分析
-    print("\n2. 测试意图分析:")
-    test_inputs = [
-        "帮我整理文件并提醒我",
-        "诊断系统问题并修复",
-        "记住我最喜欢的工作模式",
-        "学习我的使用习惯并推荐场景",
-    ]
+    elif args.command == "status":
+        # 显示状态
+        status = orchestrator.get_status()
+        print(json.dumps(status, ensure_ascii=False, indent=2))
 
-    for test_input in test_inputs:
-        intent = orchestrator.analyze_intent(test_input)
-        print(f"\n   输入: {test_input}")
-        print(f"   选择引擎: {intent['selected_engines']}")
-        print(f"   决策理由: {intent['reasoning']}")
+    elif args.command == "orchestrate":
+        # 执行编排
+        if not args.input:
+            print("错误: orchestrate 命令需要 --input 参数")
+            sys.exit(1)
+        result = orchestrator.orchestrate(args.input)
+        if args.json:
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        else:
+            print(f"状态: {result['status']}")
+            print(f"选择引擎: {result['intent_analysis']['selected_engines']}")
+            print(f"决策理由: {result['intent_analysis']['reasoning']}")
+            print(f"执行结果数: {len(result['execution_results'])}")
 
-    # 测试编排执行
-    print("\n3. 测试编排执行:")
+    else:
+        # 默认执行测试
+        print("=== 智能决策编排中心测试 ===")
+
+        # 测试状态获取
+        print("\n1. 获取状态:")
+        status = orchestrator.get_status()
+        print(f"   已加载引擎: {status['loaded_engines']}")
+        print(f"   注册引擎: {status['registered_engines']}")
+
+        # 测试意图分析
+        print("\n2. 测试意图分析:")
+        test_inputs = [
+            "帮我整理文件并提醒我",
+            "诊断系统问题并修复",
+            "记住我最喜欢的工作模式",
+            "学习我的使用习惯并推荐场景",
+        ]
+
+        for test_input in test_inputs:
+            intent = orchestrator.analyze_intent(test_input)
+            print(f"\n   输入: {test_input}")
+            print(f"   选择引擎: {intent['selected_engines']}")
+            print(f"   决策理由: {intent['reasoning']}")
+
+        # 测试编排执行
+        print("\n3. 测试编排执行:")
+        result = orchestrator.orchestrate("诊断系统问题")
+        print(f"   状态: {result['status']}")
+        print(f"   执行结果数: {len(result['execution_results'])}")
+
+        # 测试预测主动服务
+        print("\n4. 测试基于预测的主动服务:")
+        proactive_report = orchestrator.proactive_service_from_prediction()
+        print(proactive_report)
+
+        print("\n=== 测试完成 ===")
     result = orchestrator.orchestrate("诊断系统问题")
     print(f"   状态: {result['status']}")
     print(f"   执行结果数: {len(result['execution_results'])}")

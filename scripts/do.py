@@ -1546,13 +1546,13 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能主动通知引擎
-    elif "通知" in intent or "提醒" in intent or "主动建议" in intent or "notification" in intent.lower() or "reminder" in intent.lower() or "proactive" in intent.lower() or "智能提醒" in intent or "主动通知" in intent:
+    elif "通知" in intent or "提醒" in intent or "主动建议" in intent or "notification" in intent.lower() or "reminder" in intent.lower() or "智能提醒" in intent or "主动通知" in intent:
         print(f"[智能主动通知引擎] 正在处理通知请求...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "proactive_notification_engine.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
         # 过滤掉意图关键词
-        filtered_args = [arg for arg in cmd_args if arg not in ["通知", "提醒", "主动建议", "notification", "reminder", "proactive", "智能提醒", "主动通知"]]
+        filtered_args = [arg for arg in cmd_args if arg not in ["通知", "提醒", "主动建议", "notification", "reminder", "智能提醒", "主动通知"]]
         if not filtered_args:
             filtered_args = ["status"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
@@ -1642,17 +1642,33 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
-    # 智能决策编排中心
-    elif "决策" in intent or "编排" in intent or "协同" in intent or "最佳方案" in intent or "智能调度" in intent or "multi-engine" in intent.lower() or "decision" in intent.lower() or "orchestrate" in intent.lower() or "协调" in intent:
-        print(f"[智能决策编排中心] 正在分析并调度引擎...", file=sys.stderr)
+    # 智能决策编排中心 + 基于预测的主动服务
+    elif "决策" in intent or "编排" in intent or "协同" in intent or "最佳方案" in intent or "智能调度" in intent or "multi-engine" in intent.lower() or "decision" in intent.lower() or "orchestrate" in intent.lower() or "协调" in intent or "预测服务" in intent or "主动服务" in intent or "proactive" in intent.lower() or "predictive-service" in intent.lower():
+        # 判断是否是主动预测服务
+        is_proactive = "预测服务" in intent or "主动服务" in intent or "proactive" in intent.lower() or "predictive-service" in intent.lower()
+
+        if is_proactive:
+            print(f"[基于预测的主动服务] 正在分析系统状态并生成主动服务...", file=sys.stderr)
+        else:
+            print(f"[智能决策编排中心] 正在分析并调度引擎...", file=sys.stderr)
+
         script_path = os.path.join(SCRIPTS, "decision_orchestrator.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
         # 过滤掉意图关键词
-        filtered_args = [arg for arg in cmd_args if arg not in ["决策", "编排", "协同", "最佳方案", "智能调度", "multi-engine", "decision", "orchestrate", "协调"]]
-        if not filtered_args:
-            # 如果没有额外参数，显示状态
-            filtered_args = ["status"]
+        filtered_args = [arg for arg in cmd_args if arg not in ["决策", "编排", "协同", "最佳方案", "智能调度", "multi-engine", "decision", "orchestrate", "协调", "预测服务", "主动服务", "proactive", "predictive-service"]]
+
+        if is_proactive:
+            # 主动预测服务使用 predictive-service 命令
+            if not filtered_args:
+                filtered_args = ["proactive"]
+            else:
+                filtered_args = ["proactive"] + filtered_args
+        else:
+            if not filtered_args:
+                # 如果没有额外参数，显示状态
+                filtered_args = ["status"]
+
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
             print(result.stdout)
