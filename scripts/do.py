@@ -2290,6 +2290,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能主动洞察与建议引擎（round 213）
+    elif "主动洞察" in intent or "主动建议" in intent or "洞察" in intent or "主动价值" in intent or "proactive insight" in intent.lower() or "insight advisor" in intent.lower() or "洞察引擎" in intent or "建议引擎" in intent or "趋势分析" in intent or "进化趋势" in intent or "预测" in intent:
+        print(f"[智能主动洞察与建议引擎] 正在分析跨引擎知识、进化趋势和系统状态，生成主动洞察与建议...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "proactive_insight_advisor.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["主动洞察", "主动建议", "洞察", "主动价值", "proactive insight", "insight advisor", "洞察引擎", "建议引擎", "趋势分析", "进化趋势", "预测"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能引擎组合实时监控与自适应优化引擎（round 208）
     elif "引擎实时监控" in intent or "引擎组合优化" in intent or "实时优化" in intent or "engine realtime" in intent.lower() or "engine monitor" in intent.lower() or "组合分析" in intent or "engine combo" in intent.lower() or "引擎自适应" in intent:
         print(f"[智能引擎组合实时监控与自适应优化引擎] 正在分析引擎组合并生成优化建议...", file=sys.stderr)
