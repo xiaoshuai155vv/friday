@@ -1131,6 +1131,12 @@ def main():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["list"]
         # 支持 list/search/recommend/orchestrate/stats 命令
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "unified_engine_hub.py")] + cmd, cwd=PROJECT)
+    # 智能对话执行一体化引擎
+    elif "对话执行" in intent or "对话引擎" in intent or "智能对话" in intent or "chat" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else []
+        if not cmd or (cmd and cmd[0] not in ["chat", "status", "history", "clear"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "conversation_execution_engine.py")] + cmd, cwd=PROJECT)
     # 番茄钟功能
     elif "番茄钟" in intent or "pomodoro" in intent.lower() or "专注" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else []
