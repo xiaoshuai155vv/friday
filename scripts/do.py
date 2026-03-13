@@ -2527,6 +2527,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能引擎负载均衡与协同调度引擎（round 248）- 多引擎并发时智能分配资源
+    elif "负载均衡" in intent or "引擎负载" in intent or "load balance" in intent.lower() or "资源分配" in intent or "引擎调度" in intent or "engine load" in intent.lower():
+        print(f"[智能引擎负载均衡与协同调度引擎] 正在执行引擎负载均衡...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "engine_load_balancer.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["负载均衡", "引擎负载", "load balance", "资源分配", "引擎调度", "engine load"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能引擎能力组合自动发现与优化引擎（round 174）
     elif "引擎能力发现" in intent or "能力组合" in intent or "创新组合" in intent or "engine capability" in intent.lower() or "组合发现" in intent or "工作流建议" in intent:
         print(f"[智能引擎能力组合自动发现与优化引擎] 正在分析引擎能力组合...", file=sys.stderr)
