@@ -2020,6 +2020,43 @@ def main():
                     print(f"     置信度: {d.get('confidence', 0):.1%}")
                     print(f"     {d.get('description', '')}")
         sys.exit(0)
+    elif "自适应优先级" in intent or "优先级调整" in intent or "智能优先级" in intent or ("优先级" in intent and "调整" in intent) or ("自适应" in intent and "优先" in intent):
+        print(f"[自适应优先级引擎] 正在分析系统状态并调整任务优先级...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "adaptive_priority_engine.py")
+        result = subprocess.run([sys.executable, script_path, "--analyze"], cwd=PROJECT, capture_output=True, text=True)
+        print(result.stdout)
+        if result.stderr:
+            print(f"执行出错: {result.stderr}", file=sys.stderr)
+
+        # 读取并显示优先级状态
+        result_path = os.path.join(PROJECT, "runtime/state/adaptive_priority_result.json")
+        if os.path.exists(result_path):
+            with open(result_path, 'r', encoding='utf-8') as f:
+                result_data = json.load(f)
+            print("\n=== 自适应优先级状态 ===")
+            system = result_data.get("system", {})
+            print(f"系统负载等级: {system.get('load_level', 'N/A')}")
+
+            metrics = system.get("metrics", {})
+            if metrics:
+                print(f"CPU: {metrics.get('average_cpu', 0):.1f}%")
+                print(f"内存: {metrics.get('average_memory', 0):.1f}%")
+
+            user = result_data.get("user", {})
+            print(f"\n用户需求等级: {user.get('demand_level', 'N/A')}/10")
+
+            tasks = result_data.get("tasks", {}).get("tasks", [])
+            if tasks:
+                print("\n任务优先级:")
+                for task in tasks[:5]:
+                    print(f"  - {task.get('task_name')}: {task.get('current_priority')}/10 ({task.get('adjustment_reason', '')})")
+
+            recommendations = result_data.get("recommendations", [])
+            if recommendations:
+                print("\n建议:")
+                for rec in recommendations:
+                    print(f"  - {rec}")
+        sys.exit(0)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
