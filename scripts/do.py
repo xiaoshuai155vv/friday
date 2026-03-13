@@ -1904,6 +1904,35 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景质量保障闭环引擎
+    elif "全场景质量保障" in intent or "统一质量" in intent or "质量闭环" in intent or "质量服务" in intent or "unified quality" in intent.lower() or "质量循环" in intent or "质量状态" in intent:
+        print(f"[智能全场景质量保障闭环引擎] 正在执行质量保障服务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "unified_quality_loop.py")
+        cmd_args = []
+        if "--quick" in sys.argv or "快速" in intent or "quick" in intent.lower():
+            cmd_args.append("--quick")
+        elif "--status" in sys.argv or "状态" in intent:
+            cmd_args.append("--status")
+        elif "--report" in sys.argv or "报告" in intent:
+            cmd_args.append("--report")
+        else:
+            # 默认运行完整闭环
+            cmd_args.append("--cycles")
+            # 从参数中提取循环次数
+            cycles = 3
+            for i, arg in enumerate(sys.argv):
+                if arg == "--cycles" and i + 1 < len(sys.argv):
+                    try:
+                        cycles = int(sys.argv[i + 1])
+                    except:
+                        pass
+            cmd_args.append(str(cycles))
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 自动执行
     elif "自动执行推荐" in intent or "自动执行" in intent or "auto execute" in intent.lower() or "auto run" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行自动推荐...", file=sys.stderr)
