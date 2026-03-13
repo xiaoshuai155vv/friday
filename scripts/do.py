@@ -1774,6 +1774,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能引擎编排优化器
+    elif "引擎编排" in intent or "引擎优化" in intent or "编排优化" in intent or "engine orchestration" in intent.lower() or "orchestrate" in intent.lower() or "engine optimize" in intent.lower() or "优化引擎" in intent or "引擎协作优化" in intent or "collaboration optimize" in intent.lower():
+        print(f"[智能引擎编排优化器] 正在分析引擎协作并生成优化建议...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "engine_orchestration_optimizer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["引擎编排", "引擎优化", "编排优化", "engine orchestration", "orchestrate", "engine optimize", "优化引擎", "引擎协作优化", "collaboration optimize"]]
+        if not filtered_args:
+            filtered_args = ["--analyze"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化日志分析与可视化
     elif "进化日志" in intent or "日志分析" in intent or "进化分析" in intent or "evolution log" in intent.lower() or "evolution analysis" in intent.lower():
         print(f"[进化日志分析] 正在分析进化日志...", file=sys.stderr)
