@@ -2249,11 +2249,11 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化指挥塔引擎（round 209）
-    elif "进化指挥塔" in intent or "command tower" in intent.lower() or "evolution command" in intent.lower() or "指挥塔" in intent or "进化态势" in intent or "evolution situational" in intent.lower() or "进化预测" in intent or "evolution predict" in intent.lower() or "进化规划" in intent or "进化优先级" in intent:
+    elif "进化指挥塔" in intent or "command tower" in intent.lower() or "evolution command" in intent.lower() or "指挥塔" in intent or "进化态势" in intent or "evolution situational" in intent.lower() or "进化预测" in intent or "evolution predict" in intent.lower() or "进化规划" in intent or "进化优先级" in intent or "执行进化" in intent or "execute evolution" in intent.lower() or "进化执行" in intent:
         print(f"[智能进化指挥塔引擎] 正在分析进化态势...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_command_tower.py")
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
-        filtered_args = [arg for arg in cmd_args if arg not in ["进化指挥塔", "command tower", "evolution command", "指挥塔", "进化态势", "evolution situational", "进化预测", "evolution predict", "进化规划", "进化优先级"]]
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化指挥塔", "command tower", "evolution command", "指挥塔", "进化态势", "evolution situational", "进化预测", "evolution predict", "进化规划", "进化优先级", "执行进化", "execute evolution", "进化执行"]]
         if not filtered_args:
             filtered_args = ["status"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
