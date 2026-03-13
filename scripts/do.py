@@ -2364,6 +2364,36 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能跨设备协同控制引擎（round 170）
+    elif "跨设备" in intent or "设备协同" in intent or "设备控制" in intent or "cross device" in intent.lower() or "设备发现" in intent or "扫描设备" in intent or "设备列表" in intent or "发送到手机" in intent or "发送文件到" in intent or "远程控制" in intent or "远程执行" in intent or "通知同步" in intent:
+        print(f"[智能跨设备协同控制引擎] 正在处理请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "cross_device_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["跨设备", "设备协同", "设备控制", "cross device", "设备发现", "扫描设备", "设备列表", "发送到手机", "发送文件到", "远程控制", "远程执行", "通知同步"]]
+        if not filtered_args:
+            # 根据意图确定默认命令
+            if "状态" in intent or "status" in intent.lower():
+                filtered_args = ["status"]
+            elif "列表" in intent or "list" in intent.lower():
+                filtered_args = ["list"]
+            elif "扫描" in intent or "发现" in intent or "scan" in intent.lower() or "discover" in intent.lower():
+                filtered_args = ["scan"]
+            elif "发送" in intent or "send" in intent.lower() or "传输" in intent:
+                filtered_args = ["help"]  # 需要额外参数
+            elif "远程" in intent or "remote" in intent.lower():
+                filtered_args = ["help"]  # 需要额外参数
+            elif "同步" in intent or "sync" in intent.lower():
+                filtered_args = ["sync"]
+            else:
+                filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能决策编排中心 + 基于预测的主动服务
     elif "决策" in intent or "编排" in intent or "协同" in intent or "最佳方案" in intent or "智能调度" in intent or "multi-engine" in intent.lower() or "decision" in intent.lower() or "orchestrate" in intent.lower() or "协调" in intent or "预测服务" in intent or "主动服务" in intent or "proactive" in intent.lower() or "predictive-service" in intent.lower():
         # 判断是否是主动预测服务
