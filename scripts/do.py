@@ -1933,6 +1933,30 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景自进化诊断与规划引擎
+    elif "进化诊断" in intent or "自进化诊断" in intent or "诊断规划" in intent or "evolution diagnosis" in intent.lower() or "进化规划" in intent or "自进化" in intent:
+        print(f"[智能全场景自进化诊断与规划引擎] 正在执行诊断与规划...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_diagnosis_planner.py")
+        cmd_args = []
+        if "--diagnose" in sys.argv or "诊断" in intent:
+            cmd_args.append("diagnose")
+        elif "--opportunities" in sys.argv or "机会" in intent:
+            cmd_args.append("opportunities")
+        elif "--plan" in sys.argv or "规划" in intent:
+            cmd_args.append("plan")
+        elif "--report" in sys.argv or "报告" in intent or "完整" in intent:
+            cmd_args.append("report")
+        elif "--status" in sys.argv or "状态" in intent:
+            cmd_args.append("status")
+        else:
+            # 默认显示状态
+            cmd_args.append("status")
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 自动执行
     elif "自动执行推荐" in intent or "自动执行" in intent or "auto execute" in intent.lower() or "auto run" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行自动推荐...", file=sys.stderr)
