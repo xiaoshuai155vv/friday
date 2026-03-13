@@ -1126,6 +1126,11 @@ def main():
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "intelligent_evolution_engine.py"), "suggest"])
         msg = " ".join(sys.argv[2:]) if len(sys.argv) > 2 else "FRIDAY"
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "notification_tool.py"), "show", msg], cwd=PROJECT)
+    # 统一引擎调度中心
+    elif "引擎" in intent or "engine hub" in intent.lower() or "统一调度" in intent or "引擎列表" in intent or "所有引擎" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["list"]
+        # 支持 list/search/recommend/orchestrate/stats 命令
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "unified_engine_hub.py")] + cmd, cwd=PROJECT)
     # 番茄钟功能
     elif "番茄钟" in intent or "pomodoro" in intent.lower() or "专注" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else []
