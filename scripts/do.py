@@ -2396,6 +2396,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全系统引擎协同调度引擎（round 232）
+    elif "引擎协同调度" in intent or "引擎调度" in intent or "智能调度" in intent or "engine collaboration" in intent.lower() or "engine schedule" in intent.lower() or "引擎选择" in intent or "自适应调度" in intent:
+        print(f"[智能全系统引擎协同调度引擎] 正在分析任务需求并选择最优引擎组合...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "engine_collaboration_optimizer.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["run"]
+        filtered_args = [arg for arg in cmd_args if arg not in ["引擎协同调度", "引擎调度", "智能调度", "engine collaboration", "engine schedule", "引擎选择", "自适应调度"]]
+        if not filtered_args:
+            filtered_args = ["run"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能工作流自动实现引擎（round 175）
     elif "工作流自动实现" in intent or "自动实现工作流" in intent or "实现工作流建议" in intent or "workflow auto implement" in intent.lower() or "auto implement workflow" in intent.lower():
         print(f"[智能工作流自动实现引擎] 正在将工作流建议转化为可执行计划...", file=sys.stderr)
