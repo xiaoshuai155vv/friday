@@ -1385,6 +1385,20 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "complete", "clear", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "intent_completion_engine.py")] + cmd, cwd=PROJECT)
+    # 智能跨引擎协同智能决策引擎（round 234）
+    elif "跨引擎协同决策" in intent or "智能决策引擎" in intent or "引擎智能选择" in intent or "cross engine decision" in intent.lower() or "任务引擎组合" in intent or "引擎决策" in intent:
+        print(f"[智能跨引擎协同智能决策引擎] 正在分析任务意图并选择最优引擎组合...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "cross_engine_smart_decision_engine.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        filtered_args = [arg for arg in cmd_args if arg not in ["跨引擎协同决策", "智能决策引擎", "引擎智能选择", "cross engine decision", "任务引擎组合", "引擎决策"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能跨引擎复杂任务规划引擎
     elif "任务规划" in intent or "复杂任务" in intent or "任务拆分" in intent or "协同执行" in intent or "task_planner" in intent.lower() or "跨引擎" in intent or "多引擎" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else []
