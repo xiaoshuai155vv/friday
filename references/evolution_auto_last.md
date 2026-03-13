@@ -2,16 +2,17 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/do.py, scripts/workflow_auto_implementer.py, scripts/scene_adaptive_engine.py, references/evolution_auto_last.md
+scripts/meta_evolution_engine.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md
 
-## 2026-03-13 round 189
-- **current_goal**：智能工作流自动实现引擎 - 将引擎能力组合发现的工作流建议自动转化为可执行的 run_plan JSON，并可选自动执行，形成发现→实现→执行的完整闭环
+## 2026-03-13 round 190
+- **current_goal**：智能统一元进化引擎 - 创建统一的元进化层，集成所有进化引擎的能力，实现从「单引擎独立进化」到「全系统协同元进化」的范式升级
 - **做了什么**：
-  1. 验证 round 175 智能工作流自动实现引擎 (workflow_auto_implementer.py) - 模块已存在并可正常运行
-  2. 验证该模块已集成到 do.py，支持「工作流自动实现」「自动实现工作流」等关键词触发
-  3. 运行该模块，成功加载 2 条工作流建议并生成 2 个计划文件
-  4. 验证 round 176 智能场景自适应执行引擎 (scene_adaptive_engine.py) - 模块已存在并可正常运行
-  5. 验证该模块已集成到 do.py，支持场景自适应相关关键词触发
-  6. 基线验证 5/6 通过（剪贴板远程限制为已知问题）
-- **是否完成**：已完成（模块已存在于 round 175/176）
-- **下一轮建议**：可继续完成其他未完成轮次，或探索新的创新方向
+  1. 创建 meta_evolution_engine.py 模块，实现智能统一元进化引擎功能
+  2. 实现多维度引擎状态分析（扫描 205 个引擎，分析执行频率、功能完整性、协同效果）
+  3. 实现进化机会智能评估（识别 10 个高优先级进化机会）
+  4. 实现自动修复检查（发现 181 个问题，主要是未在 capabilities.md 中记录的引擎）
+  5. 实现进化效果追踪功能
+  6. 在 do.py 中添加「元进化」「统一进化」「meta evolution」「引擎状态」「进化机会」「进化追踪」等关键词触发支持
+  7. 基线验证 5/6 通过（剪贴板远程限制为已知问题）
+- **是否完成**：已完成
+- **下一轮建议**：可基于元进化引擎分析结果推进具体进化任务，或探索新的创新方向

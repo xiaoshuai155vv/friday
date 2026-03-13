@@ -3705,6 +3705,36 @@ def main():
             print("脚本不存在:", path, file=sys.stderr)
             sys.exit(1)
         subprocess.run([sys.executable, path] + sys.argv[3:], cwd=PROJECT)
+    # 智能统一元进化引擎
+    elif "元进化" in intent or "统一进化" in intent or "meta evolution" in intent.lower() or ("进化" in intent and "协调" in intent) or ("进化" in intent and "引擎" in intent and "状态" in intent) or ("进化" in intent and "机会" in intent) or "进化追踪" in intent or "进化评估" in intent:
+        print(f"[智能统一元进化引擎] 正在处理元进化任务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "meta_evolution_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "full"
+        if "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "分析" in intent or "analyze" in intent.lower():
+            action = "analyze"
+        elif "机会" in intent or "opportunity" in intent.lower():
+            action = "opportunities"
+        elif "修复" in intent or "repair" in intent.lower() or "自动修复" in intent:
+            action = "repair"
+        elif "追踪" in intent or "track" in intent.lower() or "进化评估" in intent:
+            action = "track"
+        # 过滤掉意图关键词
+        filter_words = ["元进化", "统一进化", "meta evolution", "进化协调", "引擎状态", "进化机会", "进化追踪", "进化评估"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     else:
         # 未知意图时，先检查是否包含情感关键词
         import json
