@@ -1155,6 +1155,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "analyze", "bottlenecks", "suggest", "optimize", "track", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "service_orchestration_optimizer.py")] + cmd, cwd=PROJECT)
+    # 智能引擎组合推荐系统
+    elif "引擎组合" in intent or "推荐引擎" in intent or "智能组合" in intent or "engine_combination" in intent.lower() or "组合推荐" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["list"]
+        if not cmd or (cmd and cmd[0] not in ["list", "recommend", "execute", "stats", "analyze", "search", "help"]):
+            cmd = ["list"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "engine_combination_recommender.py")] + cmd, cwd=PROJECT)
     # 智能主动预测与洞察引擎
     elif "主动预测" in intent or "洞察" in intent or "前瞻" in intent or "主动建议" in intent or "预测需求" in intent or "proactive" in intent.lower() or "insight" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
