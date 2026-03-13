@@ -1677,6 +1677,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能代码理解与重构引擎
+    elif "代码分析" in intent or "代码理解" in intent or "代码重构" in intent or intent == "code" or intent == "analyze" or "code analysis" in intent.lower() or "code understanding" in intent.lower() or "code refactor" in intent.lower() or "analyze code" in intent.lower():
+        print(f"[智能代码理解与重构引擎] 正在分析代码...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "code_understanding_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["代码分析", "代码理解", "代码重构", "code analysis", "code understanding", "code refactor", "analyze code"]]
+        if not filtered_args:
+            filtered_args = ["--help"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化策略引擎
     elif "进化策略" in intent or "策略分析" in intent or "evolution strategy" in intent.lower():
         print(f"[进化策略引擎] 正在分析进化方向...", file=sys.stderr)
