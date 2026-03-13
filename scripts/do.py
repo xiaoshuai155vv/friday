@@ -1483,6 +1483,31 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能推荐-编排-执行-解释完整闭环引擎
+    elif "服务闭环" in intent or "完整闭环" in intent or "推荐编排" in intent or "编排执行" in intent or "推荐执行" in intent or "service_loop" in intent.lower() or "闭环引擎" in intent:
+        print(f"[智能推荐-编排-执行-解释完整闭环引擎] 正在执行完整服务闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "service_loop_closer.py")
+        user_input = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
+        cmd = []
+        if user_input:
+            parts = user_input.split()
+            if parts[0] in ["status", "run", "explain"]:
+                cmd = [parts[0]]
+                if len(parts) > 1 and parts[0] == "run":
+                    # 合并剩余部分作为 intent
+                    cmd.extend(["--intent", " ".join(parts[1:])])
+            elif parts[0].startswith("--"):
+                cmd = ["run", "--intent", user_input]
+            else:
+                cmd = ["run", "--intent", user_input]
+        if not cmd:
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能任务协调中心
     elif "协调中心" in intent or "智能处理" in intent or "coordinator" in intent.lower():
         print(f"[智能任务协调中心] 正在协调处理您的任务...", file=sys.stderr)
