@@ -4319,6 +4319,40 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化闭环自治引擎 (Round 223)
+    elif "进化自治" in intent or "自动进化" in intent or "启动进化环" in intent or "停止进化环" in intent or "evolution autonomy" in intent.lower() or "auto evolution" in intent.lower():
+        print(f"[智能进化闭环自治引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_autonomy_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "启动" in intent or "start" in intent.lower() or "运行" in intent:
+            action = "start"
+        elif "停止" in intent or "stop" in intent.lower():
+            action = "stop"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "健康" in intent or "health" in intent.lower():
+            action = "health"
+        elif "统计" in intent or "stats" in intent.lower() or "统计" in intent:
+            action = "stats"
+        elif "立即触发" in intent or "trigger" in intent.lower():
+            action = "trigger"
+        elif "添加条件" in intent or "add-condition" in intent.lower():
+            action = "add-condition"
+        # 过滤掉意图关键词
+        filter_words = ["进化自治", "自动进化", "启动进化环", "停止进化环", "evolution autonomy", "auto evolution", "启动", "停止", "运行", "状态", "健康", "统计", "立即触发", "trigger", "添加条件"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能系统自检与健康报告引擎 (Round 203) - 放在 system_health_monitor 之前
     elif "健康检查" in intent or "健康报告" in intent or "系统自检" in intent or "health check" in intent.lower() or "health report" in intent.lower() or "系统诊断" in intent:
         print(f"[智能系统自检与健康报告引擎] 正在运行健康检查...", file=sys.stderr)
