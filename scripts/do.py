@@ -3348,13 +3348,13 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能跨引擎智能体自主协作引擎（round 200）
-    elif "智能协作" in intent or "引擎协作" in intent or "多引擎协同" in intent or "智能体协作" in intent or "multi-agent" in intent.lower() or "agent collaboration" in intent.lower() or "跨引擎协作" in intent or "引擎社会" in intent or "任务分配" in intent:
+    elif "智能协作" in intent or "引擎协作" in intent or "多引擎协同" in intent or "智能体协作" in intent or "multi-agent" in intent.lower() or "agent collaboration" in intent.lower() or "跨引擎协作" in intent or "引擎社会" in intent or "任务分配" in intent or "联动执行" in intent or "执行协作任务" in intent or "引擎联动" in intent or "collaboration execute" in intent.lower():
         print(f"[智能跨引擎智能体自主协作引擎] 正在处理请求...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "multi_agent_collaboration_engine.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
         # 过滤掉意图关键词
-        filtered_args = [arg for arg in cmd_args if arg not in ["智能协作", "引擎协作", "多引擎协同", "智能体协作", "multi-agent", "agent collaboration", "跨引擎协作", "引擎社会", "任务分配"]]
+        filtered_args = [arg for arg in cmd_args if arg not in ["智能协作", "引擎协作", "多引擎协同", "智能体协作", "multi-agent", "agent collaboration", "跨引擎协作", "引擎社会", "任务分配", "联动执行", "执行协作任务", "引擎联动", "collaboration execute"]]
         if not filtered_args:
             # 根据意图确定默认命令
             if "状态" in intent or "status" in intent.lower():
@@ -3365,6 +3365,10 @@ def main():
                 filtered_args = ["agents"]
             elif "日志" in intent or "logs" in intent.lower():
                 filtered_args = ["logs"]
+            elif "测试" in intent or "test" in intent.lower():
+                filtered_args = ["test_execution"]
+            elif "执行" in intent or "execute" in intent.lower():
+                filtered_args = ["example"]
             else:
                 filtered_args = ["example"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)

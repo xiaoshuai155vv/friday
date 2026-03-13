@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-智能跨引擎智能体自主协作引擎
+智能跨引擎智能体自主协作引擎（增强版）
 
 功能：
 - 让70+引擎能够像人类团队一样自主协作
@@ -9,6 +9,13 @@
 - 提供引擎注册、任务分发、执行监控、结果聚合等核心能力
 - 实现智能体间通信协议，支持跨引擎消息传递
 - 集成到 do.py 支持「智能协作」「引擎协作」「多引擎协同」「智能体协作」等关键词触发
+
+增强功能（Round 201）：
+- 新增引擎实际联动执行能力，能够真正触发和执行其他引擎的任务
+- 实现从任务分配到实际执行的完整闭环
+- 支持多种执行模式：同步执行、异步执行、串行执行、并行执行
+- 实现执行结果聚合和状态追踪
+- 集成到 do.py 支持「执行协作任务」「联动执行」等关键词触发
 
 这是「元进化」方向的创新——系统不仅能进化能力，还能让多个引擎像团队一样协同工作。
 """
@@ -19,11 +26,14 @@ import json
 import subprocess
 import time
 import uuid
+import asyncio
+import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Callable
 from collections import defaultdict, deque
-import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import shlex
 
 # 路径设置
 SCRIPT_DIR = Path(__file__).parent
@@ -90,6 +100,22 @@ ENGINE_REGISTRY = {
     "meta_evolution": {"module": "meta_evolution_engine.py", "category": "evolution", "capability": "元进化"},
 }
 
+class SubTask:
+    """子任务对象 - 用于引擎联动执行"""
+    def __init__(self, subtask_id: str, engine: str, command: str, args: List[str] = None, depends_on: List[str] = None):
+        self.subtask_id = subtask_id
+        self.engine = engine
+        self.command = command
+        self.args = args or []
+        self.depends_on = depends_on or []  # 依赖的其他子任务ID
+        self.status = "pending"  # pending, running, completed, failed
+        self.result = None
+        self.error = None
+        self.started_at = None
+        self.completed_at = None
+        self.output = None
+
+
 class Task:
     """任务对象"""
     def __init__(self, task_id: str, name: str, description: str, assigned_engines: List[str], priority: int = 5):
@@ -106,6 +132,8 @@ class Task:
         self.updated_at = datetime.now().isoformat()
         self.completed_at = None
         self.escalation_level = 0
+        self.subtasks: Dict[str, SubTask] = {}  # 增强：子任务列表
+        self.execution_mode = "parallel"  # parallel, sequential, async
 
 class AgentMessage:
     """智能体间消息"""
@@ -239,6 +267,329 @@ class MultiAgentCollaborationEngine:
         message = AgentMessage("coordinator", to_agent, message_type, content)
         self.message_queue.append(message)
         self._log("message_sent", f"消息发送到 {to_agent}: {message_type}")
+
+    # ======== 增强：引擎实际联动执行能力 ========
+
+    def _get_engine_script_path(self, engine_name: str) -> Optional[Path]:
+        """获取引擎脚本路径"""
+        if engine_name not in ENGINE_REGISTRY:
+            return None
+
+        module_name = ENGINE_REGISTRY[engine_name].get("module", "")
+        if not module_name:
+            return None
+
+        script_path = SCRIPT_DIR / module_name
+        return script_path if script_path.exists() else None
+
+    def _execute_engine_command(self, engine: str, command: str, args: List[str] = None, timeout: int = 60) -> Dict:
+        """执行单个引擎命令"""
+        script_path = self._get_engine_script_path(engine)
+
+        if not script_path:
+            return {"success": False, "error": f"引擎 {engine} 脚本不存在", "output": ""}
+
+        try:
+            # 构建命令
+            cmd = [sys.executable, str(script_path)]
+            if command:
+                cmd.append(command)
+            if args:
+                cmd.extend(args)
+
+            # 执行命令
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                encoding="utf-8",
+                errors="replace"
+            )
+
+            success = result.returncode == 0
+            return {
+                "success": success,
+                "returncode": result.returncode,
+                "output": result.stdout,
+                "error": result.stderr if result.returncode != 0 else "",
+                "engine": engine,
+                "command": command
+            }
+        except subprocess.TimeoutExpired:
+            return {"success": False, "error": f"执行超时（{timeout}秒）", "output": "", "engine": engine}
+        except Exception as e:
+            return {"success": False, "error": str(e), "output": "", "engine": engine}
+
+    def create_executable_task(self, name: str, description: str, subtasks: List[Dict], execution_mode: str = "parallel") -> str:
+        """创建可执行的协作任务（增强版）
+
+        Args:
+            name: 任务名称
+            description: 任务描述
+            subtasks: 子任务列表，每个子任务包含：
+                - engine: 引擎名称
+                - command: 命令（如 "status", "list" 等）
+                - args: 参数列表
+                - depends_on: 依赖的子任务ID（用于串行执行）
+            execution_mode: 执行模式 "parallel"(并行) / "sequential"(串行) / "async"(异步)
+
+        Returns:
+            任务ID
+        """
+        task_id = f"task_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{str(uuid.uuid4())[:4]}"
+
+        # 创建任务
+        assigned_engines = [st["engine"] for st in subtasks if "engine" in st]
+        task = Task(task_id, name, description, list(set(assigned_engines)), priority=5)
+        task.execution_mode = execution_mode
+        self.tasks[task_id] = task
+
+        # 创建子任务
+        for i, st in enumerate(subtasks):
+            subtask_id = f"{task_id}_sub_{i}"
+            engine = st.get("engine", "")
+            command = st.get("command", "")
+            args = st.get("args", [])
+            depends_on = st.get("depends_on", [])
+
+            if engine not in ENGINE_REGISTRY:
+                continue
+
+            subtask = SubTask(subtask_id, engine, command, args, depends_on)
+            task.subtasks[subtask_id] = subtask
+
+        # 更新引擎状态
+        for engine in set(assigned_engines):
+            if engine in self.agent_status:
+                self.agent_status[engine]["status"] = "assigned"
+                self.agent_status[engine]["current_task"] = task_id
+
+        self._log("executable_task_created", f"可执行任务 {task_id} 已创建，模式: {execution_mode}，子任务数: {len(task.subtasks)}")
+        return task_id
+
+    def execute_task(self, task_id: str, timeout: int = 120) -> Dict:
+        """执行协作任务（真正触发引擎执行）
+
+        Returns:
+            执行结果，包含各子任务的执行状态和结果聚合
+        """
+        if task_id not in self.tasks:
+            return {"success": False, "error": f"任务 {task_id} 不存在"}
+
+        task = self.tasks[task_id]
+        if not task.subtasks:
+            return {"success": False, "error": "任务没有子任务"}
+
+        task.status = "running"
+        task.updated_at = datetime.now().isoformat()
+
+        results = {}
+        completed_subtasks = set()
+
+        # 根据执行模式执行
+        if task.execution_mode == "sequential":
+            # 串行执行：按依赖顺序执行
+            results = self._execute_sequential(task, timeout)
+        elif task.execution_mode == "async":
+            # 异步执行
+            results = self._execute_async(task, timeout)
+        else:
+            # 并行执行（默认）
+            results = self._execute_parallel(task, timeout)
+
+        # 聚合结果
+        success_count = sum(1 for r in results.values() if r.get("success", False))
+        total_count = len(results)
+
+        if success_count == total_count:
+            task.status = "completed"
+            task.result = {"subtask_results": results, "summary": f"{success_count}/{total_count} 成功"}
+        else:
+            task.status = "failed"
+            task.error = f"部分子任务失败：{success_count}/{total_count} 成功"
+            task.result = {"subtask_results": results, "summary": f"{success_count}/{total_count} 成功"}
+
+        task.completed_at = datetime.now().isoformat()
+        task.progress = 100.0
+        task.updated_at = datetime.now().isoformat()
+
+        # 更新引擎状态
+        for engine in task.assigned_engines:
+            if engine in self.agent_status:
+                self.agent_status[engine]["status"] = "idle"
+                self.agent_status[engine]["current_task"] = None
+                if task.status == "completed":
+                    self.agent_status[engine]["tasks_completed"] += 1
+                else:
+                    self.agent_status[engine]["tasks_failed"] += 1
+                self.agent_status[engine]["last_active"] = datetime.now().isoformat()
+
+        # 记录到历史
+        self.task_history.append({
+            "task_id": task_id,
+            "name": task.name,
+            "assigned_engines": task.assigned_engines,
+            "status": task.status,
+            "execution_mode": task.execution_mode,
+            "completed_at": task.completed_at
+        })
+
+        self._log("task_executed", f"任务 {task_id} 已执行完成，状态: {task.status}，结果: {task.result.get('summary', '')}")
+        self._save_history()
+
+        return {
+            "success": task.status == "completed",
+            "task_id": task_id,
+            "status": task.status,
+            "results": results,
+            "summary": task.result.get("summary", "")
+        }
+
+    def _execute_parallel(self, task: Task, timeout: int) -> Dict:
+        """并行执行所有子任务"""
+        results = {}
+
+        def run_subtask(subtask_id: str, subtask: SubTask):
+            subtask.status = "running"
+            subtask.started_at = datetime.now().isoformat()
+            result = self._execute_engine_command(subtask.engine, subtask.command, subtask.args, timeout)
+            subtask.status = "completed" if result.get("success") else "failed"
+            subtask.completed_at = datetime.now().isoformat()
+            subtask.result = result
+            subtask.output = result.get("output", "")
+            subtask.error = result.get("error", "")
+            return subtask_id, result
+
+        # 并行执行
+        with ThreadPoolExecutor(max_workers=len(task.subtasks)) as executor:
+            futures = {
+                executor.submit(run_subtask, sid, st): sid
+                for sid, st in task.subtasks.items()
+            }
+
+            for future in as_completed(futures):
+                try:
+                    subtask_id, result = future.result(timeout=timeout)
+                    results[subtask_id] = result
+                except Exception as e:
+                    sid = futures[future]
+                    results[sid] = {"success": False, "error": str(e)}
+
+        return results
+
+    def _execute_sequential(self, task: Task, timeout: int) -> Dict:
+        """串行执行子任务（按依赖顺序）"""
+        results = {}
+        completed = set()
+
+        # 持续执行直到所有任务完成或无法继续
+        max_iterations = len(task.subtasks) * 2  # 防止无限循环
+        iteration = 0
+
+        while len(completed) < len(task.subtasks) and iteration < max_iterations:
+            iteration += 1
+            made_progress = False
+
+            for subtask_id, subtask in task.subtasks.items():
+                if subtask_id in completed:
+                    continue
+
+                # 检查依赖是否满足
+                deps_met = all(dep in completed for dep in subtask.depends_on)
+                if not deps_met:
+                    continue
+
+                # 执行子任务
+                subtask.status = "running"
+                subtask.started_at = datetime.now().isoformat()
+
+                result = self._execute_engine_command(subtask.engine, subtask.command, subtask.args, timeout)
+                subtask.status = "completed" if result.get("success") else "failed"
+                subtask.completed_at = datetime.now().isoformat()
+                subtask.result = result
+                subtask.output = result.get("output", "")
+                subtask.error = result.get("error", "")
+
+                results[subtask_id] = result
+                completed.add(subtask_id)
+                made_progress = True
+
+                # 如果失败且不允许继续，则停止
+                if not result.get("success"):
+                    break
+
+            if not made_progress:
+                break
+
+        # 标记未完成的任务
+        for subtask_id in task.subtasks:
+            if subtask_id not in results:
+                results[subtask_id] = {"success": False, "error": "依赖未满足或执行失败"}
+
+        return results
+
+    def _execute_async(self, task: Task, timeout: int) -> Dict:
+        """异步执行（快速返回，结果通过回调或轮询获取）"""
+        # 异步执行实际上是启动后台线程执行，结果通过轮询获取
+        results = {}
+
+        def run_subtask_background(subtask_id: str, subtask: SubTask):
+            subtask.status = "running"
+            subtask.started_at = datetime.now().isoformat()
+            result = self._execute_engine_command(subtask.engine, subtask.command, subtask.args, timeout)
+            subtask.status = "completed" if result.get("success") else "failed"
+            subtask.completed_at = datetime.now().isoformat()
+            subtask.result = result
+            subtask.output = result.get("output", "")
+            subtask.error = result.get("error", "")
+            results[subtask_id] = result
+
+        # 启动后台线程
+        threads = []
+        for subtask_id, subtask in task.subtasks.items():
+            t = threading.Thread(target=run_subtask_background, args=(subtask_id, subtask))
+            t.start()
+            threads.append(t)
+
+        # 等待所有线程完成（带超时）
+        for t in threads:
+            t.join(timeout=timeout)
+
+        # 标记未完成的任务
+        for subtask_id, subtask in task.subtasks.items():
+            if subtask_id not in results:
+                results[subtask_id] = {"success": False, "error": "执行超时", "engine": subtask.engine}
+
+        return results
+
+    def get_execution_status(self, task_id: str) -> Optional[Dict]:
+        """获取任务执行状态"""
+        if task_id not in self.tasks:
+            return None
+
+        task = self.tasks[task_id]
+        subtask_status = {}
+        for sid, st in task.subtasks.items():
+            subtask_status[sid] = {
+                "engine": st.engine,
+                "command": st.command,
+                "status": st.status,
+                "started_at": st.started_at,
+                "completed_at": st.completed_at,
+                "result": st.result
+            }
+
+        return {
+            "task_id": task_id,
+            "name": task.name,
+            "status": task.status,
+            "execution_mode": task.execution_mode,
+            "progress": task.progress,
+            "subtasks": subtask_status,
+            "result": task.result,
+            "error": task.error
+        }
 
     def update_task_progress(self, task_id: str, progress: float, status: str = "running"):
         """更新任务进度"""
@@ -474,6 +825,93 @@ def main():
             print(f"任务已创建: {task_id}")
             print(f"任务状态: {engine.get_task_status(task_id)}")
 
+        elif command == "create_executable_task" or command == "create_exec":
+            # 用法: create_executable_task <name> <description> <mode> <subtask1> <subtask2> ...
+            # 子任务格式: engine:command:arg1,arg2
+            if len(sys.argv) < 5:
+                print("用法: multi_agent_collaboration_engine.py create_executable_task <任务名> <描述> <parallel|sequential|async> <子任务1> <子任务2> ...")
+                print("子任务格式: engine:command:arg1,arg2")
+                print("示例: multi_agent_collaboration_engine.py create_exec 测试任务 测试描述 parallel process:list window:activate:办公平台")
+                sys.exit(1)
+            name = sys.argv[2]
+            description = sys.argv[3]
+            execution_mode = sys.argv[4] if sys.argv[4] in ["parallel", "sequential", "async"] else "parallel"
+
+            # 解析子任务
+            subtasks = []
+            for st_arg in sys.argv[5:]:
+                parts = st_arg.split(":")
+                if len(parts) >= 2:
+                    engine_name = parts[0]
+                    cmd = parts[1]
+                    args = parts[2].split(",") if len(parts) > 2 and parts[2] else []
+                    subtasks.append({"engine": engine_name, "command": cmd, "args": args})
+
+            if not subtasks:
+                print("错误: 至少需要一个子任务")
+                sys.exit(1)
+
+            task_id = engine.create_executable_task(name, description, subtasks, execution_mode)
+            print(f"可执行任务已创建: {task_id}")
+            print(f"执行模式: {execution_mode}")
+            print(f"子任务数: {len(subtasks)}")
+
+        elif command == "execute" or command == "run":
+            # 用法: execute <task_id> [timeout]
+            if len(sys.argv) < 3:
+                print("用法: multi_agent_collaboration_engine.py execute <task_id> [超时秒数]")
+                sys.exit(1)
+            task_id = sys.argv[2]
+            timeout = int(sys.argv[3]) if len(sys.argv) > 3 else 120
+
+            print(f"开始执行任务: {task_id}")
+            result = engine.execute_task(task_id, timeout)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+
+        elif command == "execution_status" or command == "exec_status":
+            # 用法: execution_status <task_id>
+            if len(sys.argv) < 3:
+                print("用法: multi_agent_collaboration_engine.py execution_status <task_id>")
+                sys.exit(1)
+            task_id = sys.argv[2]
+            status = engine.get_execution_status(task_id)
+            if status:
+                print(json.dumps(status, ensure_ascii=False, indent=2))
+            else:
+                print(f"任务 {task_id} 不存在")
+
+        elif command == "test_execution":
+            # 测试引擎联动执行能力
+            print("\n=== 测试引擎联动执行能力 ===\n")
+
+            # 创建测试任务：并行执行多个引擎
+            subtasks = [
+                {"engine": "process", "command": "list", "args": []},
+                {"engine": "window", "command": "activate", "args": ["记事本"]},
+            ]
+            task_id = engine.create_executable_task(
+                "测试引擎联动执行",
+                "测试多引擎并行执行能力",
+                subtasks,
+                "parallel"
+            )
+            print(f"1. 创建测试任务: {task_id}")
+
+            # 执行任务
+            print(f"2. 执行任务...")
+            result = engine.execute_task(task_id, 30)
+            print(f"3. 执行结果: {result.get('summary', '')}")
+            print(f"4. 状态: {result.get('status', '')}")
+
+            # 显示详细信息
+            exec_status = engine.get_execution_status(task_id)
+            if exec_status:
+                print(f"5. 子任务详情:")
+                for sid, st in exec_status.get("subtasks", {}).items():
+                    print(f"   - {sid}: {st['engine']}:{st['command']} -> {st['status']}")
+
+            print("\n=== 测试完成 ===\n")
+
         elif command == "status":
             if len(sys.argv) > 2:
                 task_id = sys.argv[2]
@@ -505,7 +943,7 @@ def main():
 
         else:
             print(f"未知命令: {command}")
-            print("可用命令: create_task, status, agents, stats, logs, example")
+            print("可用命令: create_task, create_executable_task, execute, execution_status, test_execution, status, agents, stats, logs, example")
     else:
         # 默认运行示例
         engine.run_collaboration_example()
