@@ -2170,6 +2170,23 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能系统主动运维引擎（round 160）
+    elif "主动运维" in intent or "系统运维" in intent or "运维引擎" in intent or "资源优化" in intent or "自动清理" in intent or "内存优化" in intent or "proactive operations" in intent.lower() or "system operations" in intent.lower() or "资源监控" in intent or "运维" in intent:
+        print(f"[智能系统主动运维引擎] 正在处理请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "proactive_operations_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["主动运维", "系统运维", "运维引擎", "资源优化", "自动清理", "内存优化", "proactive operations", "system operations", "资源监控", "运维"]]
+        if not filtered_args:
+            # 如果没有额外参数，显示状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 跨模块状态共享总线
     elif "状态总线" in intent or "模块共享" in intent or "共享状态" in intent or "module_bus" in intent.lower() or "state bus" in intent.lower():
         print(f"[跨模块状态共享总线] 正在处理状态共享...", file=sys.stderr)
