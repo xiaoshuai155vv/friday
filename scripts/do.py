@@ -1181,6 +1181,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["learn", "analyze", "apply", "stats", "recommend", "clear"]):
             cmd = ["stats"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "workflow_strategy_learner.py")] + cmd, cwd=PROJECT)
+    # 智能跨会话任务接续引擎
+    elif "任务接续" in intent or "恢复任务" in intent or "任务进度" in intent or "未完成任务" in intent or "task_continuation" in intent.lower() or "任务追踪" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else []
+        if not cmd or (cmd and cmd[0] not in ["start", "status", "resume", "complete", "fail", "list", "history", "snapshot", "delete", "env"]):
+            cmd = ["list"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "task_continuation_engine.py")] + cmd, cwd=PROJECT)
     # 智能知识进化引擎
     elif "知识进化" in intent or "知识更新" in intent or "知识提取" in intent or "knowledge" in intent.lower() or "knowledge_evolution" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
