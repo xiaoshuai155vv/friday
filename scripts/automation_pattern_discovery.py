@@ -11,15 +11,26 @@
 2. 可自动化模式识别：发现重复执行的操作序列
 3. 场景计划自动生成：根据模式自动生成 JSON 场景计划
 4. 主动推荐功能：向用户推荐新发现的自动化场景
+5. 引擎深度协同（round 143）：与 task_preference_engine 集成，实现从模式发现到偏好学习的完整闭环
 """
 
 import os
+import sys
 import json
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
 from collections import Counter, defaultdict
 from typing import List, Dict, Optional, Tuple
+
+# 导入任务偏好引擎
+SCRIPT_DIR = Path(__file__).parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+try:
+    from task_preference_engine import TaskPreferenceEngine
+except ImportError:
+    TaskPreferenceEngine = None
 
 # 项目根目录
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -307,8 +318,209 @@ class AutomationPatternDiscovery:
             'status': 'active',
             'min_pattern_occurrences': self.min_pattern_occurrences,
             'analysis_days': self.analysis_days,
-            'last_analysis': datetime.now().isoformat()
+            'last_analysis': datetime.now().isoformat(),
+            'preference_engine_available': TaskPreferenceEngine is not None
         }
+
+    # ===== 引擎深度协同功能 (round 143) =====
+
+    def _get_preference_engine(self) -> Optional[TaskPreferenceEngine]:
+        """获取任务偏好引擎实例"""
+        if TaskPreferenceEngine is None:
+            return None
+        return TaskPreferenceEngine()
+
+    def learn_preferences_from_patterns(self, patterns: List[Dict]) -> Dict:
+        """从发现的模式学习用户偏好
+
+        当模式发现引擎识别到重复模式时，自动提取并学习用户偏好
+
+        Args:
+            patterns: 发现的重复模式列表
+
+        Returns:
+            学习结果
+        """
+        result = {
+            'preferences_learned': [],
+            'preferences_applied': [],
+            'errors': []
+        }
+
+        pref_engine = self._get_preference_engine()
+        if pref_engine is None:
+            result['errors'].append('任务偏好引擎不可用')
+            return result
+
+        # 从模式中提取偏好
+        for pattern in patterns:
+            sequence = pattern.get('sequence', [])
+            if not sequence:
+                continue
+
+            # 分析序列中的操作，提取偏好信息
+            task_type = self._extract_task_type(sequence)
+            if not task_type:
+                continue
+
+            # 检查操作顺序中的首选项
+            first_action = sequence[0] if sequence else None
+            if first_action:
+                # 尝试设置偏好：例如首步操作
+                pref_key = 'preferred_first_action'
+                pref_value = first_action[0] if isinstance(first_action, (list, tuple)) else str(first_action)
+
+                try:
+                    pref_engine.set_preference(
+                        task_type=task_type,
+                        preference_key=pref_key,
+                        preference_value=pref_value,
+                        auto_apply=True
+                    )
+                    result['preferences_learned'].append({
+                        'task_type': task_type,
+                        'key': pref_key,
+                        'value': pref_value
+                    })
+                except Exception as e:
+                    result['errors'].append(f'学习偏好失败: {e}')
+
+        return result
+
+    def _extract_task_type(self, sequence: List) -> Optional[str]:
+        """从操作序列中提取任务类型"""
+        action_str = ' '.join([str(a) for a in sequence]).lower()
+
+        # 根据操作关键词识别任务类型
+        task_keywords = {
+            'ihaier': ['ihaier', '办公平台', '消息', '联系人'],
+            'browser': ['browser', '浏览器', 'chrome', 'edge', '打开网页'],
+            'document': ['document', '文档', 'word', 'excel', 'notepad'],
+            'music': ['music', '音乐', '播放', '网易云', '歌曲'],
+            'file': ['file', '文件', 'explorer', '文件夹']
+        }
+
+        for task_type, keywords in task_keywords.items():
+            if any(kw in action_str for kw in keywords):
+                return task_type
+
+        # 默认返回 "general"
+        return 'general'
+
+    def auto_apply_preferences(self, task_type: str) -> Dict:
+        """自动应用偏好到任务执行
+
+        当执行任务时，自动加载并应用相关偏好
+
+        Args:
+            task_type: 任务类型
+
+        Returns:
+            应用结果
+        """
+        result = {
+            'task_type': task_type,
+            'applied_preferences': {},
+            'has_preferences': False
+        }
+
+        pref_engine = self._get_preference_engine()
+        if pref_engine is None:
+            result['error'] = '任务偏好引擎不可用'
+            return result
+
+        # 获取该任务类型的偏好
+        preferences = pref_engine.get_preferences(task_type)
+        if preferences:
+            result['has_preferences'] = True
+            result['applied_preferences'] = preferences
+
+        return result
+
+    def track_collaboration_effect(self, task_type: str, execution_result: Dict) -> Dict:
+        """追踪引擎协同效果
+
+        记录模式发现与偏好学习的协同效果，供后续优化参考
+
+        Args:
+            task_type: 任务类型
+            execution_result: 执行结果
+
+        Returns:
+            追踪结果
+        """
+        result = {
+            'task_type': task_type,
+            'tracked': True,
+            'timestamp': datetime.now().isoformat()
+        }
+
+        # 记录协同效果到文件
+        collaboration_file = STATE_DIR / "engine_collaboration_tracking.json"
+        try:
+            # 读取现有数据
+            tracking_data = {'collaborations': []}
+            if collaboration_file.exists():
+                with open(collaboration_file, 'r', encoding='utf-8') as f:
+                    tracking_data = json.load(f)
+
+            # 添加新记录
+            tracking_data['collaborations'].append({
+                'task_type': task_type,
+                'execution_result': execution_result,
+                'timestamp': result['timestamp']
+            })
+
+            # 只保留最近 50 条记录
+            tracking_data['collaborations'] = tracking_data['collaborations'][-50:]
+
+            # 保存
+            with open(collaboration_file, 'w', encoding='utf-8') as f:
+                json.dump(tracking_data, f, ensure_ascii=False, indent=2)
+
+            result['saved'] = True
+        except Exception as e:
+            result['error'] = f'保存协同效果失败: {e}'
+
+        return result
+
+    def engine_collaboration_report(self) -> Dict:
+        """获取引擎协同报告
+
+        返回模式发现引擎与偏好引擎的协同状态
+
+        Returns:
+            协同报告
+        """
+        report = {
+            'pattern_discovery_engine': {
+                'name': '智能自动化模式发现引擎',
+                'status': 'active',
+                'min_pattern_occurrences': self.min_pattern_occurrences
+            },
+            'preference_engine': {
+                'name': '任务偏好引擎',
+                'available': TaskPreferenceEngine is not None
+            },
+            'collaboration_status': 'active' if TaskPreferenceEngine else 'unavailable',
+            'integration_features': [
+                '从模式自动学习偏好',
+                '偏好自动应用到任务执行',
+                '协同效果追踪'
+            ]
+        }
+
+        # 添加协同效果统计
+        collaboration_file = STATE_DIR / "engine_collaboration_tracking.json"
+        if collaboration_file.exists():
+            try:
+                with open(collaboration_file, 'r', encoding='utf-8') as f:
+                    tracking_data = json.load(f)
+                    report['total_collaborations'] = len(tracking_data.get('collaborations', []))
+            except Exception:
+                pass
+
+        return report
 
 
 def handle_command(args: List[str]) -> str:
@@ -364,10 +576,40 @@ def handle_command(args: List[str]) -> str:
             'scenes': scenes
         }, ensure_ascii=False, indent=2)
 
+    # ===== 引擎协同命令 (round 143) =====
+
+    elif command in ['learn', '学习', '偏好学习', 'learn-preferences']:
+        # 从发现的模式学习偏好
+        behavior_data = engine.analyze_behavior_logs()
+        patterns = engine.find_repeated_patterns(behavior_data)
+        result = engine.learn_preferences_from_patterns(patterns)
+        return json.dumps(result, ensure_ascii=False, indent=2)
+
+    elif command in ['apply', '应用', '应用偏好', 'apply-preferences']:
+        # 自动应用偏好到任务
+        task_type = args[1] if len(args) > 1 else 'general'
+        result = engine.auto_apply_preferences(task_type)
+        return json.dumps(result, ensure_ascii=False, indent=2)
+
+    elif command in ['collaboration', '协同', '引擎协同', 'engine-collab']:
+        # 获取引擎协同报告
+        result = engine.engine_collaboration_report()
+        return json.dumps(result, ensure_ascii=False, indent=2)
+
+    elif command in ['track', '追踪', 'track-effect']:
+        # 追踪协同效果
+        task_type = args[1] if len(args) > 1 else 'general'
+        execution_result = {'status': 'success', 'task_type': task_type}
+        result = engine.track_collaboration_effect(task_type, execution_result)
+        return json.dumps(result, ensure_ascii=False, indent=2)
+
     else:
         return json.dumps({
             'error': f'未知命令: {command}',
-            'available_commands': ['status', 'discover', 'analyze', 'generate']
+            'available_commands': [
+                'status', 'discover', 'analyze', 'generate',
+                'learn', 'apply', 'collaboration', 'track'
+            ]
         }, ensure_ascii=False, indent=2)
 
 
