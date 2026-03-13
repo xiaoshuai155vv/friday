@@ -1545,6 +1545,23 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能工作流自动生成引擎
+    elif "生成工作流" in intent or "自动生成工作流" in intent or "generate workflow" in intent.lower() or "创建工作流" in intent or "生成任务步骤" in intent or "自动生成步骤" in intent or "生成计划" in intent or "工作流生成" in intent:
+        print(f"[智能工作流自动生成引擎] 正在生成工作流...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "workflow_auto_generator.py")
+        # 解析命令参数 - 提取任务描述
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词，保留任务描述
+        filter_kw = ["生成工作流", "自动生成工作流", "generate workflow", "创建工作流", "生成任务步骤", "自动生成步骤", "生成计划", "工作流生成"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_kw]
+        if not filtered_args:
+            filtered_args = ["--help"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 自动执行
     elif "自动执行推荐" in intent or "自动执行" in intent or "auto execute" in intent.lower() or "auto run" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行自动推荐...", file=sys.stderr)
