@@ -2660,6 +2660,52 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能场景自适应执行引擎（round 176）- 基于实时上下文自动执行/切换场景计划
+    elif "场景自适应" in intent or "自适应场景" in intent or "自动场景" in intent or "scene adaptive" in intent.lower() or "auto scene" in intent.lower() or "场景自动" in intent or "自适应执行" in intent or "auto-switch" in intent.lower():
+        print(f"[智能场景自适应执行引擎] 正在分析上下文并执行场景...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "scene_adaptive_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = None
+        if "状态" in intent or "status" in intent.lower() or "查看状态" in intent:
+            action = "status"
+        elif "启动" in intent or "start" in intent.lower() or "开启" in intent:
+            action = "start"
+        elif "停止" in intent or "stop" in intent.lower() or "关闭" in intent:
+            action = "stop"
+        elif "执行" in intent or "execute" in intent.lower() or "运行" in intent:
+            action = "execute"
+        elif "启用" in intent or "enable" in intent.lower():
+            action = "enable"
+        elif "禁用" in intent or "disable" in intent.lower():
+            action = "disable"
+        elif "自动开" in intent or "auto-on" in intent.lower() or "自动启用" in intent:
+            action = "auto-on"
+        elif "自动关" in intent or "auto-off" in intent.lower() or "自动禁用" in intent:
+            action = "auto-off"
+        elif "上下文" in intent or "context" in intent.lower():
+            action = "context"
+        elif "历史" in intent or "history" in intent.lower():
+            action = "history"
+        elif "日志" in intent or "log" in intent.lower():
+            action = "log"
+        elif "间隔" in intent or "interval" in intent.lower():
+            action = "interval"
+        # 过滤掉意图关键词
+        filter_words = ["场景自适应", "自适应场景", "自动场景", "scene adaptive", "auto scene", "场景自动", "自适应执行", "auto-switch", "状态", "status", "启动", "start", "开启", "停止", "stop", "关闭", "执行", "execute", "运行", "启用", "enable", "禁用", "disable", "自动开", "auto-on", "自动启用", "自动关", "auto-off", "自动禁用", "上下文", "context", "历史", "history", "日志", "log", "间隔", "interval"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action and action not in filtered_args:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            # 默认查看状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能自动化执行闭环引擎（round 157）- 自动发现并执行重复任务
     elif "自动化执行" in intent or "自动执行" in intent or "执行闭环" in intent or "automation execution" in intent.lower() or "auto execute" in intent.lower() or "自动化闭环" in intent or "auto-task" in intent.lower() or "自动化任务" in intent:
         print(f"[智能自动化执行闭环引擎] 正在分析并执行自动化任务...", file=sys.stderr)
