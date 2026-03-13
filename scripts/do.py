@@ -4422,6 +4422,34 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能拟人操作协调引擎 (Round 250) - 像人一样理解任务、选择工具、协同执行
+    elif "拟人操作" in intent or "操作协调" in intent or "humanoid" in intent.lower() or "像人一样" in intent or "综合协调" in intent or "引擎协调" in intent:
+        print(f"[智能拟人操作协调引擎] 正在处理任务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "humanoid_operation_coordinator.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "理解" in intent or "understand" in intent.lower():
+            action = "understand"
+        elif "执行" in intent or "execute" in intent.lower():
+            action = "execute"
+        elif "建议" in intent or "suggest" in intent.lower() or "推荐" in intent:
+            action = "suggest"
+        elif "分析" in intent or "analyze" in intent.lower():
+            action = "analyze"
+        # 过滤掉意图关键词
+        filter_words = ["拟人操作", "操作协调", "humanoid", "像人一样", "综合协调", "引擎协调", "理解", "执行", "建议", "推荐", "分析"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能多维融合智能分析引擎 (Round 204)
     elif "多维分析" in intent or "态势感知" in intent or "智能分析" in intent or "统一分析" in intent or "跨引擎分析" in intent or "multi-dim" in intent.lower() or "situation" in intent.lower() or "智能洞察" in intent:
         print(f"[智能多维融合智能分析引擎] 正在运行多维度分析...", file=sys.stderr)
