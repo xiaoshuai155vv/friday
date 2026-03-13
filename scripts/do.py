@@ -2333,6 +2333,44 @@ def main():
                 for rec in recommendations:
                     print(f"  - {rec}")
         sys.exit(0)
+    # 增强智能知识推理引擎 - 因果推理、类比推理、知识关联发现和主动洞察
+    elif "知识推理" in intent or "因果分析" in intent or "推理" in intent or "主动洞察" in intent or "发现关联" in intent or "knowledge reasoning" in intent.lower() or "reasoning" in intent.lower() or "insight" in intent.lower() or "causal" in intent.lower() or "analogy" in intent.lower():
+        print(f"[增强智能知识推理引擎] 正在分析知识关联...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "enhanced_knowledge_reasoning_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "reason"
+        if "因果" in intent or "cause" in intent.lower():
+            action = "causal"
+        elif "类似" in intent or "相似" in intent or "analogy" in intent.lower():
+            action = "analogy"
+        elif "关联" in intent or "association" in intent.lower():
+            action = "association"
+        elif "洞察" in intent or "主动" in intent or "insight" in intent.lower():
+            action = "insight"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        # 过滤掉意图关键词
+        filter_words = ["知识推理", "因果分析", "推理", "主动洞察", "发现关联", "knowledge reasoning", "reasoning", "insight", "causal", "analogy", "状态"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            filtered_args = ["reason"]
+        # 提取查询内容
+        query = intent
+        for word in filter_words:
+            query = query.replace(word, "").strip()
+        if query:
+            filtered_args.extend(["--query", query])
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
