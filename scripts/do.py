@@ -1756,6 +1756,42 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能任务规划与执行编排引擎
+    elif "任务规划" in intent or "执行编排" in intent or "任务编排" in intent or "task planning" in intent.lower() or "规划任务" in intent:
+        print(f"[智能任务规划与执行编排引擎] 正在处理任务规划请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "task_planning_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["任务规划", "执行编排", "任务编排", "task planning", "规划任务"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            # 默认显示状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自动化脚本生成引擎
+    elif "生成脚本" in intent or "脚本生成" in intent or "创建脚本" in intent or "自动生成脚本" in intent or "script generation" in intent.lower() or "生成代码" in intent or "帮我写脚本" in intent:
+        print(f"[智能自动化脚本生成引擎] 正在处理脚本生成请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "script_generation_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["生成脚本", "脚本生成", "创建脚本", "自动生成脚本", "script generation", "生成代码", "帮我写脚本"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            # 默认显示状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 执行指定推荐
     elif "执行推荐" in intent or "execute recommend" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行推荐...", file=sys.stderr)
