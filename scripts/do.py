@@ -651,6 +651,38 @@ def main():
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 检查是否请求智能跨引擎协同优化引擎
+    cross_engine_optimizer_keywords = ["跨引擎协同", "协同优化", "引擎协同", "跨引擎优化", "cross engine", "coordination optimization", "engine coordination", "引擎优化"]
+    for keyword in cross_engine_optimizer_keywords:
+        if keyword in " ".join(sys.argv[1:]):
+            print(f"[智能跨引擎协同优化引擎] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "cross_engine_optimizer.py")
+            cmd = [sys.executable, script_path]
+            # 解析子命令
+            if "status" in " ".join(sys.argv[1:]) or "状态" in " ".join(sys.argv[1:]):
+                cmd.append("status")
+            elif "analyze" in " ".join(sys.argv[1:]) or "分析" in " ".join(sys.argv[1:]):
+                cmd.append("analyze")
+            elif "recommend" in " ".join(sys.argv[1:]) or "建议" in " ".join(sys.argv[1:]):
+                cmd.append("recommend")
+            elif "execute" in " ".join(sys.argv[1:]) or "执行" in " ".join(sys.argv[1:]):
+                cmd.append("execute")
+                # 提取建议ID
+                if "-r" in sys.argv:
+                    idx = sys.argv.index("-r")
+                    if idx + 1 < len(sys.argv):
+                        cmd.extend(["--recommendation-id", sys.argv[idx + 1]])
+                if "--auto" in sys.argv or "自动" in " ".join(sys.argv[1:]):
+                    cmd.append("--auto")
+            else:
+                cmd.append("status")  # 默认输出状态
+            result = subprocess.run(cmd, cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 检查是否请求状态仪表板
     dashboard_keywords = ["状态面板", "系统状态", "进化状态", "dashboard", "仪表板", "状态概览"]
     for keyword in dashboard_keywords:
