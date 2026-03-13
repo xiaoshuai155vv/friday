@@ -1738,6 +1738,24 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能会议助手引擎
+    elif "会议" in intent or "meeting" in intent.lower() or "会议纪要" in intent or "会议提醒" in intent:
+        print(f"[智能会议助手引擎] 正在处理会议相关请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "meeting_assistant_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["会议", "meeting", "会议纪要", "会议提醒", "会议助手"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            # 默认显示状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 执行指定推荐
     elif "执行推荐" in intent or "execute recommend" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行推荐...", file=sys.stderr)
