@@ -2312,6 +2312,44 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全自动化服务引擎（round 158）- 基于时间/事件/行为的自动触发执行
+    elif "全自动化" in intent or "自动服务" in intent or "full auto" in intent.lower() or "fullauto" in intent.lower() or "auto service" in intent.lower() or "自动化守护" in intent or "auto guardian" in intent.lower() or "守护进程" in intent or "daemon" in intent.lower():
+        print(f"[智能全自动化服务引擎] 正在处理自动化服务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "full_auto_service_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = None
+        if "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "启动" in intent or "start" in intent.lower() or "开始" in intent:
+            action = "start"
+        elif "停止" in intent or "stop" in intent.lower() or "关闭" in intent:
+            action = "stop"
+        elif "检查" in intent or "check" in intent.lower():
+            action = "check"
+        elif "列表" in intent or "list" in intent.lower() or "任务列表" in intent:
+            action = "list-tasks"
+        elif "添加" in intent or "add" in intent.lower():
+            action = "add-default-tasks"
+        elif "启用" in intent or "enable" in intent.lower():
+            action = "enable"
+        elif "禁用" in intent or "disable" in intent.lower():
+            action = "disable"
+        # 过滤掉意图关键词
+        filter_words = ["全自动化", "自动服务", "full auto", "fullauto", "auto service", "自动化守护", "auto guardian", "守护进程", "daemon", "状态", "status", "启动", "start", "开始", "停止", "stop", "关闭", "检查", "check", "列表", "list", "任务列表", "添加", "add", "启用", "enable", "禁用", "disable"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action and action not in filtered_args:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            # 默认显示状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能情境感知引擎
     elif "情境感知" in intent or "环境感知" in intent or "当前状态" in intent or "主动推荐" in intent or "context awareness" in intent.lower() or "sense environment" in intent.lower() or "perceive" in intent.lower():
         print(f"[智能情境感知引擎] 正在感知当前环境...", file=sys.stderr)
