@@ -2,17 +2,20 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/unified_service_hub.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md
+scripts/system_health_report_engine.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md
 
-## 2026-03-13 round 202
-- **current_goal**：智能统一服务中枢引擎 - 整合所有智能服务能力，提供统一的自然语言服务入口，让用户通过一个入口即可获得推荐、解释、执行、协同等完整服务体验
+## 2026-03-13 round 203
+- **current_goal**：智能系统自检与健康报告引擎 - 创建 system_health_report_engine.py 模块，实现自动健康检查、详细状态报告生成、健康建议功能
 - **做了什么**：
-  1. 创建 unified_service_hub.py 模块，实现智能统一服务中枢引擎功能
-  2. 实现统一服务入口、智能服务路由（推荐/编排/执行/解释/协作）
-  3. 实现服务链编排功能，支持多引擎协同
-  4. 实现结果聚合展示和服务状态追踪功能
-  5. 集成到 do.py 支持统一服务、服务中枢、服务统计、服务历史等关键词触发
-  6. 基线验证 5/6 通过（剪贴板远程限制为已知问题）
-  7. 针对性验证通过：status/query/stats 命令均可正常工作，成功路由推荐请求并返回结果
+  1. 创建 system_health_report_engine.py 模块，实现智能系统自检与健康报告引擎功能
+  2. 实现系统资源检查（CPU、内存、磁盘）- 支持 psutil 和 PowerShell/wmic 两种方式
+  3. 实现进程状态检查（运行进程、高CPU/高内存进程）
+  4. 实现引擎状态检查（检查关键引擎文件是否存在）
+  5. 实现进化环状态检查（当前任务、进化历史、日志）
+  6. 实现运行时状态检查（关键文件存在性和修改时间）
+  7. 生成健康评分和优化建议
+  8. 集成到 do.py 支持"健康检查"、"健康报告"、"系统自检"、"系统诊断"关键词触发
+  9. 基线验证 5/6 通过（剪贴板远程限制为已知问题）
+  10. 针对性验证通过：引擎成功运行并输出健康报告
 - **是否完成**：已完成
-- **下一轮建议**：可增强服务链编排的复杂性、添加更多引擎集成、实现学习用户偏好功能；或探索与对话执行引擎的深度集成
+- **下一轮建议**：可探索智能多维融合智能分析引擎（待执行项）；或增强健康报告与现有引擎的集成
