@@ -2,17 +2,17 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/proactive_service_enhancer.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md
+scripts/system_self_diagnosis_engine.py, scripts/do.py, references/evolution_auto_last.md
 
-## 2026-03-13 round 193
-- **current_goal**：智能主动服务增强引擎 - 让系统能够在用户发出指令之前就主动预测可能需要的服务并做好准备，实现从被动响应到主动预见的范式升级
+## 2026-03-13 round 194
+- **current_goal**：智能系统自检与健康报告引擎 - 让系统能够自动进行全面健康检查、生成详细状态报告、提供健康建议，实现元进化方向的自我审视能力
 - **做了什么**：
-  1. 创建 proactive_service_enhancer.py 模块，实现智能主动服务增强引擎功能
-  2. 实现用户行为模式分析（分析历史交互识别常用场景）
-  3. 实现主动服务预测（基于时间、上下文、习惯预测可能需求）
-  4. 实现预加载准备（提前打开可能需要的应用/场景）
-  5. 实现智能提醒功能
-  6. 在 do.py 中添加「主动增强」「服务增强」「预见服务」「主动预测」等关键词触发支持
-  7. 基线验证 5/6 通过（剪贴板远程限制为已知问题）
+  1. 创建 system_self_diagnosis_engine.py 模块，实现智能系统自检与健康报告引擎功能
+  2. 实现全面健康检查（引擎状态、执行历史、资源使用、进化历史、守护进程）
+  3. 实现智能分析和问题识别
+  4. 生成详细状态报告和健康评分
+  5. 提供健康建议
+  6. 在 do.py 中添加「系统自检」「健康报告」「健康诊断」「自检」等关键词触发支持
+  7. 基线验证 6/6 通过（剪贴板远程限制为已知问题）
 - **是否完成**：已完成
-- **下一轮建议**：可增强 LLM 集成以提升预测准确性，或与 zero_click_service_engine 联动实现更智能的主动服务
+- **下一轮建议**：可增强与质量保障引擎联动，或添加自动化修复建议执行能力

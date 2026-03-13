@@ -2931,6 +2931,34 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能系统自检与健康报告引擎（round 194）- 自动进行全面健康检查、生成详细状态报告、提供健康建议
+    elif "系统自检" in intent or "健康报告" in intent or "健康诊断" in intent or "自检" in intent or "系统诊断" in intent or "system diagnose" in intent.lower() or "health report" in intent.lower() or "self check" in intent.lower() or "self diagnosis" in intent.lower() or "system self" in intent.lower():
+        print(f"[智能系统自检与健康报告引擎] 正在进行全面健康检查...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "system_self_diagnosis_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = None
+        if "完整" in intent or "full" in intent.lower() or "全面" in intent:
+            action = "--full"
+        elif "快速" in intent or "quick" in intent.lower() or "状态" in intent:
+            action = "--quick"
+        elif "报告" in intent or "report" in intent.lower():
+            action = "--report"
+        # 过滤掉意图关键词
+        filter_words = ["系统自检", "健康报告", "健康诊断", "自检", "系统诊断", "system diagnose", "health report", "self check", "self diagnosis", "system self", "完整", "full", "全面", "快速", "quick", "状态", "报告", "report"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action and action not in filtered_args:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            # 默认运行完整检查
+            filtered_args = ["--full"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能场景自适应执行引擎（round 176）- 基于实时上下文自动执行/切换场景计划
     elif "场景自适应" in intent or "自适应场景" in intent or "自动场景" in intent or "scene adaptive" in intent.lower() or "auto scene" in intent.lower() or "场景自动" in intent or "自适应执行" in intent or "auto-switch" in intent.lower():
         print(f"[智能场景自适应执行引擎] 正在分析上下文并执行场景...", file=sys.stderr)
