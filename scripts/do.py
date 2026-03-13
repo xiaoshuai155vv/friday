@@ -4473,6 +4473,43 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化闭环完整集成引擎 (Round 228) - 整合创意生成、创意评估执行、进化学习、进化执行
+    elif "闭环集成" in intent or "完整闭环" in intent or "发现评估执行学习" in intent or "evolution loop complete" in intent.lower() or "complete loop" in intent.lower() or "闭环完整" in intent or "集成进化" in intent:
+        print(f"[智能进化闭环完整集成引擎] 正在运行完整进化闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution闭环_complete_integrator.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "run"
+        action_mode = "full"
+        if "status" in intent or "状态" in intent:
+            action = "status"
+        elif "history" in intent or "历史" in intent:
+            action = "history"
+        elif "analyze" in intent or "分析" in intent:
+            action = "analyze"
+        elif "discovery" in intent or "发现" in intent:
+            action_mode = "discovery"
+        elif "evaluation" in intent or "评估" in intent:
+            action_mode = "evaluation"
+        elif "execution" in intent or "执行" in intent:
+            action_mode = "execution"
+        elif "learning" in intent or "学习" in intent:
+            action_mode = "learning"
+        # 过滤掉意图关键词
+        filter_words = ["闭环集成", "完整闭环", "发现评估执行学习", "evolution loop complete", "complete loop", "闭环完整", "集成进化", "status", "history", "analyze", "discovery", "evaluation", "execution", "learning", "状态", "历史", "分析", "发现", "评估", "执行", "学习"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action == "run" and action_mode not in filtered_args:
+            filtered_args.insert(0, action_mode)
+        elif action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path, action] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能系统自检与健康报告引擎 (Round 203) - 放在 system_health_monitor 之前
     elif "健康检查" in intent or "健康报告" in intent or "系统自检" in intent or "health check" in intent.lower() or "health report" in intent.lower() or "系统诊断" in intent:
         print(f"[智能系统自检与健康报告引擎] 正在运行健康检查...", file=sys.stderr)
