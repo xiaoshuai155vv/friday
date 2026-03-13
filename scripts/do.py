@@ -3853,6 +3853,36 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能多维融合智能分析引擎
+    elif "多维融合" in intent or "融合分析" in intent or "统一态势" in intent or "融合洞察" in intent or "cross dimension" in intent.lower() or "multi dimension" in intent.lower() or ("态势感知" in intent) or ("跨引擎" in intent and "协同" in intent):
+        print(f"[智能多维融合智能分析引擎] 正在处理融合分析任务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "multi_dimension_fusion_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "summary"
+        if "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "洞察" in intent or "insights" in intent.lower():
+            action = "insights"
+        elif "态势" in intent or "situational" in intent.lower():
+            action = "situational"
+        elif "协同" in intent or "collaboration" in intent.lower() or "跨引擎" in intent:
+            action = "collaboration"
+        elif "建议" in intent or "recommendations" in intent.lower() or "推荐" in intent:
+            action = "recommendations"
+        # 过滤掉意图关键词
+        filter_words = ["多维融合", "融合分析", "统一态势", "融合洞察", "态势感知", "cross dimension", "multi dimension", "跨引擎协同"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     else:
         # 未知意图时，先检查是否包含情感关键词
         import json
