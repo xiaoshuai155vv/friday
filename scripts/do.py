@@ -2897,6 +2897,40 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能主动服务增强引擎（round 193）- 在用户发出指令之前预测需求并预准备
+    elif "主动增强" in intent or "服务增强" in intent or "预见服务" in intent or "主动预测" in intent or "proactive enhance" in intent.lower() or "service enhancer" in intent.lower() or "predictive service" in intent.lower():
+        print(f"[智能主动服务增强引擎] 正在预测用户需求并准备服务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "proactive_service_enhancer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = None
+        if "状态" in intent or "status" in intent.lower() or "查看状态" in intent:
+            action = "status"
+        elif "预测" in intent or "predict" in intent.lower():
+            action = "predict"
+        elif "推荐" in intent or "recommend" in intent.lower():
+            action = "recommend"
+        elif "预加载" in intent or "preload" in intent.lower():
+            action = "preload"
+        elif "启用" in intent or "enable" in intent.lower():
+            action = "enable"
+        elif "禁用" in intent or "disable" in intent.lower():
+            action = "disable"
+        # 过滤掉意图关键词
+        filter_words = ["主动增强", "服务增强", "预见服务", "主动预测", "proactive enhance", "service enhancer", "predictive service", "预测", "predict", "推荐", "recommend", "预加载", "preload", "状态", "status", "启用", "enable", "禁用", "disable"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action and action not in filtered_args:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            # 默认查看状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能场景自适应执行引擎（round 176）- 基于实时上下文自动执行/切换场景计划
     elif "场景自适应" in intent or "自适应场景" in intent or "自动场景" in intent or "scene adaptive" in intent.lower() or "auto scene" in intent.lower() or "场景自动" in intent or "自适应执行" in intent or "auto-switch" in intent.lower():
         print(f"[智能场景自适应执行引擎] 正在分析上下文并执行场景...", file=sys.stderr)
