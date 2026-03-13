@@ -3733,6 +3733,34 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能零点击服务引擎
+    elif "零点击" in intent or "一键服务" in intent or "自动任务链" in intent or "一句话办事" in intent or "零click" in intent.lower() or "zero_click" in intent.lower() or "zero click" in intent.lower() or ("完成" in intent and "整件事" in intent) or ("帮我" in intent and len(intent.split()) < 10) or ("自动" in intent and "执行" in intent and "完整" in intent):
+        print(f"[智能零点击服务引擎] 正在分析目标并生成任务链...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "zero_click_service_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "plan"
+        if "执行" in intent or "execute" in intent.lower() or "运行" in intent:
+            action = "execute"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "仪表盘" in intent or "dashboard" in intent.lower():
+            action = "dashboard"
+        elif "历史" in intent or "history" in intent.lower():
+            action = "history"
+        # 过滤掉意图关键词
+        filter_words = ["零点击", "一键服务", "自动任务链", "一句话办事", "零click", "完成", "整件事", "帮我", "自动", "执行", "状态", "仪表盘", "历史", "运行"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一元进化引擎
     elif "元进化" in intent or "统一进化" in intent or "meta evolution" in intent.lower() or ("进化" in intent and "协调" in intent) or ("进化" in intent and "引擎" in intent and "状态" in intent) or ("进化" in intent and "机会" in intent) or "进化追踪" in intent or "进化评估" in intent:
         print(f"[智能统一元进化引擎] 正在处理元进化任务...", file=sys.stderr)
