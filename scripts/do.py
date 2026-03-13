@@ -1777,6 +1777,35 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 主动服务触发引擎 - 条件触发的自动服务
+    elif "触发器" in intent or "自动服务" in intent or "条件触发" in intent or "proactive trigger" in intent.lower() or "服务触发" in intent or "trigger" in intent.lower():
+        print(f"[主动服务触发引擎] 正在处理触发请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "proactive_service_trigger.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "启动" in intent or "start" in intent.lower() or "开启" in intent:
+            action = "start"
+        elif "停止" in intent or "stop" in intent.lower() or "关闭" in intent:
+            action = "stop"
+        elif "触发" in intent or "手动触发" in intent:
+            action = "trigger"
+        elif "列表" in intent or "list" in intent.lower():
+            action = "list"
+        # 过滤掉意图关键词
+        filter_words = ["触发器", "自动服务", "条件触发", "proactive trigger", "服务触发", "trigger", "启动", "start", "开启", "停止", "stop", "关闭", "手动触发", "触发", "列表", "list"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action not in ["status", "list"]:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能情境感知引擎
     elif "情境感知" in intent or "环境感知" in intent or "当前状态" in intent or "主动推荐" in intent or "context awareness" in intent.lower() or "sense environment" in intent.lower() or "perceive" in intent.lower():
         print(f"[智能情境感知引擎] 正在感知当前环境...", file=sys.stderr)
