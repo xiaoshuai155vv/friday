@@ -1443,6 +1443,46 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能决策可解释性增强器
+    elif "解释决策" in intent or "为什么推荐" in intent or "执行解释" in intent or "决策解释" in intent or "explain" in intent.lower():
+        print(f"[智能决策可解释性增强器] 正在解释决策原因...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "decision_explainer_engine.py")
+        user_input = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
+        cmd = []
+        if user_input:
+            parts = user_input.split()
+            if parts[0] in ["status", "explain", "workflow", "failure", "progress"]:
+                cmd = [parts[0]]
+                # 处理后续参数
+                if len(parts) > 1:
+                    if parts[0] == "explain" and "--task" in user_input:
+                        # 提取 task 和 engines
+                        try:
+                            task_idx = parts.index("--task") + 1 if "--task" in parts else -1
+                            engines_idx = parts.index("--engines") + 1 if "--engines" in parts else -1
+                            if task_idx > 0 and engines_idx > 0:
+                                cmd = ["explain", "--task", " ".join(parts[task_idx:engines_idx-1])]
+                                # 找到 engines 后的引擎列表
+                                engines = []
+                                for i in range(engines_idx, len(parts)):
+                                    if parts[i].startswith("--"):
+                                        break
+                                    engines.append(parts[i])
+                                cmd.extend(["--engines"] + engines)
+                        except:
+                            cmd = ["status"]
+                    elif parts[0] in ["workflow", "failure", "progress"]:
+                        cmd = [parts[0]]
+                        if len(parts) > 1:
+                            cmd.extend(parts[1:])
+        if not cmd:
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能任务协调中心
     elif "协调中心" in intent or "智能处理" in intent or "coordinator" in intent.lower():
         print(f"[智能任务协调中心] 正在协调处理您的任务...", file=sys.stderr)

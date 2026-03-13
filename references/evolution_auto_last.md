@@ -2,18 +2,18 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/auto_execution_engine.py, scripts/do.py, references/evolution_self_proposed.md
+scripts/decision_explainer_engine.py, scripts/do.py, references/evolution_self_proposed.md
 
-## 2026-03-13 round 197
-- **current_goal**：智能自动化执行引擎 - 让系统能够自动执行编排计划，实现从建议到执行的完整闭环
+## 2026-03-13 round 198
+- **current_goal**：智能决策可解释性增强器 - 让系统能够以自然语言详细解释每个决策的背后原因，提升系统透明度和用户信任
 - **做了什么**：
-  1. 创建 auto_execution_engine.py 模块，实现智能自动化执行引擎功能
-  2. 实现编排计划解析与自动执行功能
-  3. 实现执行模式配置（auto/confirm/suggest 三种模式）
-  4. 实现执行结果追踪与反馈收集
-  5. 实现学习优化机制（根据执行结果自动调整偏好）
-  6. 在 do.py 中添加自动执行、执行计划、执行编排等关键词触发支持
+  1. 创建 decision_explainer_engine.py 模块，实现智能决策可解释性增强器功能
+  2. 实现引擎推荐理由解释（分析任务需求，解释为什么选择这些引擎）
+  3. 实现工作流执行路径解释（解释为什么按这个顺序执行，关键决策点是什么）
+  4. 实现失败原因分析（步骤失败时提供原因和可能的解决方案）
+  5. 实现执行过程实时解说（在执行工作流时逐步解释当前步骤的原因）
+  6. 在 do.py 中添加解释决策、为什么推荐、执行解释、决策解释、explain 等关键词触发支持
   7. 基线验证 5/6 通过（剪贴板远程限制为已知问题）
-  8. 针对性验证通过 - status/history/set_mode/suggest 命令均可正常工作
+  8. 针对性验证通过 - status/explain/workflow 命令均可正常工作
 - **是否完成**：已完成
-- **下一轮建议**：可增强与 dynamic_engine_orchestrator 的深度集成，实现从编排到自动执行的完整闭环
+- **下一轮建议**：可增强与推荐引擎、编排引擎的深度集成，实现从推荐/编排到解释的完整闭环
