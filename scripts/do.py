@@ -2371,6 +2371,39 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 增强多模态场景理解与智能场景联动引擎 - 界面结构解析、场景联动推荐、跨场景上下文传递
+    elif "场景理解" in intent or "场景联动" in intent or "智能场景推荐" in intent or "multimodal" in intent.lower() or "scene understanding" in intent.lower() or "scene linkage" in intent.lower() or "scene_recommend" in intent.lower():
+        print(f"[增强多模态场景理解引擎] 正在分析场景...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "multimodal_scene_understanding.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "analyze"
+        if "推荐" in intent or "recommend" in intent.lower():
+            action = "recommend"
+        elif "联动" in intent or "link" in intent.lower():
+            action = "link"
+        elif "上下文" in intent or "context" in intent.lower():
+            action = "context"
+        elif "理解" in intent or "understand" in intent.lower():
+            action = "understand"
+        # 过滤掉意图关键词
+        filter_words = ["场景理解", "场景联动", "智能场景推荐", "multimodal", "scene understanding", "scene linkage", "scene_recommend", "推荐", "联动", "上下文", "理解"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            filtered_args = ["analyze"]
+        # 如果是截图路径，直接作为参数
+        if len(cmd_args) == 1 and os.path.exists(cmd_args[0]):
+            filtered_args = ["analyze", cmd_args[0]]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
