@@ -1610,13 +1610,16 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
     # 主动预测与预防引擎
-    elif "预测与预防" in intent or "主动预防" in intent or "预防" in intent or "predictive" in intent.lower() or "prevention" in intent.lower() or "预警" in intent:
+    elif "预测与预防" in intent or "主动预防" in intent or "预防" in intent or "predictive" in intent.lower() or "prevention" in intent.lower() or "预警" in intent or "发送预警" in intent or "预警通知" in intent:
         print(f"[主动预测与预防引擎] 正在分析系统状态并预测潜在问题...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "predictive_prevention_engine.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
         # 过滤掉意图关键词
-        filtered_args = [arg for arg in cmd_args if arg not in ["预测与预防", "主动预防", "预防", "predictive", "prevention", "预警"]]
+        filtered_args = [arg for arg in cmd_args if arg not in ["预测与预防", "主动预防", "预防", "predictive", "prevention", "预警", "发送预警", "预警通知"]]
+        # 如果用户要求发送预警通知，使用 notify 命令
+        if "发送预警" in intent or "预警通知" in intent:
+            filtered_args = ["notify"] + filtered_args
         if not filtered_args:
             filtered_args = ["report"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)

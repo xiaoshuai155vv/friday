@@ -27,6 +27,13 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 sys.path.insert(0, PROJECT_ROOT)
 
+# 导入主动通知引擎
+try:
+    from proactive_notification_engine import ProactiveNotificationEngine
+    NOTIFICATION_ENGINE_AVAILABLE = True
+except ImportError:
+    NOTIFICATION_ENGINE_AVAILABLE = False
+
 
 class PredictivePreventionEngine:
     """主动预测与预防引擎"""
@@ -458,6 +465,99 @@ class PredictivePreventionEngine:
 
         return None
 
+    def send_alert_notification(self, force: bool = False) -> Dict[str, Any]:
+        """发送预警通知到用户
+
+        当检测到高风险时，自动通过主动通知引擎发送预警通知
+
+        Args:
+            force: 是否强制发送（即使没有高风险）
+
+        Returns:
+            发送结果
+        """
+        result = {
+            "success": False,
+            "alert_sent": False,
+            "message": ""
+        }
+
+        # 获取预警信息
+        alert = self.get_alert()
+
+        if not alert and not force:
+            result["message"] = "当前无高风险预警，无需发送通知"
+            return result
+
+        if not NOTIFICATION_ENGINE_AVAILABLE:
+            result["message"] = "主动通知引擎不可用"
+            return result
+
+        try:
+            # 创建通知引擎实例
+            notification_engine = ProactiveNotificationEngine()
+
+            # 构建通知内容
+            if alert:
+                level_text = "紧急" if alert["level"] == "critical" else "高风险"
+                title = f"⚠️ 系统{level_text}预警"
+
+                # 构建消息内容
+                issues_text = []
+                for issue in alert.get("issues", []):
+                    issues_text.append(f"• {issue.get('description', '未知问题')}: {issue.get('current_value', 'N/A')}")
+
+                suggestions_text = []
+                for suggestion in alert.get("suggestions", []):
+                    if suggestion.get("action_type") == "immediate":
+                        suggestions_text.append(f"• {suggestion.get('suggestion', '无')}")
+
+                content_lines = [title, ""]
+                if issues_text:
+                    content_lines.append("检测到以下问题:")
+                    content_lines.extend(issues_text)
+                    content_lines.append("")
+                if suggestions_text:
+                    content_lines.append("建议立即处理:")
+                    content_lines.extend(suggestions_text)
+
+                content = "\n".join(content_lines)
+
+                # 发送通知，优先级根据风险等级
+                priority = 5 if alert["level"] == "critical" else 4
+
+                notification_id = notification_engine.add_notification(
+                    notification_type="alert",
+                    content=content,
+                    priority=priority,
+                    metadata={
+                        "alert_level": alert["level"],
+                        "issues_count": len(alert.get("issues", [])),
+                        "source": "predictive_prevention_engine"
+                    }
+                )
+
+                result["success"] = True
+                result["alert_sent"] = True
+                result["message"] = f"预警通知已发送 (ID: {notification_id})"
+                result["notification_id"] = notification_id
+
+            elif force:
+                # 强制发送时，发送系统正常通知
+                notification_id = notification_engine.add_notification(
+                    notification_type="system",
+                    content="系统检测完成，当前无高风险预警。系统运行正常。",
+                    priority=1,
+                    metadata={"source": "predictive_prevention_engine"}
+                )
+                result["success"] = True
+                result["message"] = f"系统状态通知已发送 (ID: {notification_id})"
+
+        except Exception as e:
+            result["message"] = f"发送预警通知失败: {str(e)}"
+
+        return result
+
 
 def main():
     """主函数"""
@@ -480,6 +580,12 @@ def main():
                 print(json.dumps(alert, ensure_ascii=False, indent=2))
             else:
                 print(json.dumps({"status": "no_alert", "message": "当前无预警"}, ensure_ascii=False, indent=2))
+
+        elif command in ["notify", "通知", "发送预警", "send_alert"]:
+            # 发送预警通知
+            force = len(sys.argv) > 2 and sys.argv[2].lower() in ["--force", "-f", "force"]
+            result = engine.send_alert_notification(force=force)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
 
         else:
             # 默认显示报告
