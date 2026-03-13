@@ -1848,6 +1848,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自适应场景选择引擎
+    elif "自适应场景" in intent or "智能场景选择" in intent or "场景选择" in intent or "adaptive scene" in intent.lower() or "context aware" in intent.lower() or "当前情境" in intent:
+        print(f"[智能自适应场景选择引擎] 正在分析当前情境并选择最佳场景...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "adaptive_scene_selector.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["analyze"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["自适应场景", "智能场景选择", "场景选择", "adaptive scene", "context aware", "当前情境"]]
+        if not filtered_args:
+            filtered_args = ["analyze"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能文件管理引擎
     elif "文件管理" in intent or "整理文件" in intent or "文件整理" in intent or "搜索文件" in intent or "文件搜索" in intent or "分析文件" in intent or "文件分析" in intent or "file manager" in intent.lower() or "organize files" in intent.lower():
         print(f"[智能文件管理引擎] 正在处理文件管理请求...", file=sys.stderr)
