@@ -4396,6 +4396,32 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景服务融合引擎 (Round 249)
+    elif "全场景服务" in intent or "服务融合" in intent or "模糊需求" in intent or "一站式服务" in intent or "full scenario" in intent.lower() or "service fusion" in intent.lower() or "融合服务" in intent or "智能服务入口" in intent or "理解我的需求" in intent:
+        print(f"[智能全场景服务融合引擎] 正在处理服务请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "full_scenario_service_fusion_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "分析" in intent or "analyze" in intent.lower():
+            action = "analyze"
+        elif "能力" in intent or "capabilities" in intent.lower() or "能做什么" in intent:
+            action = "capabilities"
+        elif "查询" in intent or "query" in intent.lower() or "服务" in intent:
+            action = "query"
+        # 过滤掉意图关键词
+        filter_words = ["全场景服务", "服务融合", "模糊需求", "一站式服务", "full scenario", "service fusion", "融合服务", "智能服务入口", "理解我的需求", "分析", "能力", "能做什么", "查询"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能多维融合智能分析引擎 (Round 204)
     elif "多维分析" in intent or "态势感知" in intent or "智能分析" in intent or "统一分析" in intent or "跨引擎分析" in intent or "multi-dim" in intent.lower() or "situation" in intent.lower() or "智能洞察" in intent:
         print(f"[智能多维融合智能分析引擎] 正在运行多维度分析...", file=sys.stderr)
