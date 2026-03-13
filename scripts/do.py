@@ -4445,6 +4445,34 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化创意评估与执行引擎 (Round 227) - 集成创意生成到执行
+    elif "进化评估" in intent or "创意执行" in intent or "执行创意" in intent or "evolution evaluate" in intent.lower() or "idea execute" in intent.lower() or "进化闭环" in intent or "idea evaluation" in intent.lower() or "创意评估" in intent:
+        print(f"[智能进化创意评估与执行引擎] 正在评估和执行进化创意...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_idea_execution_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "evaluate"
+        if "执行" in intent or "execute" in intent.lower() or "运行" in intent:
+            action = "execute"
+        elif "报告" in intent or "report" in intent.lower():
+            action = "report"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "学习" in intent or "learn" in intent.lower():
+            action = "learn"
+        # 过滤掉意图关键词
+        filter_words = ["进化评估", "创意执行", "执行创意", "evolution evaluate", "idea execute", "进化闭环", "idea evaluation", "创意评估", "执行", "报告", "状态", "学习", "execute", "report", "status", "learn", "运行"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能系统自检与健康报告引擎 (Round 203) - 放在 system_health_monitor 之前
     elif "健康检查" in intent or "健康报告" in intent or "系统自检" in intent or "health check" in intent.lower() or "health report" in intent.lower() or "系统诊断" in intent:
         print(f"[智能系统自检与健康报告引擎] 正在运行健康检查...", file=sys.stderr)
