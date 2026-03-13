@@ -2667,6 +2667,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能任务偏好记忆引擎
+    elif "任务偏好" in intent or "我的偏好" in intent or "设置偏好" in intent or "查看偏好" in intent or "preference" in intent.lower() or "task preference" in intent.lower():
+        print(f"[智能任务偏好记忆引擎] 正在处理任务偏好请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "task_preference_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["list"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["任务偏好", "我的偏好", "设置偏好", "查看偏好", "preference", "task preference"]]
+        if not filtered_args:
+            filtered_args = ["list"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
