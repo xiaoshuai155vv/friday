@@ -2,20 +2,18 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/system_dashboard_engine.py, scripts/do.py, references/evolution_self_proposed.md
+scripts/ui_structure_engine.py, scripts/do.py
 
-## 2026-03-13 round 165
-- **current_goal**：智能统一系统监控仪表盘引擎 - 整合所有引擎监控数据提供统一系统状态视图
+## 2026-03-13 round 167
+- **current_goal**：智能UI结构理解引擎 - 创建一个能够解析界面元素层级、识别可交互组件、提供更精确的自动化操作能力的引擎
 - **做了什么**：
-  1. 创建 system_dashboard_engine.py 模块，实现统一系统监控仪表盘功能
-  2. 整合健康保障数据（health_assurance_loop）
-  3. 整合主动运维数据（proactive_operations_engine）
-  4. 整合守护进程状态（daemon_manager）
-  5. 整合执行历史和性能指标
-  6. 实现总体健康评分计算
-  7. 实现智能告警检测
-  8. 在 do.py 中添加系统监控仪表盘关键词触发支持
-  9. 基线验证通过（5/6，剪贴板远程限制为已知问题）
-  10. 本轮针对性验证通过：system_dashboard_engine.py 的 summary/json 命令均可正常工作
+  1. 创建 ui_structure_engine.py 模块，实现智能UI结构理解引擎功能
+  2. 实现界面元素层级解析（基于 Windows UIA + vision）
+  3. 实现可交互组件识别（按钮、输入框、下拉菜单、复选框等）
+  4. 实现精确点击坐标计算（结合 UIA 和 vision）
+  5. 提供元素路径定位功能
+  6. 在 do.py 中添加 UI结构、界面元素、元素识别、点击元素等关键词触发支持
+  7. 基线验证通过（5/6，剪贴板远程限制为已知问题）
+  8. 本轮针对性验证通过：ui_structure_engine.py 的 analyze/summary 命令均可正常工作
 - **是否完成**：已完成
-- **下一轮建议**：可以增强 psutil 依赖以获取更精确的系统资源数据，或添加更多可视化展示（如图表）
+- **下一轮建议**：可增强与现有场景计划的集成，实现更智能的 UI 自动化操作；可添加更多元素类型识别（如图标、颜色等）

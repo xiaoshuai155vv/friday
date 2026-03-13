@@ -2414,6 +2414,40 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能主动服务编排引擎（round 166）- 持续监控用户行为，主动发现并推荐服务
+    elif "主动服务编排" in intent or "服务编排" in intent or "proactive orchestrator" in intent.lower() or "service orchestration" in intent.lower() or "编排引擎" in intent:
+        print(f"[智能主动服务编排引擎] 正在分析并提供服务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "proactive_service_orchestrator.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = None
+        if "推荐" in intent or "recommend" in intent.lower() or "发现" in intent:
+            action = "recommendations"
+        elif "执行" in intent or "execute" in intent.lower():
+            action = "execute"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "历史" in intent or "history" in intent.lower():
+            action = "history"
+        elif "启用" in intent or "enable" in intent.lower():
+            action = "enable"
+        elif "禁用" in intent or "disable" in intent.lower():
+            action = "disable"
+        # 过滤掉意图关键词
+        filter_words = ["主动服务编排", "服务编排", "proactive orchestrator", "service orchestration", "编排引擎", "推荐", "recommend", "发现", "执行", "execute", "状态", "status", "历史", "history", "启用", "enable", "禁用", "disable"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action and action not in filtered_args:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            # 默认查看推荐
+            filtered_args = ["recommendations"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能自动化执行闭环引擎（round 157）- 自动发现并执行重复任务
     elif "自动化执行" in intent or "自动执行" in intent or "执行闭环" in intent or "automation execution" in intent.lower() or "auto execute" in intent.lower() or "自动化闭环" in intent or "auto-task" in intent.lower() or "自动化任务" in intent:
         print(f"[智能自动化执行闭环引擎] 正在分析并执行自动化任务...", file=sys.stderr)
@@ -2514,6 +2548,38 @@ def main():
         if not filtered_args:
             # 如果没有额外参数，显示健康报告
             filtered_args = ["report"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能UI结构理解引擎（round 167）- 解析界面元素层级、识别可交互组件、精确点击坐标计算
+    elif "UI结构" in intent or "界面元素" in intent or "元素识别" in intent or "ui structure" in intent.lower() or "ui element" in intent.lower() or "element识别" in intent or "界面解析" in intent or "点击元素" in intent or "find element" in intent.lower() or "element" in intent.lower():
+        print(f"[智能UI结构理解引擎] 正在分析UI结构...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "ui_structure_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = None
+        if "分析" in intent or "analyze" in intent.lower() or "结构" in intent:
+            action = "analyze"
+        elif "查找" in intent or "find" in intent.lower() or "搜索" in intent or "找" in intent:
+            action = "find"
+        elif "点击" in intent or "click" in intent.lower():
+            action = "click"
+        elif "摘要" in intent or "summary" in intent.lower() or "概览" in intent:
+            action = "summary"
+        elif "交互" in intent or "interactive" in intent.lower() or "探索" in intent:
+            action = "interactive"
+        # 过滤掉意图关键词
+        filter_words = ["UI结构", "界面元素", "元素识别", "ui structure", "ui element", "element识别", "界面解析", "点击元素", "find element", "element", "分析", "analyze", "结构", "查找", "find", "搜索", "找", "点击", "click", "摘要", "summary", "概览", "交互", "interactive", "探索"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action and action not in filtered_args:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            # 默认分析当前UI
+            filtered_args = ["analyze"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
             print(result.stdout)
