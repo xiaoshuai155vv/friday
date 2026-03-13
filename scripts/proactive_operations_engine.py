@@ -375,6 +375,138 @@ class ProactiveOperationsEngine:
 
         return suggestions
 
+    def auto_execute_optimization(self, force: bool = False) -> Dict:
+        """自动执行优化 - 根据系统状态自动决定执行哪些优化
+
+        这是"超越用户"的关键能力 - 用户只能收到建议但需要手动操作，
+        AI 可以自动完成从建议到执行的全过程。
+
+        Args:
+            force: 是否强制执行（忽略阈值检查）
+
+        Returns:
+            执行结果摘要
+        """
+        results = {
+            "timestamp": datetime.now().isoformat(),
+            "executed_actions": [],
+            "total_freed_mb": 0,
+            "summary": "",
+            "errors": []
+        }
+
+        # 获取当前系统状态
+        status = self.get_system_status()
+
+        # 检查是否需要执行优化（除非 force=True）
+        overall_status = status.get('overall_status', 'normal')
+        if not force and overall_status == 'normal':
+            results["summary"] = "系统状态正常，无需自动优化"
+            return results
+
+        # 根据状态自动执行相应优化
+        # 1. 如果磁盘有压力，执行清理
+        disk = status.get('disk', {})
+        if force or disk.get('status') in ['warning', 'critical']:
+            try:
+                cleanup_result = self.auto_cleanup()
+                results["executed_actions"].append({
+                    "action": "auto_cleanup",
+                    "result": cleanup_result
+                })
+                results["total_freed_mb"] += cleanup_result.get('total_freed_mb', 0)
+            except Exception as e:
+                results["errors"].append(f"自动清理失败: {str(e)}")
+
+        # 2. 如果内存有压力，执行内存优化
+        memory = status.get('memory', {})
+        if force or memory.get('status') in ['warning', 'critical']:
+            try:
+                optimize_result = self.optimize_memory()
+                results["executed_actions"].append({
+                    "action": "optimize_memory",
+                    "result": optimize_result
+                })
+                results["total_freed_mb"] += optimize_result.get('freed_memory_mb', 0)
+            except Exception as e:
+                results["errors"].append(f"内存优化失败: {str(e)}")
+
+        results["total_freed_mb"] = round(results["total_freed_mb"], 2)
+
+        # 生成摘要
+        if results["executed_actions"]:
+            action_names = [a["action"] for a in results["executed_actions"]]
+            results["summary"] = f"自动执行优化完成：{', '.join(action_names)}，释放 {results['total_freed_mb']} MB"
+        else:
+            results["summary"] = "无需执行优化"
+
+        # 保存历史
+        self._save_history("auto_execute_optimization", results)
+
+        return results
+
+    def execute_all_optimizations(self) -> Dict:
+        """一键执行所有优化操作
+
+        强制执行所有优化操作，不考虑当前系统状态。
+        用于用户主动触发或预防性维护。
+
+        Returns:
+            执行结果摘要
+        """
+        results = {
+            "timestamp": datetime.now().isoformat(),
+            "executed_actions": [],
+            "total_freed_mb": 0,
+            "errors": []
+        }
+
+        # 1. 执行自动清理
+        try:
+            cleanup_result = self.auto_cleanup()
+            results["executed_actions"].append({
+                "action": "auto_cleanup",
+                "cleaned_files": len(cleanup_result.get('cleaned_files', [])),
+                "freed_mb": cleanup_result.get('total_freed_mb', 0)
+            })
+            results["total_freed_mb"] += cleanup_result.get('total_freed_mb', 0)
+        except Exception as e:
+            results["errors"].append(f"清理失败: {str(e)}")
+
+        # 2. 执行内存优化
+        try:
+            optimize_result = self.optimize_memory()
+            results["executed_actions"].append({
+                "action": "optimize_memory",
+                "terminated": len(optimize_result.get('terminated_processes', [])),
+                "freed_mb": optimize_result.get('freed_memory_mb', 0)
+            })
+            results["total_freed_mb"] += optimize_result.get('freed_memory_mb', 0)
+        except Exception as e:
+            results["errors"].append(f"内存优化失败: {str(e)}")
+
+        results["total_freed_mb"] = round(results["total_freed_mb"], 2)
+
+        # 保存历史
+        self._save_history("execute_all_optimizations", results)
+
+        return results
+
+    def get_auto_execute_status(self) -> Dict:
+        """获取自动执行状态"""
+        return {
+            "enabled": self.config.get("auto_execute", False),
+            "auto_cleanup": self.config.get("auto_cleanup", True),
+            "auto_optimize": self.config.get("auto_optimize", True),
+            "thresholds": self.thresholds
+        }
+
+    def set_auto_execute(self, enabled: bool) -> Dict:
+        """设置是否启用自动执行"""
+        self.config["auto_execute"] = enabled
+        self._save_config()
+        return {"auto_execute": enabled, "status": "updated"}
+
     def _save_history(self, action: str, result: Dict):
         """保存操作历史"""
         history = []
@@ -473,6 +605,27 @@ class ProactiveOperationsEngine:
                     time.sleep(10)
             return {"status": "daemon_mode"}
 
+        elif command in ["execute", "auto_execute"]:
+            # 自动执行优化（根据系统状态决定执行哪些）
+            force = "--force" in args or "-f" in args
+            return self.auto_execute_optimization(force)
+
+        elif command in ["auto", "execute_all", "all"]:
+            # 一键执行所有优化
+            return self.execute_all_optimizations()
+
+        elif command == "auto_status":
+            # 获取自动执行状态
+            return self.get_auto_execute_status()
+
+        elif command in ["auto_enable", "enable_auto"]:
+            # 启用自动执行
+            return self.set_auto_execute(True)
+
+        elif command in ["auto_disable", "disable_auto"]:
+            # 禁用自动执行
+            return self.set_auto_execute(False)
+
         elif command == "help":
             return {
                 "commands": {
@@ -481,6 +634,10 @@ class ProactiveOperationsEngine:
                     "cleanup": "自动清理临时文件",
                     "optimize": "内存优化",
                     "suggestions": "生成优化建议",
+                    "execute [--force]": "自动执行优化（根据系统状态）",
+                    "auto/execute_all": "一键执行所有优化",
+                    "auto_status": "获取自动执行状态",
+                    "auto_enable/auto_disable": "启用/禁用自动执行",
                     "start [interval]": "启动守护进程监控",
                     "stop": "停止守护进程监控",
                     "daemon": "守护进程模式（持续运行）"
@@ -496,7 +653,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="智能系统主动运维引擎")
-    parser.add_argument("command", nargs="?", default="status", help="命令: status/predict/cleanup/optimize/suggestions/start/stop/daemon/help")
+    parser.add_argument("command", nargs="?", default="status", help="命令: status/predict/cleanup/optimize/suggestions/execute/auto/auto_status/start/stop/daemon/help")
     parser.add_argument("args", nargs="*", help="命令参数")
     parser.add_argument("--json", action="store_true", help="JSON 输出")
 
@@ -537,6 +694,20 @@ def main():
             print(f"=== 内存优化结果 ===")
             print(f"终止进程: {', '.join(result.get('terminated_processes', []))}")
             print(f"释放内存: {result.get('freed_memory_mb', 0)} MB")
+        elif args.command in ["execute", "auto_execute", "auto", "execute_all"]:
+            print(f"=== 自动优化执行结果 ===")
+            print(f"摘要: {result.get('summary', '')}")
+            print(f"执行操作: {len(result.get('executed_actions', []))}")
+            print(f"释放空间: {result.get('total_freed_mb', 0)} MB")
+            if result.get("errors"):
+                print("错误:")
+                for err in result["errors"]:
+                    print(f"  - {err}")
+        elif args.command == "auto_status":
+            print(f"=== 自动执行状态 ===")
+            print(f"自动执行: {'已启用' if result.get('enabled') else '已禁用'}")
+            print(f"自动清理: {'已启用' if result.get('auto_cleanup') else '已禁用'}")
+            print(f"自动优化: {'已启用' if result.get('auto_optimize') else '已禁用'}")
         elif "error" in result:
             print(f"错误: {result['error']}")
         elif result.get("status") == "started":

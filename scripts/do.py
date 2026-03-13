@@ -2170,14 +2170,14 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
-    # 智能系统主动运维引擎（round 160）
-    elif "主动运维" in intent or "系统运维" in intent or "运维引擎" in intent or "资源优化" in intent or "自动清理" in intent or "内存优化" in intent or "proactive operations" in intent.lower() or "system operations" in intent.lower() or "资源监控" in intent or "运维" in intent:
+    # 智能系统主动运维引擎（round 160/161）- 增强自动执行能力
+    elif "主动运维" in intent or "系统运维" in intent or "运维引擎" in intent or "资源优化" in intent or "自动清理" in intent or "内存优化" in intent or "proactive operations" in intent.lower() or "system operations" in intent.lower() or "资源监控" in intent or "运维" in intent or "自动优化" in intent or "一键优化" in intent or "执行优化" in intent or "auto optimize" in intent.lower():
         print(f"[智能系统主动运维引擎] 正在处理请求...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "proactive_operations_engine.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
         # 过滤掉意图关键词
-        filtered_args = [arg for arg in cmd_args if arg not in ["主动运维", "系统运维", "运维引擎", "资源优化", "自动清理", "内存优化", "proactive operations", "system operations", "资源监控", "运维"]]
+        filtered_args = [arg for arg in cmd_args if arg not in ["主动运维", "系统运维", "运维引擎", "资源优化", "自动清理", "内存优化", "proactive operations", "system operations", "资源监控", "运维", "自动优化", "一键优化", "执行优化", "auto optimize"]]
         if not filtered_args:
             # 如果没有额外参数，显示状态
             filtered_args = ["status"]
