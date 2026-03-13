@@ -1864,6 +1864,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能场景执行联动引擎
+    elif "场景执行联动" in intent or "场景链" in intent or "场景串联" in intent or "执行多个场景" in intent or "scene execution" in intent.lower() or "scene chain" in intent.lower() or "execute scene" in intent.lower():
+        print(f"[智能场景执行联动引擎] 正在分析任务并执行场景链...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "scene_execution_linkage_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--help"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["场景执行联动", "场景链", "场景串联", "执行多个场景", "scene execution", "scene chain", "execute scene"]]
+        if not filtered_args:
+            filtered_args = ["--help"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能文件管理引擎
     elif "文件管理" in intent or "整理文件" in intent or "文件整理" in intent or "搜索文件" in intent or "文件搜索" in intent or "分析文件" in intent or "文件分析" in intent or "file manager" in intent.lower() or "organize files" in intent.lower():
         print(f"[智能文件管理引擎] 正在处理文件管理请求...", file=sys.stderr)
