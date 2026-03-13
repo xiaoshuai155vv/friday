@@ -4547,6 +4547,42 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全系统健康预警与自适应干预引擎 (Round 230)
+    elif "健康预警" in intent or "系统预警" in intent or "健康干预" in intent or "自适应干预" in intent or "health alert" in intent.lower() or "健康趋势" in intent or "预测问题" in intent or "系统预测" in intent:
+        print(f"[智能全系统健康预警与自适应干预引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "system_health_alert_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "check"
+        if "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "趋势" in intent or "trends" in intent.lower():
+            action = "trends"
+        elif "预测" in intent or "predict" in intent.lower():
+            action = "predict"
+        elif "干预" in intent or "intervene" in intent.lower():
+            action = "intervene"
+        elif "预警" in intent and "查看" in intent or "alerts" in intent.lower():
+            action = "alerts"
+        elif "干预记录" in intent or "interventions" in intent.lower():
+            action = "interventions"
+        elif "启动监控" in intent or "start monitor" in intent.lower():
+            action = "start"
+        elif "停止监控" in intent or "stop monitor" in intent.lower():
+            action = "stop"
+
+        # 过滤掉意图关键词
+        filter_words = ["健康预警", "系统预警", "健康干预", "自适应干预", "health alert", "健康趋势", "预测问题", "系统预测", "状态", "趋势", "预测", "干预", "预警", "干预记录", "启动监控", "停止监控"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action not in filtered_args and action not in ["status", "check"]:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path, action] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能系统自检与健康报告引擎 (Round 203) - 放在 system_health_monitor 之前
     elif "健康检查" in intent or "健康报告" in intent or "系统自检" in intent or "health check" in intent.lower() or "health report" in intent.lower() or "系统诊断" in intent:
         print(f"[智能系统自检与健康报告引擎] 正在运行健康检查...", file=sys.stderr)
