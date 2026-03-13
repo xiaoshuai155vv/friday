@@ -4353,6 +4353,38 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化闭环学习增强引擎 (Round 224)
+    elif "进化学习" in intent or "闭环学习" in intent or "智能优化" in intent or "进化策略优化" in intent or "evolution loop learning" in intent.lower() or "learning enhancer" in intent.lower() or "学习增强" in intent:
+        print(f"[智能进化闭环学习增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_loop_learning_enhancer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "分析" in intent or "analyze" in intent.lower():
+            action = "analyze"
+        elif "模式" in intent or "patterns" in intent.lower():
+            action = "patterns"
+        elif "优化" in intent or "optimize" in intent.lower():
+            action = "optimize"
+        elif "预测" in intent or "predict" in intent.lower():
+            action = "predict"
+        elif "洞察" in intent or "insights" in intent.lower():
+            action = "insights"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        # 过滤掉意图关键词
+        filter_words = ["进化学习", "闭环学习", "智能优化", "进化策略优化", "evolution loop learning", "learning enhancer", "学习增强", "分析", "模式", "优化", "预测", "洞察", "状态", "analyze", "patterns", "optimize", "predict", "insights", "status"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能系统自检与健康报告引擎 (Round 203) - 放在 system_health_monitor 之前
     elif "健康检查" in intent or "健康报告" in intent or "系统自检" in intent or "health check" in intent.lower() or "health report" in intent.lower() or "系统诊断" in intent:
         print(f"[智能系统自检与健康报告引擎] 正在运行健康检查...", file=sys.stderr)
