@@ -4510,6 +4510,43 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化闭环条件自动触发引擎 (Round 229) - 让进化环能够基于条件自动触发
+    elif "条件触发" in intent or "触发条件" in intent or "触发引擎" in intent or "conditional trigger" in intent.lower() or "evolution trigger" in intent.lower() or "设置进化触发" in intent or "查看触发条件" in intent or "触发引擎状态" in intent or "触发引擎统计" in intent:
+        print(f"[智能进化闭环条件自动触发引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_conditional_trigger.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "启动" in intent or "start" in intent.lower() or "开始" in intent or "运行" in intent:
+            action = "start"
+        elif "停止" in intent or "stop" in intent.lower():
+            action = "stop"
+        elif "统计" in intent or "stats" in intent.lower():
+            action = "stats"
+        elif "列表" in intent or "list" in intent.lower() or "查看" in intent:
+            action = "list"
+        elif "添加" in intent or "add" in intent.lower() or "新增" in intent:
+            action = "add"
+        elif "移除" in intent or "remove" in intent.lower() or "删除" in intent:
+            action = "remove"
+        elif "启用" in intent or "enable" in intent.lower():
+            action = "enable"
+        elif "禁用" in intent or "disable" in intent.lower():
+            action = "disable"
+        elif "立即触发" in intent or "trigger now" in intent.lower() or "手动触发" in intent:
+            action = "trigger"
+        # 过滤掉意图关键词
+        filter_words = ["条件触发", "触发条件", "触发引擎", "conditional trigger", "evolution trigger", "设置进化触发", "查看触发条件", "触发引擎状态", "触发引擎统计", "启动", "start", "开始", "运行", "停止", "stop", "统计", "stats", "列表", "list", "查看", "添加", "add", "新增", "移除", "remove", "删除", "启用", "enable", "禁用", "disable", "立即触发", "trigger now", "手动触发"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action not in filtered_args and action not in ["status", "list"]:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path, action] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能系统自检与健康报告引擎 (Round 203) - 放在 system_health_monitor 之前
     elif "健康检查" in intent or "健康报告" in intent or "系统自检" in intent or "health check" in intent.lower() or "health report" in intent.lower() or "系统诊断" in intent:
         print(f"[智能系统自检与健康报告引擎] 正在运行健康检查...", file=sys.stderr)
