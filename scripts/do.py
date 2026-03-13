@@ -1594,6 +1594,40 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能任务理解与自动规划引擎
+    elif "任务规划" in intent or "规划任务" in intent or "自动规划" in intent or "分解任务" in intent or "task plan" in intent.lower() or "智能任务" in intent or "帮我做" in intent or "帮我执行" in intent or "描述任务" in intent:
+        print(f"[智能任务理解与自动规划引擎] 正在解析任务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "task_planner.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["actions"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["任务规划", "规划任务", "自动规划", "分解任务", "task plan", "智能任务", "帮我做", "帮我执行", "描述任务"]]
+        if not filtered_args:
+            # 尝试从整个命令行提取任务描述
+            task_desc = " ".join(sys.argv[1:])
+            for kw in ["任务规划", "规划任务", "自动规划", "分解任务", "task plan", "智能任务", "帮我做", "帮我执行", "描述任务"]:
+                task_desc = task_desc.replace(kw, "").strip()
+            if task_desc:
+                filtered_args = ["plan", "--input", task_desc]
+            else:
+                filtered_args = ["actions"]
+        # 检查是否需要执行
+        if "--execute" in intent or "执行" in intent or "执行计划" in intent:
+            if "plan" not in filtered_args:
+                filtered_args = ["execute"] + filtered_args
+            else:
+                # 在 plan 后面加 --execute
+                idx = filtered_args.index("plan") if "plan" in filtered_args else -1
+                if idx >= 0 and idx + 1 < len(filtered_args) and not filtered_args[idx + 1].startswith("--"):
+                    filtered_args.insert(idx + 2, "--execute")
+                else:
+                    filtered_args.append("--execute")
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能学习与适应引擎
     elif "学习" in intent or "适应" in intent or "个性化" in intent or "learning" in intent.lower() or "adaptive" in intent.lower() or "personalize" in intent.lower() or "习惯" in intent or "分析习惯" in intent:
         print(f"[智能学习与适应引擎] 正在处理学习与适应请求...", file=sys.stderr)
