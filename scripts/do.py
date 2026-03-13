@@ -2278,6 +2278,40 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自动化执行闭环引擎（round 157）- 自动发现并执行重复任务
+    elif "自动化执行" in intent or "自动执行" in intent or "执行闭环" in intent or "automation execution" in intent.lower() or "auto execute" in intent.lower() or "自动化闭环" in intent or "auto-task" in intent.lower() or "自动化任务" in intent:
+        print(f"[智能自动化执行闭环引擎] 正在分析并执行自动化任务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "automation_execution_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = None
+        if "分析" in intent or "analyze" in intent.lower():
+            action = "analyze"
+        elif "执行" in intent or "execute" in intent.lower() or "run" in intent.lower():
+            action = "execute"
+        elif "启用" in intent or "enable" in intent.lower() or "开启" in intent:
+            action = "enable"
+        elif "禁用" in intent or "disable" in intent.lower() or "关闭" in intent:
+            action = "disable"
+        elif "统计" in intent or "stats" in intent.lower():
+            action = "stats"
+        elif "报告" in intent or "report" in intent.lower():
+            action = "report"
+        # 过滤掉意图关键词
+        filter_words = ["自动化执行", "自动执行", "执行闭环", "automation execution", "auto execute", "自动化闭环", "auto-task", "自动化任务", "分析", "analyze", "执行", "execute", "run", "启用", "enable", "开启", "禁用", "disable", "关闭", "统计", "stats", "报告", "report"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action and action not in filtered_args:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            # 默认分析自动化机会
+            filtered_args = ["analyze"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能情境感知引擎
     elif "情境感知" in intent or "环境感知" in intent or "当前状态" in intent or "主动推荐" in intent or "context awareness" in intent.lower() or "sense environment" in intent.lower() or "perceive" in intent.lower():
         print(f"[智能情境感知引擎] 正在感知当前环境...", file=sys.stderr)
