@@ -2586,6 +2586,42 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能操作演示与回放引擎（round 168）- 记录操作序列、转换为run_plan、回放操作、生成演示脚本
+    elif "录制操作" in intent or "回放操作" in intent or "操作演示" in intent or "做个教程" in intent or "record operation" in intent.lower() or "playback" in intent.lower() or "operation demo" in intent.lower() or "tutorial" in intent.lower() or "录制" in intent or "回放" in intent:
+        print(f"[智能操作演示与回放引擎] 正在处理操作录制请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "operation_recorder.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = None
+        if "开始" in intent or "start" in intent.lower() or "录制" in intent and "开始" not in intent:
+            action = "start"
+        elif "停止" in intent or "stop" in intent.lower():
+            action = "stop"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "转换" in intent or "convert" in intent.lower() or "run_plan" in intent.lower():
+            action = "convert"
+        elif "演示" in intent or "demo" in intent.lower() or "教程" in intent:
+            action = "demo"
+        elif "回放" in intent or "play" in intent.lower() or "playback" in intent.lower():
+            action = "play"
+        elif "加载" in intent or "load" in intent.lower():
+            action = "load"
+        # 过滤掉意图关键词
+        filter_words = ["录制操作", "回放操作", "操作演示", "做个教程", "record operation", "playback", "operation demo", "tutorial", "录制", "回放", "开始", "start", "停止", "stop", "状态", "status", "转换", "convert", "演示", "demo", "教程", "加载", "load"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action and action not in filtered_args:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            # 默认显示状态
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能代码理解与重构引擎
     elif "代码分析" in intent or "代码理解" in intent or "代码重构" in intent or intent == "code" or intent == "analyze" or "code analysis" in intent.lower() or "code understanding" in intent.lower() or "code refactor" in intent.lower() or "analyze code" in intent.lower():
         print(f"[智能代码理解与重构引擎] 正在分析代码...", file=sys.stderr)

@@ -2,18 +2,19 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/ui_structure_engine.py, scripts/do.py
+scripts/operation_recorder.py, scripts/do.py
 
-## 2026-03-13 round 167
-- **current_goal**：智能UI结构理解引擎 - 创建一个能够解析界面元素层级、识别可交互组件、提供更精确的自动化操作能力的引擎
+## 2026-03-13 round 168
+- **current_goal**：智能操作演示与回放引擎 - 让系统能够记录用户操作序列，智能转换为可复用的演示脚本或自动化计划
 - **做了什么**：
-  1. 创建 ui_structure_engine.py 模块，实现智能UI结构理解引擎功能
-  2. 实现界面元素层级解析（基于 Windows UIA + vision）
-  3. 实现可交互组件识别（按钮、输入框、下拉菜单、复选框等）
-  4. 实现精确点击坐标计算（结合 UIA 和 vision）
-  5. 提供元素路径定位功能
-  6. 在 do.py 中添加 UI结构、界面元素、元素识别、点击元素等关键词触发支持
-  7. 基线验证通过（5/6，剪贴板远程限制为已知问题）
-  8. 本轮针对性验证通过：ui_structure_engine.py 的 analyze/summary 命令均可正常工作
+  1. 创建 operation_recorder.py 模块，实现智能操作演示与回放引擎功能
+  2. 实现操作录制功能（start/stop 状态管理）
+  3. 实现多种操作类型识别（click、type、key、activate、maximize、scroll、screenshot）
+  4. 实现操作序列到 run_plan JSON 的智能转换（convert 命令）
+  5. 实现操作回放功能（play 命令）
+  6. 实现演示脚本生成功能（demo 命令，输出 markdown 格式操作步骤）
+  7. 在 do.py 中添加「录制操作」「回放操作」「操作演示」「做个教程」等关键词触发支持
+  8. 基线验证通过（5/6，剪贴板远程限制为已知问题）
+  9. 本轮针对性验证通过：operation_recorder.py 的 status/start/help 命令均可正常工作
 - **是否完成**：已完成
-- **下一轮建议**：可增强与现有场景计划的集成，实现更智能的 UI 自动化操作；可添加更多元素类型识别（如图标、颜色等）
+- **下一轮建议**：可增强实时录制能力（守护进程模式持续监听）；可添加操作编辑功能；可实现操作分类和标签管理
