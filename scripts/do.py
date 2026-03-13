@@ -2410,6 +2410,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能主动优化发现引擎（round 233）
+    elif "主动优化发现" in intent or "优化发现" in intent or "主动优化" in intent or "optimization discovery" in intent.lower() or "主动优化引擎" in intent or "发现优化" in intent or "优化机会" in intent:
+        print(f"[智能主动优化发现引擎] 正在分析系统状态并发现优化机会...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "proactive_optimization_discovery_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["discover"]
+        filtered_args = [arg for arg in cmd_args if arg not in ["主动优化发现", "优化发现", "主动优化", "optimization discovery", "主动优化引擎", "发现优化", "优化机会"]]
+        if not filtered_args:
+            filtered_args = ["discover"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能工作流自动实现引擎（round 175）
     elif "工作流自动实现" in intent or "自动实现工作流" in intent or "实现工作流建议" in intent or "workflow auto implement" in intent.lower() or "auto implement workflow" in intent.lower():
         print(f"[智能工作流自动实现引擎] 正在将工作流建议转化为可执行计划...", file=sys.stderr)
