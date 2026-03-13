@@ -604,6 +604,24 @@ def main():
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 检查是否请求统一系统监控仪表盘
+    system_dashboard_keywords = ["系统监控仪表盘", "统一系统状态", "系统概览", "系统监控视图", "监控仪表盘", "system dashboard", "unified status", "系统全貌"]
+    for keyword in system_dashboard_keywords:
+        if keyword in " ".join(sys.argv[1:]):
+            print(f"[统一系统监控仪表盘] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "system_dashboard_engine.py")
+            cmd = [sys.executable, script_path]
+            if "json" in " ".join(sys.argv[1:]):
+                cmd.append("json")
+            else:
+                cmd.append("summary")
+            result = subprocess.run(cmd, cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 检查是否请求状态仪表板
     dashboard_keywords = ["状态面板", "系统状态", "进化状态", "dashboard", "仪表板", "状态概览"]
     for keyword in dashboard_keywords:
