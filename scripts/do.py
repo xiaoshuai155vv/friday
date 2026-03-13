@@ -4450,6 +4450,34 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能引擎深度集成协同引擎 (Round 251) - 将拟人操作协调引擎与全场景服务融合引擎深度集成
+    elif "引擎集成" in intent or "深度集成" in intent or "integrate" in intent.lower() or "服务推荐增强" in intent or "上下文保持" in intent or "deep integration" in intent.lower():
+        print(f"[智能引擎深度集成协同引擎] 正在处理深度集成请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "engine_deep_integration.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "分析" in intent or "analyze" in intent.lower():
+            action = "analyze"
+        elif "执行" in intent or "execute" in intent.lower():
+            action = "execute"
+        elif "上下文" in intent or "context" in intent.lower():
+            action = "context"
+        elif "清除" in intent or "clear" in intent.lower():
+            action = "clear"
+        # 过滤掉意图关键词
+        filter_words = ["引擎集成", "深度集成", "integrate", "服务推荐增强", "上下文保持", "deep integration", "分析", "执行", "上下文", "清除"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能多维融合智能分析引擎 (Round 204)
     elif "多维分析" in intent or "态势感知" in intent or "智能分析" in intent or "统一分析" in intent or "跨引擎分析" in intent or "multi-dim" in intent.lower() or "situation" in intent.lower() or "智能洞察" in intent:
         print(f"[智能多维融合智能分析引擎] 正在运行多维度分析...", file=sys.stderr)
