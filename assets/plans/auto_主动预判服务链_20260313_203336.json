@@ -1,0 +1,22 @@
+{
+  "name": "主动预判服务链",
+  "description": "从预测到主动行动的完整服务链，当预测到问题时主动行动并通知用户",
+  "trigger": "auto:主动预判服务链",
+  "steps": [
+    {
+      "action": "run",
+      "command": "predictive_prevention_engine predict",
+      "description": "预测潜在问题"
+    },
+    {
+      "action": "run",
+      "command": "proactive_decision_action_engine decide",
+      "description": "生成行动计划"
+    },
+    {
+      "action": "run",
+      "command": "proactive_notification_engine notify",
+      "description": "发送通知"
+    }
+  ]
+}

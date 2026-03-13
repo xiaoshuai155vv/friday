@@ -1937,6 +1937,24 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能工作流自动实现引擎（round 175）
+    elif "工作流自动实现" in intent or "自动实现工作流" in intent or "实现工作流建议" in intent or "workflow auto implement" in intent.lower() or "auto implement workflow" in intent.lower():
+        print(f"[智能工作流自动实现引擎] 正在将工作流建议转化为可执行计划...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "workflow_auto_implementer.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["run"]
+        filtered_args = [arg for arg in cmd_args if arg not in ["工作流自动实现", "自动实现工作流", "实现工作流建议", "workflow auto implement", "auto implement workflow"]]
+        if not filtered_args:
+            filtered_args = ["run"]
+        # 检查是否有 -e 或 --execute 参数
+        auto_execute = "-e" in cmd_args or "--execute" in cmd_args
+        if auto_execute:
+            filtered_args.append("--execute")
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能系统安全监控 - 状态查询
     elif "安全监控" in intent or "系统安全" in intent or "security monitor" in intent.lower() or "安全状态" in intent:
         print(f"[智能系统安全监控] 正在获取安全状态...", file=sys.stderr)
