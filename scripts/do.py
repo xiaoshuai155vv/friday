@@ -700,6 +700,38 @@ def main():
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 检查是否请求守护进程管理
+    daemon_keywords = {
+        "守护进程列表": ["list"],
+        "守护进程状态": ["status"],
+        "查看守护进程": ["status"],
+        "启动守护进程": ["start"],
+        "停止守护进程": ["stop"],
+        "重启守护进程": ["restart"],
+        "启用守护进程": ["enable"],
+        "禁用守护进程": ["disable"],
+    }
+    for keyword, subcmd in daemon_keywords.items():
+        if keyword in " ".join(sys.argv[1:]):
+            # 尝试提取守护进程名称
+            daemon_name = None
+            argv_str = " ".join(sys.argv[1:])
+            for name in ["health_check", "evolution_loop"]:
+                if name in argv_str:
+                    daemon_name = name
+                    break
+            print(f"[守护进程管理] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "daemon_manager.py")
+            cmd = [subcmd]
+            if daemon_name:
+                cmd.append(daemon_name)
+            result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 检查是否请求告警相关操作
     alert_keywords = {
         "告警状态": ["status"],
