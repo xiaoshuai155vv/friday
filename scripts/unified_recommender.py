@@ -49,6 +49,13 @@ try:
 except ImportError:
     DECISION_ORCHESTRATOR_AVAILABLE = False
 
+# 尝试导入反馈学习引擎
+try:
+    from feedback_learning_engine import FeedbackLearningEngine, get_filtered_recommendations
+    FEEDBACK_LEARNING_AVAILABLE = True
+except ImportError:
+    FEEDBACK_LEARNING_AVAILABLE = False
+
 
 @dataclass
 class UnifiedRecommendation:
@@ -76,6 +83,7 @@ class UnifiedRecommenderEngine:
         self.scenario_engine = None
         self.workflow_engine = None
         self.orchestrator = None
+        self.learning_engine = None
 
         if SCENARIO_RECOMMENDER_AVAILABLE:
             try:
@@ -94,6 +102,13 @@ class UnifiedRecommenderEngine:
                 self.orchestrator = DecisionOrchestrator()
             except Exception as e:
                 print(f"决策编排中心初始化失败: {e}")
+
+        if FEEDBACK_LEARNING_AVAILABLE:
+            try:
+                from feedback_learning_engine import get_learning_engine
+                self.learning_engine = get_learning_engine()
+            except Exception as e:
+                print(f"反馈学习引擎初始化失败: {e}")
 
     def get_all_recommendations(self, context: Dict[str, Any] = None, limit: int = 10) -> List[UnifiedRecommendation]:
         """获取所有类型的推荐（统一入口）"""
@@ -117,6 +132,35 @@ class UnifiedRecommenderEngine:
         # 4. 添加引擎推荐（推荐使用某个引擎）
         engine_recs = self._get_engine_recommendations(context, limit)
         all_recommendations.extend(engine_recs)
+
+        # 5. 通过反馈学习引擎过滤和调整推荐
+        if self.learning_engine:
+            # 转换为字典列表供学习引擎处理
+            rec_dicts = [
+                {
+                    'type': rec.recommendation_type,
+                    'name': rec.name,
+                    'confidence': rec.confidence,
+                    'action': rec.action,
+                    'recommendation_id': rec.recommendation_id
+                }
+                for rec in all_recommendations
+            ]
+            # 获取过滤和调整后的推荐
+            filtered_dicts = self.learning_engine.get_filtered_recommendations(rec_dicts)
+
+            # 重新构建 UnifiedRecommendation 对象
+            filtered_recommendations = []
+            for rec_dict in filtered_dicts:
+                # 找到对应的原始推荐对象
+                for rec in all_recommendations:
+                    if rec.recommendation_id == rec_dict.get('recommendation_id'):
+                        # 更新置信度
+                        rec.confidence = rec_dict['confidence']
+                        filtered_recommendations.append(rec)
+                        break
+
+            all_recommendations = filtered_recommendations
 
         # 综合排序
         sorted_recommendations = self._rank_recommendations(all_recommendations)
@@ -324,8 +368,14 @@ class UnifiedRecommenderEngine:
 
         return [rec for _, rec in scored]
 
-    def record_feedback(self, recommendation_id: str, feedback: str):
-        """记录用户对推荐的反馈"""
+    def record_feedback(self, recommendation_id: str, feedback: str, recommendation: Dict[str, Any] = None):
+        """记录用户对推荐的反馈，并触发学习
+
+        Args:
+            recommendation_id: 推荐ID
+            feedback: 反馈类型 (accepted/rejected/ignored)
+            recommendation: 推荐内容字典（可选，用于学习）
+        """
         try:
             feedback_data = {}
             if os.path.exists(self.feedback_file):
@@ -343,6 +393,11 @@ class UnifiedRecommenderEngine:
 
             with open(self.feedback_file, 'w', encoding='utf-8') as f:
                 json.dump(feedback_data, f, ensure_ascii=False, indent=2)
+
+            # 触发反馈学习引擎（如果可用）
+            if self.learning_engine and recommendation:
+                self.learning_engine.record_feedback(recommendation_id, recommendation, feedback)
+
         except Exception as e:
             print(f"记录反馈失败: {e}")
 
@@ -565,6 +620,18 @@ class UnifiedRecommenderEngine:
         except Exception as e:
             print(f"[UnifiedRecommender] 保存执行历史失败: {e}")
 
+    def get_learning_stats(self) -> Dict[str, Any]:
+        """获取反馈学习统计"""
+        if self.learning_engine:
+            return self.learning_engine.get_learning_stats()
+        return {"message": "反馈学习引擎未启用"}
+
+    def get_learning_insights(self) -> Dict[str, Any]:
+        """获取反馈学习洞察"""
+        if self.learning_engine:
+            return self.learning_engine.analyze_feedback_patterns()
+        return {"message": "反馈学习引擎未启用"}
+
 
 def get_unified_recommendations(context: Dict[str, Any] = None, limit: int = 10) -> List[Dict[str, Any]]:
     """获取统一推荐（主入口函数）"""
@@ -594,8 +661,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='智能统一推荐引擎')
     parser.add_argument('action', nargs='?', default='recommend',
-                       choices=['recommend', 'history', 'feedback', 'execute', 'auto'],
-                       help='动作: recommend 获取推荐, history 查看历史, feedback 记录反馈, execute 执行推荐, auto 自动执行')
+                       choices=['recommend', 'history', 'feedback', 'execute', 'auto', 'learn-stats', 'learn-insights'],
+                       help='动作: recommend 获取推荐, history 查看历史, feedback 记录反馈, execute 执行推荐, auto 自动执行, learn-stats 学习统计, learn-insights 学习洞察')
     parser.add_argument('--limit', '-l', type=int, default=10, help='推荐数量')
     parser.add_argument('--query', '-q', help='用户查询/意图')
     parser.add_argument('--json', '-j', action='store_true', help='输出JSON格式')
@@ -674,3 +741,35 @@ if __name__ == '__main__':
                     print(f"  {i}. {rec['name']} (置信度: {int(rec['confidence']*100)}%)")
             if result.get('executed'):
                 print(f"\n已执行结果: {result['executed'].get('message', '')}")
+
+    elif args.action == 'learn-stats':
+        stats = engine.get_learning_stats()
+        if args.json:
+            print(json.dumps(stats, ensure_ascii=False, indent=2))
+        else:
+            print("=== 推荐反馈学习统计 ===")
+            print(f"总反馈数: {stats.get('total_feedbacks', 0)}")
+            print(f"  接受: {stats.get('accepted', 0)}")
+            print(f"  拒绝: {stats.get('rejected', 0)}")
+            print(f"  忽略: {stats.get('ignored', 0)}")
+            print("\n=== 学习权重 ===")
+            for k, v in stats.get('learned_weights', {}).items():
+                print(f"  {k}: {v:.2f}")
+            print("\n=== 用户偏好 ===")
+            print(f"首选场景: {stats.get('preferred_scenes', [])}")
+            print(f"首选工作流: {stats.get('preferred_workflows', [])}")
+            print(f"拒绝场景: {stats.get('rejected_scenes', [])}")
+            print(f"拒绝工作流: {stats.get('rejected_workflows', [])}")
+            print(f"偏好时段: {stats.get('preferred_time_periods', [])}")
+
+    elif args.action == 'learn-insights':
+        insights = engine.get_learning_insights()
+        if args.json:
+            print(json.dumps(insights, ensure_ascii=False, indent=2))
+        else:
+            print("=== 推荐反馈学习洞察 ===")
+            print(insights.get('summary', ''))
+            if insights.get('recommendations'):
+                print("\n建议:")
+                for r in insights['recommendations']:
+                    print(f"  - {r.get('message', '')}")

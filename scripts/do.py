@@ -1559,6 +1559,28 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能推荐反馈学习引擎 - 学习统计
+    elif "推荐学习统计" in intent or "反馈学习" in intent or "推荐反馈" in intent and "统计" in intent or "learning stats" in intent.lower() or "推荐权重" in intent:
+        print(f"[智能推荐反馈学习引擎] 正在获取学习统计...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "unified_recommender.py")
+        cmd_args = ["learn-stats"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能推荐反馈学习引擎 - 学习洞察
+    elif "推荐洞察" in intent or "推荐建议" in intent and "学习" in intent or "learning insights" in intent.lower() or "推荐分析" in intent:
+        print(f"[智能推荐反馈学习引擎] 正在获取学习洞察...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "unified_recommender.py")
+        cmd_args = ["learn-insights"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 执行指定推荐
     elif "执行推荐" in intent or "execute recommend" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行推荐...", file=sys.stderr)
