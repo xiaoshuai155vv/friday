@@ -358,9 +358,12 @@ class UnifiedRecommenderEngine:
         return []
 
     def execute_recommendation(self, recommendation_id: str = None, recommendation: Dict[str, Any] = None) -> Dict[str, Any]:
-        """执行推荐 - 通过决策编排中心执行推荐的操作
+        """执行推荐 - 通过决策编排中心或直接执行推荐的操作
 
-        实现推荐→决策→执行的自动闭环。
+        实现推荐→决策→执行的自动闭环。支持：
+        1. 通过决策编排中心执行（场景/工作流）
+        2. 直接执行 run_plan 场景计划
+        3. 直接执行 do.py 命令
 
         Args:
             recommendation_id: 推荐ID（如果已知）
@@ -401,6 +404,44 @@ class UnifiedRecommenderEngine:
             action = rec.get('action', '')
             rec_type = rec.get('type', '')
             rec_name = rec.get('name', '')
+
+            # 首先检查是否是场景/工作流推荐，尝试直接执行 run_plan
+            if rec_type in ('scene', 'workflow') and action:
+                # 尝试直接执行 run_plan
+                # action 可能是 "run_plan assets/plans/xxx.json" 或 "assets/plans/xxx.json" 或 "xxx.json"
+                plan_path = action
+                # 移除 "run_plan " 前缀
+                if plan_path.startswith('run_plan '):
+                    plan_path = plan_path[9:]  # 移除 "run_plan "
+                # 添加 assets/plans/ 前缀（如果需要）
+                if not plan_path.startswith('assets/plans/'):
+                    plan_path = f"assets/plans/{plan_path}"
+
+                # 检查计划文件是否存在
+                import os
+                project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                full_plan_path = os.path.join(project_root, plan_path)
+
+                if os.path.exists(full_plan_path):
+                    # 直接执行 run_plan
+                    import subprocess
+                    run_plan_script = os.path.join(project_root, 'scripts', 'run_plan.py')
+                    exec_result = subprocess.run(
+                        [sys.executable, run_plan_script, plan_path],
+                        cwd=project_root,
+                        capture_output=True,
+                        text=True
+                    )
+                    result["success"] = exec_result.returncode == 0
+                    result["execution_result"] = {
+                        "method": "run_plan",
+                        "plan": plan_path,
+                        "stdout": exec_result.stdout,
+                        "returncode": exec_result.returncode
+                    }
+                    result["message"] = f"执行场景计划「{rec_name}」: {'成功' if result['success'] else '失败'}"
+                    self._save_execution_history(rec, result)
+                    return result
 
             # 使用决策编排中心执行（如果可用）
             if self.orchestrator and action:

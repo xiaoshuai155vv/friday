@@ -225,7 +225,7 @@ def _compact_from_completed_jsons():
                 goal = d.get("current_goal") or d.get("goal") or "—"
                 done_raw = d.get("做了什么") or d.get("did") or d.get("actions_taken") or []
                 done = (done_raw[0][:60] if isinstance(done_raw, list) and done_raw else str(done_raw)[:60]) if done_raw else "—"
-                ok = d.get("是否完成") or d.get("is_completed") or d.get("completed")
+                ok = d.get("是否完成") or d.get("is_completed") or d.get("completed") or (d.get("status") == "completed")
                 summary = "完成" if ok else "未完成"
                 rel = os.path.relpath(path, ROOT).replace("\\", "/")
                 line = "round %s: %s; %s; %s | 详见 %s" % (r, (goal or "—")[:80], (done or "—")[:60], summary, rel)
