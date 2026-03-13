@@ -1277,6 +1277,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "analyze", "predict", "batch", "insights", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "intent_deep_reasoning_engine.py")] + cmd, cwd=PROJECT)
+    # 智能用户意图自动补全引擎
+    elif "意图补全" in intent or "意图增强" in intent or "补全意图" in intent or "intent_completion" in intent.lower() or "模糊输入" in intent or "理解模糊" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "complete", "clear", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "intent_completion_engine.py")] + cmd, cwd=PROJECT)
     # 智能跨引擎复杂任务规划引擎
     elif "任务规划" in intent or "复杂任务" in intent or "任务拆分" in intent or "协同执行" in intent or "task_planner" in intent.lower() or "跨引擎" in intent or "多引擎" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else []
