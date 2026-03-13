@@ -1876,6 +1876,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能场景计划深度验证与优化引擎
+    elif "场景计划优化" in intent or "优化场景计划" in intent or "plan optimizer" in intent.lower() or "场景深度验证" in intent or "计划质量" in intent:
+        print(f"[智能场景计划深度验证与优化引擎] 正在验证和优化场景计划...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "scenario_plan_optimizer.py")
+        cmd_args = ["--verify"]
+        if "--summary" in sys.argv or "-s" in sys.argv:
+            cmd_args.append("--summary")
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 自动执行
     elif "自动执行推荐" in intent or "自动执行" in intent or "auto execute" in intent.lower() or "auto run" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行自动推荐...", file=sys.stderr)
