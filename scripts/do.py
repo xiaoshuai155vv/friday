@@ -1724,6 +1724,25 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能统一学习中枢引擎 - 学习状态/统计/洞察
+    elif "统一学习" in intent or "学习中枢" in intent or "学习中心" in intent or "unified learning" in intent.lower() or "learning hub" in intent.lower() or "学习整合" in intent or "学习状态" in intent or "学习统计" in intent:
+        print(f"[智能统一学习中枢引擎] 正在处理请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "unified_learning_hub.py")
+        # 根据意图选择动作
+        if "统计" in intent or "stats" in intent.lower():
+            cmd_args = ["stats"]
+        elif "洞察" in intent or "insights" in intent.lower() or "建议" in intent:
+            cmd_args = ["insights"]
+        elif "覆盖" in intent or "coverage" in intent.lower() or "能力" in intent:
+            cmd_args = ["coverage"]
+        else:
+            cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能个性化深度学习引擎 - 用户洞察
     elif "个性化洞察" in intent or "深度学习" in intent or "用户洞察" in intent or "personalization insights" in intent.lower() or "深度个性化" in intent or "用户画像" in intent:
         print(f"[智能个性化深度学习引擎] 正在获取用户洞察...", file=sys.stderr)
