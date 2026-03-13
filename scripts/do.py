@@ -3347,6 +3347,32 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能跨引擎智能体自主协作引擎（round 200）
+    elif "智能协作" in intent or "引擎协作" in intent or "多引擎协同" in intent or "智能体协作" in intent or "multi-agent" in intent.lower() or "agent collaboration" in intent.lower() or "跨引擎协作" in intent or "引擎社会" in intent or "任务分配" in intent:
+        print(f"[智能跨引擎智能体自主协作引擎] 正在处理请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "multi_agent_collaboration_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["智能协作", "引擎协作", "多引擎协同", "智能体协作", "multi-agent", "agent collaboration", "跨引擎协作", "引擎社会", "任务分配"]]
+        if not filtered_args:
+            # 根据意图确定默认命令
+            if "状态" in intent or "status" in intent.lower():
+                filtered_args = ["status"]
+            elif "统计" in intent or "stats" in intent.lower():
+                filtered_args = ["stats"]
+            elif "引擎" in intent or "agents" in intent.lower():
+                filtered_args = ["agents"]
+            elif "日志" in intent or "logs" in intent.lower():
+                filtered_args = ["logs"]
+            else:
+                filtered_args = ["example"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化日志分析与可视化
     elif "进化日志" in intent or "日志分析" in intent or "进化分析" in intent or "evolution log" in intent.lower() or "evolution analysis" in intent.lower():
         print(f"[进化日志分析] 正在分析进化日志...", file=sys.stderr)
