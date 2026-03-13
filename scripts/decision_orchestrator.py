@@ -439,6 +439,187 @@ class DecisionOrchestrator:
 
         return "\n".join(report_lines)
 
+    def execute_auto_remediation(self, prediction_result: Dict[str, Any] = None) -> Dict[str, Any]:
+        """执行自动化修复 - 基于预测结果自动触发修复流程
+
+        这是「预测→决策→执行→通知」自动化闭环的核心方法。
+        当预测引擎检测到高风险问题时，自动调用此方法执行修复。
+
+        Args:
+            prediction_result: 预测引擎的结果，如果为 None 则重新扫描
+
+        Returns:
+            修复执行结果
+        """
+        result = {
+            "success": False,
+            "executed": False,
+            "timestamp": datetime.now().isoformat(),
+            "prediction": None,
+            "actions_taken": [],
+            "notifications_sent": [],
+            "message": ""
+        }
+
+        # 获取预测结果
+        if prediction_result is None:
+            try:
+                from predictive_prevention_engine import PredictivePreventionEngine
+                predictor = PredictivePreventionEngine()
+                prediction_result = predictor.scan_and_predict()
+            except Exception as e:
+                result["message"] = f"获取预测结果失败: {str(e)}"
+                return result
+
+        result["prediction"] = prediction_result
+
+        # 检查风险等级
+        risk_level = prediction_result.get("risk_level", "low")
+        if risk_level not in ["critical", "high"]:
+            result["success"] = True
+            result["message"] = f"风险等级 {risk_level}，无需自动修复"
+            return result
+
+        # 根据问题类型执行修复
+        issues = prediction_result.get("detected_issues", [])
+        if not issues:
+            result["message"] = "未检测到具体问题"
+            return result
+
+        # 执行修复操作
+        for issue in issues:
+            issue_type = issue.get("type", "unknown")
+            action_taken = {
+                "issue": issue.get("description"),
+                "type": issue_type,
+                "status": "pending"
+            }
+
+            try:
+                # 根据问题类型选择修复引擎
+                if issue_type == "high_memory":
+                    # 尝试调用自愈引擎清理内存
+                    if "self_healing" in self.engines:
+                        healing_engine = self.engines["self_healing"]
+                        if hasattr(healing_engine, "cleanup_memory"):
+                            cleanup_result = healing_engine.cleanup_memory()
+                            action_taken["status"] = "executed"
+                            action_taken["detail"] = "已尝试清理内存"
+                        else:
+                            action_taken["status"] = "skipped"
+                            action_taken["detail"] = "自愈引擎无内存清理方法"
+                    else:
+                        action_taken["status"] = "skipped"
+                        action_taken["detail"] = "自愈引擎不可用"
+
+                elif issue_type == "high_cpu":
+                    # 高 CPU 通常需要人工干预，记录即可
+                    action_taken["status"] = "requires_manual"
+                    action_taken["detail"] = "高CPU需要人工处理"
+
+                elif issue_type == "disk_low":
+                    # 记录磁盘清理建议
+                    action_taken["status"] = "suggested"
+                    action_taken["detail"] = issue.get("prevention", "需要清理磁盘空间")
+
+                else:
+                    action_taken["status"] = "unknown_issue_type"
+                    action_taken["detail"] = f"未知问题类型: {issue_type}"
+
+            except Exception as e:
+                action_taken["status"] = "failed"
+                action_taken["detail"] = f"执行失败: {str(e)}"
+
+            result["actions_taken"].append(action_taken)
+
+        # 发送修复结果通知
+        if "notification" in self.engines:
+            try:
+                notification_engine = self.engines["notification"]
+
+                # 构建通知内容
+                level_text = "紧急" if risk_level == "critical" else "高风险"
+                title = f"⚡ 系统{risk_level}问题自动处理报告"
+
+                content_lines = [title, ""]
+                content_lines.append(f"检测到 {len(issues)} 个问题，已执行自动处理：")
+                content_lines.append("")
+
+                for action in result["actions_taken"]:
+                    status_emoji = {
+                        "executed": "✓",
+                        "skipped": "-",
+                        "requires_manual": "⚠",
+                        "suggested": "→",
+                        "failed": "✗",
+                        "unknown_issue_type": "?"
+                    }.get(action["status"], "?")
+
+                    content_lines.append(f"{status_emoji} {action['issue']}: {action['detail']}")
+
+                content = "\n".join(content_lines)
+
+                # 发送通知
+                if hasattr(notification_engine, "add_notification"):
+                    notification_id = notification_engine.add_notification(
+                        notification_type="auto_remediation",
+                        content=content,
+                        priority=5 if risk_level == "critical" else 4,
+                        metadata={
+                            "risk_level": risk_level,
+                            "issues_count": len(issues),
+                            "actions_count": len(result["actions_taken"]),
+                            "source": "decision_orchestrator_auto_remediation"
+                        }
+                    )
+                    result["notifications_sent"].append({
+                        "notification_id": notification_id,
+                        "status": "sent"
+                    })
+
+            except Exception as e:
+                result["notifications_sent"].append({
+                    "status": "failed",
+                    "error": str(e)
+                })
+
+        # 完成
+        result["success"] = True
+        result["executed"] = True
+        result["message"] = f"自动修复完成，处理了 {len(issues)} 个问题"
+
+        # 保存执行历史
+        self._save_remediation_history(result)
+
+        return result
+
+    def _save_remediation_history(self, result: Dict[str, Any]):
+        """保存修复历史"""
+        try:
+            os.makedirs("runtime/state", exist_ok=True)
+            output_file = "runtime/state/auto_remediation_history.json"
+            history = []
+
+            if os.path.exists(output_file):
+                with open(output_file, "r", encoding="utf-8") as f:
+                    history = json.load(f)
+
+            history.append({
+                "timestamp": result["timestamp"],
+                "success": result["success"],
+                "executed": result["executed"],
+                "prediction": result.get("prediction", {}).get("risk_level"),
+                "actions_count": len(result.get("actions_taken", []))
+            })
+            # 保留最近20条记录
+            history = history[-20:]
+
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(history, f, ensure_ascii=False, indent=2)
+
+        except Exception as e:
+            print(f"[DecisionOrchestrator] 保存修复历史失败: {e}")
+
 
 # 单元测试
 if __name__ == "__main__":

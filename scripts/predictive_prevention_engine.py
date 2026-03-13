@@ -25,14 +25,32 @@ from typing import Dict, List, Optional, Any
 # 路径处理
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+sys.path.insert(0, SCRIPT_DIR)  # 添加 scripts 目录
 sys.path.insert(0, PROJECT_ROOT)
 
-# 导入主动通知引擎
+# 导入主动通知引擎和决策编排中心
 try:
     from proactive_notification_engine import ProactiveNotificationEngine
     NOTIFICATION_ENGINE_AVAILABLE = True
 except ImportError:
     NOTIFICATION_ENGINE_AVAILABLE = False
+
+try:
+    # 动态导入决策编排中心
+    from importlib.util import spec_from_file_location, module_from_spec
+    decision_file = os.path.join(SCRIPT_DIR, "decision_orchestrator.py")
+    if os.path.exists(decision_file):
+        spec = spec_from_file_location("decision_orchestrator", decision_file)
+        if spec and spec.loader:
+            decision_module = module_from_spec(spec)
+            sys.modules['decision_orchestrator'] = decision_module
+            spec.loader.exec_module(decision_module)
+            DecisionOrchestrator = decision_module.DecisionOrchestrator
+            DECISION_ORCHESTRATOR_AVAILABLE = True
+    else:
+        DECISION_ORCHESTRATOR_AVAILABLE = False
+except Exception as e:
+    DECISION_ORCHESTRATOR_AVAILABLE = False
 
 
 class PredictivePreventionEngine:
@@ -558,6 +576,80 @@ class PredictivePreventionEngine:
 
         return result
 
+    def auto_trigger_decision(self, auto_execute: bool = False) -> Dict[str, Any]:
+        """自动触发决策编排中心
+
+        当检测到高风险问题时，自动触发决策编排中心进行分析和修复决策。
+        这是「预测→决策→执行→通知」自动化闭环的关键环节。
+
+        Args:
+            auto_execute: 是否自动执行修复（需要决策编排中心支持）
+
+        Returns:
+            触发决策编排的结果
+        """
+        result = {
+            "success": False,
+            "triggered": False,
+            "decision_result": None,
+            "message": ""
+        }
+
+        # 先进行系统扫描
+        scan_result = self.scan_and_predict()
+
+        # 检查是否需要触发决策
+        if scan_result["risk_level"] not in ["critical", "high"]:
+            result["message"] = "系统风险等级低，无需触发决策编排"
+            return result
+
+        if not DECISION_ORCHESTRATOR_AVAILABLE:
+            result["message"] = "决策编排中心不可用，仅发送预警通知"
+            # 降级为仅发送通知
+            notify_result = self.send_alert_notification(force=True)
+            result["notification_sent"] = notify_result.get("alert_sent", False)
+            return result
+
+        try:
+            # 创建决策编排中心实例
+            orchestrator = DecisionOrchestrator()
+
+            # 构建触发上下文
+            context = f"系统检测到{scan_result['risk_level']}风险，检测到{len(scan_result['detected_issues'])}个问题，需要诊断和修复"
+
+            # 调用决策编排中心
+            # 检查是否有自动化修复能力
+            if auto_execute and hasattr(orchestrator, 'execute_auto_remediation'):
+                decision_result = orchestrator.execute_auto_remediation(scan_result)
+            else:
+                # 仅获取预测服务（分析+建议）
+                decision_result = orchestrator.get_predictive_service()
+
+            result["success"] = True
+            result["triggered"] = True
+            result["decision_result"] = decision_result
+            result["risk_level"] = scan_result["risk_level"]
+            result["issues_count"] = len(scan_result["detected_issues"])
+            result["message"] = f"已触发决策编排中心，风险等级: {scan_result['risk_level']}"
+
+            # 同时发送预警通知
+            notify_result = self.send_alert_notification(force=True)
+            result["notification_sent"] = notify_result.get("alert_sent", False)
+
+        except Exception as e:
+            result["message"] = f"触发决策编排失败: {str(e)}"
+
+        # 保存触发历史
+        self.state["alerts"].append({
+            "timestamp": datetime.now().isoformat(),
+            "triggered": result["triggered"],
+            "risk_level": scan_result.get("risk_level"),
+            "auto_execute": auto_execute
+        })
+        self._save_state()
+
+        return result
+
 
 def main():
     """主函数"""
@@ -585,6 +677,12 @@ def main():
             # 发送预警通知
             force = len(sys.argv) > 2 and sys.argv[2].lower() in ["--force", "-f", "force"]
             result = engine.send_alert_notification(force=force)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+
+        elif command in ["auto", "自动", "auto_trigger", "自动触发"]:
+            # 自动触发决策编排
+            auto_execute = len(sys.argv) > 2 and sys.argv[2].lower() in ["--auto", "-a", "auto", "execute"]
+            result = engine.auto_trigger_decision(auto_execute=auto_execute)
             print(json.dumps(result, ensure_ascii=False, indent=2))
 
         else:

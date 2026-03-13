@@ -1609,18 +1609,32 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
-    # 主动预测与预防引擎
-    elif "预测与预防" in intent or "主动预防" in intent or "预防" in intent or "predictive" in intent.lower() or "prevention" in intent.lower() or "预警" in intent or "发送预警" in intent or "预警通知" in intent:
-        print(f"[主动预测与预防引擎] 正在分析系统状态并预测潜在问题...", file=sys.stderr)
+    # 主动预测与预防引擎 + 自动闭环
+    elif "预测与预防" in intent or "主动预防" in intent or "预防" in intent or "predictive" in intent.lower() or "prevention" in intent.lower() or "预警" in intent or "发送预警" in intent or "预警通知" in intent or "自动触发" in intent or "自动闭环" in intent or "自动修复" in intent or "auto" in intent.lower():
+        # 判断是否是自动触发/闭环
+        is_auto = "自动触发" in intent or "自动闭环" in intent or "自动修复" in intent or "auto" in intent.lower()
+
+        if is_auto:
+            print(f"[自动闭环引擎] 正在执行预测→决策→执行→通知的完整自动化服务...", file=sys.stderr)
+        else:
+            print(f"[主动预测与预防引擎] 正在分析系统状态并预测潜在问题...", file=sys.stderr)
+
         script_path = os.path.join(SCRIPTS, "predictive_prevention_engine.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
         # 过滤掉意图关键词
-        filtered_args = [arg for arg in cmd_args if arg not in ["预测与预防", "主动预防", "预防", "predictive", "prevention", "预警", "发送预警", "预警通知"]]
-        # 如果用户要求发送预警通知，使用 notify 命令
-        if "发送预警" in intent or "预警通知" in intent:
+        filtered_args = [arg for arg in cmd_args if arg not in ["预测与预防", "主动预防", "预防", "predictive", "prevention", "预警", "发送预警", "预警通知", "自动触发", "自动闭环", "自动修复", "auto"]]
+
+        # 根据意图类型选择命令
+        if is_auto:
+            # 自动触发使用 auto 命令
+            if not filtered_args:
+                filtered_args = ["auto"]
+            else:
+                filtered_args = ["auto"] + filtered_args
+        elif "发送预警" in intent or "预警通知" in intent:
             filtered_args = ["notify"] + filtered_args
-        if not filtered_args:
+        elif not filtered_args:
             filtered_args = ["report"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
