@@ -2248,6 +2248,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能引擎组合实时监控与自适应优化引擎（round 208）
+    elif "引擎实时监控" in intent or "引擎组合优化" in intent or "实时优化" in intent or "engine realtime" in intent.lower() or "engine monitor" in intent.lower() or "组合分析" in intent or "engine combo" in intent.lower() or "引擎自适应" in intent:
+        print(f"[智能引擎组合实时监控与自适应优化引擎] 正在分析引擎组合并生成优化建议...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "engine_realtime_optimizer.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["引擎实时监控", "引擎组合优化", "实时优化", "engine realtime", "engine monitor", "组合分析", "engine combo", "引擎自适应"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能引擎能力组合自动发现与优化引擎（round 174）
     elif "引擎能力发现" in intent or "能力组合" in intent or "创新组合" in intent or "engine capability" in intent.lower() or "组合发现" in intent or "工作流建议" in intent:
         print(f"[智能引擎能力组合自动发现与优化引擎] 正在分析引擎能力组合...", file=sys.stderr)
