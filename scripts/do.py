@@ -4077,6 +4077,32 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景智能服务融合引擎 (Round 206)
+    elif "服务融合" in intent or "智能服务" in intent or "需求预测" in intent or "完整服务" in intent or "服务闭环" in intent or "service fusion" in intent.lower() or "预测需求" in intent:
+        print(f"[智能全场景智能服务融合引擎] 正在处理智能服务请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "intelligent_service_fusion_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "预测" in intent or "predict" in intent.lower():
+            action = "predict"
+        elif "服务" in intent or "serve" in intent.lower() or "帮我" in intent or "完成" in intent:
+            action = "serve"
+        elif "分析" in intent or "analyze" in intent.lower() or "模式" in intent:
+            action = "analyze"
+        # 过滤掉意图关键词
+        filter_words = ["服务融合", "智能服务", "需求预测", "完整服务", "服务闭环", "service fusion", "预测需求", "预测", "分析", "模式"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能系统自检与健康报告引擎 (Round 203) - 放在 system_health_monitor 之前
     elif "健康检查" in intent or "健康报告" in intent or "系统自检" in intent or "health check" in intent.lower() or "health report" in intent.lower() or "系统诊断" in intent:
         print(f"[智能系统自检与健康报告引擎] 正在运行健康检查...", file=sys.stderr)
