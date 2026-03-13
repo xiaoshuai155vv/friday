@@ -9,7 +9,7 @@
   ],
   "steps": [
     {
-      "do": "截图",
+      "do": "screenshot",
       "description": "截图当前桌面或文件资源管理器"
     },
     {
@@ -23,22 +23,22 @@
       "prompt": "请根据上下文或用户意图，识别用户想要执行的具体批量操作类型：\n1. 批量重命名\n2. 批量复制\n3. 批量移动\n4. 批量删除\n5. 其他操作\n\n如果用户没有明确说明，请询问用户具体需求。"
     },
     {
-      "do": "打开文件管理器",
+      "do": "launch_explorer",
       "path": "{{target_directory}}",
       "description": "打开目标文件夹"
     },
     {
-      "do": "窗口最大化",
+      "do": "maximize",
       "title": "文件资源管理器",
       "description": "最大化文件资源管理器窗口"
     },
     {
-      "do": "等待",
+      "do": "wait",
       "seconds": 1,
       "description": "等待文件夹加载完成"
     },
     {
-      "do": "截图",
+      "do": "screenshot",
       "description": "截图文件列表"
     },
     {

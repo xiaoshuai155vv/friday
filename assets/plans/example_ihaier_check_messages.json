@@ -1,8 +1,37 @@
-[
-  {"do": "comment", "comment": "检查 ihaier 是否有人找我：激活 → 最大化 → 截图+vision，避免背景干扰"},
-  {"do": "run", "script": "window_tool", "args": ["activate", "办公平台"]},
-  {"do": "run", "script": "window_tool", "args": ["maximize", "办公平台"]},
-  {"do": "wait", "sec": 1.2},
-  {"do": "screenshot", "path": "runtime/screenshots/ihaier_check.bmp"},
-  {"do": "vision", "image": "runtime/screenshots/ihaier_check.bmp", "question": "图中是电脑桌面，打开的 ihaier 应用，消息界面。输出：左侧「消息」旁红数字；中间列表带红数字或加粗的会话名及未读数。若无未读则输出「未发现有人找我」。"}
-]
+{
+  "steps": [
+    {
+      "do": "comment",
+      "comment": "检查 ihaier 是否有人找我：激活 → 最大化 → 截图+vision，避免背景干扰"
+    },
+    {
+      "do": "run",
+      "script": "window_tool",
+      "args": [
+        "activate",
+        "办公平台"
+      ]
+    },
+    {
+      "do": "run",
+      "script": "window_tool",
+      "args": [
+        "maximize",
+        "办公平台"
+      ]
+    },
+    {
+      "do": "wait",
+      "sec": 1.2
+    },
+    {
+      "do": "screenshot",
+      "path": "runtime/screenshots/ihaier_check.bmp"
+    },
+    {
+      "do": "vision",
+      "image": "runtime/screenshots/ihaier_check.bmp",
+      "question": "图中是电脑桌面，打开的 ihaier 应用，消息界面。输出：左侧「消息」旁红数字；中间列表带红数字或加粗的会话名及未读数。若无未读则输出「未发现有人找我」。"
+    }
+  ]
+}

@@ -1889,6 +1889,21 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能场景计划自动修复引擎
+    elif "场景计划自动修复" in intent or "自动修复场景计划" in intent or "scene plan repair" in intent.lower() or "修复场景计划" in intent or "计划自动修复" in intent:
+        print(f"[智能场景计划自动修复引擎] 正在自动修复场景计划...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "scene_plan_auto_repair_engine.py")
+        cmd_args = []
+        if "--dry-run" in sys.argv or "试运行" in intent or "模拟" in intent:
+            cmd_args.append("--dry-run")
+        if "--full" in sys.argv or "全部" in intent or "完整" in intent:
+            cmd_args.append("--full")
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 自动执行
     elif "自动执行推荐" in intent or "自动执行" in intent or "auto execute" in intent.lower() or "auto run" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行自动推荐...", file=sys.stderr)

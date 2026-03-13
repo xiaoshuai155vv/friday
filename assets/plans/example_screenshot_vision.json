@@ -1,5 +1,17 @@
-[
-  {"do": "screenshot", "path": "runtime/screenshots/example_capture.bmp"},
-  {"do": "wait", "sec": 0.5},
-  {"do": "vision", "image": "runtime/screenshots/example_capture.bmp", "question": "简要描述画面内容，以及如有可点击的按钮或输入框，说明其大致位置（如左上、中央）。"}
-]
+{
+  "steps": [
+    {
+      "do": "screenshot",
+      "path": "runtime/screenshots/example_capture.bmp"
+    },
+    {
+      "do": "wait",
+      "sec": 0.5
+    },
+    {
+      "do": "vision",
+      "image": "runtime/screenshots/example_capture.bmp",
+      "question": "简要描述画面内容，以及如有可点击的按钮或输入框，说明其大致位置（如左上、中央）。"
+    }
+  ]
+}

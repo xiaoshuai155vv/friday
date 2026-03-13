@@ -1,11 +1,16 @@
 {
   "name": "read_news.json",
   "description": "阅读新闻自动化计划",
-  "triggers": ["看新闻", "读新闻", "浏览新闻"],
+  "triggers": [
+    "看新闻",
+    "读新闻",
+    "浏览新闻"
+  ],
   "steps": [
     {
-      "do": "打开浏览器",
-      "url": "https://news.baidu.com"
+      "do": "launch_browser",
+      "url": "https://news.baidu.com",
+      "description": ""
     },
     {
       "do": "wait",
@@ -31,7 +36,8 @@
     },
     {
       "do": "vision_coords",
-      "query": "点击第一条新闻标题"
+      "query": "点击第一条新闻标题",
+      "description": ""
     },
     {
       "do": "click"

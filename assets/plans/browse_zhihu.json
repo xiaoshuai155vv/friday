@@ -1,11 +1,16 @@
 {
   "name": "browse_zhihu.json",
   "description": "刷知乎自动化计划",
-  "triggers": ["刷知乎", "浏览知乎", "看知乎"],
+  "triggers": [
+    "刷知乎",
+    "浏览知乎",
+    "看知乎"
+  ],
   "steps": [
     {
-      "do": "打开浏览器",
-      "url": "https://www.zhihu.com"
+      "do": "launch_browser",
+      "url": "https://www.zhihu.com",
+      "description": ""
     },
     {
       "do": "wait",
@@ -31,7 +36,8 @@
     },
     {
       "do": "vision_coords",
-      "query": "点击第一篇推荐内容"
+      "query": "点击第一篇推荐内容",
+      "description": ""
     },
     {
       "do": "click"

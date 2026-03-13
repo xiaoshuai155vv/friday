@@ -1,23 +1,126 @@
-[
-  {"do": "run", "script": "window_tool", "args": ["activate", "办公平台"]},
-  {"do": "run", "script": "window_tool", "args": ["maximize", "办公平台"]},
-  {"do": "wait", "sec": 1},
-  {"do": "comment", "comment": "搜索并进入周小帅会话"},
-  {"do": "run", "script": "keyboard_tool", "args": ["shortcut", "ctrl+k"]},
-  {"do": "wait", "sec": 0.8},
-  {"do": "run", "script": "keyboard_tool", "args": ["type", "周小帅"]},
-  {"do": "wait", "sec": 1},
-  {"do": "screenshot", "path": "runtime/screenshots/search_result.bmp"},
-  {"do": "vision_coords", "image": "runtime/screenshots/search_result.bmp", "question": "这是iHaier搜索界面，输出第一个结果的坐标，格式 x y", "normalized": true},
-  {"do": "run", "script": "click_from_vision_or_key", "args": ["13", "0", "0"]},
-  {"do": "wait", "sec": 1.5},
-  {"do": "comment", "comment": "已进入周小帅会话，点击输入框并粘贴"},
-  {"do": "screenshot", "path": "runtime/screenshots/input_box.bmp"},
-  {"do": "vision_coords", "image": "runtime/screenshots/input_box.bmp", "question": "这是iHaier聊天界面，输出底部消息输入框的中心坐标，格式 x y", "normalized": true},
-  {"do": "run", "script": "click_from_vision_or_key", "args": ["13", "0", "0"]},
-  {"do": "wait", "sec": 0.5},
-  {"do": "comment", "comment": "使用粘贴发送消息，使用 Ctrl+V"},
-  {"do": "run", "script": "keyboard_tool", "args": ["shortcut", "ctrl+v"]},
-  {"do": "wait", "sec": 0.5},
-  {"do": "run", "script": "keyboard_tool", "args": ["key", "13"]}
-]
+{
+  "steps": [
+    {
+      "do": "run",
+      "script": "window_tool",
+      "args": [
+        "activate",
+        "办公平台"
+      ]
+    },
+    {
+      "do": "run",
+      "script": "window_tool",
+      "args": [
+        "maximize",
+        "办公平台"
+      ]
+    },
+    {
+      "do": "wait",
+      "sec": 1
+    },
+    {
+      "do": "comment",
+      "comment": "搜索并进入周小帅会话"
+    },
+    {
+      "do": "run",
+      "script": "keyboard_tool",
+      "args": [
+        "shortcut",
+        "ctrl+k"
+      ]
+    },
+    {
+      "do": "wait",
+      "sec": 0.8
+    },
+    {
+      "do": "run",
+      "script": "keyboard_tool",
+      "args": [
+        "type",
+        "周小帅"
+      ]
+    },
+    {
+      "do": "wait",
+      "sec": 1
+    },
+    {
+      "do": "screenshot",
+      "path": "runtime/screenshots/search_result.bmp"
+    },
+    {
+      "do": "vision_coords",
+      "image": "runtime/screenshots/search_result.bmp",
+      "question": "这是iHaier搜索界面，输出第一个结果的坐标，格式 x y",
+      "normalized": true
+    },
+    {
+      "do": "run",
+      "script": "click_from_vision_or_key",
+      "args": [
+        "13",
+        "0",
+        "0"
+      ]
+    },
+    {
+      "do": "wait",
+      "sec": 1.5
+    },
+    {
+      "do": "comment",
+      "comment": "已进入周小帅会话，点击输入框并粘贴"
+    },
+    {
+      "do": "screenshot",
+      "path": "runtime/screenshots/input_box.bmp"
+    },
+    {
+      "do": "vision_coords",
+      "image": "runtime/screenshots/input_box.bmp",
+      "question": "这是iHaier聊天界面，输出底部消息输入框的中心坐标，格式 x y",
+      "normalized": true
+    },
+    {
+      "do": "run",
+      "script": "click_from_vision_or_key",
+      "args": [
+        "13",
+        "0",
+        "0"
+      ]
+    },
+    {
+      "do": "wait",
+      "sec": 0.5
+    },
+    {
+      "do": "comment",
+      "comment": "使用粘贴发送消息，使用 Ctrl+V"
+    },
+    {
+      "do": "run",
+      "script": "keyboard_tool",
+      "args": [
+        "shortcut",
+        "ctrl+v"
+      ]
+    },
+    {
+      "do": "wait",
+      "sec": 0.5
+    },
+    {
+      "do": "run",
+      "script": "keyboard_tool",
+      "args": [
+        "key",
+        "13"
+      ]
+    }
+  ]
+}
