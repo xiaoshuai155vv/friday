@@ -2,19 +2,20 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/operation_recorder.py, scripts/do.py
+scripts/realtime_guidance_engine.py, scripts/do.py
 
-## 2026-03-13 round 168
-- **current_goal**：智能操作演示与回放引擎 - 让系统能够记录用户操作序列，智能转换为可复用的演示脚本或自动化计划
+## 2026-03-13 round 169
+- **current_goal**：智能实时操作指导引擎 - 让系统实时观察用户操作、识别动作、预测意图并提供智能辅助
 - **做了什么**：
-  1. 创建 operation_recorder.py 模块，实现智能操作演示与回放引擎功能
-  2. 实现操作录制功能（start/stop 状态管理）
-  3. 实现多种操作类型识别（click、type、key、activate、maximize、scroll、screenshot）
-  4. 实现操作序列到 run_plan JSON 的智能转换（convert 命令）
-  5. 实现操作回放功能（play 命令）
-  6. 实现演示脚本生成功能（demo 命令，输出 markdown 格式操作步骤）
-  7. 在 do.py 中添加「录制操作」「回放操作」「操作演示」「做个教程」等关键词触发支持
-  8. 基线验证通过（5/6，剪贴板远程限制为已知问题）
-  9. 本轮针对性验证通过：operation_recorder.py 的 status/start/help 命令均可正常工作
+  1. 创建 realtime_guidance_engine.py 模块，实现智能实时操作指导引擎功能
+  2. 实现窗口信息获取功能（GetForegroundWindow API）
+  3. 实现操作类型识别（file_browse、web_browse、chat、document_edit 等）
+  4. 实现意图预测功能（基于历史操作序列）
+  5. 实现智能建议生成（根据操作类型和上下文）
+  6. 实现操作历史记录和上下文管理
+  7. 支持守护进程模式持续监控
+  8. 在 do.py 中添加「实时指导」「操作指导」「智能辅助」等关键词触发支持
+  9. 基线验证通过（5/6，剪贴板远程限制为已知问题）
+  10. 本轮针对性验证通过：realtime_guidance_engine.py 的 status/suggestions/context 命令均可正常工作
 - **是否完成**：已完成
-- **下一轮建议**：可增强实时录制能力（守护进程模式持续监听）；可添加操作编辑功能；可实现操作分类和标签管理
+- **下一轮建议**：可增强与 vision 的集成实现更精确的界面元素识别；可添加实时通知功能；可实现操作预测后的自动执行

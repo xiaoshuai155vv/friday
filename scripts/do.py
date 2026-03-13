@@ -2332,6 +2332,38 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能实时操作指导引擎（round 169）
+    elif "实时指导" in intent or "操作指导" in intent or "智能辅助" in intent or "realtime guidance" in intent.lower() or "操作观察" in intent or "实时监控操作" in intent:
+        print(f"[智能实时操作指导引擎] 正在处理请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "realtime_guidance_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["analyze"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["实时指导", "操作指导", "智能辅助", "realtime guidance", "操作观察", "实时监控操作"]]
+        if not filtered_args:
+            # 根据意图确定默认命令
+            if "状态" in intent or "status" in intent.lower():
+                filtered_args = ["status"]
+            elif "分析" in intent or "analyze" in intent.lower():
+                filtered_args = ["analyze"]
+            elif "开始监控" in intent or "启动监控" in intent or "start" in intent.lower():
+                filtered_args = ["start"]
+            elif "停止监控" in intent or "stop" in intent.lower():
+                filtered_args = ["stop"]
+            elif "建议" in intent or "suggestion" in intent.lower():
+                filtered_args = ["suggestions"]
+            elif "上下文" in intent or "context" in intent.lower():
+                filtered_args = ["context"]
+            elif "清除" in intent or "clear" in intent.lower():
+                filtered_args = ["clear"]
+            else:
+                filtered_args = ["analyze"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能决策编排中心 + 基于预测的主动服务
     elif "决策" in intent or "编排" in intent or "协同" in intent or "最佳方案" in intent or "智能调度" in intent or "multi-engine" in intent.lower() or "decision" in intent.lower() or "orchestrate" in intent.lower() or "协调" in intent or "预测服务" in intent or "主动服务" in intent or "proactive" in intent.lower() or "predictive-service" in intent.lower():
         # 判断是否是主动预测服务
