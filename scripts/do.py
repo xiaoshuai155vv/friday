@@ -1923,6 +1923,50 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能系统安全监控 - 状态查询
+    elif "安全监控" in intent or "系统安全" in intent or "security monitor" in intent.lower() or "安全状态" in intent:
+        print(f"[智能系统安全监控] 正在获取安全状态...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "security_monitor_engine.py")
+        cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能系统安全监控 - 安全扫描
+    elif "安全扫描" in intent or "scan security" in intent.lower() or "扫描安全" in intent or "安全检测" in intent:
+        print(f"[智能系统安全监控] 正在执行安全扫描...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "security_monitor_engine.py")
+        cmd_args = ["scan"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能系统安全监控 - 告警查看
+    elif "安全告警" in intent or "security alert" in intent.lower() or "告警" in intent or "安全警报" in intent:
+        print(f"[智能系统安全监控] 正在获取安全告警...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "security_monitor_engine.py")
+        cmd_args = ["alerts"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能系统安全监控 - 持续监控
+    elif "启动安全监控" in intent or "start security monitor" in intent.lower() or "开启安全监控" in intent:
+        print(f"[智能系统安全监控] 正在启动持续监控...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "security_monitor_engine.py")
+        cmd_args = ["monitor"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能创新发现引擎 - 状态查询
     elif "创新发现" in intent or "创新推荐" in intent or "发现新功能" in intent or "创新" in intent and ("发现" in intent or "推荐" in intent) or "innovation" in intent.lower() or "discover innovation" in intent.lower() or "new capability" in intent.lower():
         print(f"[智能创新发现引擎] 正在分析创新机会...", file=sys.stderr)
