@@ -1161,6 +1161,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["list", "recommend", "execute", "stats", "analyze", "search", "help"]):
             cmd = ["list"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "engine_combination_recommender.py")] + cmd, cwd=PROJECT)
+    # 智能系统自省与元认知引擎
+    elif "系统自省" in intent or "自我分析" in intent or "元认知" in intent or "进化反思" in intent or "self_reflection" in intent.lower() or "metacognition" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["full"]
+        if not cmd or (cmd and cmd[0] not in ["full", "health", "bottlenecks", "strategy", "recommendations", "--help", "-h", "help"]):
+            cmd = ["full"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "system_self_reflection_engine.py")] + cmd, cwd=PROJECT)
     # 智能主动预测与洞察引擎
     elif "主动预测" in intent or "洞察" in intent or "前瞻" in intent or "主动建议" in intent or "预测需求" in intent or "proactive" in intent.lower() or "insight" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
