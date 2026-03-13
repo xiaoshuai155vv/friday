@@ -1923,6 +1923,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能引擎能力组合自动发现与优化引擎（round 174）
+    elif "引擎能力发现" in intent or "能力组合" in intent or "创新组合" in intent or "engine capability" in intent.lower() or "组合发现" in intent or "工作流建议" in intent:
+        print(f"[智能引擎能力组合自动发现与优化引擎] 正在分析引擎能力组合...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "engine_capability_discovery.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["run"]
+        filtered_args = [arg for arg in cmd_args if arg not in ["引擎能力发现", "能力组合", "创新组合", "engine capability", "组合发现", "工作流建议"]]
+        if not filtered_args:
+            filtered_args = ["run"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能系统安全监控 - 状态查询
     elif "安全监控" in intent or "系统安全" in intent or "security monitor" in intent.lower() or "安全状态" in intent:
         print(f"[智能系统安全监控] 正在获取安全状态...", file=sys.stderr)
