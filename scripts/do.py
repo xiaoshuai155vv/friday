@@ -3447,6 +3447,36 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化协同增强引擎（round 214）
+    elif "进化协同" in intent or "协同增强" in intent or "引擎神经网络" in intent or "分布式进化" in intent or "collaboration enhance" in intent.lower() or "evolution collaboration" in intent.lower():
+        print(f"[智能进化协同增强引擎] 正在处理请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_collaboration_enhancer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化协同", "协同增强", "引擎神经网络", "分布式进化", "collaboration enhance", "evolution collaboration"]]
+        if not filtered_args:
+            # 根据意图确定默认命令
+            if "状态" in intent or "status" in intent.lower():
+                filtered_args = ["status"]
+            elif "分析" in intent or "analyze" in intent.lower():
+                filtered_args = ["analyze"]
+            elif "推荐" in intent or "recommend" in intent.lower():
+                filtered_args = ["recommend", "--task-type", "general"]
+            elif "关系" in intent or "relationships" in intent.lower():
+                filtered_args = ["relationships"]
+            elif "创建" in intent or "create" in intent.lower():
+                filtered_args = ["create", "--task-id", "test_task", "--engines", "evolution_command_tower,evolution_strategy_optimizer", "--task-type", "test"]
+            elif "事件" in intent or "event" in intent.lower():
+                filtered_args = ["trigger", "--event-type", "test_event", "--source", "test", "--event-data", "{}"]
+            else:
+                filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 进化日志分析与可视化
     elif "进化日志" in intent or "日志分析" in intent or "进化分析" in intent or "evolution log" in intent.lower() or "evolution analysis" in intent.lower():
         print(f"[进化日志分析] 正在分析进化日志...", file=sys.stderr)
