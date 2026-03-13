@@ -1223,6 +1223,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "record", "predict", "evolve", "suggest", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "behavior_sequence_prediction_engine.py")] + cmd, cwd=PROJECT)
+    # 智能意图深度推理引擎
+    elif "意图深度" in intent or "深层意图" in intent or "意图推理" in intent or "intent_reasoning" in intent.lower() or "deep_intent" in intent.lower() or "分析意图" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "analyze", "predict", "batch", "insights", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "intent_deep_reasoning_engine.py")] + cmd, cwd=PROJECT)
     # 番茄钟功能
     elif "番茄钟" in intent or "pomodoro" in intent.lower() or "专注" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else []
