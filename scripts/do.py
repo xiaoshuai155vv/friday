@@ -683,6 +683,29 @@ def main():
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 检查是否请求智能服务联动中心引擎
+    service_linkage_keywords = ["服务联动", "联动中心", "联动状态", "查看联动", "自动触发", "触发规则", "联动执行", "service linkage", "linkage center", "联动"]
+    for keyword in service_linkage_keywords:
+        if keyword in " ".join(sys.argv[1:]):
+            print(f"[智能服务联动中心引擎] 检测到请求: {keyword}", file=sys.stderr)
+            script_path = os.path.join(SCRIPTS, "service_linkage_center.py")
+            cmd = [sys.executable, script_path]
+            # 解析子命令
+            if "status" in " ".join(sys.argv[1:]) or "状态" in " ".join(sys.argv[1:]):
+                cmd.append("status")
+            elif "history" in " ".join(sys.argv[1:]) or "历史" in " ".join(sys.argv[1:]):
+                cmd.append("history")
+            elif "clear" in " ".join(sys.argv[1:]) or "清空" in " ".join(sys.argv[1:]):
+                cmd.append("clear")
+            else:
+                cmd.append("status")  # 默认输出状态
+            result = subprocess.run(cmd, cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 检查是否请求状态仪表板
     dashboard_keywords = ["状态面板", "系统状态", "进化状态", "dashboard", "仪表板", "状态概览"]
     for keyword in dashboard_keywords:
