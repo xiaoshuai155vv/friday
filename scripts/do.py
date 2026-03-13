@@ -2336,6 +2336,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化预测与主动规划引擎（round 217）- 放在其他"主动规划"之前
+    elif "进化预测" in intent or "预测进化" in intent or "evolution prediction" in intent.lower() or "进化规划" in intent or "下一轮进化" in intent or ("进化" in intent and "规划" in intent):
+        print(f"[智能进化预测与主动规划引擎] 正在分析进化历史、检测模式、预测下一轮进化方向并生成主动规划...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_prediction_planner.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化预测", "预测进化", "evolution prediction", "进化规划", "下一轮进化"]]
+        if not filtered_args:
+            filtered_args = ["plan"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能引擎组合实时监控与自适应优化引擎（round 208）
     elif "引擎实时监控" in intent or "引擎组合优化" in intent or "实时优化" in intent or "engine realtime" in intent.lower() or "engine monitor" in intent.lower() or "组合分析" in intent or "engine combo" in intent.lower() or "引擎自适应" in intent:
         print(f"[智能引擎组合实时监控与自适应优化引擎] 正在分析引擎组合并生成优化建议...", file=sys.stderr)
