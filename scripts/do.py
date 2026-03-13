@@ -2379,6 +2379,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能错误模式学习与主动防御引擎
+    elif "错误模式" in intent or "主动防御" in intent or "防御" in intent or "error_pattern" in intent.lower() or "defense" in intent.lower() or "错误学习" in intent or "模式学习" in intent:
+        print(f"[智能错误模式学习与主动防御引擎] 正在分析错误模式并制定防御策略...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "error_pattern_learning_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["错误模式", "主动防御", "防御", "error_pattern", "defense", "错误学习", "模式学习"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能操作安全卫士引擎
     elif "安全" in intent or "安全卫士" in intent or "操作安全" in intent or "危险操作" in intent or "safety" in intent.lower() or "guardian" in intent.lower():
         print(f"[智能操作安全卫士引擎] 正在分析操作安全性...", file=sys.stderr)
