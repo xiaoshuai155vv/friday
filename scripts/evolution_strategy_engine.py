@@ -41,22 +41,54 @@ class EvolutionStrategyEngine:
         # 进化策略输出路径
         self.strategy_file = self.state_dir / "evolution_strategy.json"
         self.strategy_history_file = self.state_dir / "evolution_strategy_history.json"
+        self.prediction_file = self.state_dir / "advanced_evolution_prediction_result.json"
+
+    def load_predictions(self) -> Dict[str, Any]:
+        """加载高级预测结果"""
+        if self.prediction_file.exists():
+            try:
+                with open(self.prediction_file, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception as e:
+                print(f"加载预测结果失败: {e}")
+        return {}
 
     def analyze(self) -> Dict[str, Any]:
         """分析历史进化数据和系统状态"""
+        # 加载预测结果
+        predictions = self.load_predictions()
+
         analysis = {
             "timestamp": datetime.now().isoformat(),
             "round_analysis": self._analyze_rounds(),
             "capability_analysis": self._analyze_capabilities(),
             "failure_analysis": self._analyze_failures(),
             "trend_analysis": self._analyze_trends(),
+            "prediction_analysis": self._analyze_predictions(predictions),
             "recommendations": []
         }
 
         # 生成推荐
-        analysis["recommendations"] = self._generate_recommendations(analysis)
+        analysis["recommendations"] = self._generate_recommendations(analysis, predictions)
 
         return analysis
+
+    def _analyze_predictions(self, predictions: Dict[str, Any]) -> Dict[str, Any]:
+        """分析预测结果"""
+        if not predictions:
+            return {"status": "no_predictions", "message": "无预测数据"}
+
+        pred_summary = predictions.get("summary", {})
+        pred_direction = pred_summary.get("recommended_primary_direction", {})
+
+        return {
+            "status": "integrated",
+            "recommended_direction": pred_direction.get("direction", "unknown"),
+            "recommended_description": pred_direction.get("description", ""),
+            "confidence": pred_direction.get("confidence", 0),
+            "reasoning": predictions.get("predictions", {}).get("next_direction", {}).get("reasoning", []),
+            "overall_confidence": pred_summary.get("overall_confidence", 0)
+        }
 
     def _analyze_rounds(self) -> Dict[str, Any]:
         """分析历史进化轮次"""
@@ -151,9 +183,24 @@ class EvolutionStrategyEngine:
             "activity_trend": "active" if len(recent_logs) > 20 else "slow"
         }
 
-    def _generate_recommendations(self, analysis: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _generate_recommendations(self, analysis: Dict[str, Any], predictions: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         """根据分析生成推荐"""
         recommendations = []
+
+        # 优先：基于预测分析的推荐
+        if predictions:
+            pred_summary = predictions.get("summary", {})
+            pred_direction = pred_summary.get("recommended_primary_direction", {})
+            if pred_direction:
+                recommendations.append({
+                    "priority": "high",
+                    "category": "prediction_based",
+                    "title": f"预测驱动: {pred_direction.get('direction', 'unknown')}",
+                    "description": pred_direction.get('description', ''),
+                    "confidence": pred_direction.get('confidence', 0),
+                    "reasoning": predictions.get("predictions", {}).get("next_direction", {}).get("reasoning", []),
+                    "source": "advanced_prediction"
+                })
 
         # 基于能力分析推荐
         if analysis["capability_analysis"].get("status") == "needs_expansion":
