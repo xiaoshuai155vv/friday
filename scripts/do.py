@@ -1143,6 +1143,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["track", "analyze", "optimize", "recommend", "stats"]):
             cmd = ["recommend"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "execution_enhancement_engine.py")] + cmd, cwd=PROJECT)
+    # 智能知识进化引擎
+    elif "知识进化" in intent or "知识更新" in intent or "知识提取" in intent or "knowledge" in intent.lower() or "knowledge_evolution" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "evolve", "insights", "update", "stats"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "knowledge_evolution_engine.py")] + cmd, cwd=PROJECT)
     # 番茄钟功能
     elif "番茄钟" in intent or "pomodoro" in intent.lower() or "专注" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else []
