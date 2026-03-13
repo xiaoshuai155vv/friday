@@ -1229,6 +1229,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "analyze", "predict", "batch", "insights", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "intent_deep_reasoning_engine.py")] + cmd, cwd=PROJECT)
+    # 智能跨引擎复杂任务规划引擎
+    elif "任务规划" in intent or "复杂任务" in intent or "任务拆分" in intent or "协同执行" in intent or "task_planner" in intent.lower() or "跨引擎" in intent or "多引擎" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else []
+        if not cmd or (cmd and cmd[0] not in ["plan", "execute", "status", "list", "history", "analyze", "help"]):
+            cmd = ["analyze", "帮我整理今天的工作成果"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "cross_engine_task_planner.py")] + cmd, cwd=PROJECT)
     # 番茄钟功能
     elif "番茄钟" in intent or "pomodoro" in intent.lower() or "专注" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else []
