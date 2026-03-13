@@ -2055,6 +2055,34 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能主动决策与行动引擎（round 146）- 放在决策编排中心之前以优先匹配
+    elif "主动决策" in intent or "主动行动" in intent or "主动思考" in intent or "proactive action" in intent.lower() or "主动扫描" in intent or "主动识别" in intent or "主动推荐" in intent:
+        print(f"[智能主动决策与行动引擎] 正在处理请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "proactive_decision_action_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["scan"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["主动决策", "主动行动", "主动思考", "proactive action", "主动扫描", "主动识别", "主动推荐"]]
+        if not filtered_args:
+            # 根据意图确定默认命令
+            if "状态" in intent or "status" in intent.lower():
+                filtered_args = ["status"]
+            elif "分析" in intent or "analyze" in intent.lower():
+                filtered_args = ["analyze"]
+            elif "扫描" in intent or "scan" in intent.lower():
+                filtered_args = ["scan"]
+            elif "启用" in intent or "enable" in intent.lower():
+                filtered_args = ["enable"]
+            elif "禁用" in intent or "disable" in intent.lower():
+                filtered_args = ["disable"]
+            else:
+                filtered_args = ["scan"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能决策编排中心 + 基于预测的主动服务
     elif "决策" in intent or "编排" in intent or "协同" in intent or "最佳方案" in intent or "智能调度" in intent or "multi-engine" in intent.lower() or "decision" in intent.lower() or "orchestrate" in intent.lower() or "协调" in intent or "预测服务" in intent or "主动服务" in intent or "proactive" in intent.lower() or "predictive-service" in intent.lower():
         # 判断是否是主动预测服务
