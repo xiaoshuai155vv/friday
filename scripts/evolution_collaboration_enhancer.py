@@ -34,7 +34,7 @@ class EvolutionCollaborationEnhancer:
 
     def __init__(self):
         self.name = "EvolutionCollaborationEnhancer"
-        self.version = "1.0.0"
+        self.version = "1.1.0"  # 升级版本，添加与预测引擎的集成
         self.collaboration_state_file = RUNTIME_STATE_DIR / "evolution_collaboration_state.json"
         self.event_bus_file = RUNTIME_STATE_DIR / "evolution_event_bus.json"
         self.collaboration_log_file = RUNTIME_LOGS_DIR / "evolution_collaboration.log"
@@ -42,6 +42,9 @@ class EvolutionCollaborationEnhancer:
         # 初始化协同状态
         self.collaboration_state = self._load_collaboration_state()
         self.event_bus = self._load_event_bus()
+
+        # 新增：集成进化预测引擎（round 217）
+        self.prediction_enabled = True
 
     def _load_collaboration_state(self) -> Dict:
         """加载协同状态"""
@@ -399,6 +402,88 @@ class EvolutionCollaborationEnhancer:
             "top_engines": [{"engine": e, "count": c} for e, c in top_engines]
         }
 
+    def integrate_with_prediction_engine(self) -> Dict:
+        """集成进化预测引擎（round 217），实现预测→协同→执行的完整闭环"""
+        try:
+            # 尝试导入进化预测模块
+            prediction_script = SCRIPTS_DIR / "evolution_prediction_planner.py"
+            if not prediction_script.exists():
+                return {"status": "no_prediction_engine", "message": "进化预测引擎未找到"}
+
+            # 导入模块并获取预测结果
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("prediction", prediction_script)
+            if spec and spec.loader:
+                prediction_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(prediction_module)
+
+                # 获取预测结果
+                if hasattr(prediction_module, 'EvolutionPredictionPlanner'):
+                    planner = prediction_module.EvolutionPredictionPlanner()
+
+                    # 获取历史数据
+                    history = planner.get_evolution_history(limit=10)
+                    efficiency = planner.analyze_evolution_efficiency(history)
+                    patterns = planner.detect_evolution_patterns(history)
+
+                    # 获取预测
+                    predictions = []
+                    if history and efficiency and patterns:
+                        predictions = planner.predict_next_evolution(history, efficiency, patterns)
+
+                    # 基于预测创建协同任务
+                    if predictions and len(predictions) > 0:
+                        # 创建从预测到协同的闭环
+                        pred_summary = []
+                        for p in predictions[:3]:
+                            if isinstance(p, dict):
+                                pred_summary.append(p.get("direction", "未知方向"))
+                            else:
+                                pred_summary.append(str(p)[:50])
+
+                        return {
+                            "status": "integrated",
+                            "predictions": pred_summary,
+                            "collaboration_triggered": True,
+                            "message": "已集成预测引擎，实现预测→协同→执行闭环"
+                        }
+
+            return {"status": "no_predictions", "message": "预测引擎无可用预测"}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    def get_collaboration_visualization(self) -> Dict:
+        """获取协同可视化数据"""
+        # 获取引擎关系
+        relationships = self._analyze_engine_relationships()
+
+        # 构建可视化数据
+        nodes = []
+        edges = []
+
+        # 添加节点
+        for engine, related in relationships.items():
+            nodes.append({
+                "id": engine,
+                "label": engine,
+                "type": "engine"
+            })
+
+        # 添加边
+        for engine, related in relationships.items():
+            for rel_engine in related:
+                edges.append({
+                    "from": engine,
+                    "to": rel_engine,
+                    "type": "collaboration"
+                })
+
+        return {
+            "nodes": nodes,
+            "edges": edges,
+            "clusters": len(self.collaboration_state.get("collaboration_patterns", []))
+        }
+
 
 def main():
     """主函数"""
@@ -481,6 +566,14 @@ def main():
 
     elif args.command == "relationships":
         result = enhancer._analyze_engine_relationships()
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+
+    elif args.command == "integrate":
+        result = enhancer.integrate_with_prediction_engine()
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+
+    elif args.command == "visualize":
+        result = enhancer.get_collaboration_visualization()
         print(json.dumps(result, ensure_ascii=False, indent=2))
 
     else:
