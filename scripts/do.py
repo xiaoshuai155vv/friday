@@ -1686,6 +1686,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能创新发现引擎 - 状态查询
+    elif "创新发现" in intent or "创新推荐" in intent or "发现新功能" in intent or "创新" in intent and ("发现" in intent or "推荐" in intent) or "innovation" in intent.lower() or "discover innovation" in intent.lower() or "new capability" in intent.lower():
+        print(f"[智能创新发现引擎] 正在分析创新机会...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "innovation_discovery_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["创新发现", "创新推荐", "发现新功能", "创新", "innovation", "discover", "innovation discover"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 执行指定推荐
     elif "执行推荐" in intent or "execute recommend" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行推荐...", file=sys.stderr)
