@@ -1757,6 +1757,26 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能服务闭环引擎 - 整合预测→决策→执行→反馈的完整自动化服务
+    elif "智能服务闭环" in intent or "服务闭环" in intent or "智能闭环" in intent or "service loop" in intent.lower() or "智能主动闭环" in intent or "跨引擎闭环" in intent:
+        print(f"[智能服务闭环引擎] 正在运行预测→决策→执行→反馈闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "intelligent_service_loop.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断是否自动执行
+        auto_execute = "自动" in intent or "auto" in intent.lower()
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["智能服务闭环", "服务闭环", "智能闭环", "service loop", "智能主动闭环", "跨引擎闭环"]]
+        if not filtered_args:
+            filtered_args = ["run"]
+            if auto_execute:
+                filtered_args.append("--auto")
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能情境感知引擎
     elif "情境感知" in intent or "环境感知" in intent or "当前状态" in intent or "主动推荐" in intent or "context awareness" in intent.lower() or "sense environment" in intent.lower() or "perceive" in intent.lower():
         print(f"[智能情境感知引擎] 正在感知当前环境...", file=sys.stderr)

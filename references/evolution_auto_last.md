@@ -2,17 +2,18 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/unified_recommender.py, scripts/decision_orchestrator.py, scripts/do.py, references/evolution_self_proposed.md
+scripts/intelligent_service_loop.py, scripts/do.py
 
-## 2026-03-13 round 116
-- **current_goal**：将统一推荐引擎与决策编排中心集成，实现基于推荐的自适应执行闭环
+## 2026-03-13 round 117
+- **current_goal**：增强跨引擎智能服务闭环 - 创建统一的智能主动服务入口，实现预测→决策→执行→反馈的完整自动化服务
 - **做了什么**：
-  1) 扩展 unified_recommender.py，添加 execute_recommendation() 方法，实现推荐→决策→执行的自动闭环
-  2) 添加 execute_auto() 方法，支持自动执行最高置信度的推荐
-  3) 集成决策编排中心(DecisionOrchestrator)，当推荐需要执行场景/工作流时，通过 orchestrate 方法处理
-  4) 在 do.py 中添加对「执行推荐」「自动执行推荐」「auto execute」等关键词支持
-  5) 添加推荐执行历史记录功能
-  6) 基线验证通过（5/6，剪贴板远程限制为已知问题）
-  7) 功能测试通过（recommend/auto 命令正常工作，决策编排中心成功集成）
+  1) 创建 intelligent_service_loop.py 模块，实现智能服务闭环引擎功能
+  2) 整合 predictive_prevention_engine（预测预防）、decision_orchestrator（决策编排）、unified_recommender（统一推荐）
+  3) 实现 run_service_loop() 方法，执行预测→决策→执行→反馈完整闭环
+  4) 实现 get_service_status()、submit_feedback()、get_recommendations()、auto_learning() 等功能
+  5) 提供 CLI 入口支持 run/status/recommend/feedback/learn 命令
+  6) 集成到 do.py，支持「智能服务闭环」「服务闭环」「智能闭环」等关键词触发
+  7) 基线验证通过（5/6，剪贴板远程限制为已知问题）
+  8) 功能测试通过（status/recommend/run 命令正常工作）
 - **是否完成**：已完成
-- **下一轮建议**：可以继续增强端到端智能服务能力，如添加推荐置信度阈值自动执行、根据用户反馈自动优化推荐等
+- **下一轮建议**：可以继续增强端到端智能服务能力，如添加更多引擎的深度集成、根据用户反馈自动优化推荐算法、实现跨会话的学习等
