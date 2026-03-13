@@ -70,6 +70,14 @@ DAEMON_REGISTRY = {
         "restart_on_failure": True,
         "check_interval": 300,  # 5分钟
     },
+    "health_assurance": {
+        "name": "health_assurance",
+        "description": "健康保障守护进程 - 在后台持续运行系统健康保障闭环（监控→预测→运维→自愈→反馈），自动执行优化和修复",
+        "script": "health_assurance_daemon.py",
+        "auto_start": False,
+        "restart_on_failure": True,
+        "check_interval": 300,  # 5分钟检查一次
+    },
 }
 
 

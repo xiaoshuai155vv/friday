@@ -2,18 +2,17 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/health_assurance_loop.py, scripts/do.py
+scripts/health_assurance_daemon.py, scripts/daemon_manager.py, scripts/do.py
 
-## 2026-03-13 round 162
-- **current_goal**：智能系统健康保障闭环引擎 - 将主动运维引擎、自愈引擎、预测预防引擎深度集成，形成监控→预测→运维→自愈→反馈的完整服务保障闭环
+## 2026-03-13 round 163
+- **current_goal**：增强守护进程健康保障服务 - 让健康保障闭环能够自动在后台持续运行
 - **做了什么**：
-  1. 创建 health_assurance_loop.py 模块，实现智能系统健康保障闭环引擎功能
-  2. 集成自愈引擎(SelfHealingEngine)、预测预防引擎(PredictivePreventionEngine)、主动运维引擎(ProactiveOperationsEngine)
-  3. 实现统一健康保障入口(get_status)、健康扫描(scan)、完整闭环(full_loop)、健康报告(report)
-  4. 实现监控→预测→运维→自愈→反馈的完整服务保障闭环
-  5. 集成到 do.py 支持健康保障、保障、服务闭环、系统保障等关键词触发
+  1. 创建 health_assurance_daemon.py 模块，实现健康保障守护进程功能
+  2. 支持守护进程模式持续运行（默认5分钟间隔）
+  3. 支持单次执行模式（--run-once）
+  4. 在 daemon_manager.py 中注册 health_assurance 守护进程
+  5. 更新 do.py 支持健康保障守护进程相关关键词触发
   6. 基线验证通过（5/6，剪贴板远程限制为已知问题）
-  7. 本轮针对性验证通过：status/scan/report 命令均正常工作
-  8. 系统当前状态：CPU 6.0%, 内存 62.9%, 磁盘 50.5%
+  7. 本轮针对性验证通过：守护进程列表、单次执行、health_assurance_loop均正常工作
 - **是否完成**：已完成
-- **下一轮建议**：可与 intelligent_service_loop 深度集成实现自动触发的健康保障服务；或实现守护进程模式持续监控系统健康
+- **下一轮建议**：可以增加更多守护进程到注册表（如 intelligent_service_loop 守护进程化），或增强守护进程间的联动能力

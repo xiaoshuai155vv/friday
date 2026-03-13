@@ -716,7 +716,7 @@ def main():
             # 尝试提取守护进程名称
             daemon_name = None
             argv_str = " ".join(sys.argv[1:])
-            for name in ["health_check", "evolution_loop"]:
+            for name in ["health_check", "evolution_loop", "health_assurance"]:
                 if name in argv_str:
                     daemon_name = name
                     break
@@ -2190,6 +2190,41 @@ def main():
     # 智能系统健康保障闭环引擎（round 162）- 集成主动运维、自愈、预测预防
     elif "健康保障" in intent or "服务闭环" in intent or "系统保障" in intent or "保障状态" in intent or "health assurance" in intent.lower() or "health loop" in intent.lower() or "assurance" in intent.lower() or "保障" in intent:
         print(f"[智能系统健康保障闭环引擎] 正在处理请求...", file=sys.stderr)
+
+        # 检查是否是守护进程相关请求
+        if "守护进程" in intent or "daemon" in intent.lower() or "后台" in intent or "持续" in intent or "自动运行" in intent:
+            # 启动健康保障守护进程
+            script_path = os.path.join(SCRIPTS, "daemon_manager.py")
+            cmd = ["start", "health_assurance"]
+            if "停止" in intent or "关闭" in intent:
+                cmd = ["stop", "health_assurance"]
+            elif "状态" in intent or "查看" in intent or "status" in intent.lower():
+                cmd = ["status", "health_assurance"]
+            elif "列表" in intent or "list" in intent.lower():
+                cmd = ["list"]
+            elif "启用" in intent or "enable" in intent.lower():
+                cmd = ["enable", "health_assurance"]
+            elif "禁用" in intent or "disable" in intent.lower():
+                cmd = ["disable", "health_assurance"]
+            elif "单次" in intent or "一次" in intent or "run-once" in intent.lower():
+                # 单次执行
+                script_path = os.path.join(SCRIPTS, "health_assurance_daemon.py")
+                cmd = ["--run-once"]
+                result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+                if result.stdout:
+                    print(result.stdout)
+                if result.returncode != 0 and result.stderr:
+                    print(result.stderr, file=sys.stderr)
+                sys.exit(0 if result.returncode == 0 else result.returncode)
+
+            result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
+
+        # 正常健康保障闭环引擎调用
         script_path = os.path.join(SCRIPTS, "health_assurance_loop.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
