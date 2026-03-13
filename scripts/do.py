@@ -1540,6 +1540,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化闭环自动集成执行引擎（round 243）
+    elif "进化自动集成" in intent or "集成优化" in intent or "闭环执行" in intent or "auto integrate" in intent.lower() or "集成执行" in intent or "进化闭环自动化" in intent:
+        print(f"[智能进化闭环自动集成执行引擎] 正在执行进化闭环自动集成...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_auto_integrated_executor.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd_args:
+            cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能决策可解释性增强器
     elif "解释决策" in intent or "为什么推荐" in intent or "执行解释" in intent or "决策解释" in intent or "explain" in intent.lower():
         print(f"[智能决策可解释性增强器] 正在解释决策原因...", file=sys.stderr)
