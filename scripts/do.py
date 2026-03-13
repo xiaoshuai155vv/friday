@@ -1529,6 +1529,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能工作流推荐与优化引擎
+    elif "工作流推荐" in intent or "智能推荐工作流" in intent or "workflow recommend" in intent.lower() or "工作流优化" in intent or "workflow optimize" in intent.lower() or "智能工作流" in intent or "推荐工作流" in intent:
+        print(f"[智能工作流推荐与优化引擎] 正在处理工作流推荐请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "workflow_smart_recommender.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["recommend"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["工作流推荐", "智能推荐工作流", "workflow recommend", "工作流优化", "workflow optimize", "智能工作流", "推荐工作流"]]
+        if not filtered_args:
+            filtered_args = ["recommend"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能学习与适应引擎
     elif "学习" in intent or "适应" in intent or "个性化" in intent or "learning" in intent.lower() or "adaptive" in intent.lower() or "personalize" in intent.lower() or "习惯" in intent or "分析习惯" in intent:
         print(f"[智能学习与适应引擎] 正在处理学习与适应请求...", file=sys.stderr)
