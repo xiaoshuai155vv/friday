@@ -2683,6 +2683,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自动化模式发现与场景生成引擎
+    elif "模式发现" in intent or "自动创建场景" in intent or "发现自动化" in intent or "场景推荐" in intent or "pattern discovery" in intent.lower() or "automation pattern" in intent.lower():
+        print(f"[智能自动化模式发现与场景生成引擎] 正在处理请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "automation_pattern_discovery.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["discover"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["模式发现", "自动创建场景", "发现自动化", "场景推荐", "pattern discovery", "automation pattern"]]
+        if not filtered_args:
+            filtered_args = ["discover"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 专注模式
     elif "专注模式" in intent or ("专注" in intent and "模式" in intent):
         if "开始" in intent or "启动" in intent or "开启" in intent:
