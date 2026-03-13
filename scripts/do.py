@@ -1367,6 +1367,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "predict", "analyze", "execute", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "active_service_loop_enhancer.py")] + cmd, cwd=PROJECT)
+    # 智能全自动化服务执行引擎
+    elif "全自动" in intent or "一键执行" in intent or "自动执行" in intent or "full_auto" in intent.lower() or "一键式" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "trigger", "history", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "full_auto_service_execution_engine.py")] + cmd, cwd=PROJECT)
     # 智能意图深度推理引擎
     elif "意图深度" in intent or "深层意图" in intent or "意图推理" in intent or "intent_reasoning" in intent.lower() or "deep_intent" in intent.lower() or "分析意图" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
