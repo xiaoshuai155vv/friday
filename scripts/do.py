@@ -1828,6 +1828,23 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自主学习与创新引擎
+    elif "自主学习" in intent or "主动进化" in intent or "系统自省" in intent or "自我优化" in intent or "autonomous" in intent.lower() or "self learning" in intent.lower() or "主动分析" in intent or "分析系统" in intent or "学习创新" in intent:
+        print(f"[智能自主学习与创新引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "autonomous_learning_innovation_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["自主学习", "主动进化", "系统自省", "自我优化", "autonomous", "self learning", "主动分析", "分析系统", "学习创新"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能长期记忆与主动规划引擎
     elif "长期记忆" in intent or "目标跟踪" in intent or "主动规划" in intent or "我的目标" in intent or "待办" in intent or "long term memory" in intent.lower() or "目标" in intent or "待办" in intent:
         print(f"[智能长期记忆与主动规划引擎] 正在处理...", file=sys.stderr)
