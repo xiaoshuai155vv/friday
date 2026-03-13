@@ -4419,6 +4419,32 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化创意生成引擎 (Round 226)
+    elif "进化创意" in intent or "发现进化方向" in intent or "还有什么可以进化" in intent or "进化建议" in intent or "evolution idea" in intent.lower() or "idea generator" in intent.lower() or "进化方向" in intent:
+        print(f"[智能进化创意生成引擎] 正在生成进化创意...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_idea_generator.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "generate"
+        if "报告" in intent or "report" in intent.lower():
+            action = "report"
+        elif "top" in intent.lower() or "建议" in intent:
+            action = "top"
+        elif "生成" in intent:
+            action = "generate"
+        # 过滤掉意图关键词
+        filter_words = ["进化创意", "发现进化方向", "还有什么可以进化", "进化建议", "evolution idea", "idea generator", "进化方向", "生成", "报告", "top", "建议"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能系统自检与健康报告引擎 (Round 203) - 放在 system_health_monitor 之前
     elif "健康检查" in intent or "健康报告" in intent or "系统自检" in intent or "health check" in intent.lower() or "health report" in intent.lower() or "系统诊断" in intent:
         print(f"[智能系统自检与健康报告引擎] 正在运行健康检查...", file=sys.stderr)
