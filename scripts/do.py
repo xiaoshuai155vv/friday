@@ -1418,6 +1418,31 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自动化执行引擎
+    elif "自动执行" in intent or "执行计划" in intent or "执行编排" in intent or "auto_execution" in intent.lower() or "auto execute" in intent.lower():
+        print(f"[智能自动化执行引擎] 正在自动执行编排计划...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "auto_execution_engine.py")
+        user_input = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
+        cmd = []
+        if user_input:
+            # 解析命令
+            parts = user_input.split()
+            if parts[0] in ["status", "history", "set_mode", "execute", "suggest"]:
+                cmd = [parts[0]]
+                if parts[0] == "set_mode" and len(parts) > 1:
+                    cmd.extend(["--mode", parts[1]])
+                elif parts[0] in ["execute", "suggest"] and len(parts) > 1:
+                    # 剩余部分作为计划
+                    plan_input = " ".join(parts[1:])
+                    cmd.extend(["--" + ("plan" if parts[0] == "execute" else "plan"), plan_input])
+        if not cmd:
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能任务协调中心
     elif "协调中心" in intent or "智能处理" in intent or "coordinator" in intent.lower():
         print(f"[智能任务协调中心] 正在协调处理您的任务...", file=sys.stderr)
