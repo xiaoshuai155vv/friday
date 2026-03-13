@@ -1879,6 +1879,50 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能引擎性能监控 - 状态查询
+    elif "引擎性能" in intent or "性能监控" in intent or "engine performance" in intent.lower() or "engine monitor" in intent.lower() or "调优引擎" in intent or "引擎调优" in intent:
+        print(f"[智能引擎性能监控] 正在获取引擎性能状态...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "engine_performance_monitor.py")
+        cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能引擎性能监控 - 分析
+    elif "分析引擎" in intent or "引擎分析" in intent or "analyze engine" in intent.lower() or "engine analyze" in intent.lower() or "性能分析" in intent:
+        print(f"[智能引擎性能监控] 正在分析引擎性能...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "engine_performance_monitor.py")
+        cmd_args = ["analyze"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能引擎性能监控 - 建议
+    elif "引擎建议" in intent or "性能建议" in intent or "engine recommend" in intent.lower() or "engine suggestions" in intent.lower() or "调优建议" in intent:
+        print(f"[智能引擎性能监控] 正在生成调优建议...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "engine_performance_monitor.py")
+        cmd_args = ["recommend"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能引擎性能监控 - 最佳引擎
+    elif "最佳引擎" in intent or "top engine" in intent.lower() or "引擎排行" in intent or "最快引擎" in intent:
+        print(f"[智能引擎性能监控] 正在获取最佳引擎...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "engine_performance_monitor.py")
+        cmd_args = ["top", "5", "success_rate"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能创新发现引擎 - 状态查询
     elif "创新发现" in intent or "创新推荐" in intent or "发现新功能" in intent or "创新" in intent and ("发现" in intent or "推荐" in intent) or "innovation" in intent.lower() or "discover innovation" in intent.lower() or "new capability" in intent.lower():
         print(f"[智能创新发现引擎] 正在分析创新机会...", file=sys.stderr)
@@ -2388,6 +2432,36 @@ def main():
                 filtered_args = ["sync"]
             else:
                 filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能跨会话知识传承引擎（round 171）
+    elif "知识传承" in intent or "传承知识" in intent or "跨会话" in intent or "会话接续" in intent or "知识摘要" in intent or "knowledge inheritance" in intent.lower() or "knowledge summary" in intent.lower() or "session summary" in intent.lower() or "知识概览" in intent:
+        print(f"[智能跨会话知识传承引擎] 正在处理请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "knowledge_inheritance_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["summary"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["知识传承", "传承知识", "跨会话", "会话接续", "知识摘要", "knowledge inheritance", "knowledge summary", "session summary", "知识概览"]]
+        if not filtered_args:
+            # 根据意图确定默认命令
+            if "状态" in intent or "status" in intent.lower() or "概览" in intent or "summary" in intent.lower():
+                filtered_args = ["summary"]
+            elif "列表" in intent or "list" in intent.lower():
+                filtered_args = ["list"]
+            elif "会话" in intent or "session" in intent.lower():
+                filtered_args = ["sessions"]
+            elif "决策" in intent or "decision" in intent.lower():
+                filtered_args = ["decisions"]
+            elif "进化" in intent or "evolution" in intent.lower():
+                filtered_args = ["evolution"]
+            elif "获取" in intent or "get" in intent.lower():
+                filtered_args = ["help"]  # 需要会话ID参数
+            else:
+                filtered_args = ["summary"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
             print(result.stdout)
