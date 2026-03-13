@@ -1826,6 +1826,23 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自动化质量保障引擎
+    elif "质量保障" in intent or "自动质量" in intent or "引擎测试" in intent or "测试引擎" in intent or "auto quality" in intent.lower() or "quality assurance" in intent.lower() or "质量检测" in intent:
+        print(f"[智能自动化质量保障引擎] 正在检测引擎质量...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "auto_quality_assurance_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filter_kw = ["质量保障", "自动质量", "引擎测试", "测试引擎", "auto quality", "quality assurance", "质量检测"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_kw]
+        if not filtered_args:
+            # 默认运行检测
+            filtered_args = ["--run"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能统一推荐引擎 - 自动执行
     elif "自动执行推荐" in intent or "自动执行" in intent or "auto execute" in intent.lower() or "auto run" in intent.lower():
         print(f"[智能统一推荐引擎] 正在执行自动推荐...", file=sys.stderr)
