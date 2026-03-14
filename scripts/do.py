@@ -3113,6 +3113,38 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能决策质量预测性优化与预防性增强引擎（round 337）
+    elif ("质量预测" in intent or "predictive quality" in intent.lower() or
+          "预测性优化" in intent or "preventive optimizer" in intent.lower() or
+          "预测优化引擎" in intent or "predict optimizer" in intent.lower() or
+          "预防性增强" in intent or "decision quality prediction" in intent.lower()):
+        print(f"[智能决策质量预测性优化与预防性增强引擎 v1.0] 正在处理预测性优化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_decision_predictive_optimizer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "摘要" in intent or "summary" in intent.lower() or "预测摘要" in intent:
+            action = "--summary"
+        elif "测试" in intent or "test" in intent.lower() or "执行" in intent or "运行" in intent:
+            action = "--test"
+        elif "配置" in intent or "config" in intent.lower():
+            action = "--config"
+        # 过滤掉意图关键词
+        filter_words = ["质量预测", "predictive quality", "预测性优化", "preventive optimizer",
+                       "预测优化引擎", "predict optimizer", "预防性增强", "decision quality prediction",
+                       "摘要", "summary", "预测摘要", "测试", "test", "执行", "运行", "配置", "config",
+                       "状态", "status"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作前缀
+        if action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能主动洞察与建议引擎（round 213）
     elif "主动洞察" in intent or "主动建议" in intent or "洞察" in intent or "主动价值" in intent or "proactive insight" in intent.lower() or "insight advisor" in intent.lower() or "洞察引擎" in intent or "建议引擎" in intent or "趋势分析" in intent or "进化趋势" in intent or "预测" in intent:
         print(f"[智能主动洞察与建议引擎] 正在分析跨引擎知识、进化趋势和系统状态，生成主动洞察与建议...", file=sys.stderr)
@@ -3248,6 +3280,40 @@ def main():
                        "决策优化闭环", "质量闭环", "驱动自适应", "quality execution",
                        "质量驱动", "决策质量执行",
                        "摘要", "summary", "优化摘要", "测试", "test", "执行", "运行", "配置", "config",
+                       "状态", "status"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作前缀
+        if action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能决策质量预测性优化与预防性增强引擎（round 337）
+    elif ("预测性" in intent or "predictive" in intent.lower() or
+          "预防性" in intent or "preventive" in intent.lower() or
+          "预测优化" in intent or "predictive optimization" in intent.lower() or
+          "预防性增强" in intent or "事前预测" in intent or
+          "决策预测" in intent or "quality prediction" in intent.lower() or
+          "predict optimizer" in intent.lower()):
+        print(f"[智能决策质量预测性优化与预防性增强引擎 v1.0] 正在处理预测性优化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_decision_predictive_optimizer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "摘要" in intent or "summary" in intent.lower() or "预测摘要" in intent:
+            action = "--summary"
+        elif "测试" in intent or "test" in intent.lower() or "执行" in intent or "运行" in intent:
+            action = "--test"
+        elif "配置" in intent or "config" in intent.lower():
+            action = "--config"
+        # 过滤掉意图关键词
+        filter_words = ["预测性", "predictive", "预防性", "preventive", "预测优化", "predictive optimization",
+                       "预防性增强", "事前预测", "决策预测", "quality prediction", "predict optimizer",
+                       "摘要", "summary", "预测摘要", "测试", "test", "执行", "运行", "配置", "config",
                        "状态", "status"]
         filtered_args = [arg for arg in cmd_args if arg not in filter_words]
         # 添加动作前缀
