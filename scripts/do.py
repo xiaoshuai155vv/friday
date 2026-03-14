@@ -1670,6 +1670,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化自主决策深度增强引擎（Round 379）- 元进化决策、智能进化决策、进化策略分析、自主决策增强
+    elif "元进化决策" in intent or "智能进化决策" in intent or "进化策略分析" in intent or "自主决策增强" in intent or "meta decision" in intent.lower() or "meta evolution" in intent.lower() and "decision" in intent.lower() or "evolution decision" in intent.lower() or "元决策" in intent or "决策增强" in intent or "meta_decision" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "analyze", "select", "predict", "execute", "health", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_meta_decision_deep_enhancement_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
