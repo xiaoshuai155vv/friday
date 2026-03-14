@@ -1726,6 +1726,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环持续创新引擎（round 307）
+    elif "创新机会发现" in intent or "持续创新引擎" in intent or "进化创新分析" in intent or "进化创新计划" in intent or "创新趋势分析" in intent or "continuous innovation engine" in intent.lower() or "innovation opportunities" in intent.lower() or "进化环创新" in intent:
+        print(f"[智能全场景进化环持续创新引擎] 正在执行持续创新分析...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_continuous_innovation_engine.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["analyze"]
+        if not cmd_args:
+            cmd_args = ["analyze"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化质量保障与持续改进闭环引擎（round 302）
     elif "进化质量保障" in intent or "质量保障" in intent and "进化" in intent or "持续改进" in intent or "模块验证" in intent or "集成测试" in intent or "质量报告" in intent or "quality assurance" in intent.lower() or "quality loop" in intent.lower() or "evolution quality" in intent.lower() or "qa loop" in intent.lower() or "质量闭环" in intent:
         print(f"[智能全场景进化质量保障与持续改进闭环引擎] 正在执行质量保障循环...", file=sys.stderr)
