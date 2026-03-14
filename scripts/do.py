@@ -1690,6 +1690,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环完全无人值守自主进化增强引擎（Round 382）- 增强完全无人值守的自主进化能力（必须放在 round 381 之前以确保精确匹配）
+    elif "完全无人值守" in intent or "无人值守进化增强" in intent or "自主进化增强" in intent or "auto unattended" in intent.lower() or "autonomous enhancement" in intent.lower() or "unattended evolution" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "enable", "disable", "trigger", "metrics", "run", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_autonomous_unattended_enhancement_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化驾驶舱深度集成引擎（Round 381）- 将元进化自动化引擎与进化驾驶舱深度集成
     elif "元进化驾驶舱" in intent or "驾驶舱集成" in intent or "无人值守进化环" in intent or "完全自主进化" in intent or "auto evolution" in intent.lower() or "unmanned evolution" in intent.lower() or "cockpit meta" in intent.lower() or "进化驾驶舱" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
