@@ -1750,10 +1750,10 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
-    # 智能全场景进化环价值实现追踪深度量化引擎（Round 364）
-    elif "价值量化" in intent or "价值追踪" in intent and "量化" in intent or "ROI分析" in intent or "价值分析" in intent or "value quantization" in intent.lower() or "roi analysis" in intent.lower() or "量化价值" in intent or "价值得分" in intent or "价值指标" in intent or "量化分析" in intent:
+    # 智能全场景进化环价值实现追踪深度量化引擎（Round 364，增强 Round 438）
+    elif "价值量化" in intent or "价值追踪" in intent and "量化" in intent or "ROI分析" in intent or "价值分析" in intent or "value quantization" in intent.lower() or "roi analysis" in intent.lower() or "量化价值" in intent or "价值得分" in intent or "价值指标" in intent or "量化分析" in intent or "价值优化" in intent or "价值模式" in intent or "价值预测" in intent or "价值闭环" in intent or "增强价值" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
-        if not cmd or (cmd and cmd[0] not in ["status", "analyze", "trends", "recommend", "report", "summary", "help"]):
+        if not cmd or (cmd and cmd[0] not in ["status", "analyze", "trends", "recommend", "report", "summary", "help", "optimize", "patterns", "predict", "cockpit", "adjust", "validate", "enhanced_loop", "full_loop"]):
             cmd = ["status"]
         result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_value_quantization_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
