@@ -1680,6 +1680,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化决策与自动化执行深度集成引擎（Round 380）- 元进化自动化、决策执行集成、自动化决策执行
+    elif "元进化自动化" in intent or "决策执行集成" in intent or "自动化决策执行" in intent or "meta execution" in intent.lower() or "decision execution" in intent.lower() or "meta auto" in intent.lower() or "元进化执行" in intent or "自动化集成" in intent or "meta_decision_execution" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "analyze", "decide", "execute", "verify", "optimize", "full_loop", "health", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_meta_decision_execution_integration_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
