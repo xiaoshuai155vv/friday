@@ -1740,6 +1740,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化引擎集群元进化自主意识深度增强引擎（Round 387）- 元进化自主意识、自主意识进化、智能进化决策、意识驱动
+    elif "元进化自主意识" in intent or "自主意识进化" in intent or "智能进化决策" in intent or "意识驱动" in intent or "meta autonomous" in intent.lower() or "autonomous consciousness" in intent.lower() or "consciousness driven" in intent.lower() or "meta_consciousness" in intent.lower() or "意识增强" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "scan", "decide", "execute", "full_cycle", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_meta_autonomous_consciousness_deep_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化驾驶舱深度集成引擎（Round 381）- 将元进化自动化引擎与进化驾驶舱深度集成
     elif "元进化驾驶舱" in intent or "驾驶舱集成" in intent or "无人值守进化环" in intent or "完全自主进化" in intent or "auto evolution" in intent.lower() or "unmanned evolution" in intent.lower() or "cockpit meta" in intent.lower() or "进化驾驶舱" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
