@@ -3757,6 +3757,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环跨引擎元进化协同深度增强引擎（round 429）
+    elif "跨引擎元进化协同" in intent or "元进化协同" in intent or "cross engine meta" in intent.lower() or "meta collaboration" in intent.lower() or "元协同" in intent or "跨引擎协同" in intent or "cross-engine collaboration" in intent.lower() or "跨引擎元数据" in intent or "meta data sharing" in intent.lower():
+        print(f"[跨引擎元进化协同深度增强引擎] 正在启动跨引擎元进化协同...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_engine_meta_collaboration_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["跨引擎元进化协同", "元进化协同", "cross engine meta", "meta collaboration", "元协同", "跨引擎协同", "cross-engine collaboration", "跨引擎元数据", "meta data sharing"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环跨引擎深度协同自适应优化增强引擎（round 421）
     elif "跨引擎深度协同" in intent or "深度协同优化" in intent or "自适应协同" in intent or "collaboration optimization" in intent.lower() or "deep collaboration" in intent.lower() or "cross engine optimization" in intent.lower() or "协作优化" in intent or "协同自适应" in intent:
         print(f"[跨引擎深度协同自适应优化增强引擎] 正在启动跨引擎深度协同与自适应优化...", file=sys.stderr)
