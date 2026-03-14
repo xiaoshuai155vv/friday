@@ -1760,6 +1760,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环自适应进化路径规划与预测引擎（Round 439）
+    elif "路径规划" in intent or "进化路径" in intent or "路径预测" in intent or "规划进化" in intent or "自适应路径" in intent or "path planning" in intent.lower() or "进化规划" in intent or "自适应规划" in intent or "智能规划" in intent and "进化" in intent or "战略规划" in intent or "路径选择" in intent or "最佳路径" in intent or "optimal path" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["report"]
+        if not cmd or (cmd and cmd[0] not in ["status", "analyze", "paths", "report", "optimal", "help"]):
+            cmd = ["report"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_adaptive_path_planning_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环价值驱动决策自动执行引擎（Round 365）
     elif "价值驱动决策" in intent or "价值决策" in intent and "自动" in intent or "value driven decision" in intent.lower() or "价值驱动" in intent and "决策" in intent or "自动决策" in intent and "价值" in intent or "决策自动化" in intent or "价值自适应" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
