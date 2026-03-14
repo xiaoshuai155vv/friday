@@ -3190,6 +3190,30 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能主动价值发现与自主意识执行深度集成引擎（round 340）
+    elif ("价值执行融合" in intent or "value execution fusion" in intent.lower() or
+          "主动执行闭环" in intent or "价值自主执行" in intent or
+          "融合引擎" in intent and "执行" in intent or
+          "自主价值发现" in intent):
+        print(f"[智能主动价值发现与自主意识执行深度集成引擎 v1.0] 正在执行价值-执行融合...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_execution_fusion_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        action = "status"
+        if "完整闭环" in intent or "full cycle" in intent.lower() or "执行闭环" in intent:
+            action = "--full-cycle"
+        elif "历史" in intent or "history" in intent.lower():
+            action = "--history"
+        filter_words = ["价值执行融合", "value execution fusion", "主动执行闭环", "价值自主执行",
+                       "融合引擎", "执行", "完整闭环", "full cycle", "历史", "history", "状态", "status"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能主动价值发现与智能决策闭环增强引擎（round 339）
     elif ("主动价值发现" in intent or "价值发现" in intent or "主动决策" in intent or
           "active value discovery" in intent.lower() or "value discovery engine" in intent.lower() or
