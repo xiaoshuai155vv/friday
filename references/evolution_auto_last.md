@@ -2,19 +2,19 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/evolution_hypothesis_verification_engine.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md, runtime/state/
+scripts/evolution_strategy_generation_evaluator.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md, runtime/state/
 
-## 2026-03-14 round 309
-- **current_goal**：智能全场景进化环自主实验与假设验证引擎 - 让系统能够主动设计并执行进化实验，验证假设，积累进化方法论
+## 2026-03-14 round 310
+- **current_goal**：智能全场景进化策略自动生成与动态评估引擎 - 让系统能够基于当前系统状态、进化历史、知识图谱自动生成多套进化策略方案，动态评估各方案的效果与风险，智能选择最优路径执行
 - **做了什么**：
-  1. 创建 evolution_hypothesis_verification_engine.py 模块（version 1.0.0）
-  2. 实现进化假设自动生成（基于知识图谱、效能分析、失败教训）
-  3. 实现实验框架设计（定义实验目标、指标、假设条件）
-  4. 实现实验执行与验证（自动执行小规模实验、收集数据、验证假设）
-  5. 实现方法论积累（从实验结果中提取可复用的进化规律）
-  6. 集成到 do.py 支持关键词触发（进化实验、假设验证、实验验证、方法论等）
-  7. 测试通过：status/generate/run 命令均正常工作
+  1. 创建 evolution_strategy_generation_evaluator.py 模块（version 1.0.0）
+  2. 实现多维度策略方案生成（基于系统状态、进化历史、能力缺口）
+  3. 实现策略效果动态评估（预测成功率、资源效率、风险分数、收益分数）
+  4. 实现智能策略选择（基于综合评估结果选择最优策略）
+  5. 实现策略执行与效果追踪
+  6. 集成到 do.py 支持策略生成、策略评估、动态策略、智能选择等关键词触发
+  7. 测试通过：--generate/--evaluate/--status 命令均正常工作
 - **是否完成**：已完成
 - **基线校验**：5/6 通过（剪贴板远程限制为已知问题）
-- **针对性校验**：通过 - 模块功能正常，do.py 触发成功，完整实验周期功能正常
-- **下一轮建议**：可继续深化假设验证方法论，或探索其他进化方向
+- **针对性校验**：通过 - 模块功能正常，do.py 触发成功，完整生成→评估→选择流程功能正常
+- **下一轮建议**：可继续深化策略评估算法，或探索其他进化方向
