@@ -1420,6 +1420,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环知识驱动递归增强闭环深度集成引擎（Round 414）- 将 round 413 的知识反馈能力与 round 412 的触发推荐引擎深度集成，形成完整的知识→触发→执行→验证→知识更新递归增强闭环
+    elif "知识触发" in intent or "递归增强闭环" in intent or "知识驱动" in intent or "knowledge trigger" in intent.lower() or "recursive enhancement" in intent.lower() or "知识执行集成" in intent or "trigger knowledge" in intent.lower() or "knowledge driven loop" in intent.lower() or "递归闭环" in intent or "知识递归" in intent or "递归知识" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "health", "execute", "discover", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_knowledge_trigger_integration.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎协同自优化与深度集成引擎（Round 349）
     elif "进化协同" in intent or "引擎协同优化" in intent or "跨引擎健康" in intent or "协同自优化" in intent or "跨引擎" in intent or "引擎健康" in intent or "进化引擎健康" in intent or "cross engine" in intent.lower() or "engine collaboration" in intent.lower() or "collaboration optimizer" in intent.lower() or "跨引擎协同" in intent or "引擎协作" in intent or "协同优化" in intent or "进化环健康" in intent or "evolution health" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
