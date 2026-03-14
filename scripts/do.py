@@ -5137,6 +5137,24 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环跨引擎协同效能预测增强引擎 (Round 477)
+    elif "跨引擎协同效能预测" in intent or "跨引擎预测" in intent or "协同效能预测" in intent or "cross engine collaboration prediction" in intent.lower() or "collaboration prediction" in intent.lower() or "跨引擎协同" in intent:
+        print(f"[智能全场景进化环跨引擎协同效能预测增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_engine_collaboration_prediction_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["跨引擎协同效能预测", "跨引擎预测", "协同效能预测", "cross engine collaboration prediction", "collaboration prediction", "跨引擎协同"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能决策质量预测性优化与预防性增强引擎（round 337）
     elif ("预测性" in intent or "predictive" in intent.lower() or
           "预防性" in intent or "preventive" in intent.lower() or
