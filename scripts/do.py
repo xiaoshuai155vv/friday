@@ -1440,6 +1440,26 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环多维度系统指标融合与预防性阈值管理增强引擎（Round 401）- 在实时阈值动态调整引擎基础上，增强磁盘IO、网络延迟、进程状态等多维度系统指标融合能力，实现更精准的预防性阈值管理
+    elif "多维度指标" in intent or "多维度融合" in intent or "系统指标" in intent or "磁盘IO" in intent or "网络延迟" in intent or "进程状态" in intent or "multidim" in intent.lower() or "multi-dim" in intent.lower() or "metrics fusion" in intent.lower() or "disk io" in intent.lower() or "network latency" in intent.lower() or "多维度阈值" in intent or "指标融合" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "health", "history", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_multidim_system_metrics_fusion_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨引擎协同深度集成引擎（Round 402）- 将多维度指标分析结果与进化环其他引擎（健康评估、预测预防、决策执行）深度集成，形成更全面的智能决策闭环
+    elif "跨引擎协同" in intent or "跨引擎集成" in intent or "引擎协同" in intent or "引擎集成" in intent or "cross engine" in intent.lower() or "跨引擎深度" in intent or "深度集成" in intent or "智能决策闭环" in intent or "集成决策" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "health", "analyze", "decide", "synergy", "start", "stop", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_cross_engine_collaboration_deep_integration_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环全局智能驾驶舱与一键启动引擎（Round 350）
     elif "驾驶舱" in intent or "进化驾驶舱" in intent or "一键启动" in intent or "进化控制台" in intent or "cockpit" in intent.lower() or "evolution cockpit" in intent.lower() or "一键进化" in intent or "进化状态" in intent and ("控制" in intent or "台" in intent or "一键" in intent):
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
