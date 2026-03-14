@@ -3785,6 +3785,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环创新假设自动执行与价值实现引擎（round 431）
+    elif "假设执行" in intent or "假设转化" in intent or "hypothesis execution" in intent.lower() or "假设自动执行" in intent or "创新假设执行" in intent or ("假设" in intent and "价值" in intent) or "hypothesis_value" in intent.lower() or "创新假设转化" in intent:
+        print(f"[创新假设自动执行与价值实现引擎] 正在启动创新假设自动执行与价值实现...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_hypothesis_execution_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["假设执行", "假设转化", "hypothesis execution", "假设自动执行", "创新假设执行", "价值实现", "value realization", "假设价值"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环跨引擎深度协同自适应优化增强引擎（round 421）
     elif "跨引擎深度协同" in intent or "深度协同优化" in intent or "自适应协同" in intent or "collaboration optimization" in intent.lower() or "deep collaboration" in intent.lower() or "cross engine optimization" in intent.lower() or "协作优化" in intent or "协同自适应" in intent:
         print(f"[跨引擎深度协同自适应优化增强引擎] 正在启动跨引擎深度协同与自适应优化...", file=sys.stderr)
