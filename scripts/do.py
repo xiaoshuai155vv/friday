@@ -1800,6 +1800,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景统一进化智能体深度融合引擎（Round 393）- 将评估、预测、决策、执行、学习等多维度智能深度融合，构建统一进化智能体核心
+    elif "统一进化智能体" in intent or "智能体融合" in intent or "进化智能体" in intent or "unified intelligent" in intent.lower() or "intelligent body fusion" in intent.lower() or "智能融合引擎" in intent or "多维智能融合" in intent or "进化大脑" in intent or "unified body" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "full_cycle", "evaluate", "decision", "execution", "learning", "health", "history", "enable", "disable", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_unified_intelligent_body_fusion_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化驾驶舱深度集成引擎（Round 381）- 将元进化自动化引擎与进化驾驶舱深度集成
     elif "元进化驾驶舱" in intent or "驾驶舱集成" in intent or "无人值守进化环" in intent or "完全自主进化" in intent or "auto evolution" in intent.lower() or "unmanned evolution" in intent.lower() or "cockpit meta" in intent.lower() or "进化驾驶舱" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
