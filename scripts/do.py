@@ -3145,6 +3145,51 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能决策质量跨轮持续学习与自适应进化引擎（round 338）
+    elif ("决策持续学习" in intent or "decision continuous learning" in intent.lower() or
+          "决策进化优化" in intent or "decision evolution optimization" in intent.lower() or
+          "决策自适应进化" in intent or "decision adaptive evolution" in intent.lower() or
+          "质量学习闭环" in intent or "quality learning loop" in intent.lower() or
+          "质量预测学习" in intent or "quality prediction learning" in intent.lower() or
+          "持续学习引擎" in intent or "continuous learning engine" in intent.lower() or
+          "自适应进化引擎" in intent or "adaptive evolution engine" in intent.lower() or
+          "学习闭环引擎" in intent or "learning loop engine" in intent.lower() or
+          "跨轮学习" in intent):
+        print(f"[智能决策质量跨轮持续学习与自适应进化引擎 v1.0] 正在执行持续学习与自适应优化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_decision_continuous_learning.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "摘要" in intent or "summary" in intent.lower() or "学习摘要" in intent:
+            action = "--summary"
+        elif "测试" in intent or "test" in intent.lower() or "执行" in intent or "运行" in intent:
+            action = "--test"
+        elif "记录" in intent or "record" in intent.lower():
+            action = "--record"
+        elif "分析" in intent or "analyze" in intent.lower():
+            action = "--analyze"
+        elif "洞察" in intent or "insights" in intent.lower():
+            action = "--insights"
+        elif "配置" in intent or "config" in intent.lower():
+            action = "--config"
+        # 过滤掉意图关键词
+        filter_words = ["持续学习", "continuous learning", "进化优化", "evolution optimization",
+                       "自适应进化", "adaptive evolution", "学习闭环", "learning loop",
+                       "预测学习", "prediction learning",
+                       "摘要", "summary", "学习摘要", "测试", "test", "执行", "运行", "配置", "config",
+                       "记录", "record", "分析", "analyze", "洞察", "insights",
+                       "状态", "status"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作前缀
+        if action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能主动洞察与建议引擎（round 213）
     elif "主动洞察" in intent or "主动建议" in intent or "洞察" in intent or "主动价值" in intent or "proactive insight" in intent.lower() or "insight advisor" in intent.lower() or "洞察引擎" in intent or "建议引擎" in intent or "趋势分析" in intent or "进化趋势" in intent or "预测" in intent:
         print(f"[智能主动洞察与建议引擎] 正在分析跨引擎知识、进化趋势和系统状态，生成主动洞察与建议...", file=sys.stderr)
