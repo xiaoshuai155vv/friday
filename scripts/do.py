@@ -1332,6 +1332,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "predict", "orchestrate", "execute", "patterns", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "predictive_service_orchestrator.py")] + cmd, cwd=PROJECT)
+    # 智能全场景超级预测与主动价值创造引擎（Round 287）
+    elif "超级预测" in intent or "主动价值创造" in intent or "机会发现" in intent or "价值预测" in intent or "super prediction" in intent.lower() or "opportunity discovery" in intent.lower() or "create value" in intent.lower() or "价值创造" in intent or "趋势分析" in intent or "trends analysis" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "analyze", "list", "proposal", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "super_prediction_opportunity_engine.py")] + cmd, cwd=PROJECT)
     # 智能进化闭环自愈与预防引擎（Round 280）
     elif "进化自愈" in intent or "进化修复" in intent or "进化预防" in intent or "evolution self heal" in intent.lower() or "self healing" in intent.lower() or "进化健康" in intent or "进化闭环自愈" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
@@ -1350,6 +1356,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "monitor", "metrics", "anomalies", "trends", "alerts", "clear", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_loop_health_monitor.py")] + cmd, cwd=PROJECT)
+    # 智能全场景进化意图自主觉醒引擎（Round 288）
+    elif "进化意图" in intent or "主动进化" in intent or "自主意图" in intent or "intent" in intent.lower() and "evolution" in intent.lower() or "意图驱动" in intent or "我想进化" in intent or "我需要进化" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "awaken", "evaluate", "analyze", "rank", "plan", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_intent_awakening_engine.py")] + cmd, cwd=PROJECT)
     # 统一引擎调度中心
     elif "引擎" in intent or "engine hub" in intent.lower() or "统一调度" in intent or "引擎列表" in intent or "所有引擎" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["list"]
