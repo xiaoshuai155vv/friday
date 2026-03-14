@@ -3701,6 +3701,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环策略推荐-执行-反馈-调整完整闭环引擎（round 419）
+    elif "策略闭环" in intent or "策略推荐反馈" in intent or "推荐反馈集成" in intent or "strategy loop" in intent.lower() or "recommendation feedback" in intent.lower() or "strategy integration" in intent.lower() or "推荐反馈闭环" in intent or "策略完整闭环" in intent:
+        print(f"[策略推荐-执行-反馈-调整完整闭环引擎] 正在启动完整的策略闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_strategy_recommendation_feedback_integration_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["策略闭环", "策略推荐反馈", "推荐反馈集成", "strategy loop", "recommendation feedback", "strategy integration", "推荐反馈闭环", "策略完整闭环"]]
+        if not filtered_args:
+            filtered_args = ["start"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化策略自动生成与动态评估引擎（round 310）
     elif "策略生成" in intent or "策略评估" in intent or "动态策略" in intent or "智能策略选择" in intent or "strategy generation" in intent.lower() or "strategy evaluate" in intent.lower() or "generate strategy" in intent.lower() or "策略智能选择" in intent or "进化策略生成" in intent or "生成进化策略" in intent:
         print(f"[智能进化策略自动生成与动态评估引擎] 正在生成和评估进化策略...", file=sys.stderr)
