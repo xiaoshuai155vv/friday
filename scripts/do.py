@@ -3225,6 +3225,40 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景决策质量驱动自适应优化执行引擎 (Round 336) - 需要放在 round 233 前面以避免被"优化执行"拦截
+    elif ("决策质量驱动" in intent or "质量驱动优化" in intent or "质量优化执行" in intent or
+          "quality driven" in intent.lower() or "quality optimizer" in intent.lower() or
+          "决策优化闭环" in intent or "质量闭环" in intent or
+          "驱动自适应" in intent or "quality execution" in intent.lower() or
+          "质量驱动" in intent or "决策质量执行" in intent):
+        print(f"[智能决策质量驱动自适应优化执行引擎 v1.0] 正在处理决策质量驱动的优化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_decision_quality_driven_optimizer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "摘要" in intent or "summary" in intent.lower() or "优化摘要" in intent:
+            action = "--summary"
+        elif "测试" in intent or "test" in intent.lower() or "执行" in intent or "运行" in intent:
+            action = "--test"
+        elif "配置" in intent or "config" in intent.lower():
+            action = "--config"
+        # 过滤掉意图关键词
+        filter_words = ["决策质量驱动", "质量驱动优化", "质量优化执行", "quality driven", "quality optimizer",
+                       "决策优化闭环", "质量闭环", "驱动自适应", "quality execution",
+                       "质量驱动", "决策质量执行",
+                       "摘要", "summary", "优化摘要", "测试", "test", "执行", "运行", "配置", "config",
+                       "状态", "status"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作前缀
+        if action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能主动优化发现引擎（round 233）
     elif "主动优化发现" in intent or "优化发现" in intent or "主动优化" in intent or "optimization discovery" in intent.lower() or "主动优化引擎" in intent or "发现优化" in intent or "优化机会" in intent:
         print(f"[智能主动优化发现引擎] 正在分析系统状态并发现优化机会...", file=sys.stderr)
