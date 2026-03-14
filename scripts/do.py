@@ -3827,6 +3827,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环知识蒸馏与进化驾驶舱可视化集成引擎（round 434）
+    elif "蒸馏可视化" in intent or "蒸馏驾驶舱" in intent or "distillation cockpit" in intent.lower() or "蒸馏集成" in intent or "蒸馏进度" in intent or "知识蒸馏可视化" in intent or "distillation visual" in intent.lower() or "蒸馏数据推送" in intent or "蒸馏集成" in intent:
+        print(f"[知识蒸馏与驾驶舱集成引擎] 正在启动知识蒸馏与驾驶舱可视化集成...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_distillation_cockpit_integration_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["蒸馏可视化", "蒸馏驾驶舱", "distillation cockpit", "蒸馏集成", "蒸馏进度", "知识蒸馏可视化", "distillation visual", "蒸馏数据推送"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环跨引擎深度协同自适应优化增强引擎（round 421）
     elif "跨引擎深度协同" in intent or "深度协同优化" in intent or "自适应协同" in intent or "collaboration optimization" in intent.lower() or "deep collaboration" in intent.lower() or "cross engine optimization" in intent.lower() or "协作优化" in intent or "协同自适应" in intent:
         print(f"[跨引擎深度协同自适应优化增强引擎] 正在启动跨引擎深度协同与自适应优化...", file=sys.stderr)
