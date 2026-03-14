@@ -1739,6 +1739,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环跨模态协同增强引擎（round 308）
+    elif "跨模态进化" in intent or "模态协同" in intent or "多模态增强" in intent or "cross-modal" in intent.lower() or "跨模态" in intent or "多模态" in intent or "模态融合" in intent or "crossmodal" in intent.lower():
+        print(f"[智能全场景进化环跨模态协同增强引擎] 正在执行跨模态协同分析...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_crossmodal_enhancer.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd_args:
+            cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化质量保障与持续改进闭环引擎（round 302）
     elif "进化质量保障" in intent or "质量保障" in intent and "进化" in intent or "持续改进" in intent or "模块验证" in intent or "集成测试" in intent or "质量报告" in intent or "quality assurance" in intent.lower() or "quality loop" in intent.lower() or "evolution quality" in intent.lower() or "qa loop" in intent.lower() or "质量闭环" in intent:
         print(f"[智能全场景进化质量保障与持续改进闭环引擎] 正在执行质量保障循环...", file=sys.stderr)
