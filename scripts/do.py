@@ -5995,6 +5995,37 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景系统健康防御深度协同引擎 (Round 326) - 需要在错误模式防御之前
+    elif ("健康防御" in intent or "系统防御" in intent or "防御协同" in intent or
+          "health defense" in intent.lower() or "防御闭环" in intent or
+          "统一防御" in intent or "防御体系" in intent or "health_defense" in intent.lower()) and "错误模式" not in intent:
+        print(f"[智能全场景系统健康防御深度协同引擎 v1.0] 正在执行健康防御协同...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "health_defense_deep_integration.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "仪表盘" in intent or "dashboard" in intent.lower():
+            action = "dashboard"
+        elif "检查" in intent or "check" in intent.lower():
+            action = "check"
+        elif "完整周期" in intent or "full_cycle" in intent.lower() or "全链路" in intent or "防御周期" in intent:
+            action = "full-cycle"
+        elif "修复" in intent or "repair" in intent.lower():
+            action = "repair"
+        # 过滤掉意图关键词
+        filter_words = ["健康防御", "系统防御", "防御协同", "health defense", "防御闭环", "统一防御", "健康闭环", "防御体系", "health_defense", "状态", "status", "仪表盘", "dashboard", "检查", "check", "完整周期", "full_cycle", "全链路", "防御周期", "修复", "repair"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化方向自动发现与优先级排序引擎 (Round 239)
     elif "进化发现" in intent or "方向发现" in intent or "优先级排序" in intent or "evolution discovery" in intent.lower() or "方向排序" in intent or "进化机会" in intent or "发现进化" in intent or "自动发现进化" in intent:
         print(f"[智能进化方向自动发现引擎] 正在分析进化机会...", file=sys.stderr)
