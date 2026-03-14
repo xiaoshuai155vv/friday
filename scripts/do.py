@@ -1290,6 +1290,12 @@ def main():
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "intelligent_evolution_engine.py"), "suggest"])
         msg = " ".join(sys.argv[2:]) if len(sys.argv) > 2 else "FRIDAY"
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "notification_tool.py"), "show", msg], cwd=PROJECT)
+    # 智能全场景进化效能实时监控与自适应优化引擎（Round 277）
+    elif intent in ("进化效能", "效能监控", "效能优化", "进化性能", "效能分析", "evolution_performance", "performance_monitor"):
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["dashboard"]
+        if not cmd or (cmd and cmd[0] not in ["dashboard", "analyze", "optimize", "report", "predict", "collect"]):
+            cmd = ["dashboard"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_performance_monitor.py")] + cmd, cwd=PROJECT)
     # 统一引擎调度中心
     elif "引擎" in intent or "engine hub" in intent.lower() or "统一调度" in intent or "引擎列表" in intent or "所有引擎" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["list"]
