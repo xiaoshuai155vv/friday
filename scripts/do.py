@@ -3893,6 +3893,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环元进化能力增强引擎（round 442）- 让系统能够自动分析自身进化过程、评估进化方法论效率、生成更优的进化策略，形成"学会如何进化"的递归优化能力
+    elif "元进化增强" in intent or "元进化能力" in intent or "学会进化" in intent or "meta evolution enhancement" in intent.lower() or "evolution meta" in intent.lower() and "enhance" in intent.lower() or "进化方法论" in intent or "methodology evolution" in intent.lower() or "递归优化进化" in intent or "元进化分析" in intent:
+        print(f"[进化环元进化能力增强引擎] 正在启动元进化能力增强分析...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_evolution_enhancement_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["元进化增强", "元进化能力", "学会进化", "meta evolution enhancement", "进化方法论", "methodology evolution", "递归优化进化", "元进化分析"]]
+        if not filtered_args:
+            filtered_args = ["--analyze"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环跨引擎深度协同自适应优化增强引擎（round 421）
     elif "跨引擎深度协同" in intent or "深度协同优化" in intent or "自适应协同" in intent or "collaboration optimization" in intent.lower() or "deep collaboration" in intent.lower() or "cross engine optimization" in intent.lower() or "协作优化" in intent or "协同自适应" in intent:
         print(f"[跨引擎深度协同自适应优化增强引擎] 正在启动跨引擎深度协同与自适应优化...", file=sys.stderr)
