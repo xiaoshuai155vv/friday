@@ -1500,6 +1500,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环实时监控与智能预警增强引擎（Round 362）
+    elif "实时监控" in intent or "智能预警" in intent or "状态监控" in intent or "预警查询" in intent or "监控状态" in intent or "realtime monitoring" in intent.lower() or "real-time monitor" in intent.lower() or "智能监控" in intent or "预警" in intent and "进化" in intent or "monitoring" in intent.lower() and "warning" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "check", "warnings", "acknowledge", "start", "stop", "summary", "clear", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_realtime_monitoring_warning_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
