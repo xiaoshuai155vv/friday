@@ -1924,6 +1924,25 @@ def main():
             print("用法: do.py 后续建议 <场景名>", file=sys.stderr)
             print("示例: do.py 后续建议 看电影", file=sys.stderr)
             sys.exit(1)
+    # 多模态情感理解与智能响应增强引擎 (需要在普通情感交互之前匹配)
+    elif "多模态情感" in intent or "多维度情感" in intent or "情感理解" in intent or "情感增强" in intent or "multimodal emotion" in intent.lower() or "emotion understanding" in intent.lower():
+        print(f"[多模态情感理解引擎] 正在综合分析您的情感状态...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "multimodal_emotion_understanding_engine.py")
+        user_input = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
+        if user_input:
+            # 使用 -c 选项执行代码，需要先添加路径
+            import_path = SCRIPTS.replace('\\', '\\\\')
+            result = subprocess.run([sys.executable, "-c",
+                f"import sys; sys.path.insert(0, r'{import_path}'); "
+                f"from multimodal_emotion_understanding_engine import MultimodalEmotionUnderstandingEngine; "
+                f"engine = MultimodalEmotionUnderstandingEngine(); "
+                f"print(engine.analyze_and_respond('''{user_input}'''))"],
+                cwd=PROJECT, capture_output=True, text=True)
+            if result.stdout:
+                print(result.stdout)
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, file=sys.stderr)
+            sys.exit(0 if result.returncode == 0 else result.returncode)
     # 情感交互
     elif "情感" in intent or "心情" in intent or "好累" in intent or "好困" in intent or "开心" in intent or "难过" in intent or "焦虑" in intent or "emotion" in intent.lower() or "feeling" in intent.lower() or "疲惫" in intent:
         print(f"[情感交互] 正在分析您的情感状态...", file=sys.stderr)
