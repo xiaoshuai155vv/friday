@@ -1715,6 +1715,35 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+
+    # 智能全场景进化环认知-价值-涌现三维深度融合与自主进化引擎（Round 456）- 融合深度认知(r454)、价值实现追踪(r453)、知识自涌现(r440)能力，形成认知→价值→涌现的三维闭环
+    elif "三维融合" in intent or "融合闭环" in intent or "价值涌现融合" in intent or "cognition_value_emergence" in intent.lower() or "cognition_value" in intent.lower() or "value_emergence_fusion" in intent.lower():
+        print(f"[认知-价值-涌现三维融合引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cognition_value_emergence_fusion_engine.py")
+
+        # 确定要执行的命令
+        if "--cognition-value" in sys.argv or "认知价值" in intent or "cognition value" in intent.lower() or "关联分析" in intent:
+            filtered_args = ["--cognition-value"]
+        elif "--value-emergence" in sys.argv or "价值涌现" in intent or "value emergence" in intent.lower() or "涌现追踪" in intent:
+            filtered_args = ["--value-emergence"]
+        elif "--emergence-cognition" in sys.argv or "涌现认知" in intent or "emergence cognition" in intent.lower() or "反馈" in intent:
+            filtered_args = ["--emergence-cognition"]
+        elif "--analyze" in sys.argv or "分析" in intent or "analyze" in intent.lower() or "三维分析" in intent:
+            filtered_args = ["--analyze"]
+        elif "--closed-loop" in sys.argv or "闭环" in intent or "closed loop" in intent.lower() or "完整闭环" in intent:
+            filtered_args = ["--closed-loop"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：获取驾驶舱数据
+            filtered_args = ["--cockpit-data"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+
     # 智能全场景进化环跨引擎统一知识索引与智能检索引擎（Round 446）- 聚合所有进化引擎产生的知识资产、建立统一知识索引、实现智能检索、生成知识关联图谱
     elif "知识索引" in intent or "知识检索" in intent or "跨引擎知识" in intent or "查询知识" in intent or "知识图谱" in intent or "knowledge index" in intent.lower() or "knowledge search" in intent.lower() or "knowledge graph" in intent.lower() or "知识发现" in intent or "搜索知识" in intent:
         print(f"[跨引擎知识索引与检索引擎] 正在处理...", file=sys.stderr)
