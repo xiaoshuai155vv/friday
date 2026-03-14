@@ -4564,6 +4564,40 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化全自主闭环引擎 (Round 255) - 让进化环能够真正自主运行、主动触发、形成完整闭环
+    elif "全自主进化" in intent or "自主闭环" in intent or "进化自主运行" in intent or "autonomous loop" in intent.lower() or "自动进化" in intent or "自主进化" in intent or "进化全自主" in intent or "full autonomous" in intent.lower():
+        print(f"[智能进化全自主闭环引擎] 正在处理全自主进化请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_full_autonomous_loop.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "检测" in intent or "detect" in intent.lower() or "需求" in intent:
+            action = "detect"
+        elif "触发" in intent or "trigger" in intent.lower() or "启动" in intent:
+            action = "trigger"
+        elif "验证" in intent or "verify" in intent.lower() or "效果" in intent:
+            action = "verify"
+        elif "启动" in intent or "start" in intent.lower() or "运行" in intent:
+            action = "start"
+        elif "停止" in intent or "stop" in intent.lower():
+            action = "stop"
+        elif "等级" in intent or "level" in intent.lower() or "模式" in intent:
+            action = "level"
+        elif "周期" in intent or "cycle" in intent.lower():
+            action = "cycle"
+        # 过滤掉意图关键词
+        filter_words = ["全自主进化", "自主闭环", "进化自主运行", "autonomous loop", "自动进化", "自主进化", "进化全自主", "full autonomous", "检测", "需求", "触发", "验证", "效果", "启动", "运行", "停止", "等级", "模式", "周期"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能多维融合智能分析引擎 (Round 204)
     elif "多维分析" in intent or "态势感知" in intent or "智能分析" in intent or "统一分析" in intent or "跨引擎分析" in intent or "multi-dim" in intent.lower() or "situation" in intent.lower() or "智能洞察" in intent:
         print(f"[智能多维融合智能分析引擎] 正在运行多维度分析...", file=sys.stderr)
