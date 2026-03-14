@@ -2098,6 +2098,24 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+
+    # 智能全场景智能体自主协作与社会化推理引擎
+    elif "智能体协作" in intent or "多智能体" in intent or "社会化推理" in intent or "智能体社会" in intent or "multi agent" in intent.lower() or "agent collaboration" in intent.lower() or "social reasoning" in intent.lower() or "协作解决问题" in intent:
+        print(f"[智能体自主协作引擎] 正在启动多智能体协作...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "multi_agent_social_reasoning_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--help"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["智能体协作", "多智能体", "社会化推理", "智能体社会", "multi agent", "agent collaboration", "social reasoning", "协作解决问题"]]
+        if not filtered_args:
+            filtered_args = ["--help"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能文件管理引擎
     elif "文件管理" in intent or "整理文件" in intent or "文件整理" in intent or "搜索文件" in intent or "文件搜索" in intent or "分析文件" in intent or "文件分析" in intent or "file manager" in intent.lower() or "organize files" in intent.lower():
         print(f"[智能文件管理引擎] 正在处理文件管理请求...", file=sys.stderr)
