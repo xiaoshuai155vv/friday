@@ -1687,6 +1687,34 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景认知驱动自动决策与执行闭环引擎（Round 455）- 将深度认知引擎的评估结果自动应用到进化决策过程中，基于认知质量评估生成优化决策，并自动执行决策形成验证闭环
+    elif "认知决策" in intent or "驱动决策" in intent or "自动决策" in intent or "认知执行" in intent or "cognition decision" in intent.lower() or "cognition driven" in intent.lower() or "decision execution" in intent.lower() or "cognitive decision" in intent.lower() or "认知驱动" in intent or "决策闭环" in intent or "decision loop" in intent.lower() or "cognition loop" in intent.lower() or "认知驱动决策" in intent:
+        print(f"[认知驱动自动决策与执行闭环引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cognition_driven_decision_execution_engine.py")
+
+        # 确定要执行的命令
+        if "--collect" in sys.argv or "收集" in intent or "collect" in intent.lower():
+            filtered_args = ["--collect"]
+        elif "--decide" in sys.argv or "决策" in intent or "decide" in intent.lower() or "生成决策" in intent:
+            filtered_args = ["--decide"]
+        elif "--execute" in sys.argv or "执行" in intent or "execute" in intent.lower():
+            # 需要传递决策 JSON
+            filtered_args = ["--execute", json.dumps({"type": "self_optimization", "description": "命令行执行", "action": "test action"})]
+        elif "--loop" in sys.argv or "闭环" in intent or "loop" in intent.lower() or "完整闭环" in intent:
+            filtered_args = ["--loop"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--json" in sys.argv or "json" in intent.lower():
+            filtered_args = ["--json"]
+        else:
+            # 默认：获取驾驶舱数据
+            filtered_args = ["--cockpit-data"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎统一知识索引与智能检索引擎（Round 446）- 聚合所有进化引擎产生的知识资产、建立统一知识索引、实现智能检索、生成知识关联图谱
     elif "知识索引" in intent or "知识检索" in intent or "跨引擎知识" in intent or "查询知识" in intent or "知识图谱" in intent or "knowledge index" in intent.lower() or "knowledge search" in intent.lower() or "knowledge graph" in intent.lower() or "知识发现" in intent or "搜索知识" in intent:
         print(f"[跨引擎知识索引与检索引擎] 正在处理...", file=sys.stderr)
