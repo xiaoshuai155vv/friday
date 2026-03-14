@@ -6299,10 +6299,44 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化决策质量实时评估与自适应优化引擎 (Round 335) - 需要放在前面以避免被 round 334 拦截
+    elif ("决策质量评估" in intent or "质量评估" in intent or "质量优化" in intent or
+          "quality evaluation" in intent.lower() or "decision quality" in intent.lower() or
+          "自适应优化" in intent or "优化建议" in intent or
+          "决策偏差" in intent or "质量趋势" in intent):
+        print(f"[智能进化决策质量实时评估与自适应优化引擎 v1.0] 正在处理决策质量评估...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_decision_quality_evaluator.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "评估" in intent or "evaluate" in intent.lower() or "评估决策" in intent:
+            action = "--evaluate"
+        elif "分析" in intent or "analyze" in intent.lower() or "偏差" in intent:
+            action = "--analyze"
+        elif "建议" in intent or "suggest" in intent.lower() or "优化建议" in intent:
+            action = "--suggest"
+        elif "趋势" in intent or "trend" in intent.lower() or "质量趋势" in intent:
+            action = "--trend"
+        # 过滤掉意图关键词
+        filter_words = ["决策质量评估", "质量评估", "质量优化", "quality evaluation", "decision quality",
+                       "自适应优化", "优化建议", "决策偏差", "质量趋势",
+                       "评估", "evaluate", "分析", "analyze", "建议", "suggest", "趋势", "trend",
+                       "状态", "status"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作前缀
+        if action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化决策-知识-解释深度集成引擎 (Round 334)
-    elif ("决策知识集成" in intent or "决策优化" in intent or "解释增强" in intent or
+    elif ("决策知识集成" in intent or "解释增强" in intent or
           "知识驱动决策" in intent or "decision knowledge" in intent.lower() or
-          "决策学习" in intent or "知识解释集成" in intent or "深度集成决策" in intent):
+          "知识解释集成" in intent or "深度集成决策" in intent):
         print(f"[智能进化决策-知识-解释深度集成引擎 v1.0] 正在处理知识驱动的决策...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_decision_knowledge_integration.py")
         # 解析命令参数
