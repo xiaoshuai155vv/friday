@@ -4106,6 +4106,33 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环自主意识觉醒与执行闭环引擎（round 321）- 让系统具备真正的自主意识
+    elif "自主意识" in intent or "自主执行" in intent or "意识觉醒" in intent or "执行闭环" in intent or "autonomous consciousness" in intent.lower() or "consciousness execution" in intent.lower() or "想做事" in intent or "想做" in intent or "我要做" in intent or "自主驱动" in intent or "auto drive" in intent.lower():
+        print(f"[智能全场景进化环自主意识觉醒与执行闭环引擎] 正在分析系统自主意识状态并驱动执行...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_autonomous_consciousness_execution_engine.py")
+        # 判断动作
+        action = None
+        if "状态" in intent or "status" in intent.lower():
+            action = "--status"
+        elif "扫描" in intent or "scan" in intent.lower() or "分析" in intent:
+            action = "--consciousness-scan"
+        elif "意图" in intent or "intent" in intent.lower() or "生成" in intent:
+            action = "--generate-intent"
+        elif "执行" in intent or "execute" in intent.lower() or "驱动" in intent:
+            action = "--auto-execute"
+        elif "验证" in intent or "verify" in intent.lower() or "验证结果" in intent:
+            action = "--verify-result"
+        elif "仪表盘" in intent or "dashboard" in intent.lower():
+            action = "--dashboard"
+        # 默认使用摘要
+        if not action:
+            action = "--summary"
+        result = subprocess.run([sys.executable, script_path, action], cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能场景自适应执行引擎（round 176）- 基于实时上下文自动执行/切换场景计划
     elif "场景自适应" in intent or "自适应场景" in intent or "自动场景" in intent or "scene adaptive" in intent.lower() or "auto scene" in intent.lower() or "场景自动" in intent or "自适应执行" in intent or "auto-switch" in intent.lower():
         print(f"[智能场景自适应执行引擎] 正在分析上下文并执行场景...", file=sys.stderr)
