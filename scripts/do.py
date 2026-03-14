@@ -2951,6 +2951,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景统一智能决策与执行中枢引擎（round 313）
+    elif "智能决策" in intent or "决策中枢" in intent or "执行大脑" in intent or "unified decision" in intent.lower() or "decision hub" in intent.lower() or "智能执行" in intent or "决策执行" in intent or "全场景决策" in intent or "统一决策" in intent or "intelligent decision" in intent.lower():
+        print(f"[智能全场景统一智能决策与执行中枢引擎] 正在执行感知→决策→执行→学习完整闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "unified_intelligent_decision_execution_hub.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["智能决策", "决策中枢", "执行大脑", "unified decision", "decision hub", "智能执行", "决策执行", "全场景决策", "统一决策", "intelligent decision", "状态", "查询"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能跨引擎知识融合与持续学习引擎（round 212）
     elif "跨引擎学习" in intent or "跨引擎知识" in intent or "引擎持续学习" in intent or "cross engine learning" in intent.lower() or "知识融合" in intent or "模式发现" in intent or "创新组合" in intent:
         print(f"[智能跨引擎知识融合与持续学习引擎] 正在分析跨引擎交互数据并生成创新建议...", file=sys.stderr)
