@@ -3715,6 +3715,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环执行效果实时反馈与进化驾驶舱深度集成引擎（round 420）
+    elif "反馈驾驶舱" in intent or "执行效果显示" in intent or "反馈驾驶舱集成" in intent or "feedback cockpit" in intent.lower() or "execution display" in intent.lower() or "feedback integration" in intent.lower() or "执行反馈驾驶舱" in intent or "效果驾驶舱" in intent or "execution feedback cockpit" in intent.lower():
+        print(f"[进化环执行效果实时反馈与进化驾驶舱深度集成引擎] 正在启动执行效果反馈与驾驶舱集成...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_execution_feedback_cockpit_integration_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["反馈驾驶舱", "执行效果显示", "反馈驾驶舱集成", "feedback cockpit", "execution display", "feedback integration", "执行反馈驾驶舱", "效果驾驶舱", "execution feedback cockpit"]]
+        if not filtered_args:
+            filtered_args = ["dashboard"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化策略自动生成与动态评估引擎（round 310）
     elif "策略生成" in intent or "策略评估" in intent or "动态策略" in intent or "智能策略选择" in intent or "strategy generation" in intent.lower() or "strategy evaluate" in intent.lower() or "generate strategy" in intent.lower() or "策略智能选择" in intent or "进化策略生成" in intent or "生成进化策略" in intent:
         print(f"[智能进化策略自动生成与动态评估引擎] 正在生成和评估进化策略...", file=sys.stderr)
