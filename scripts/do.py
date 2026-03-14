@@ -1570,6 +1570,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环多维度自主意识融合深度增强引擎（Round 369）
+    elif "多维度融合" in intent or "多维度意识融合" in intent or "意识融合" in intent or "multidimensional fusion" in intent.lower() or "multi-dim consciousness" in intent.lower() or "consciousness fusion" in intent.lower() or "融合模式" in intent or "自适应模式" in intent or "模式选择" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["--dashboard"]
+        if not cmd or (cmd and cmd[0] not in ["--status", "--full-loop", "--fusion-status", "--analyze-context", "--dashboard", "--help"]):
+            cmd = ["--dashboard"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_multidimensional_consciousness_fusion_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
