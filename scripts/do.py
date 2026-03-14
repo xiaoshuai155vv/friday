@@ -1379,6 +1379,39 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环优化建议自动执行闭环引擎（Round 445）- 自动分析优化建议可执行性、将高置信度建议自动转化为执行计划、执行并验证优化效果
+    elif "优化执行" in intent or "自动执行优化" in intent or "执行优化建议" in intent or "优化闭环" in intent or "optimization execution" in intent.lower() or "auto execute optimization" in intent.lower() or "execute optimization" in intent.lower() or "优化自动执行" in intent or "优化建议执行" in intent:
+        print(f"[优化建议自动执行闭环引擎] 正在启动优化执行分析...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_optimization_auto_execution_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+
+        # 确定要执行的命令
+        if "状态" in intent or "status" in intent.lower():
+            filtered_args = ["--status"]
+        elif "加载建议" in intent or "load suggestions" in intent.lower():
+            filtered_args = ["--load-suggestions"]
+        elif "分析可执行" in intent or "analyze" in intent.lower():
+            filtered_args = ["--analyze"]
+        elif "生成计划" in intent or "generate plan" in intent.lower() or "执行计划" in intent:
+            filtered_args = ["--generate-plan"]
+        elif "执行" in intent and "计划" in intent or "execute" in intent.lower():
+            filtered_args = ["--execute"]
+        elif "自动周期" in intent or "auto cycle" in intent.lower() or "完整周期" in intent or "full cycle" in intent.lower():
+            filtered_args = ["--auto-cycle"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "推送" in intent or "push" in intent.lower():
+            filtered_args = ["--push-cockpit"]
+        elif "验证" in intent and "执行" in intent or "verify" in intent.lower():
+            filtered_args = ["--verify"]
+        else:
+            filtered_args = ["--status"]  # 默认状态
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化知识深度传承与自适应遗忘引擎（Round 347）
     elif "知识传承" in intent or "自适应遗忘" in intent or "知识管理" in intent or "遗忘引擎" in intent or "knowledge inheritance" in intent.lower() or "knowledge forgetting" in intent.lower() or "knowledge management" in intent.lower() or "知识老化" in intent or "知识价值" in intent or "遗忘知识" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
