@@ -1727,6 +1727,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环智能协同与自主决策增强引擎（round 303）
+    elif "智能协同" in intent or "协同编排" in intent or "协同决策" in intent or "协同增强" in intent or "多引擎协同" in intent or "collaboration intelligence" in intent.lower() or "智能团队" in intent:
+        print(f"[智能全场景进化环智能协同与自主决策增强引擎] 正在分析任务并组建协同团队...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_collaboration_intelligence_enhancer.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["recommend", "--task", intent]
+        if not cmd_args or len(cmd_args) < 2:
+            cmd_args = ["recommend", "--task", intent]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化元模式发现引擎（round 244）
     elif "进化元模式" in intent or "元模式发现" in intent or "meta pattern" in intent.lower() or "meta" in intent.lower() or "进化模式分析" in intent or "模式发现" in intent or intent == "patterns":
         print(f"[智能进化元模式发现引擎] 正在分析进化模式...", file=sys.stderr)
