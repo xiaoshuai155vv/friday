@@ -1610,6 +1610,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨轮次知识深度整合与智能推理引擎（Round 373）- 跨轮次知识收集、图谱构建、趋势分析、创新发现
+    elif "知识整合" in intent or "知识推理" in intent or "跨轮推理" in intent or "知识分析" in intent or "knowledge integration" in intent.lower() or "knowledge reasoning" in intent.lower() or "知识网络" in intent or "图谱构建" in intent or "趋势分析" in intent or "创新发现" in intent or "跨轮知识" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "collect", "build", "analyze", "discover", "integrate", "cycle", "test", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_knowledge_deep_integration_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
