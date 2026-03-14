@@ -2826,6 +2826,32 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能主动价值发现与即时服务引擎 (Round 264) - 主动分析用户情境，识别用户可能需要但尚未提出的高价值服务
+    elif "主动发现" in intent or "价值发现" in intent or "即时服务" in intent or "主动价值" in intent or "proactive value" in intent.lower() or "value discovery" in intent.lower() or "主动服务" in intent or "discover opportunity" in intent.lower():
+        print(f"[智能主动价值发现与即时服务引擎] 正在分析情境并发现价值机会...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "proactive_value_discovery_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--discover"]
+        # 判断动作
+        action = "status"
+        if "discover" in intent.lower() or "发现" in intent:
+            action = "discover"
+        elif "analyze" in intent.lower() or "分析" in intent:
+            action = "analyze"
+        elif "effectiveness" in intent.lower() or "效果" in intent:
+            action = "effectiveness"
+        # 过滤掉意图关键词
+        filter_words = ["主动发现", "价值发现", "即时服务", "主动价值", "proactive value", "value discovery", "主动服务", "discover opportunity", "分析", "发现", "效果"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg for w in filter_words)]
+        # 添加动作参数
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能长期记忆与主动规划引擎
     elif "长期记忆" in intent or "目标跟踪" in intent or "主动规划" in intent or "我的目标" in intent or "待办" in intent or "long term memory" in intent.lower() or "目标" in intent or "待办" in intent:
         print(f"[智能长期记忆与主动规划引擎] 正在处理...", file=sys.stderr)
