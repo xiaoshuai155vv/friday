@@ -1470,6 +1470,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化引擎集群跨引擎智能修复与深度自愈集成引擎（Round 405）- 将诊断结果自动转化为修复行动
+    elif "智能修复" in intent or "深度自愈" in intent or "跨引擎修复" in intent or "自动修复" in intent or "smart repair" in intent.lower() or "deep healing" in intent.lower() or "auto repair" in intent.lower() or "跨引擎自愈" in intent or "智能自愈" in intent or "修复引擎" in intent or "自愈引擎" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "history", "auto_repair", "analyze", "enable", "disable", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_cross_engine_smart_repair_deep_healing_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环全局智能驾驶舱与一键启动引擎（Round 350）
     elif "驾驶舱" in intent or "进化驾驶舱" in intent or "一键启动" in intent or "进化控制台" in intent or "cockpit" in intent.lower() or "evolution cockpit" in intent.lower() or "一键进化" in intent or "进化状态" in intent and ("控制" in intent or "台" in intent or "一键" in intent):
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
