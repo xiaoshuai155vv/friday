@@ -1423,7 +1423,7 @@ def main():
     # 智能全场景进化环自我修复能力增强引擎（Round 353）
     elif "自我修复" in intent or "主动预防" in intent or "问题预测" in intent or "self repair" in intent.lower() or "主动修复" in intent or "预防性修复" in intent or "predict problem" in intent.lower() or "问题预测" in intent or "自愈增强" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
-        if not cmd or (cmd and cmd[0] not in ["status", "predict", "prevent", "repair", "verify", "full_cycle", "help"]):
+        if not cmd or (cmd and cmd[0] not in ["status", "predict", "prevent", "repair", "verify", "full_cycle", "meta_repair", "help"]):
             cmd = ["status"]
         result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_self_repair_enhancement_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
