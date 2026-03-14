@@ -5312,26 +5312,32 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
-    # 智能全场景自进化健康保障闭环引擎 (Round 271)
-    elif "进化健康" in intent or "自进化保障" in intent or "evolution health" in intent.lower() or "进化保障" in intent or "健康闭环" in intent or "自进化健康" in intent:
-        print(f"[智能全场景自进化健康保障闭环引擎] 正在检查进化健康状态...", file=sys.stderr)
+    # 智能全场景自进化健康保障闭环引擎 (Round 271-272 深度集成版)
+    elif "进化健康" in intent or "自进化保障" in intent or "evolution health" in intent.lower() or "进化保障" in intent or "健康闭环" in intent or "自进化健康" in intent or "自动修复" in intent or "闭环自愈" in intent:
+        print(f"[智能全场景自进化健康保障闭环引擎 v2.0] 正在检查进化健康状态...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_health_assurance_loop.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
-        # 判断动作
+        # 判断动作 (v2.0 新增: auto_repair, verify, closed_loop)
         action = "summary"
         if "检查" in intent or "check" in intent.lower() or "状态" in intent:
             action = "check"
         elif "诊断" in intent or "diagnose" in intent.lower():
             action = "diagnose"
+        elif "自动修复" in intent or "auto_repair" in intent.lower():
+            action = "auto_repair"
+        elif "验证" in intent or "verify" in intent.lower():
+            action = "verify"
+        elif "闭环" in intent or "closed_loop" in intent.lower() or "完整闭环" in intent:
+            action = "closed_loop"
         elif "修复" in intent or "heal" in intent.lower() or "自愈" in intent:
             action = "heal"
         elif "评估" in intent or "evaluate" in intent.lower():
             action = "evaluate"
         elif "摘要" in intent or "summary" in intent.lower():
             action = "summary"
-        # 过滤掉意图关键词
-        filter_words = ["进化健康", "自进化保障", "evolution health", "进化保障", "健康闭环", "自进化健康", "检查", "check", "状态", "诊断", "diagnose", "修复", "heal", "自愈", "评估", "evaluate", "摘要", "summary"]
+        # 过滤掉意图关键词 (v2.0 新增关键词)
+        filter_words = ["进化健康", "自进化保障", "evolution health", "进化保障", "健康闭环", "自进化健康", "自动修复", "闭环自愈", "检查", "check", "状态", "诊断", "diagnose", "修复", "heal", "自愈", "评估", "evaluate", "摘要", "summary", "自动修复", "auto_repair", "验证", "verify", "闭环", "closed_loop", "完整闭环"]
         filtered_args = [arg for arg in cmd_args if arg not in filter_words]
         if action not in filtered_args:
             filtered_args.insert(0, action)
