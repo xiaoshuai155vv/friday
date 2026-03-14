@@ -2937,6 +2937,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景元进化统一协同引擎（round 312）
+    elif "元进化协同" in intent or "进化智慧" in intent or "协同洞察" in intent or "meta coordination" in intent.lower() or "evolution intelligence" in intent.lower() or "元进化大脑" in intent or "统一协同" in intent or "evolution meta" in intent.lower() or "meta evolve" in intent.lower():
+        print(f"[智能全场景元进化统一协同引擎] 正在协调各元进化引擎，生成统一进化洞察...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_coordination_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["元进化协同", "进化智慧", "协同洞察", "meta coordination", "evolution intelligence", "元进化大脑", "统一协同", "evolution meta", "meta evolve"]]
+        if not filtered_args:
+            filtered_args = ["--coordination"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能跨引擎知识融合与持续学习引擎（round 212）
     elif "跨引擎学习" in intent or "跨引擎知识" in intent or "引擎持续学习" in intent or "cross engine learning" in intent.lower() or "知识融合" in intent or "模式发现" in intent or "创新组合" in intent:
         print(f"[智能跨引擎知识融合与持续学习引擎] 正在分析跨引擎交互数据并生成创新建议...", file=sys.stderr)
