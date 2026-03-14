@@ -2,16 +2,15 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/evolution_health_self_evaluation_engine.py, scripts/do.py
+scripts/evolution_health_healing_integrated_engine.py, scripts/do.py
 
-## 2026-03-14 round 294
-- **current_goal**：智能全场景进化闭环健康自评估与自适应优化引擎 - 让系统能够自动评估自身进化健康状态、识别进化过程中的问题、生成健康报告并指导后续进化方向
+## 2026-03-14 round 295
+- **current_goal**：智能全场景进化健康自评估与自愈集成引擎 - 将 round 294 的健康自评估引擎与 round 290 的自愈引擎深度集成，实现评估→发现问题→自动修复→验证的完整闭环
 - **做了什么**：
-  1. 创建 evolution_health_self_evaluation_engine.py 模块（version 1.0.0）
-  2. 实现进化健康状态评估（检查 current_mission、recent_logs、history_db、pending_evolutions）
-  3. 实现问题自动识别与诊断（诊断各组件问题、计算健康分数）
-  4. 生成进化健康报告（综合评估结果、问题列表、优化建议）
-  5. 实现进化趋势分析（分析成功率、效率趋势）
-  6. 集成到 do.py 支持进化健康自评估、健康报告、优化建议、趋势分析等关键词触发
+  1. 创建 evolution_health_healing_integrated_engine.py 模块（version 1.0.0）
+  2. 集成进化健康自评估引擎（round 294）实现健康检查与问题诊断
+  3. 集成进化自愈引擎（round 290）实现自动修复能力
+  4. 实现完整闭环：健康评估→问题分类→自动修复→验证修复效果
+  5. 集成到 do.py 支持"进化健康自愈集成"、"健康自愈集成"、"评估修复闭环"等关键词触发
 - **是否完成**：已完成
-- **下一轮建议**：可进一步与进化自愈引擎(290)集成，实现自动修复发现的问题
+- **下一轮建议**：可进一步与进化策略引擎集成，实现基于评估结果的智能进化方向推荐
