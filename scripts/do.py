@@ -1302,6 +1302,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "build_model", "reflect", "goals", "plan", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "autonomous_awareness_engine.py")] + cmd, cwd=PROJECT)
+    # 智能全场景系统自我进化评估与优化引擎（Round 279）
+    elif "进化评估" in intent or "自我评估" in intent or "进化优化" in intent or "evolution_evaluation" in intent.lower() or "self evaluation" in intent.lower() or "评估优化" in intent or "进化自评" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "evaluate", "opportunities", "suggestions", "execute", "integrate", "cycle", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_self_evaluation_optimizer.py")] + cmd, cwd=PROJECT)
     # 统一引擎调度中心
     elif "引擎" in intent or "engine hub" in intent.lower() or "统一调度" in intent or "引擎列表" in intent or "所有引擎" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["list"]
