@@ -1362,6 +1362,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "monitor", "metrics", "anomalies", "trends", "alerts", "clear", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_loop_health_monitor.py")] + cmd, cwd=PROJECT)
+    # 智能进化引擎架构健康度评估与自动优化引擎（Round 291）
+    elif "架构健康" in intent or "引擎评估" in intent or "架构评估" in intent or "engine health" in intent.lower() or "architecture health" in intent.lower() or "进化引擎健康" in intent or "引擎优化" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["--summary"]
+        if not cmd or (cmd and cmd[0] not in ["--eval", "--summary", "--plan", "--json", "help"]):
+            cmd = ["--summary"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_engine_architecture_health_evaluator.py")] + cmd, cwd=PROJECT)
     # 智能全场景进化意图自主觉醒引擎（Round 288）
     elif "进化意图" in intent or "主动进化" in intent or "自主意图" in intent or "intent" in intent.lower() and "evolution" in intent.lower() or "意图驱动" in intent or "我想进化" in intent or "我需要进化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
