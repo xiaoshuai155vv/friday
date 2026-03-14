@@ -1729,6 +1729,18 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景跨引擎知识深度融合与主动洞察生成引擎（round 320）
+    elif "知识融合" in intent or "跨引擎洞察" in intent or "主动洞察" in intent or "深度融合" in intent or "智能洞察" in intent or "洞察生成" in intent or "cross engine fusion" in intent.lower() or "knowledge fusion" in intent.lower() or "proactive insight" in intent.lower() or "主动洞察生成" in intent or "跨引擎知识" in intent:
+        print(f"[智能全场景跨引擎知识深度融合与主动洞察生成引擎] 正在融合跨引擎知识并生成洞察...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_engine_knowledge_fusion.py")
+        # 始终生成主动洞察
+        cmd_args = ["--generate"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景自主进化闭环全自动化引擎（round 300）
     elif "进化全自动化" in intent or "全自动进化" in intent or "无人值守进化" in intent or "一键进化" in intent or "进化环自动" in intent or "自动进化环" in intent or "full auto" in intent.lower() or "auto loop" in intent.lower() or "evolution auto" in intent.lower() or "全自动化闭环" in intent:
         print(f"[智能全场景自主进化闭环全自动化引擎] 正在执行全自动化进化闭环...", file=sys.stderr)
