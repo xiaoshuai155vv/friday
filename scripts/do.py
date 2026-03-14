@@ -1400,6 +1400,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环触发推荐自动执行深度集成引擎（Round 412）- 将触发推荐与进化执行引擎深度集成，实现从推荐到自动执行的完整闭环
+    elif "触发执行" in intent or "自动执行" in intent or "触发推荐执行" in intent or "推荐执行" in intent or "trigger execute" in intent.lower() or "auto execute" in intent.lower() or "execute recommendation" in intent.lower() or "推荐自动执行" in intent or "执行闭环" in intent or "trigger execution" in intent.lower() or "execution integration" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["execute", "status", "verify", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_trigger_execution_integration.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎协同自优化与深度集成引擎（Round 349）
     elif "进化协同" in intent or "引擎协同优化" in intent or "跨引擎健康" in intent or "协同自优化" in intent or "跨引擎" in intent or "引擎健康" in intent or "进化引擎健康" in intent or "cross engine" in intent.lower() or "engine collaboration" in intent.lower() or "collaboration optimizer" in intent.lower() or "跨引擎协同" in intent or "引擎协作" in intent or "协同优化" in intent or "进化环健康" in intent or "evolution health" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
