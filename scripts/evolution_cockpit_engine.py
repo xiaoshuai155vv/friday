@@ -468,7 +468,7 @@ class EvolutionCockpitEngine:
                 "auto_mode": self.auto_mode,
                 "current_round": self.current_evolution_round,
                 "status": cockpit_state.get("evolution_status", "idle"),
-                "uptime": self._calculate_uptime(cockkit_state.get("start_time")),
+                "uptime": self._calculate_uptime(cockpit_state.get("start_time")),
                 "total_rounds": cockpit_state.get("total_rounds", 0),
                 "successful_rounds": cockpit_state.get("successful_rounds", 0),
                 "failed_rounds": cockpit_state.get("failed_rounds", 0),
