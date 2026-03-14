@@ -1430,6 +1430,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨轮次知识积累与复用可视化引擎（Round 415）- 基于 round 414 的知识驱动递归增强引擎，增强跨轮次知识积累与复用的可视化能力
+    elif "知识可视化" in intent or "知识积累可视化" in intent or "知识复用可视化" in intent or "knowledge visualization" in intent.lower() or "knowledge accumulation visualization" in intent.lower() or "知识图谱可视化" in intent or "知识趋势" in intent or "knowledge trend" in intent.lower() or "知识网络" in intent or "知识关联" in intent or "knowledge correlation" in intent.lower() or "知识价值分布" in intent or "knowledge value" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["report"]
+        if not cmd or (cmd and cmd[0] not in ["report", "status", "health", "history", "trend", "network", "distribution", "help"]):
+            cmd = ["report"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_knowledge_visualization_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎协同自优化与深度集成引擎（Round 349）
     elif "进化协同" in intent or "引擎协同优化" in intent or "跨引擎健康" in intent or "协同自优化" in intent or "跨引擎" in intent or "引擎健康" in intent or "进化引擎健康" in intent or "cross engine" in intent.lower() or "engine collaboration" in intent.lower() or "collaboration optimizer" in intent.lower() or "跨引擎协同" in intent or "引擎协作" in intent or "协同优化" in intent or "进化环健康" in intent or "evolution health" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
