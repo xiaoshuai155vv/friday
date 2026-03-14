@@ -6097,6 +6097,49 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环全局态势感知与自适应决策增强引擎 (Round 329)
+    elif ("全局态势" in intent or "态势感知" in intent or "全局感知" in intent or
+          "global situation" in intent.lower() or "situation awareness" in intent.lower() or
+          "adaptive decision" in intent.lower() or "自适应决策" in intent or
+          "决策增强" in intent or "decision enhancement" in intent.lower() or
+          "决策质量" in intent or "优化建议" in intent or "智能建议" in intent or
+          "动态优化" in intent or "adaptive optimization" in intent.lower() or
+          "态势分析" in intent or "situation analyze" in intent.lower() or
+          "决策增强" in intent or "全局态势感知" in intent):
+        print(f"[智能全场景进化环全局态势感知与自适应决策增强引擎 v1.0] 正在执行全局态势感知与自适应决策增强...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_global_situation_awareness.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "感知" in intent or "perceive" in intent.lower():
+            action = "perceive"
+        elif "分析" in intent or "analyze" in intent.lower():
+            action = "analyze"
+        elif "增强" in intent or "enhance" in intent.lower() or "决策增强" in intent:
+            action = "enhance"
+        elif "完整周期" in intent or "full-cycle" in intent.lower() or "完整" in intent:
+            action = "full-cycle"
+        elif "优化建议" in intent or "suggestions" in intent.lower():
+            action = "full-cycle"
+        # 过滤掉意图关键词
+        filter_words = ["全局态势", "态势感知", "全局感知", "global situation", "situation awareness",
+                       "adaptive decision", "自适应决策", "决策增强", "decision enhancement",
+                       "决策质量", "优化建议", "智能建议", "动态优化", "adaptive optimization",
+                       "态势分析", "situation analyze", "全局态势感知", "状态", "status",
+                       "感知", "perceive", "分析", "analyze", "增强", "enhance", "完整周期", "full-cycle", "完整"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加 -- 前缀
+        if action not in filtered_args:
+            filtered_args.insert(0, "--" + action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化方向自动发现与优先级排序引擎 (Round 239)
     elif "进化发现" in intent or "方向发现" in intent or "优先级排序" in intent or "evolution discovery" in intent.lower() or "方向排序" in intent or "进化机会" in intent or "发现进化" in intent or "自动发现进化" in intent:
         print(f"[智能进化方向自动发现引擎] 正在分析进化机会...", file=sys.stderr)
