@@ -1508,6 +1508,43 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环执行策略自优化深度增强引擎（Round 449）- 自动分析引擎执行效果、识别协作低效模式、智能生成并执行优化策略
+    elif "策略优化" in intent or "执行优化" in intent or "自优化" in intent or "优化策略" in intent or "strategy optimization" in intent.lower() or "execution optimization" in intent.lower() or "self-optimization" in intent.lower() or "optimize strategy" in intent.lower() or "策略自优化" in intent or "执行策略优化" in intent:
+        print(f"[执行策略自优化深度增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_execution_strategy_self_optimizer.py")
+
+        # 确定要执行的命令
+        if "--stats" in sys.argv:
+            filtered_args = ["--stats"]
+        elif "--cycle" in sys.argv or "完整优化" in intent or "优化周期" in intent:
+            filtered_args = ["--cycle"]
+        elif "--analyze" in sys.argv or "分析" in intent:
+            filtered_args = ["--analyze"]
+            if "--engine" in sys.argv:
+                idx = sys.argv.index("--engine")
+                if idx + 1 < len(sys.argv):
+                    filtered_args.extend(["--engine", sys.argv[idx + 1]])
+        elif "--identify" in sys.argv or "识别" in intent or "模式" in intent:
+            filtered_args = ["--identify"]
+        elif "--generate" in sys.argv or "生成策略" in intent or "生成优化" in intent:
+            filtered_args = ["--generate"]
+        elif "--execute" in sys.argv:
+            filtered_args = ["--execute"]
+            if len(sys.argv) > sys.argv.index("--execute") + 1:
+                next_arg = sys.argv[sys.argv.index("--execute") + 1]
+                if not next_arg.startswith("--"):
+                    filtered_args.append(next_arg)
+        elif "--verify" in sys.argv or "验证" in intent:
+            filtered_args = ["--verify"]
+        else:
+            # 默认：显示统计信息
+            filtered_args = ["--stats"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎统一知识索引与智能检索引擎（Round 446）- 聚合所有进化引擎产生的知识资产、建立统一知识索引、实现智能检索、生成知识关联图谱
     elif "知识索引" in intent or "知识检索" in intent or "跨引擎知识" in intent or "查询知识" in intent or "知识图谱" in intent or "knowledge index" in intent.lower() or "knowledge search" in intent.lower() or "knowledge graph" in intent.lower() or "知识发现" in intent or "搜索知识" in intent:
         print(f"[跨引擎知识索引与检索引擎] 正在处理...", file=sys.stderr)
