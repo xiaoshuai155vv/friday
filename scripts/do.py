@@ -4056,6 +4056,44 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景跨模块深度诊断与自愈统一引擎（round 319）- 构建统一的系统健康诊断与自愈中枢
+    elif "统一诊断" in intent or "跨模块诊断" in intent or "深度诊断" in intent or "诊疗" in intent or "unified diagnosis" in intent.lower() or "cross module diagnosis" in intent.lower() or "deep diagnosis" in intent.lower() or "诊疗" in intent.lower() or "统一健康" in intent or "跨模块健康" in intent or "健康仪表盘" in intent:
+        print(f"[跨模块深度诊断与自愈统一引擎] 正在执行统一诊断...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "unified_diagnosis_healing_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = None
+        if "快速" in intent or "quick" in intent.lower():
+            action = "--level quick"
+        elif "深度" in intent or "deep" in intent.lower():
+            action = "--level deep"
+        elif "仪表盘" in intent or "dashboard" in intent.lower() or "状态" in intent:
+            action = "--dashboard"
+        elif "历史" in intent or "history" in intent.lower():
+            action = "--history"
+        # 判断是否自动修复
+        auto_heal = False
+        if "自动修复" in intent or "auto heal" in intent.lower() or "自愈" in intent:
+            auto_heal = True
+            action = (action or "") + " --auto-heal"
+        # 过滤掉意图关键词
+        filter_words = ["统一诊断", "跨模块诊断", "深度诊断", "诊疗", "unified diagnosis", "cross module diagnosis", "deep diagnosis", "健康仪表盘", "dashboard", "快速", "quick", "深度", "deep", "历史", "history", "自动修复", "auto heal", "自愈", "状态"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action:
+            action_parts = action.split()
+            for part in action_parts:
+                if part and part not in filtered_args:
+                    filtered_args.insert(0, part)
+        if not filtered_args:
+            # 默认运行标准诊断
+            filtered_args = ["--level", "standard"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能场景自适应执行引擎（round 176）- 基于实时上下文自动执行/切换场景计划
     elif "场景自适应" in intent or "自适应场景" in intent or "自动场景" in intent or "scene adaptive" in intent.lower() or "auto scene" in intent.lower() or "场景自动" in intent or "自适应执行" in intent or "auto-switch" in intent.lower():
         print(f"[智能场景自适应执行引擎] 正在分析上下文并执行场景...", file=sys.stderr)
