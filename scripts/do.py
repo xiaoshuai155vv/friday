@@ -3730,11 +3730,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环策略自适应迭代优化引擎（round 427）
-    elif "策略自适应迭代" in intent or "迭代优化" in intent or "自适应优化" in intent or "adaptive iteration" in intent.lower() or "strategy adaptive" in intent.lower() or "迭代闭环" in intent or "自适应迭代" in intent or "策略迭代" in intent or "迭代自优化" in intent:
+    elif ("策略自适应迭代" in intent or "迭代优化" in intent or "自适应优化" in intent or "adaptive iteration" in intent.lower() or "strategy adaptive" in intent.lower() or "迭代闭环" in intent or "自适应迭代" in intent or "策略迭代" in intent or "迭代自优化" in intent) and "元" not in intent and "meta" not in intent.lower():
         print(f"[策略自适应迭代优化引擎] 正在启动策略自适应迭代优化...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_strategy_adaptive_iteration_engine.py")
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
         filtered_args = [arg for arg in cmd_args if arg not in ["策略自适应迭代", "迭代优化", "自适应优化", "adaptive iteration", "strategy adaptive", "迭代闭环", "自适应迭代", "策略迭代", "迭代自优化"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环策略元自适应迭代优化引擎（round 428）
+    elif "策略元自适应迭代" in intent or "元迭代优化" in intent or "meta iteration" in intent.lower() or "元优化" in intent or "策略元优化" in intent or "元自适应" in intent or "meta adaptive" in intent.lower() or "策略递归优化" in intent or "递归迭代优化" in intent or "meta strategy" in intent.lower():
+        print(f"[策略元自适应迭代优化引擎] 正在启动策略元自适应迭代优化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_strategy_meta_adaptive_iteration_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["策略元自适应迭代", "元迭代优化", "meta iteration", "元优化", "策略元优化", "元自适应", "meta adaptive", "策略递归优化", "递归迭代优化", "meta strategy"]]
         if not filtered_args:
             filtered_args = ["status"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
