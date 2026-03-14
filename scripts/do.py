@@ -1465,6 +1465,49 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨引擎知识主动推荐与智能预警引擎（Round 448）- 基于上下文主动推荐知识、预测用户需求、预警潜在问题
+    elif "知识推荐" in intent or "智能推荐" in intent or "推荐知识" in intent or "主动预警" in intent or "知识预警" in intent or "knowledge recommendation" in intent.lower() or "proactive recommendation" in intent.lower() or "主动推荐" in intent or "智能预警" in intent or "预警" in intent:
+        print(f"[跨引擎知识主动推荐与智能预警引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_proactive_recommendation_engine.py")
+
+        # 确定要执行的命令
+        if "--stats" in sys.argv:
+            filtered_args = ["--stats"]
+        elif "--warning" in sys.argv or "预警" in intent:
+            filtered_args = ["--warning"]
+        elif "--proactive" in sys.argv:
+            # 主动推荐
+            proactive_type = "periodic"
+            if "task" in intent.lower():
+                proactive_type = "task_start"
+            elif "query" in intent.lower():
+                proactive_type = "query_complete"
+            elif "warning" in intent.lower() or "预警" in intent:
+                proactive_type = "warning"
+            filtered_args = ["--proactive", proactive_type]
+        elif "--recommend" in sys.argv:
+            # 提取推荐关键词
+            recommend_keyword = intent
+            trigger_keywords = [
+                "知识推荐", "智能推荐", "推荐知识", "主动预警", "知识预警",
+                "knowledge recommendation", "proactive recommendation",
+                "主动推荐", "智能预警", "预警", "推荐"
+            ]
+            for kw in trigger_keywords:
+                recommend_keyword = recommend_keyword.replace(kw, "").strip()
+            if recommend_keyword:
+                filtered_args = ["--recommend", recommend_keyword]
+            else:
+                filtered_args = ["--recommend", ""]
+        else:
+            # 默认：显示统计信息
+            filtered_args = ["--stats"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎统一知识索引与智能检索引擎（Round 446）- 聚合所有进化引擎产生的知识资产、建立统一知识索引、实现智能检索、生成知识关联图谱
     elif "知识索引" in intent or "知识检索" in intent or "跨引擎知识" in intent or "查询知识" in intent or "知识图谱" in intent or "knowledge index" in intent.lower() or "knowledge search" in intent.lower() or "knowledge graph" in intent.lower() or "知识发现" in intent or "搜索知识" in intent:
         print(f"[跨引擎知识索引与检索引擎] 正在处理...", file=sys.stderr)
