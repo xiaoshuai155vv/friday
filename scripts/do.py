@@ -3085,6 +3085,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环自我进化与决策深度集成引擎（round 325）
+    elif "进化决策集成" in intent or "自我决策集成" in intent or "分析决策执行" in intent or "integrated evolution" in intent.lower() or "进化闭环" in intent or "进化自优化" in intent or "自动化进化优化" in intent:
+        print(f"[智能全场景进化环自我进化与决策深度集成引擎] 正在深度集成自我进化引擎与决策引擎，形成分析→决策→执行→验证→优化完整闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_decision_integration.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化决策集成", "自我决策集成", "分析决策执行", "integrated evolution", "进化闭环", "进化自优化", "自动化进化优化", "状态", "status", "仪表盘", "dashboard", "执行", "execute", "循环", "cycle"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能跨引擎知识融合与持续学习引擎（round 212）
     elif "跨引擎学习" in intent or "跨引擎知识" in intent or "引擎持续学习" in intent or "cross engine learning" in intent.lower() or "知识融合" in intent or "模式发现" in intent or "创新组合" in intent:
         print(f"[智能跨引擎知识融合与持续学习引擎] 正在分析跨引擎交互数据并生成创新建议...", file=sys.stderr)
