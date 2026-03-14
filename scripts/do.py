@@ -2138,17 +2138,18 @@ def main():
             if result.returncode != 0 and result.stderr:
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
-    # 跨模态深度融合引擎
-    elif "跨模态" in intent or "多模态融合" in intent or "cross modal" in intent.lower() or "fusion" in intent.lower() or "看图说话" in intent or "视觉语音" in intent or "语音执行" in intent:
-        print(f"[跨模态深度融合引擎] 正在处理多模态融合请求...", file=sys.stderr)
-        script_path = os.path.join(SCRIPTS, "cross_modal_fusion_engine.py")
-        # 参数处理
-        cmd_args = []
-        for arg in sys.argv[1:]:
-            if arg in ["跨模态", "多模态融合", "cross modal", "fusion", "看图说话", "视觉语音", "语音执行"]:
-                continue
-            cmd_args.append(arg)
-        if not cmd_args:
+    # 跨模态深度融合推理引擎
+    elif "跨模态" in intent or "多模态融合" in intent or "cross modal" in intent.lower() or "multi-modal" in intent.lower() or "fusion" in intent.lower() or "看图说话" in intent or "视觉语音" in intent or "语音执行" in intent or "深度融合" in intent or "融合推理" in intent or "跨模态理解" in intent:
+        print(f"[跨模态深度融合推理引擎] 正在处理多模态融合请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "cross_modal_fusion_reasoning_engine.py")
+        # 确定子命令：如果用户输入中包含特定关键词则执行相应功能
+        if "状态" in intent or "status" in intent.lower():
+            cmd_args = ["status"]
+        elif "能力" in intent or "capabilities" in intent.lower() or "列表" in intent:
+            cmd_args = ["capabilities"]
+        elif "融合" in intent or "reason" in intent.lower() or "推理" in intent:
+            cmd_args = ["fusion"]
+        else:
             cmd_args = ["capabilities"]
         result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
