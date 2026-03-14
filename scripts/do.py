@@ -1420,6 +1420,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环自我修复能力增强引擎（Round 353）
+    elif "自我修复" in intent or "主动预防" in intent or "问题预测" in intent or "self repair" in intent.lower() or "主动修复" in intent or "预防性修复" in intent or "predict problem" in intent.lower() or "问题预测" in intent or "自愈增强" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "predict", "prevent", "repair", "verify", "full_cycle", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_self_repair_enhancement_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
@@ -1568,6 +1578,24 @@ def main():
             cmd = ["list"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "engine_combination_recommender.py")] + cmd, cwd=PROJECT)
     # 智能系统自省与元认知引擎
+    elif "系统自省" in intent or "自我分析" in intent or ("元认知" in intent and ("闭环" in intent or "集成" in intent or "优化" in intent or "loop" in intent.lower() or "integrate" in intent.lower() or "optimize" in intent.lower())) or "进化反思" in intent or "self_reflection" in intent.lower() or ("metacognition" in intent.lower() and ("loop" in intent.lower() or "integrate" in intent.lower() or "optimize" in intent.lower())):
+        # Round 353 元认知增强：闭环/集成/优化关键词调用增强引擎
+        script_path = os.path.join(SCRIPTS, "evolution_meta_cognition_deep_enhancement_engine.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else []
+        if "闭环" in intent or "loop" in intent.lower():
+            filtered_args = ["loop"]
+        elif "集成" in intent or "integrate" in intent.lower():
+            filtered_args = ["integrate"]
+        elif "优化" in intent or "optimize" in intent.lower():
+            filtered_args = ["optimize"]
+        else:
+            filtered_args = cmd_args if cmd_args else ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     elif "系统自省" in intent or "自我分析" in intent or "元认知" in intent or "进化反思" in intent or "self_reflection" in intent.lower() or "metacognition" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["full"]
         if not cmd or (cmd and cmd[0] not in ["full", "health", "bottlenecks", "strategy", "recommendations", "--help", "-h", "help"]):
@@ -3095,14 +3123,21 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
-    # 智能全场景进化环元认知深度增强引擎（round 316）
-    elif "元认知" in intent or "meta cognition" in intent.lower() or "元认知深度" in intent or "认知反思" in intent or "学会思考" in intent or "思考如何思考" in intent or "递归认知" in intent or "meta cognitive" in intent.lower() or "深度反思" in intent or "认知升级" in intent:
-        print(f"[智能全场景进化环元认知深度增强引擎] 正在对自身认知过程进行递归式深度反思...", file=sys.stderr)
+    # 智能全场景进化环元认知深度增强引擎（round 316 + round 353 增强）
+    elif "元认知" in intent or "meta cognition" in intent.lower() or "元认知深度" in intent or "认知反思" in intent or "学会思考" in intent or "思考如何思考" in intent or "递归认知" in intent or "meta cognitive" in intent.lower() or "深度反思" in intent or "认知升级" in intent or "认知闭环" in intent or "元认知闭环" in intent or "meta evolution" in intent.lower():
+        print(f"[智能全场景进化环元认知深度增强引擎 v1.1.0] 正在对自身认知过程进行递归式深度反思...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_meta_cognition_deep_enhancement_engine.py")
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
-        filtered_args = [arg for arg in cmd_args if arg not in ["元认知", "meta cognition", "元认知深度", "认知反思", "学会思考", "思考如何思考", "递归认知", "meta cognitive", "深度反思", "认知升级", "状态", "查询", "分析"]]
+        filtered_args = [arg for arg in cmd_args if arg not in ["元认知", "meta cognition", "元认知深度", "认知反思", "学会思考", "思考如何思考", "递归认知", "meta cognitive", "深度反思", "认知升级", "状态", "查询", "分析", "认知闭环", "元认知闭环", "meta evolution", "集成", "integrate", "优化", "optimize", "闭环", "loop"]]
         if not filtered_args:
             filtered_args = ["status"]
+        # Round 353 新增：识别子命令
+        if "集成" in intent or "integrate" in intent.lower():
+            filtered_args = ["integrate"]
+        elif "优化" in intent or "optimize" in intent.lower():
+            filtered_args = ["optimize"]
+        elif "闭环" in intent or "loop" in intent.lower() or "meta evolution" in intent.lower():
+            filtered_args = ["loop"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
             print(result.stdout)
