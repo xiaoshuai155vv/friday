@@ -4632,6 +4632,34 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景情境感知与主动服务编排引擎 (Round 257) - 综合时间、行为、系统状态、历史交互，主动识别服务机会并编排多引擎协同
+    elif "全场景情境" in intent or "情境编排" in intent or "服务机会" in intent or "主动服务编排" in intent or "context aware" in intent.lower() or "service orchestrator" in intent.lower() or "编排服务" in intent:
+        print(f"[智能全场景情境感知与主动服务编排引擎] 正在分析情境并编排服务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "context_aware_service_orchestrator.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "perceive"
+        if "机会" in intent or "opportunities" in intent.lower():
+            action = "opportunities"
+        elif "编排" in intent or "orchestrate" in intent.lower() or "执行" in intent:
+            action = "orchestrate"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "记录" in intent or "record" in intent.lower():
+            action = "record"
+        # 过滤掉意图关键词
+        filter_words = ["全场景情境", "情境编排", "服务机会", "主动服务编排", "context aware", "service orchestrator", "编排服务", "机会", "编排", "执行", "状态", "记录"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能多维融合智能分析引擎 (Round 204)
     elif "多维分析" in intent or "态势感知" in intent or "智能分析" in intent or "统一分析" in intent or "跨引擎分析" in intent or "multi-dim" in intent.lower() or "situation" in intent.lower() or "智能洞察" in intent:
         print(f"[智能多维融合智能分析引擎] 正在运行多维度分析...", file=sys.stderr)
