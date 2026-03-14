@@ -6217,6 +6217,47 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景跨轮次进化知识深度融合与自适应推理引擎 (Round 332)
+    elif ("跨轮融合" in intent or "跨轮次" in intent or "跨轮" in intent or
+          "cross round" in intent.lower() or "cross-round" in intent.lower() or
+          "知识融合" in intent or "fusion" in intent.lower() or
+          "自适应推理" in intent or "adaptive inference" in intent.lower() or
+          "进化推理" in intent or "evolution inference" in intent.lower() or
+          "跨轮学习" in intent or "cross-round learning" in intent.lower() or
+          "跨轮知识" in intent or "知识推理" in intent):
+        print(f"[智能全场景跨轮次进化知识深度融合与自适应推理引擎 v1.0] 正在执行跨轮次知识融合与自适应推理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_round_knowledge_fusion_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "融合" in intent or "fuse" in intent.lower() or "知识" in intent:
+            action = "fuse"
+        elif "推理" in intent or "inference" in intent.lower() or "infer" in intent.lower() or "推理" in intent:
+            action = "infer"
+        elif "决策" in intent or "decision" in intent.lower() or "增强决策" in intent:
+            action = "enhance-decision"
+        elif "仪表盘" in intent or "dashboard" in intent.lower() or "状态" in intent:
+            action = "dashboard"
+        elif "分析" in intent or "analyze" in intent.lower():
+            action = "analyze"
+        # 过滤掉意图关键词
+        filter_words = ["跨轮融合", "跨轮次", "跨轮", "cross round", "cross-round",
+                       "知识融合", "fusion", "自适应推理", "adaptive inference",
+                       "进化推理", "evolution inference", "跨轮学习", "cross-round learning",
+                       "跨轮知识", "知识推理", "推理", "infer", "决策", "decision",
+                       "增强决策", "融合", "fuse", "分析", "analyze",
+                       "仪表盘", "dashboard", "状态"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加 -- 前缀
+        if action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, "--" + action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化方向自动发现与优先级排序引擎 (Round 239)
     elif "进化发现" in intent or "方向发现" in intent or "优先级排序" in intent or "evolution discovery" in intent.lower() or "方向排序" in intent or "进化机会" in intent or "发现进化" in intent or "自动发现进化" in intent:
         print(f"[智能进化方向自动发现引擎] 正在分析进化机会...", file=sys.stderr)
