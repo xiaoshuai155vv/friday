@@ -1688,6 +1688,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化知识图谱推理与元优化深度集成引擎（round 299）
+    elif "知识图谱元优化" in intent or "图谱元优化" in intent or "kg meta" in intent.lower() or "图谱优化" in intent or "图谱推理优化" in intent or "知识图谱深度集成" in intent or "evolution kg meta" in intent.lower() or "kg_meta" in intent.lower() or "图谱驱动优化" in intent or "深度集成闭环" in intent:
+        print(f"[智能全场景进化知识图谱推理与元优化深度集成引擎] 正在执行深度集成闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_kg_meta_integration.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd_args:
+            cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化元模式发现引擎（round 244）
     elif "进化元模式" in intent or "元模式发现" in intent or "meta pattern" in intent.lower() or "meta" in intent.lower() or "进化模式分析" in intent or "模式发现" in intent or intent == "patterns":
         print(f"[智能进化元模式发现引擎] 正在分析进化模式...", file=sys.stderr)
