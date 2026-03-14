@@ -1314,6 +1314,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "health", "metrics", "repair", "闭环", "closed_loop", "failed", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_loop_health_healer.py")] + cmd, cwd=PROJECT)
+    # 智能进化环全局调度与优先级自动优化引擎（Round 284）
+    elif "进化调度" in intent or "全局调度" in intent or "智能调度" in intent or "进化优先级" in intent or "优先级优化" in intent or "evolution scheduler" in intent.lower() or "global scheduler" in intent.lower() or "priority" in intent.lower() and "进化" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "schedule", "load", "efficiency", "urgency", "adjust", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_global_scheduler.py")] + cmd, cwd=PROJECT)
     # 智能进化闭环自愈与预防引擎（Round 280）
     elif "进化自愈" in intent or "进化修复" in intent or "进化预防" in intent or "evolution self heal" in intent.lower() or "self healing" in intent.lower() or "进化健康" in intent or "进化闭环自愈" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
