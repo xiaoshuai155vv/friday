@@ -1724,6 +1724,23 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景记忆网络与主动意图预测引擎（Round 259）
+    elif "记忆网络" in intent or "memory network" in intent.lower() or "intent predictor" in intent.lower() or "行为模式学习" in intent or "预测需求" in intent or "提前准备服务" in intent:
+        print(f"[智能全场景记忆网络与主动意图预测引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "memory_network_intent_predictor.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["记忆网络", "memory network", "intent predictor", "行为模式学习", "预测需求", "提前准备服务"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg.lower() for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 上下文记忆与意图预测
     elif "上下文" in intent or "记忆" in intent or "历史记录" in intent or "意图预测" in intent or "预测意图" in intent or "上下文记忆" in intent:
         print(f"[上下文记忆] 正在处理您的请求...", file=sys.stderr)
