@@ -1460,6 +1460,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化引擎集群跨引擎深度健康自愈与元进化增强引擎（Round 384）
+    elif "跨引擎健康" in intent or "协同自愈" in intent or "元进化增强" in intent or "深度健康" in intent or "集群自愈" in intent or "cross engine" in intent.lower() and "health" in intent.lower() or "deep health" in intent.lower() or "meta evolution" in intent.lower() or "协同修复" in intent or "跨引擎深度" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["health"]
+        if not cmd or (cmd and cmd[0] not in ["health", "diagnose", "self_heal", "optimize", "metrics", "full_cycle", "status", "help"]):
+            cmd = ["health"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_engine_cluster_deep_health_meta_evolution_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环主动创新实现引擎（Round 358）
     elif "主动创新" in intent or "创新实现" in intent or "创新发现" in intent or "创新机会" in intent or "主动发现创新" in intent or "innovation realization" in intent.lower() or "创新闭环" in intent or "创新引擎" in intent or "发现并实现" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
