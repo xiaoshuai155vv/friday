@@ -1545,6 +1545,37 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环执行策略自优化与进化驾驶舱深度集成引擎（Round 450）- 将执行策略自优化能力与进化驾驶舱深度集成，实现可视化展示和驾驶舱控制
+    elif "驾驶舱优化" in intent or "优化驾驶舱" in intent or "优化集成" in intent or "策略驾驶舱" in intent or "cockpit optimization" in intent.lower() or "optimization cockpit" in intent.lower() or "strategy cockpit" in intent.lower() or "optimization integration" in intent.lower() or "驾驶舱集成" in intent or "策略集成" in intent:
+        print(f"[执行策略自优化与进化驾驶舱深度集成引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_strategy_cockpit_integration_engine.py")
+
+        # 确定要执行的命令
+        if "--dashboard" in sys.argv or "仪表盘" in intent or "dashboard" in intent.lower():
+            filtered_args = ["--dashboard"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--summary" in sys.argv or "摘要" in intent:
+            filtered_args = ["--summary"]
+        elif "--viz" in sys.argv or "可视化" in intent:
+            filtered_args = ["--viz"]
+        elif "--trigger" in sys.argv or "触发" in intent:
+            filtered_args = ["--trigger"]
+        elif "--history" in sys.argv or "历史" in intent:
+            filtered_args = ["--history"]
+        elif "--trend" in sys.argv or "趋势" in intent:
+            filtered_args = ["--trend", "response_time"]
+        elif "--push" in sys.argv or "推送" in intent:
+            filtered_args = ["--push"]
+        else:
+            # 默认：显示仪表盘数据
+            filtered_args = ["--dashboard"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎统一知识索引与智能检索引擎（Round 446）- 聚合所有进化引擎产生的知识资产、建立统一知识索引、实现智能检索、生成知识关联图谱
     elif "知识索引" in intent or "知识检索" in intent or "跨引擎知识" in intent or "查询知识" in intent or "知识图谱" in intent or "knowledge index" in intent.lower() or "knowledge search" in intent.lower() or "knowledge graph" in intent.lower() or "知识发现" in intent or "搜索知识" in intent:
         print(f"[跨引擎知识索引与检索引擎] 正在处理...", file=sys.stderr)

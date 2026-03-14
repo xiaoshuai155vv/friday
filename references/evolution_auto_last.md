@@ -2,20 +2,24 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/evolution_execution_strategy_self_optimizer.py, scripts/do.py, references/evolution_self_proposed.md
+scripts/evolution_strategy_cockpit_integration_engine.py, scripts/do.py, references/evolution_self_proposed.md
 
-## 2026-03-15 round 449
-- **current_goal**：智能全场景进化环执行策略自优化深度增强引擎 - 在 round 448 完成的知识主动推荐与智能预警引擎基础上，进一步构建执行策略的自优化深度增强能力。让系统能够自动分析引擎执行效果、识别协作低效模式、智能生成优化策略并自动执行优化，形成「效果分析→模式识别→策略生成→自动执行→验证优化」的完整自优化闭环。让进化环能够像神经网络一样自主学习和调整协作策略
+## 2026-03-15 round 450
+- **current_goal**：智能全场景进化环执行策略自优化与进化驾驶舱深度集成引擎 - 在 round 449 完成的执行策略自优化深度增强引擎基础上，进一步将自优化能力与进化驾驶舱深度集成。让系统能够将策略优化过程和结果实时推送到驾驶舱、实现可视化展示和驾驶舱控制，形成「优化执行→数据推送→可视化展示→驾驶舱控制→持续优化」的完整集成闭环。让进化环的执行优化成果能够直观展示
 - **做了什么**：
-  1. 创建 evolution_execution_strategy_self_optimizer.py 模块（version 1.0.0）
-  2. 实现多维度执行效果自动分析（响应时间、资源占用、成功率、协作效率）
-  3. 实现协作低效模式自动识别（分析引擎间协作数据发现低效模式）
-  4. 实现智能优化策略自动生成（基于识别的问题生成优化方案）
-  5. 实现优化策略自动执行（自动调整引擎参数、执行顺序、调度策略）
-  6. 实现优化效果验证与迭代（验证优化结果并持续改进）
-  7. 集成到 do.py 支持策略优化、执行优化、自优化、优化策略等关键词触发
-  8. 测试通过：--stats/--analyze/--cycle/--identify/--generate等命令均正常工作，do.py集成验证通过
+  1. 创建 evolution_strategy_cockpit_integration_engine.py 模块（version 1.0.0）
+  2. 实现驾驶舱状态获取（get_cockpit_status）
+  3. 实现优化摘要收集（collect_optimization_summary）
+  4. 实现可视化数据生成（generate_visualization_data）
+  5. 实现数据推送到驾驶舱（push_to_cockpit）
+  6. 实现从驾驶舱触发优化（trigger_optimization_from_cockpit）
+  7. 实现优化仪表盘数据接口（get_optimization_dashboard_data）
+  8. 实现优化历史查询（get_optimization_history）
+  9. 实现趋势分析（get_trend_analysis）
+  10. 实现持续集成模式（run_continuous_integration）
+  11. 集成到 do.py 支持驾驶舱优化、优化驾驶舱、驾驶舱集成等关键词触发
+  12. 测试通过：--status/--summary/--viz/--dashboard/--trigger/--history/--trend/--push/--continuous均正常工作
 - **是否完成**：已完成
 - **基线校验**：子进程链正常通过
-- **针对性校验**：通过 - 模块创建成功，do.py集成验证通过，各命令功能正常，数据不足时返回预期行为
-- **下一轮建议**：可继续增强引擎协作数据的收集能力，或与进化驾驶舱深度集成实现可视化
+- **针对性校验**：通过 - 模块创建成功，do.py集成验证通过，各命令功能正常
+- **下一轮建议**：可继续增强优化效果的预测能力，或将知识推荐引擎与驾驶舱进一步集成
