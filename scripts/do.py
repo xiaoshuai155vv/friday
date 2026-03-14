@@ -1977,6 +1977,24 @@ def main():
             if result.returncode != 0 and result.stderr:
                 print(result.stderr, file=sys.stderr)
             sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 跨模态深度融合引擎
+    elif "跨模态" in intent or "多模态融合" in intent or "cross modal" in intent.lower() or "fusion" in intent.lower() or "看图说话" in intent or "视觉语音" in intent or "语音执行" in intent:
+        print(f"[跨模态深度融合引擎] 正在处理多模态融合请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "cross_modal_fusion_engine.py")
+        # 参数处理
+        cmd_args = []
+        for arg in sys.argv[1:]:
+            if arg in ["跨模态", "多模态融合", "cross modal", "fusion", "看图说话", "视觉语音", "语音执行"]:
+                continue
+            cmd_args.append(arg)
+        if not cmd_args:
+            cmd_args = ["capabilities"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 情感交互
     elif "情感" in intent or "心情" in intent or "好累" in intent or "好困" in intent or "开心" in intent or "难过" in intent or "焦虑" in intent or "emotion" in intent.lower() or "feeling" in intent.lower() or "疲惫" in intent:
         print(f"[情感交互] 正在分析您的情感状态...", file=sys.stderr)
