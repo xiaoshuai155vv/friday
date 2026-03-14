@@ -1370,6 +1370,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化知识主动推理与创新发现引擎（Round 348）
+    elif "知识推理" in intent or "创新发现" in intent or "主动推理" in intent or "知识分析" in intent or "knowledge reasoning" in intent.lower() or "innovation discovery" in intent.lower() or "active reasoning" in intent.lower() or "知识趋势" in intent or "进化趋势" in intent or "知识关联" in intent or "创新机会" in intent or "知识组合" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "run", "analyze", "predict", "innovate", "paths", "config", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_knowledge_active_reasoning_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
