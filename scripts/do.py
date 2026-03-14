@@ -1326,6 +1326,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "scan", "discover", "evaluate", "plan", "history", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_autonomous_innovation_engine.py")] + cmd, cwd=PROJECT)
+    # 智能全场景预测驱动主动服务编排引擎（Round 286）
+    elif "预测驱动" in intent or "主动服务编排" in intent or "predictive service" in intent.lower() or "服务预测" in intent or "需求预测" in intent or "主动预测" in intent or "预测服务" in intent or "predict orchestrator" in intent.lower() or "predict_and_orchestrate" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "predict", "orchestrate", "execute", "patterns", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "predictive_service_orchestrator.py")] + cmd, cwd=PROJECT)
     # 智能进化闭环自愈与预防引擎（Round 280）
     elif "进化自愈" in intent or "进化修复" in intent or "进化预防" in intent or "evolution self heal" in intent.lower() or "self healing" in intent.lower() or "进化健康" in intent or "进化闭环自愈" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
