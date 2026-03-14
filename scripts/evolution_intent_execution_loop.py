@@ -86,8 +86,9 @@ class EvolutionIntentExecutionLoop:
 
         # Round 287: 超级预测价值创造引擎
         try:
-            from super_prediction_opportunity_engine import SuperPredictionOpportunityEngine
-            self.engines['super_prediction'] = SuperPredictionOpportunityEngine()
+            # 该模块使用函数式编程，没有类定义，需要特殊处理
+            import super_prediction_opportunity_engine as sp_module
+            self.engines['super_prediction'] = sp_module
         except Exception as e:
             print(f"Warning: Failed to load super_prediction engine: {e}")
 
@@ -280,8 +281,9 @@ class EvolutionIntentExecutionLoop:
                         output = engine.predict_demands({})
                         step_result['output'] = output
                         step_result['status'] = 'completed'
-                    elif engine_name == 'super_prediction' and hasattr(engine, 'discover_opportunities'):
-                        output = engine.discover_opportunities({})
+                    elif engine_name == 'super_prediction' and hasattr(engine, 'identify_potential_opportunities'):
+                        # 该模块使用函数式编程
+                        output = engine.full_trend_analysis()
                         step_result['output'] = output
                         step_result['status'] = 'completed'
                     elif engine_name == 'innovation' and hasattr(engine, 'evaluate_innovation'):
