@@ -1604,6 +1604,29 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环智能预警与主动干预深度集成引擎（Round 452）- 将主动预警与自愈能力深度集成，形成预测→预警→自动干预→自愈验证的完整闭环
+    elif "预警干预" in intent or "主动干预" in intent or "预警集成" in intent or "干预引擎" in intent or "warning intervention" in intent.lower() or "预警执行" in intent or "预警自愈" in intent:
+        print(f"[智能预警与主动干预深度集成引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_warning_intervention_deep_integration_engine.py")
+
+        # 确定要执行的命令
+        if "--analyze" in sys.argv or "分析预警" in intent:
+            filtered_args = ["--analyze"]
+        elif "--intervention" in sys.argv or "干预" in intent:
+            filtered_args = ["--intervention"]
+        elif "--cycle" in sys.argv or "闭环" in intent or "预警干预闭环" in intent:
+            filtered_args = ["--cycle"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：分析预警
+            filtered_args = ["--analyze"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎统一知识索引与智能检索引擎（Round 446）- 聚合所有进化引擎产生的知识资产、建立统一知识索引、实现智能检索、生成知识关联图谱
     elif "知识索引" in intent or "知识检索" in intent or "跨引擎知识" in intent or "查询知识" in intent or "知识图谱" in intent or "knowledge index" in intent.lower() or "knowledge search" in intent.lower() or "knowledge graph" in intent.lower() or "知识发现" in intent or "搜索知识" in intent:
         print(f"[跨引擎知识索引与检索引擎] 正在处理...", file=sys.stderr)
