@@ -4598,6 +4598,40 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能自主意识觉醒引擎 (Round 256) - 让系统能够主动感知自身状态、主动发现问题、主动规划改进，形成真正的自主意识闭环
+    elif "自主意识" in intent or "自我感知" in intent or "系统意识" in intent or "主动发现问题" in intent or "意识状态" in intent or "意识评估" in intent or "意识成长" in intent or "自主目标" in intent or "self awareness" in intent.lower() or "self-awareness" in intent.lower() or "consciousness" in intent.lower():
+        print(f"[智能自主意识觉醒引擎] 正在处理自主意识请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_awareness_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "感知" in intent or "perceive" in intent.lower():
+            action = "perceive"
+        elif "报告" in intent or "report" in intent.lower():
+            action = "report"
+        elif "目标" in intent or "goal" in intent.lower():
+            action = "goals"
+        elif "设置目标" in intent or "set_goal" in intent.lower():
+            action = "set_goal"
+        elif "洞察" in intent or "insights" in intent.lower():
+            action = "insights"
+        elif "级别" in intent or "level" in intent.lower():
+            action = "level"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        # 过滤掉意图关键词
+        filter_words = ["自主意识", "自我感知", "系统意识", "主动发现问题", "意识状态", "意识评估", "意识成长", "自主目标", "self awareness", "self-awareness", "consciousness", "感知", "报告", "目标", "设置目标", "洞察", "级别", "状态"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能多维融合智能分析引擎 (Round 204)
     elif "多维分析" in intent or "态势感知" in intent or "智能分析" in intent or "统一分析" in intent or "跨引擎分析" in intent or "multi-dim" in intent.lower() or "situation" in intent.lower() or "智能洞察" in intent:
         print(f"[智能多维融合智能分析引擎] 正在运行多维度分析...", file=sys.stderr)
