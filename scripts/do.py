@@ -4298,6 +4298,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环高质量假设自动执行与价值实现引擎（round 458）
+    elif "假设价值实现" in intent or "高质量假设执行" in intent or "hypothesis_value_execution" in intent.lower() or "假设自动筛选" in intent or "假设转化任务" in intent or ("假设" in intent and "执行" in intent and "价值" in intent) or "quality_hypothesis" in intent.lower():
+        print(f"[高质量假设自动执行与价值实现引擎] 正在启动高质量假设自动执行与价值实现...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_hypothesis_execution_value_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["假设价值实现", "高质量假设执行", "hypothesis_value_execution", "假设自动筛选", "假设转化任务", "quality_hypothesis"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环价值-涌现闭环增强引擎（round 432）
     elif "价值涌现闭环" in intent or "价值闭环" in intent or "涌现闭环" in intent or "value emergence loop" in intent.lower() or "闭环增强" in intent or "价值涌现" in intent or "execution_feedback" in intent.lower() or "反馈涌现" in intent or "闭环反馈" in intent:
         print(f"[价值-涌现闭环增强引擎] 正在启动价值-涌现闭环增强...", file=sys.stderr)
