@@ -1390,6 +1390,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环全局智能驾驶舱与一键启动引擎（Round 350）
+    elif "驾驶舱" in intent or "进化驾驶舱" in intent or "一键启动" in intent or "进化控制台" in intent or "cockpit" in intent.lower() or "evolution cockpit" in intent.lower() or "一键进化" in intent or "进化状态" in intent and ("控制" in intent or "台" in intent or "一键" in intent):
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "start", "stop", "pause", "resume", "health", "diagnose", "full_cycle", "evaluate", "toggle_auto", "dashboard", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_cockpit_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
