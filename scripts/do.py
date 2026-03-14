@@ -2082,6 +2082,22 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能跨场景协同推理引擎
+    elif "跨场景" in intent or "场景协同" in intent or "多场景分析" in intent or "cross scene" in intent.lower() or "scene reasoning" in intent.lower() or "多场景" in intent or "场景推理" in intent:
+        print(f"[智能跨场景协同推理引擎] 正在分析跨场景任务...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "cross_scene_reasoning_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--help"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["跨场景", "场景协同", "多场景分析", "cross scene", "scene reasoning", "多场景", "场景推理"]]
+        if not filtered_args:
+            filtered_args = ["--help"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能文件管理引擎
     elif "文件管理" in intent or "整理文件" in intent or "文件整理" in intent or "搜索文件" in intent or "文件搜索" in intent or "分析文件" in intent or "文件分析" in intent or "file manager" in intent.lower() or "organize files" in intent.lower():
         print(f"[智能文件管理引擎] 正在处理文件管理请求...", file=sys.stderr)

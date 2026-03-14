@@ -2,22 +2,20 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/voice_conversation_intelligence.py, scripts/do.py, references/evolution_auto_last.md, runtime/state/evolution_completed_ev_20260314_013435.json, references/evolution_self_proposed.md
+scripts/cross_scene_reasoning_engine.py, scripts/do.py, references/evolution_auto_last.md, runtime/state/evolution_completed_ev_20260314_014001.json, references/evolution_self_proposed.md
 
-## 2026-03-14 round 260
-- **current_goal**：智能语音理解与对话智能融合引擎 - 将语音输入、意图理解、情感响应、对话管理深度集成，实现真正的语音对话智能闭环
+## 2026-03-14 round 261
+- **current_goal**：智能跨场景协同推理引擎 - 让系统能够理解跨多个场景的复杂任务，自动识别场景间的关联与依赖，协同多个引擎协同推理和执行，形成从单场景到跨场景理解的范式升级
 - **做了什么**：
-  1. 创建 voice_conversation_intelligence.py 模块（version 1.0.0）
-  2. 实现语音输入理解（调用 voice_interaction_engine）
-  3. 实现意图理解（多意图识别：问候、问题、命令、一般）
-  4. 实现情感识别（调用 emotion_engine + 本地简单情感检测）
-  5. 实现上下文管理（跨轮次上下文保持）
-  6. 实现智能响应生成（基于意图和情感的动态响应）
-  7. 实现语音输出（调用 tts_engine）
-  8. 实现完整对话闭环（conversation_loop 方法）
-  9. 实现与记忆网络的集成接口
-  10. 集成到 do.py 支持语音对话、语音聊天、语音智能等关键词触发
-  11. 基线校验通过（5/6，剪贴板远程限制为已知问题）
-  12. 针对性校验通过：status/start/end/context/do.py 集成均可正常工作
+  1. 创建 cross_scene_reasoning_engine.py 模块（version 1.0.0）
+  2. 实现多场景关联分析（识别任务涉及的多个场景及其关系）
+  3. 实现跨场景依赖推理（分析场景间的数据流和执行顺序）
+  4. 实现协同推理执行（多引擎协同完成跨场景任务）
+  5. 实现跨场景状态传递（保持上下文一致性）
+  6. 实现执行计划生成
+  7. 实现请求复杂度分析
+  8. 集成到 do.py 支持跨场景推理、场景协同、多场景分析等关键词触发
+  9. 基线校验通过（5/6，剪贴板远程限制为已知问题）
+  10. 针对性校验通过：status/analyze/complexity 命令均正常工作
 - **是否完成**：已完成
-- **下一轮建议**：可继续深化语音对话能力（如实现真正的实时语音对话、语音唤醒、多轮对话优化），或与 round 259 的记忆网络、round 258 的情感理解深度集成
+- **下一轮建议**：可继续增强跨场景执行能力（如自动执行生成的工作流、跨场景状态传递优化），或与现有场景执行联动引擎深度集成
