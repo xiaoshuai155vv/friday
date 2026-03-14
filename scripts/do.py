@@ -5492,6 +5492,24 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环自我进化效能深度分析与自适应优化引擎 (Round 475)
+    elif "效能分析" in intent or "自我优化" in intent or "进化效能" in intent or "效能瓶颈" in intent or "effectiveness" in intent.lower() or "self optimization" in intent.lower() or "evolution effectiveness" in intent.lower():
+        print(f"[智能全场景进化环自我进化效能深度分析与自适应优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_evolution_effectiveness_analysis_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["效能分析", "自我优化", "进化效能", "效能瓶颈", "effectiveness", "self optimization", "evolution effectiveness"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能创意生成与评估引擎
     elif "创意生成" in intent or "智能创意" in intent or "创新想法" in intent or "新组合" in intent or "创意建议" in intent or "creative generation" in intent.lower() or "creative" in intent.lower() or "创意" in intent:
         print(f"[智能创意生成与评估引擎] 正在分析创意机会...", file=sys.stderr)
