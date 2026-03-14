@@ -5118,6 +5118,25 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+
+    # 智能全场景进化环进化效能预测与预防性优化引擎 (Round 476) - 放在其他预测引擎之前
+    elif "进化效能预测" in intent or "进化趋势预测" in intent or "进化未来效能" in intent or "evolution effectiveness prediction" in intent.lower() or "effectiveness prediction" in intent.lower() or "进化预防" in intent or "效能预防" in intent:
+        print(f"[智能全场景进化环进化效能预测与预防性优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_effectiveness_prediction_prevention_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["进化效能预测", "进化趋势预测", "进化未来效能", "evolution effectiveness prediction", "effectiveness prediction", "进化预防", "效能预防"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能决策质量预测性优化与预防性增强引擎（round 337）
     elif ("预测性" in intent or "predictive" in intent.lower() or
           "预防性" in intent or "preventive" in intent.lower() or
