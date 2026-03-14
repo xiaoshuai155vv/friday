@@ -1422,6 +1422,49 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨引擎知识推理与智能问答引擎（Round 447）- 基于知识索引实现智能问答、推理、上下文记忆、溯源
+    elif "知识问答" in intent or "智能问答" in intent or "进化问答" in intent or "问我关于" in intent or "智能回答" in intent or "知识推理" in intent or "knowledge qa" in intent.lower() or "knowledge问答" in intent.lower() or "reasoning qa" in intent.lower():
+        print(f"[跨引擎知识推理与智能问答引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_engine_knowledge_reasoning_engine.py")
+
+        # 确定要执行的命令
+        filtered_args = []
+        if "--stats" in sys.argv:
+            filtered_args = ["--stats"]
+        elif "--clear-cache" in sys.argv:
+            filtered_args = ["--clear-cache"]
+        elif "--clear-history" in sys.argv:
+            filtered_args = ["--clear-history"]
+        elif "--history" in sys.argv:
+            session_idx = sys.argv.index("--history") + 1 if "--history" in sys.argv else -1
+            if session_idx > 0 and session_idx < len(sys.argv):
+                filtered_args = ["--history", sys.argv[session_idx]]
+            else:
+                filtered_args = ["--history", "default"]
+        else:
+            # 提取问题内容（移除触发关键词）
+            question = intent
+            trigger_keywords = [
+                "知识问答", "智能问答", "进化问答", "问我关于", "智能回答",
+                "knowledge qa", "knowledge问答", "reasoning qa", "问答", "回答", "知识推理"
+            ]
+            for kw in trigger_keywords:
+                question = question.replace(kw, "").strip()
+
+            if not question:
+                # 显示统计信息
+                filtered_args = ["--stats"]
+            else:
+                # 构建会话ID（使用时间戳）
+                import time
+                session_id = f"session_{int(time.time())}"
+                filtered_args = ["--ask", question, "--session", session_id]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎统一知识索引与智能检索引擎（Round 446）- 聚合所有进化引擎产生的知识资产、建立统一知识索引、实现智能检索、生成知识关联图谱
     elif "知识索引" in intent or "知识检索" in intent or "跨引擎知识" in intent or "查询知识" in intent or "知识图谱" in intent or "knowledge index" in intent.lower() or "knowledge search" in intent.lower() or "knowledge graph" in intent.lower() or "知识发现" in intent or "搜索知识" in intent:
         print(f"[跨引擎知识索引与检索引擎] 正在处理...", file=sys.stderr)
