@@ -1660,6 +1660,33 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景深度认知与自主意识增强引擎（Round 454）- 增强深度认知与自主意识能力，实现自我反思、认知评估、认知优化策略生成
+    elif "认知增强" in intent or "自主意识" in intent or "自我反思" in intent or "认知评估" in intent or "意识增强" in intent or "cognition" in intent.lower() or "awareness" in intent.lower() or "self reflection" in intent.lower() or "cognitive" in intent.lower() or "deep cognition" in intent.lower():
+        print(f"[深度认知与自主意识增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_deep_cognition_awareness_engine.py")
+
+        # 确定要执行的命令
+        if "--reflect" in sys.argv or "自我反思" in intent or "self reflect" in intent.lower():
+            filtered_args = ["--reflect"]
+        elif "--evaluate" in sys.argv or "评估" in intent or "evaluate" in intent.lower() or "认知质量" in intent:
+            filtered_args = ["--evaluate"]
+        elif "--optimize" in sys.argv or "优化" in intent or "optimize" in intent.lower() or "策略" in intent:
+            filtered_args = ["--optimize"]
+        elif "--awareness" in sys.argv or "意识" in intent or "awareness" in intent.lower():
+            filtered_args = ["--awareness"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--all" in sys.argv or "全部" in intent or "all" in intent.lower():
+            filtered_args = ["--all"]
+        else:
+            # 默认：获取状态
+            filtered_args = []
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎统一知识索引与智能检索引擎（Round 446）- 聚合所有进化引擎产生的知识资产、建立统一知识索引、实现智能检索、生成知识关联图谱
     elif "知识索引" in intent or "知识检索" in intent or "跨引擎知识" in intent or "查询知识" in intent or "知识图谱" in intent or "knowledge index" in intent.lower() or "knowledge search" in intent.lower() or "knowledge graph" in intent.lower() or "知识发现" in intent or "搜索知识" in intent:
         print(f"[跨引擎知识索引与检索引擎] 正在处理...", file=sys.stderr)
