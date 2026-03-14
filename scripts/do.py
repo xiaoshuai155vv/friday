@@ -1701,6 +1701,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景自主进化闭环全自动化引擎（round 300）
+    elif "进化全自动化" in intent or "全自动进化" in intent or "无人值守进化" in intent or "一键进化" in intent or "进化环自动" in intent or "自动进化环" in intent or "full auto" in intent.lower() or "auto loop" in intent.lower() or "evolution auto" in intent.lower() or "全自动化闭环" in intent:
+        print(f"[智能全场景自主进化闭环全自动化引擎] 正在执行全自动化进化闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_full_auto_loop.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd_args:
+            cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化元模式发现引擎（round 244）
     elif "进化元模式" in intent or "元模式发现" in intent or "meta pattern" in intent.lower() or "meta" in intent.lower() or "进化模式分析" in intent or "模式发现" in intent or intent == "patterns":
         print(f"[智能进化元模式发现引擎] 正在分析进化模式...", file=sys.stderr)
