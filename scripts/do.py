@@ -2799,6 +2799,33 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能创意工作流自动生成与执行引擎 (Round 263)
+    elif "创意工作流" in intent or "自动生成工作流" in intent or "生成工作流" in intent or "creative workflow" in intent.lower() or "工作流生成" in intent:
+        print(f"[智能创意工作流自动生成与执行引擎] 正在生成工作流...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "creative_workflow_generator.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤掉意图关键词
+        filter_words = ["创意工作流", "自动生成工作流", "生成工作流", "creative workflow", "工作流生成"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg for w in filter_words)]
+        # 默认执行或预览
+        if "--execute" in filtered_args or "-e" in filtered_args:
+            filtered_args = [a for a in filtered_args if a not in ["--execute", "-e"]]
+            if filtered_args:
+                result = subprocess.run([sys.executable, script_path, " ".join(filtered_args), "--execute"], cwd=PROJECT, capture_output=True, text=True)
+            else:
+                result = subprocess.run([sys.executable, script_path, "--execute"], cwd=PROJECT, capture_output=True, text=True)
+        else:
+            if filtered_args:
+                result = subprocess.run([sys.executable, script_path, " ".join(filtered_args)], cwd=PROJECT, capture_output=True, text=True)
+            else:
+                # 交互模式
+                result = subprocess.run([sys.executable, script_path, "--interactive"], cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能长期记忆与主动规划引擎
     elif "长期记忆" in intent or "目标跟踪" in intent or "主动规划" in intent or "我的目标" in intent or "待办" in intent or "long term memory" in intent.lower() or "目标" in intent or "待办" in intent:
         print(f"[智能长期记忆与主动规划引擎] 正在处理...", file=sys.stderr)
