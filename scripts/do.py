@@ -1330,6 +1330,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元优化引擎（Round 297）
+    elif "进化元优化" in intent or "元优化" in intent or "策略优化" in intent or "meta optimizer" in intent.lower() or "evolution meta" in intent.lower() or "闭环优化" in intent or "进化闭环" in intent or "meta optimize" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "optimize", "verify", "history", "config", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_meta_optimizer.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能进化环全局调度与优先级自动优化引擎（Round 284）
     elif "进化调度" in intent or "全局调度" in intent or "智能调度" in intent or "进化优先级" in intent or "优先级优化" in intent or "evolution scheduler" in intent.lower() or "global scheduler" in intent.lower() or "priority" in intent.lower() and "进化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
