@@ -1760,6 +1760,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环进化趋势预测与预防性决策增强引擎（Round 389）- 趋势预测、预防性决策、风险评估、动态策略调整
+    elif "进化趋势预测" in intent or "趋势预测" in intent or "预测进化" in intent or "预防性决策" in intent or "预防决策" in intent or "风险预防" in intent or "trend prediction" in intent.lower() or "prevention decision" in intent.lower() or "risk prevention" in intent.lower() or "风险评估" in intent or "进化风险" in intent or "风险检测" in intent or "动态策略调整" in intent or "策略预测调整" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "predict", "risk", "help", "趋势预测", "风险评估", "风险检测"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_trend_prediction_prevention_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化驾驶舱深度集成引擎（Round 381）- 将元进化自动化引擎与进化驾驶舱深度集成
     elif "元进化驾驶舱" in intent or "驾驶舱集成" in intent or "无人值守进化环" in intent or "完全自主进化" in intent or "auto evolution" in intent.lower() or "unmanned evolution" in intent.lower() or "cockpit meta" in intent.lower() or "进化驾驶舱" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
