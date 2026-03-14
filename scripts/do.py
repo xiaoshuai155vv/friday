@@ -1412,6 +1412,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["execute", "status", "history", "loops", "insights", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_intent_execution_loop.py")] + cmd, cwd=PROJECT)
+    # 智能全场景进化系统自我意识深度觉醒引擎（Round 304）
+    elif "自我意识" in intent or "自我觉醒" in intent or "深度自我" in intent or "自我反思" in intent or "自我认知" in intent or "self_awareness" in intent.lower() or "自我意识引擎" in intent or "意识觉醒" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "reflect", "goals", "monitor", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_self_awareness_deep_awakening_engine.py")] + cmd, cwd=PROJECT)
     # 统一引擎调度中心
     elif "引擎" in intent or "engine hub" in intent.lower() or "统一调度" in intent or "引擎列表" in intent or "所有引擎" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["list"]
