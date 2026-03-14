@@ -1450,6 +1450,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化引擎集群协同优化与性能预测增强引擎（Round 357）
+    elif "性能预测" in intent or "协同优化" in intent or "预测优化" in intent or "预防性维护" in intent or "engine predictive" in intent.lower() or "predictive optimizer" in intent.lower() or "协同" in intent and "进化" in intent or "引擎优化" in intent or "优化引擎" in intent or "性能优化" in intent or "健康预测" in intent or "引擎趋势" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["predict", "optimize", "prevent", "verify", "status", "--days", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_engine_cluster_predictive_optimizer.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
