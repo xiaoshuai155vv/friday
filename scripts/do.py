@@ -1422,6 +1422,59 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨引擎统一知识索引与智能检索引擎（Round 446）- 聚合所有进化引擎产生的知识资产、建立统一知识索引、实现智能检索、生成知识关联图谱
+    elif "知识索引" in intent or "知识检索" in intent or "跨引擎知识" in intent or "查询知识" in intent or "知识图谱" in intent or "knowledge index" in intent.lower() or "knowledge search" in intent.lower() or "knowledge graph" in intent.lower() or "知识发现" in intent or "搜索知识" in intent:
+        print(f"[跨引擎知识索引与检索引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_engine_knowledge_index_engine.py")
+
+        # 确定要执行的命令
+        if "收集" in intent or "collect" in intent.lower():
+            filtered_args = ["--collect"]
+        elif "搜索" in intent or "查询" in intent or "search" in intent.lower() or "query" in intent.lower():
+            # 提取搜索关键词
+            search_keyword = intent
+            # 移除触发关键词
+            trigger_keywords = [
+                "搜索", "查询", "search", "query", "知识索引", "知识检索", "跨引擎知识",
+                "查询知识", "知识图谱", "knowledge index", "knowledge search",
+                "knowledge graph", "知识发现", "搜索知识"
+            ]
+            for kw in trigger_keywords:
+                search_keyword = search_keyword.replace(kw, "").strip()
+            # 如果剩余部分太短，使用默认统计
+            if len(search_keyword) < 2:
+                filtered_args = ["--stats"]
+            else:
+                filtered_args = ["--search", search_keyword]
+        elif "分类" in intent or "category" in intent.lower():
+            for kw in ["知识索引", "知识检索", "跨引擎知识", "查询知识", "分类", "category"]:
+                intent = intent.replace(kw, "").strip()
+            filtered_args = ["--category", intent] if intent else ["--stats"]
+        elif "轮次" in intent or "round" in intent.lower() or "Round" in intent:
+            import re
+            match = re.search(r'(\d+)', intent)
+            if match:
+                filtered_args = ["--round", match.group(1)]
+            else:
+                filtered_args = ["--recent"]
+        elif "最近" in intent or "recent" in intent.lower():
+            filtered_args = ["--recent"]
+        elif "图谱" in intent or "graph" in intent.lower():
+            filtered_args = ["--build-graph"]
+        elif "统计" in intent or "stats" in intent.lower() or "状态" in intent:
+            filtered_args = ["--stats"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit"]
+        elif "完整更新" in intent or "full update" in intent.lower():
+            filtered_args = ["--full-update"]
+        else:
+            filtered_args = ["--stats"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化知识主动推理与创新发现引擎（Round 348）
     elif "知识推理" in intent or "创新发现" in intent or "主动推理" in intent or "知识分析" in intent or "knowledge reasoning" in intent.lower() or "innovation discovery" in intent.lower() or "active reasoning" in intent.lower() or "知识趋势" in intent or "进化趋势" in intent or "知识关联" in intent or "创新机会" in intent or "知识组合" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
