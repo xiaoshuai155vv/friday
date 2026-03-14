@@ -5474,6 +5474,24 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环认知-价值-元进化深度融合引擎 (Round 474)
+    elif "认知价值融合" in intent or "认知驱动优化" in intent or "认知元进化" in intent or "cognition value fusion" in intent.lower() or "cognition driven" in intent.lower() or "cognitive meta" in intent.lower():
+        print(f"[智能全场景进化环认知-价值-元进化深度融合引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cognition_value_meta_fusion_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["认知价值融合", "认知驱动优化", "认知元进化", "cognition value fusion", "cognition driven", "cognitive meta"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能创意生成与评估引擎
     elif "创意生成" in intent or "智能创意" in intent or "创新想法" in intent or "新组合" in intent or "创意建议" in intent or "creative generation" in intent.lower() or "creative" in intent.lower() or "创意" in intent:
         print(f"[智能创意生成与评估引擎] 正在分析创意机会...", file=sys.stderr)
