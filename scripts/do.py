@@ -1430,6 +1430,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环实时阈值动态调整引擎（Round 400）- 在阈值自动调整引擎基础上，增强实时阈值动态调整能力，根据实时系统状态动态调整阈值
+    elif "实时阈值" in intent or "阈值动态" in intent or "动态阈值" in intent or "realtime threshold" in intent.lower() or "dynamic threshold" in intent.lower() or "实时动态阈值" in intent or "预防性阈值" in intent or "阈值预测" in intent or "趋势阈值" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["state"]
+        if not cmd or (cmd and cmd[0] not in ["state", "adjust", "history", "enable", "disable", "health", "help"]):
+            cmd = ["state"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_realtime_threshold_dynamic_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环全局智能驾驶舱与一键启动引擎（Round 350）
     elif "驾驶舱" in intent or "进化驾驶舱" in intent or "一键启动" in intent or "进化控制台" in intent or "cockpit" in intent.lower() or "evolution cockpit" in intent.lower() or "一键进化" in intent or "进化状态" in intent and ("控制" in intent or "台" in intent or "一键" in intent):
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
