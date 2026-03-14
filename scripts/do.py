@@ -1675,6 +1675,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化知识图谱深度推理引擎（round 298）
+    elif "知识图谱推理" in intent or "图谱推理" in intent or "知识推理" in intent or "kg reasoning" in intent.lower() or "knowledge graph" in intent.lower() or "图谱分析" in intent or "进化知识图谱" in intent or "隐藏机会" in intent or "创新模式识别" in intent:
+        print(f"[智能全场景进化知识图谱深度推理引擎] 正在分析进化知识图谱...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_graph_reasoning.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd_args:
+            cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化元模式发现引擎（round 244）
     elif "进化元模式" in intent or "元模式发现" in intent or "meta pattern" in intent.lower() or "meta" in intent.lower() or "进化模式分析" in intent or "模式发现" in intent or intent == "patterns":
         print(f"[智能进化元模式发现引擎] 正在分析进化模式...", file=sys.stderr)
