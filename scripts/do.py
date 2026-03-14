@@ -5261,6 +5261,23 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环创新机会自动发现与主动进化引擎（Round 462）
+    elif ("创新机会" in intent or "机会发现" in intent or "主动进化" in intent or "方案评估" in intent or "机会分析" in intent or "innovation opportunity" in intent.lower() or "opportunity discovery" in intent.lower()) and ("发现" in intent or "自动" in intent or "分析" in intent or "引擎" in intent or "status" in intent.lower()):
+        print(f"[创新机会自动发现与主动进化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_opportunity_discovery_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["创新机会", "发现", "自动", "分析", "引擎", "主动进化", "方案评估", "机会分析", "innovation", "opportunity", "discovery"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能跨引擎深度协同闭环增强器
     elif "深度协同" in intent or "闭环增强" in intent or "引擎集成" in intent or "深度集成" in intent or "跨引擎" in intent or "integration" in intent.lower() or "闭环" in intent or "集成" in intent:
         print(f"[智能跨引擎深度协同闭环增强器] 正在处理...", file=sys.stderr)
