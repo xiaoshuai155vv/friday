@@ -2167,6 +2167,23 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景自主进化闭环引擎 (Round 269)
+    elif "自主进化" in intent or "进化闭环" in intent or "自动进化" in intent or "autonomous evolution" in intent.lower() or "evolution loop" in intent.lower() or "自动发现能力" in intent or "能力组合创新" in intent:
+        print(f"[智能全场景自主进化闭环引擎] 正在启动自主进化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "autonomous_evolution_loop_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--help"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["自主进化", "进化闭环", "自动进化", "autonomous evolution", "evolution loop", "自动发现能力", "能力组合创新"]]
+        if not filtered_args:
+            filtered_args = ["--help"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能文件管理引擎
     elif "文件管理" in intent or "整理文件" in intent or "文件整理" in intent or "搜索文件" in intent or "文件搜索" in intent or "分析文件" in intent or "文件分析" in intent or "file manager" in intent.lower() or "organize files" in intent.lower():
         print(f"[智能文件管理引擎] 正在处理文件管理请求...", file=sys.stderr)
