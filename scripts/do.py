@@ -1470,6 +1470,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化引擎集群驾驶舱深度集成引擎（Round 385）
+    elif "集群驾驶舱可视化" in intent or "引擎集群驾驶舱" in intent or "深度驾驶舱集成" in intent or "cluster cockpit integration" in intent.lower() or "集成可视化监控" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["dashboard", "health", "self_heal", "visualize", "status", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_engine_cluster_cockpit_integration_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环主动创新实现引擎（Round 358）
     elif "主动创新" in intent or "创新实现" in intent or "创新发现" in intent or "创新机会" in intent or "主动发现创新" in intent or "innovation realization" in intent.lower() or "创新闭环" in intent or "创新引擎" in intent or "发现并实现" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
