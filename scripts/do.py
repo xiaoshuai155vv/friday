@@ -1400,6 +1400,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环统一监控驾驶舱与完全无人值守进化环深度集成引擎（Round 397）- 将统一监控驾驶舱(round 396)与完全无人值守进化环(round 382)深度集成，实现基于监控数据的自动触发执行
+    elif "统一监控驾驶舱" in intent or "monitoring unattended" in intent.lower() or "监控无人值守" in intent or "监控自动触发" in intent or "unified monitoring unattended" in intent.lower() or "监控执行集成" in intent or "监控驱动进化" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "dashboard", "enable", "disable", "cycle", "check_trigger", "check", "health", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_unified_monitoring_unattended_integration_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环全局智能驾驶舱与一键启动引擎（Round 350）
     elif "驾驶舱" in intent or "进化驾驶舱" in intent or "一键启动" in intent or "进化控制台" in intent or "cockpit" in intent.lower() or "evolution cockpit" in intent.lower() or "一键进化" in intent or "进化状态" in intent and ("控制" in intent or "台" in intent or "一键" in intent):
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
