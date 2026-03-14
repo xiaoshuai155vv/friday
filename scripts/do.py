@@ -5312,6 +5312,35 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景自进化健康保障闭环引擎 (Round 271)
+    elif "进化健康" in intent or "自进化保障" in intent or "evolution health" in intent.lower() or "进化保障" in intent or "健康闭环" in intent or "自进化健康" in intent:
+        print(f"[智能全场景自进化健康保障闭环引擎] 正在检查进化健康状态...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_health_assurance_loop.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "summary"
+        if "检查" in intent or "check" in intent.lower() or "状态" in intent:
+            action = "check"
+        elif "诊断" in intent or "diagnose" in intent.lower():
+            action = "diagnose"
+        elif "修复" in intent or "heal" in intent.lower() or "自愈" in intent:
+            action = "heal"
+        elif "评估" in intent or "evaluate" in intent.lower():
+            action = "evaluate"
+        elif "摘要" in intent or "summary" in intent.lower():
+            action = "summary"
+        # 过滤掉意图关键词
+        filter_words = ["进化健康", "自进化保障", "evolution health", "进化保障", "健康闭环", "自进化健康", "检查", "check", "状态", "诊断", "diagnose", "修复", "heal", "自愈", "评估", "evaluate", "摘要", "summary"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path, action] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化方向自动发现与优先级排序引擎 (Round 239)
     elif "进化发现" in intent or "方向发现" in intent or "优先级排序" in intent or "evolution discovery" in intent.lower() or "方向排序" in intent or "进化机会" in intent or "发现进化" in intent or "自动发现进化" in intent:
         print(f"[智能进化方向自动发现引擎] 正在分析进化机会...", file=sys.stderr)
