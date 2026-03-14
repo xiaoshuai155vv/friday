@@ -4841,6 +4841,36 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化效率自动优化引擎 (Round 274) - 让进化环执行更快、资源占用更低
+    elif "进化效率优化" in intent or "效率优化" in intent or "优化进化环" in intent or "evolution efficiency" in intent.lower() or "进化更快" in intent or "进化性能" in intent or "efficiency optimizer" in intent.lower():
+        print(f"[智能全场景进化效率自动优化引擎] 正在处理进化效率优化请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_efficiency_optimizer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "分析" in intent or "analyze" in intent.lower():
+            action = "analyze_time"
+        elif "资源" in intent or "resource" in intent.lower():
+            action = "analyze_resources"
+        elif "瓶颈" in intent or "bottleneck" in intent.lower():
+            action = "bottlenecks"
+        elif "建议" in intent or "suggest" in intent.lower():
+            action = "suggestions"
+        elif "优化" in intent or "optimize" in intent.lower():
+            action = "optimize"
+        # 过滤掉意图关键词
+        filter_words = ["进化效率优化", "效率优化", "优化进化环", "evolution efficiency", "进化更快", "进化性能", "efficiency optimizer", "分析", "analyze", "资源", "resource", "瓶颈", "bottleneck", "建议", "suggest", "优化", "optimize"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化全自主闭环引擎 (Round 255) - 让进化环能够真正自主运行、主动触发、形成完整闭环
     elif "全自主进化" in intent or "自主闭环" in intent or "进化自主运行" in intent or "autonomous loop" in intent.lower() or "自动进化" in intent or "自主进化" in intent or "进化全自主" in intent or "full autonomous" in intent.lower():
         print(f"[智能进化全自主闭环引擎] 正在处理全自主进化请求...", file=sys.stderr)
