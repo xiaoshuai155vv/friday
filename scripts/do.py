@@ -6258,6 +6258,47 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化决策可解释性深度增强引擎 (Round 333)
+    elif ("决策可解释" in intent or "可解释性" in intent or "解释决策" in intent or
+          "decision explain" in intent.lower() or "explainability" in intent.lower() or
+          "决策解释" in intent or "解释进化" in intent or "evolution explain" in intent.lower() or
+          "决策依据" in intent or "知其然" in intent or "reasoning chain" in intent.lower() or
+          "决策证据" in intent or "evidence" in intent.lower() or
+          "进化可解释" in intent):
+        print(f"[智能进化决策可解释性深度增强引擎 v1.0] 正在分析进化决策依据...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_decision_explainability_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "记录" in intent or "record" in intent.lower():
+            action = "record"
+        elif "解释" in intent or "explain" in intent.lower():
+            action = "explain"
+        elif "历史" in intent or "history" in intent.lower():
+            action = "history"
+        elif "质量" in intent or "quality" in intent.lower():
+            action = "quality"
+        elif "最近" in intent or "recent" in intent.lower():
+            action = "recent"
+        elif "自动" in intent or "auto" in intent.lower():
+            action = "auto_explain"
+        # 过滤掉意图关键词
+        filter_words = ["决策可解释", "可解释性", "解释决策", "decision explain", "explainability",
+                       "决策解释", "解释进化", "evolution explain", "决策依据", "知其然",
+                       "reasoning chain", "决策证据", "evidence", "进化可解释",
+                       "记录", "record", "解释", "explain", "历史", "history", "质量", "quality",
+                       "最近", "recent", "自动", "auto"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加 -- 前缀
+        if action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, "--" + action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化方向自动发现与优先级排序引擎 (Round 239)
     elif "进化发现" in intent or "方向发现" in intent or "优先级排序" in intent or "evolution discovery" in intent.lower() or "方向排序" in intent or "进化机会" in intent or "发现进化" in intent or "自动发现进化" in intent:
         print(f"[智能进化方向自动发现引擎] 正在分析进化机会...", file=sys.stderr)
