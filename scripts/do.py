@@ -6299,6 +6299,41 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化决策-知识-解释深度集成引擎 (Round 334)
+    elif ("决策知识集成" in intent or "决策优化" in intent or "解释增强" in intent or
+          "知识驱动决策" in intent or "decision knowledge" in intent.lower() or
+          "决策学习" in intent or "知识解释集成" in intent or "深度集成决策" in intent):
+        print(f"[智能进化决策-知识-解释深度集成引擎 v1.0] 正在处理知识驱动的决策...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_decision_knowledge_integration.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "决策" in intent and ("做" in intent or "生成" in intent or "执行" in intent):
+            action = "decision"
+        elif "关联" in intent or "link" in intent.lower() or "追踪" in intent:
+            action = "link"
+        elif "解释" in intent or "explain" in intent.lower():
+            action = "explain"
+        elif "反馈" in intent or "学习" in intent or "feedback" in intent.lower() or "learn" in intent.lower():
+            action = "feedback"
+        elif "自适应" in intent or "adaptive" in intent.lower():
+            action = "adaptive-level"
+        # 过滤掉意图关键词
+        filter_words = ["决策知识集成", "决策优化", "解释增强", "知识驱动决策", "decision knowledge",
+                       "决策学习", "知识解释集成", "深度集成决策", "状态", "status", "决策", "做", "生成",
+                       "执行", "关联", "link", "追踪", "解释", "explain", "反馈", "学习", "feedback",
+                       "learn", "自适应", "adaptive"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加 -- 前缀
+        if action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, "--" + action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化方向自动发现与优先级排序引擎 (Round 239)
     elif "进化发现" in intent or "方向发现" in intent or "优先级排序" in intent or "evolution discovery" in intent.lower() or "方向排序" in intent or "进化机会" in intent or "发现进化" in intent or "自动发现进化" in intent:
         print(f"[智能进化方向自动发现引擎] 正在分析进化机会...", file=sys.stderr)
