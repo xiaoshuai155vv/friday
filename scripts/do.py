@@ -2040,6 +2040,38 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化能力增强引擎（round 442）- 让系统能够自动分析自身进化过程、评估进化方法论效率、生成更优的进化策略，形成"学会如何进化"的递归优化能力
+    # round 443 新增：元进化驾驶舱深度集成 - 元进化可视化、元进化推送、驾驶舱集成（优先匹配）
+    elif "元进化驾驶舱" in intent or "元进化可视化" in intent or "元进化推送" in intent or "meta cockpit" in intent.lower() or "meta visualization" in intent.lower() or "meta push" in intent.lower():
+        print(f"[进化环元进化能力增强引擎 - 驾驶舱集成] 正在启动元进化驾驶舱深度集成...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_evolution_enhancement_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+
+        # 确定要执行的命令
+        if "摘要" in intent or "summary" in intent.lower():
+            filtered_args = ["--cockpit-summary"]
+        elif "数据" in intent or "data" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "推送" in intent or "push" in intent.lower():
+            if "启动" in intent or "start" in intent.lower():
+                filtered_args = ["--start-push"]
+            elif "停止" in intent or "stop" in intent.lower():
+                filtered_args = ["--stop-push"]
+            else:
+                filtered_args = ["--cockpit"]
+        elif "启动" in intent or "start" in intent.lower():
+            filtered_args = ["--start-push"]
+        elif "停止" in intent or "stop" in intent.lower():
+            filtered_args = ["--stop-push"]
+        else:
+            filtered_args = ["--cockpit-summary"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环统一监控数据与进化驾驶舱深度集成引擎（Round 396）- 将统一监控数据与进化驾驶舱深度集成，在驾驶舱中实现统一监控视图展示
     elif "unified monitoring cockpit" in intent.lower() or "cockpit unified monitoring" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]

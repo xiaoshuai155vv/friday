@@ -8,9 +8,10 @@
 2. 进化方法论评估（评估各进化策略的有效性）
 3. 最优进化策略生成（基于分析结果生成改进建议）
 4. 递归优化能力（将优化建议应用到后续进化中）
-5. 集成到 do.py 支持元进化、进化方法论等关键词触发
+5. 与进化驾驶舱深度集成（round 443 新增）
+6. 集成到 do.py 支持元进化、进化方法论等关键词触发
 
-Version: 1.0.0
+Version: 1.1.0 - 新增与进化驾驶舱深度集成功能
 """
 
 import os
@@ -20,6 +21,8 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional
 from collections import defaultdict
 import re
+import threading
+import time
 
 # 添加 scripts 目录到路径
 SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -30,6 +33,9 @@ PROJECT_DIR = os.path.dirname(SCRIPTS_DIR)  # 项目根目录
 RUNTIME_DIR = os.path.join(PROJECT_DIR, "runtime")
 STATE_DIR = os.path.join(RUNTIME_DIR, "state")
 LOGS_DIR = os.path.join(RUNTIME_DIR, "logs")
+
+# 驾驶舱数据文件
+COCKPIT_DATA_FILE = os.path.join(STATE_DIR, "meta_evolution_cockpit_data.json")
 
 
 def load_evolution_completed_history() -> List[Dict[str, Any]]:
@@ -356,6 +362,235 @@ def save_analysis_result(result: Dict[str, Any], output_file: str = None) -> str
         return ""
 
 
+# ========== round 443 新增：驾驶舱深度集成功能 ==========
+
+class MetaEvolutionCockpitIntegration:
+    """元进化驾驶舱深度集成引擎"""
+
+    def __init__(self):
+        self.state = self._load_state()
+        self.realtime_push_enabled = True
+        self.push_thread = None
+        self.push_interval = 30  # 推送间隔（秒）
+
+    def _load_state(self) -> Dict[str, Any]:
+        """加载状态"""
+        if os.path.exists(COCKPIT_DATA_FILE):
+            try:
+                with open(COCKPIT_DATA_FILE, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception:
+                pass
+        return {
+            "dashboard_data": {
+                "meta_evolution_metrics": {},
+                "methodology_scores": {},
+                "optimization_progress": {},
+                "strategy_suggestions": [],
+                "last_analysis_time": None,
+                "analysis_count": 0
+            },
+            "realtime_metrics": {
+                "total_analyses": 0,
+                "successful_optimizations": 0,
+                "average_success_rate": 0.0
+            }
+        }
+
+    def _save_state(self, state: Dict[str, Any]):
+        """保存状态"""
+        try:
+            with open(COCKPIT_DATA_FILE, 'w', encoding='utf-8') as f:
+                json.dump(state, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print(f"保存状态失败: {e}")
+
+    def push_to_cockpit(self, analysis_result: Dict[str, Any]) -> Dict[str, Any]:
+        """推送元进化数据到驾驶舱"""
+        if not self.realtime_push_enabled:
+            return {"status": "disabled", "message": "实时推送已禁用"}
+
+        try:
+            # 提取关键指标
+            dashboard = self.state["dashboard_data"]
+
+            # 更新元进化指标
+            analysis = analysis_result.get("analysis", {})
+            if analysis.get("status") == "success":
+                dashboard["meta_evolution_metrics"] = {
+                    "total_rounds": analysis.get("total_rounds", 0),
+                    "completed_rounds": analysis.get("completed_rounds", 0),
+                    "success_rate": analysis.get("success_rate", 0),
+                    "avg_baseline_score": analysis.get("avg_baseline_score"),
+                    "efficient_patterns": analysis.get("efficient_patterns", []),
+                    "goal_categories": analysis.get("goal_categories", {}),
+                    "timestamp": datetime.now().isoformat()
+                }
+
+            # 更新方法论评分
+            methodology = analysis_result.get("methodology", {})
+            if methodology.get("status") == "success":
+                dashboard["methodology_scores"] = {
+                    "best_strategy": methodology.get("best_strategy"),
+                    "best_success_rate": methodology.get("best_success_rate"),
+                    "needs_improvement": methodology.get("needs_improvement"),
+                    "improvement_space": methodology.get("improvement_space"),
+                    "methodology_evaluation": methodology.get("methodology_evaluation", {}),
+                    "timestamp": datetime.now().isoformat()
+                }
+
+            # 更新优化进度
+            optimization = analysis_result.get("optimization", {})
+            dashboard["optimization_progress"] = {
+                "applied_count": optimization.get("applied_count", 0),
+                "status": optimization.get("status"),
+                "timestamp": datetime.now().isoformat()
+            }
+
+            # 更新策略建议
+            strategy = analysis_result.get("strategy", {})
+            if strategy.get("status") == "success":
+                dashboard["strategy_suggestions"] = strategy.get("suggestions", [])[:10]  # 保留前10条
+
+            # 更新时间戳
+            dashboard["last_analysis_time"] = datetime.now().isoformat()
+            dashboard["analysis_count"] = dashboard.get("analysis_count", 0) + 1
+
+            # 更新实时指标
+            self.state["realtime_metrics"]["total_analyses"] = dashboard["analysis_count"]
+            self.state["realtime_metrics"]["average_success_rate"] = analysis.get("success_rate", 0)
+
+            # 保存状态
+            self._save_state(self.state)
+
+            return {
+                "status": "success",
+                "message": "数据已推送到驾驶舱",
+                "pushed_data": {
+                    "metrics": dashboard["meta_evolution_metrics"],
+                    "methodology": dashboard["methodology_scores"],
+                    "optimization": dashboard["optimization_progress"],
+                    "suggestions_count": len(dashboard["strategy_suggestions"])
+                }
+            }
+
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    def get_cockpit_data(self) -> Dict[str, Any]:
+        """获取驾驶舱展示数据"""
+        dashboard = self.state.get("dashboard_data", {})
+        realtime = self.state.get("realtime_metrics", {})
+
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "meta_evolution_metrics": dashboard.get("meta_evolution_metrics", {}),
+            "methodology_scores": dashboard.get("methodology_scores", {}),
+            "optimization_progress": dashboard.get("optimization_progress", {}),
+            "strategy_suggestions": dashboard.get("strategy_suggestions", []),
+            "realtime_metrics": realtime,
+            "last_analysis_time": dashboard.get("last_analysis_time"),
+            "analysis_count": dashboard.get("analysis_count", 0)
+        }
+
+    def enable_realtime_push(self, enabled: bool = True):
+        """启用/禁用实时推送"""
+        self.realtime_push_enabled = enabled
+        print(f"[元进化驾驶舱集成] 实时推送已{'启用' if enabled else '禁用'}")
+
+    def start_realtime_push(self, interval: int = 30):
+        """启动实时推送（定期分析并推送）"""
+        if self.push_thread and self.push_thread.is_alive():
+            print("[元进化驾驶舱集成] 实时推送已在运行中")
+            return
+
+        self.push_interval = interval
+        self.realtime_push_enabled = True
+
+        def push_loop():
+            while self.realtime_push_enabled:
+                try:
+                    # 运行分析
+                    result = run_meta_evolution_analysis()
+                    # 推送数据
+                    self.push_to_cockpit(result)
+                    print(f"[元进化驾驶舱集成] 周期推送完成")
+                except Exception as e:
+                    print(f"[元进化驾驶舱集成] 周期推送失败: {e}")
+
+                # 等待下一个周期
+                for _ in range(self.push_interval):
+                    if not self.realtime_push_enabled:
+                        break
+                    time.sleep(1)
+
+        self.push_thread = threading.Thread(target=push_loop, daemon=True)
+        self.push_thread.start()
+        print(f"[元进化驾驶舱集成] 实时推送已启动（间隔: {interval}秒）")
+
+    def stop_realtime_push(self):
+        """停止实时推送"""
+        self.realtime_push_enabled = False
+        if self.push_thread:
+            self.push_thread.join(timeout=5)
+        print("[元进化驾驶舱集成] 实时推送已停止")
+
+    def get_dashboard_summary(self) -> str:
+        """获取驾驶舱摘要"""
+        data = self.get_cockpit_data()
+        if data.get("status") != "success":
+            return "获取驾驶舱数据失败"
+
+        metrics = data.get("meta_evolution_metrics", {})
+        methodology = data.get("methodology_scores", {})
+        realtime = data.get("realtime_metrics", {})
+
+        summary = []
+        summary.append("=" * 50)
+        summary.append("【元进化驾驶舱】")
+        summary.append("=" * 50)
+
+        if metrics:
+            summary.append(f"\n【进化过程分析】")
+            summary.append(f"  - 总轮次: {metrics.get('total_rounds', 0)}")
+            summary.append(f"  - 完成轮次: {metrics.get('completed_rounds', 0)}")
+            summary.append(f"  - 成功率: {metrics.get('success_rate', 0)*100:.1f}%")
+
+        if methodology:
+            summary.append(f"\n【方法论评估】")
+            summary.append(f"  - 最佳策略: {methodology.get('best_strategy', 'N/A')}")
+            summary.append(f"  - 最佳成功率: {methodology.get('best_success_rate', 0)*100:.1f}%")
+
+        summary.append(f"\n【实时统计】")
+        summary.append(f"  - 分析次数: {realtime.get('total_analyses', 0)}")
+        summary.append(f"  - 平均成功率: {realtime.get('average_success_rate', 0)*100:.1f}%")
+
+        summary.append(f"\n【最近分析时间】")
+        summary.append(f"  - {data.get('last_analysis_time', 'N/A')}")
+
+        summary.append("=" * 50)
+        return "\n".join(summary)
+
+
+# 全局实例
+_cockpit_integration = None
+
+def get_cockpit_integration() -> MetaEvolutionCockpitIntegration:
+    """获取驾驶舱集成实例"""
+    global _cockpit_integration
+    if _cockpit_integration is None:
+        _cockpit_integration = MetaEvolutionCockpitIntegration()
+    return _cockpit_integration
+
+
+def push_meta_evolution_to_cockpit() -> Dict[str, Any]:
+    """快捷函数：将元进化数据推送到驾驶舱"""
+    integration = get_cockpit_integration()
+    result = run_meta_evolution_analysis()
+    return integration.push_to_cockpit(result)
+
+
 def main():
     """主函数 - 支持命令行调用"""
     import argparse
@@ -366,8 +601,44 @@ def main():
     parser.add_argument("--methodology", action="store_true", help="仅评估进化方法论")
     parser.add_argument("--strategy", action="store_true", help="仅生成优化策略")
     parser.add_argument("--save", action="store_true", help="保存结果到文件")
+    # round 443 新增：驾驶舱集成参数
+    parser.add_argument("--cockpit", action="store_true", help="推送到进化驾驶舱")
+    parser.add_argument("--cockpit-data", action="store_true", help="获取驾驶舱数据")
+    parser.add_argument("--cockpit-summary", action="store_true", help="获取驾驶舱摘要")
+    parser.add_argument("--start-push", action="store_true", help="启动实时推送")
+    parser.add_argument("--stop-push", action="store_true", help="停止实时推送")
+    parser.add_argument("--push-interval", type=int, default=30, help="推送间隔（秒，默认30）")
 
     args = parser.parse_args()
+
+    # 驾驶舱集成功能（round 443 新增）
+    if args.cockpit_data:
+        integration = get_cockpit_integration()
+        data = integration.get_cockpit_data()
+        print(json.dumps(data, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.cockpit_summary:
+        integration = get_cockpit_integration()
+        print(integration.get_dashboard_summary())
+        return 0
+
+    if args.start_push:
+        integration = get_cockpit_integration()
+        integration.start_realtime_push(args.push_interval)
+        return 0
+
+    if args.stop_push:
+        integration = get_cockpit_integration()
+        integration.stop_realtime_push()
+        return 0
+
+    if args.cockpit:
+        integration = get_cockpit_integration()
+        result = run_meta_evolution_analysis()
+        push_result = integration.push_to_cockpit(result)
+        print(json.dumps(push_result, ensure_ascii=False, indent=2))
+        return 0
 
     # 默认执行分析
     if args.analyze or args.process or args.methodology or args.strategy or not any([args.process, args.methodology, args.strategy]):
