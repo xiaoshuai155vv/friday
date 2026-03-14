@@ -1744,6 +1744,36 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
 
+    # 智能全场景进化环创新假设自动生成与验证引擎（Round 457）- 让系统能够主动发现进化机会、生成创新性假设、设计验证实验、自动评估假设价值，形成从假设生成到验证的完整闭环
+    elif "假设生成" in intent or "验证假设" in intent or "创新假设" in intent or "假设评估" in intent or "生成假设" in intent or "hypothesis generation" in intent.lower() or "hypothesis" in intent.lower() or "验证创新" in intent or "创新验证" in intent or "假设引擎" in intent:
+        print(f"[创新假设自动生成与验证引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_hypothesis_generation_verification_engine.py")
+
+        # 确定要执行的命令
+        if "--status" in sys.argv or "状态" in intent or "status" in intent.lower():
+            filtered_args = ["--status"]
+        elif "--generate" in sys.argv or "生成" in intent or "generate" in intent.lower() or "生成假设" in intent:
+            filtered_args = ["--cycle"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--evaluate" in sys.argv or "评估" in intent or "evaluate" in intent.lower():
+            # 提取假设ID
+            import re
+            match = re.search(r'(hyp_\w+)', intent)
+            if match:
+                filtered_args = ["--evaluate", match.group(1)]
+            else:
+                filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：获取状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+
     # 智能全场景进化环跨引擎统一知识索引与智能检索引擎（Round 446）- 聚合所有进化引擎产生的知识资产、建立统一知识索引、实现智能检索、生成知识关联图谱
     elif "知识索引" in intent or "知识检索" in intent or "跨引擎知识" in intent or "查询知识" in intent or "知识图谱" in intent or "knowledge index" in intent.lower() or "knowledge search" in intent.lower() or "knowledge graph" in intent.lower() or "知识发现" in intent or "搜索知识" in intent:
         print(f"[跨引擎知识索引与检索引擎] 正在处理...", file=sys.stderr)
