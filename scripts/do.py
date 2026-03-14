@@ -1660,6 +1660,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环统一智能体协同引擎与进化驾驶舱深度集成引擎（Round 378）- 智能体驾驶舱集成、agent cockpit、集成引擎、统一监控
+    elif "智能体驾驶舱" in intent or "agent cockpit" in intent.lower() or "集成引擎" in intent or "统一监控" in intent or "智能体与驾驶舱" in intent or "agent cockpit integration" in intent.lower() or "集成驾驶舱" in intent or "智能体集成" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "analyze", "execute", "dashboard", "health", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_agent_cockpit_integration_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
