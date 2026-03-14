@@ -3729,6 +3729,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环跨引擎深度协同自适应优化增强引擎（round 421）
+    elif "跨引擎深度协同" in intent or "深度协同优化" in intent or "自适应协同" in intent or "collaboration optimization" in intent.lower() or "deep collaboration" in intent.lower() or "cross engine optimization" in intent.lower() or "协作优化" in intent or "协同自适应" in intent:
+        print(f"[跨引擎深度协同自适应优化增强引擎] 正在启动跨引擎深度协同与自适应优化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_engine_deep_collaboration_optimizer.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["跨引擎深度协同", "深度协同优化", "自适应协同", "collaboration optimization", "deep collaboration", "cross engine optimization", "协作优化", "协同自适应"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化策略自动生成与动态评估引擎（round 310）
     elif "策略生成" in intent or "策略评估" in intent or "动态策略" in intent or "智能策略选择" in intent or "strategy generation" in intent.lower() or "strategy evaluate" in intent.lower() or "generate strategy" in intent.lower() or "策略智能选择" in intent or "进化策略生成" in intent or "生成进化策略" in intent:
         print(f"[智能进化策略自动生成与动态评估引擎] 正在生成和评估进化策略...", file=sys.stderr)
