@@ -1340,6 +1340,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环目标自优化引擎（Round 317）
+    elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "analyze", "evaluate", "discover", "validate", "optimize", "think", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_goal_self_optimizer.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能进化环全局调度与优先级自动优化引擎（Round 284）
     elif "进化调度" in intent or "全局调度" in intent or "智能调度" in intent or "进化优先级" in intent or "优先级优化" in intent or "evolution scheduler" in intent.lower() or "global scheduler" in intent.lower() or "priority" in intent.lower() and "进化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
@@ -3001,6 +3011,20 @@ def main():
         filtered_args = [arg for arg in cmd_args if arg not in ["元认知", "meta cognition", "元认知深度", "认知反思", "学会思考", "思考如何思考", "递归认知", "meta cognitive", "深度反思", "认知升级", "状态", "查询", "分析"]]
         if not filtered_args:
             filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环目标自优化引擎（round 317）
+    elif "目标自优化" in intent or "目标优化" in intent or "进化目标" in intent or "目标评估" in intent or "目标反思" in intent or "goal optimizer" in intent.lower() or "目标体系" in intent or "元目标" in intent or "优化目标" in intent:
+        print(f"[智能全场景进化环目标自优化引擎] 正在评估和优化进化目标体系...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_goal_optimizer_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["目标自优化", "目标优化", "进化目标", "目标评估", "目标反思", "goal optimizer", "目标体系", "元目标", "优化目标", "状态", "查询", "分析"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
             print(result.stdout)
