@@ -1320,6 +1320,16 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "health", "metrics", "repair", "闭环", "closed_loop", "failed", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_loop_health_healer.py")] + cmd, cwd=PROJECT)
+    # 智能全场景进化效能深度分析与优化建议引擎（Round 296）
+    elif "进化效能" in intent or "效能分析" in intent or "进化分析" in intent or "efficiency analyzer" in intent.lower() or "evolution efficiency" in intent.lower() or "进化优化建议" in intent or "优化建议" in intent and "进化" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["analyze"]
+        if not cmd or (cmd and cmd[0] not in ["analyze", "report", "suggestions", "health", "help"]):
+            cmd = ["analyze"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_efficiency_analyzer.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能进化环全局调度与优先级自动优化引擎（Round 284）
     elif "进化调度" in intent or "全局调度" in intent or "智能调度" in intent or "进化优先级" in intent or "优先级优化" in intent or "evolution scheduler" in intent.lower() or "global scheduler" in intent.lower() or "priority" in intent.lower() and "进化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
