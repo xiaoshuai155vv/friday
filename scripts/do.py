@@ -1520,6 +1520,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化引擎集群统一智能诊断与自愈中心引擎（Round 403）- 将分散的诊断自愈能力统一
+    elif "统一诊断自愈" in intent or "诊断自愈中心" in intent or "引擎统一诊断" in intent or "unified diagnosis healing" in intent.lower() or "diagnosis healing center" in intent.lower() or "统一诊断中心" in intent or "自愈中心" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["scan", "diagnose", "heal", "health", "status", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_unified_diagnosis_healing_center.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化引擎集群协同优化与性能预测增强引擎（Round 357）
     elif "性能预测" in intent or "协同优化" in intent or "预测优化" in intent or "预防性维护" in intent or "engine predictive" in intent.lower() or "predictive optimizer" in intent.lower() or "协同" in intent and "进化" in intent or "引擎优化" in intent or "优化引擎" in intent or "性能优化" in intent or "健康预测" in intent or "引擎趋势" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
