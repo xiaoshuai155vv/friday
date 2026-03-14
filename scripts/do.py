@@ -1308,8 +1308,14 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "evaluate", "opportunities", "suggestions", "execute", "integrate", "cycle", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_self_evaluation_optimizer.py")] + cmd, cwd=PROJECT)
+    # 智能全场景进化环健康自愈引擎（Round 283）- 放在前面优先匹配
+    elif "进化健康自愈" in intent or "健康自愈引擎" in intent or "evolution health healer" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "health", "metrics", "repair", "闭环", "closed_loop", "failed", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_loop_health_healer.py")] + cmd, cwd=PROJECT)
     # 智能进化闭环自愈与预防引擎（Round 280）
-    elif "进化自愈" in intent or "进化修复" in intent or "进化预防" in intent or "evolution self heal" in intent.lower() or "self healing" in intent.lower() or "进化健康" in intent or "进化闭环自愈" in intent or "自愈引擎" in intent:
+    elif "进化自愈" in intent or "进化修复" in intent or "进化预防" in intent or "evolution self heal" in intent.lower() or "self healing" in intent.lower() or "进化健康" in intent or "进化闭环自愈" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
         if not cmd or (cmd and cmd[0] not in ["status", "health", "analyze", "patterns", "repair", "prevent", "heal", "cycle", "help"]):
             cmd = ["status"]
@@ -1320,6 +1326,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "health", "analyze", "optimize", "patterns", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_loop_deep_optimizer.py")] + cmd, cwd=PROJECT)
+    # 智能全场景进化环实时监控与预警引擎（Round 283）
+    elif "进化环监控" in intent or "进化预警" in intent or "evolution monitor" in intent.lower() or "监控预警" in intent or "进化状态" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "monitor", "metrics", "anomalies", "trends", "alerts", "clear", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_loop_health_monitor.py")] + cmd, cwd=PROJECT)
     # 统一引擎调度中心
     elif "引擎" in intent or "engine hub" in intent.lower() or "统一调度" in intent or "引擎列表" in intent or "所有引擎" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["list"]
