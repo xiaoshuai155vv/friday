@@ -3879,6 +3879,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环进化路径自动执行与闭环优化引擎（round 441）- 将自适应路径规划引擎(r439)、价值量化引擎(r438)、知识驱动触发引擎(r437)深度串联，形成端到端的「规划→执行→评估→反馈→优化」完整闭环
+    elif "路径自动执行" in intent or "闭环优化" in intent or "路径执行闭环" in intent or "path execution" in intent.lower() or "closed loop optimization" in intent.lower() or "执行闭环" in intent or "进化闭环优化" in intent or "路径优化闭环" in intent or "path auto" in intent.lower():
+        print(f"[进化路径自动执行与闭环优化引擎] 正在启动进化路径自动执行与闭环优化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_path_execution_closed_loop_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["路径自动执行", "闭环优化", "路径执行闭环", "path execution", "closed loop optimization", "执行闭环", "进化闭环优化", "路径优化闭环", "path auto"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环跨引擎深度协同自适应优化增强引擎（round 421）
     elif "跨引擎深度协同" in intent or "深度协同优化" in intent or "自适应协同" in intent or "collaboration optimization" in intent.lower() or "deep collaboration" in intent.lower() or "cross engine optimization" in intent.lower() or "协作优化" in intent or "协同自适应" in intent:
         print(f"[跨引擎深度协同自适应优化增强引擎] 正在启动跨引擎深度协同与自适应优化...", file=sys.stderr)
