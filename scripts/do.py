@@ -1425,6 +1425,19 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环知识驱动全流程自动化闭环引擎（round 460）- 将知识管理与假设执行深度集成，形成从假设→决策→执行→验证→反思全流程的知识驱动闭环
+    elif "知识驱动" in intent or "知识闭环" in intent or "全流程知识" in intent or "知识推荐" in intent or "knowledge driven" in intent.lower() or "knowledge loop" in intent.lower() or "full loop knowledge" in intent.lower():
+        print(f"[知识驱动全流程自动化闭环引擎] 正在启动知识驱动全流程闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_driven_full_loop_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["知识驱动", "知识闭环", "全流程知识", "知识推荐", "knowledge driven", "knowledge loop", "full loop knowledge"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化知识深度传承与自适应遗忘引擎（Round 347）
     elif "知识传承" in intent or "自适应遗忘" in intent or "知识管理" in intent or "遗忘引擎" in intent or "knowledge inheritance" in intent.lower() or "knowledge forgetting" in intent.lower() or "knowledge management" in intent.lower() or "知识老化" in intent or "知识价值" in intent or "遗忘知识" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
