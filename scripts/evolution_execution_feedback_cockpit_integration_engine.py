@@ -4,12 +4,13 @@
 智能全场景进化环执行效果实时反馈与进化驾驶舱深度集成引擎
 Evolution Execution Feedback Cockpit Integration Engine
 
-将 round 418/419 的策略反馈调整能力与进化驾驶舱（round 350）深度集成，实现：
+将 round 418/419 的策略反馈调整能力、round 425 的趋势分析能力与进化驾驶舱（round 350）深度集成，实现：
 1. 驾驶舱实时显示策略执行效果
 2. 反馈调整状态可视化
 3. 智能推荐优化建议展示
 4. 跨引擎数据共享与状态同步
 5. 执行效果驱动的推荐优化
+6. 进化趋势预测与驾驶舱集成（round 426 增强）
 
 功能：
 1. 执行效果实时监控
@@ -17,13 +18,17 @@ Evolution Execution Feedback Cockpit Integration Engine
 3. 策略调整建议展示
 4. 执行趋势分析
 5. 智能预警
+6. 趋势预测驾驶舱可视化（新增）
+7. 实时数据推送与动态刷新（新增）
+8. 多维度效果指标展示（增强）
 
-Version: 1.0.0
+Version: 1.1.0
 
 依赖：
 - evolution_cockpit_engine.py (round 350)
 - evolution_strategy_feedback_adjustment_engine.py (round 418)
 - evolution_strategy_recommendation_feedback_integration_engine.py (round 419)
+- evolution_execution_trend_analysis_engine.py (round 425)
 """
 
 import os
@@ -57,7 +62,7 @@ class ExecutionFeedbackCockpitIntegrationEngine:
     """进化环执行效果反馈与驾驶舱深度集成引擎"""
 
     def __init__(self, state_dir: str = "runtime/state"):
-        self.version = "1.0.0"
+        self.version = "1.1.0"
         self.state_dir = Path(state_dir)
         self.project_root = PROJECT_ROOT
         self.scripts_dir = SCRIPT_DIR
@@ -77,6 +82,7 @@ class ExecutionFeedbackCockpitIntegrationEngine:
         # 引擎实例
         self.cockpit_engine = None
         self.feedback_engine = None
+        self.trend_engine = None  # round 425 新增
         self._initialize_engines()
 
     def _ensure_directories(self):
@@ -104,6 +110,15 @@ class ExecutionFeedbackCockpitIntegrationEngine:
             _safe_print(f"[反馈驾驶舱集成] 无法加载策略反馈调整引擎: {e}")
             self.feedback_engine = None
 
+        # round 425 新增：尝试导入趋势分析引擎
+        try:
+            from evolution_execution_trend_analysis_engine import EvolutionExecutionTrendAnalysisEngine
+            self.trend_engine = EvolutionExecutionTrendAnalysisEngine()
+            _safe_print("[反馈驾驶舱集成] 进化趋势分析引擎已加载 (round 425)")
+        except ImportError as e:
+            _safe_print(f"[反馈驾驶舱集成] 无法加载进化趋势分析引擎: {e}")
+            self.trend_engine = None
+
     def _load_state(self) -> Dict[str, Any]:
         """加载状态"""
         if self.state_file.exists():
@@ -120,7 +135,8 @@ class ExecutionFeedbackCockpitIntegrationEngine:
             "last_update": datetime.now().isoformat(),
             "integrated_engines": {
                 "cockpit": False,
-                "feedback": False
+                "feedback": False,
+                "trend": False  # round 425 新增
             },
             "execution_tracking": {},
             "feedback_history": [],
@@ -128,13 +144,16 @@ class ExecutionFeedbackCockpitIntegrationEngine:
                 "realtime_metrics": {},
                 "adjustment_status": {},
                 "optimization_suggestions": [],
-                "execution_trends": []
+                "execution_trends": [],
+                "trend_predictions": {},  # round 426 新增：趋势预测数据
+                "realtime_push_enabled": True  # round 426 新增：实时推送开关
             },
             "statistics": {
                 "total_executions": 0,
                 "total_adjustments": 0,
                 "average_deviation": 0.0,
-                "optimization_count": 0
+                "optimization_count": 0,
+                "trend_predictions_count": 0  # round 426 新增
             }
         }
 
@@ -343,20 +362,91 @@ class ExecutionFeedbackCockpitIntegrationEngine:
 
     def get_dashboard_integration_data(self) -> Dict[str, Any]:
         """获取驾驶舱集成数据"""
+        # 获取趋势分析数据（round 425 新增）
+        trend_data = {}
+        if self.trend_engine:
+            try:
+                trend_status = self.trend_engine.get_status()
+                trend_data = {
+                    "available": True,
+                    "status": trend_status.get("status", "unknown"),
+                    "overall_health": trend_status.get("overall_health", "unknown"),
+                    "total_history_rounds": trend_status.get("total_history_rounds", 0)
+                }
+                # 获取预测数据
+                try:
+                    analysis_result = self.trend_engine.analyze_and_predict()
+                    if analysis_result.get("status") == "success":
+                        trend_data["predictions"] = analysis_result.get("predictions", {})
+                        trend_data["trends"] = analysis_result.get("trends", {})
+                        trend_data["optimization_suggestions"] = analysis_result.get("optimization_suggestions", [])
+                except Exception as e:
+                    _safe_print(f"[反馈驾驶舱集成] 获取趋势分析失败: {e}")
+            except Exception as e:
+                _safe_print(f"[反馈驾驶舱集成] 获取趋势引擎状态失败: {e}")
+
         return {
             "status": "success",
             "timestamp": datetime.now().isoformat(),
             "version": self.version,
             "engines_status": {
                 "cockpit": self.cockpit_engine is not None,
-                "feedback": self.feedback_engine is not None
+                "feedback": self.feedback_engine is not None,
+                "trend": self.trend_engine is not None  # round 426 新增
             },
             "realtime_metrics": self.state["dashboard_data"]["realtime_metrics"],
             "adjustment_status": self.get_adjustment_status()["strategies"],
             "optimization_suggestions": self.state["dashboard_data"]["optimization_suggestions"],
             "execution_trends": self.state["dashboard_data"]["execution_trends"][-20:],  # 最近20条
+            "trend_analysis": trend_data,  # round 426 新增
+            "realtime_push_enabled": self.state["dashboard_data"].get("realtime_push_enabled", True),  # round 426 新增
             "statistics": self.state["statistics"]
         }
+
+    def get_trend_predictions_for_cockpit(self) -> Dict[str, Any]:
+        """获取趋势预测数据用于驾驶舱展示（round 426 新增）"""
+        result = {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+            "trend_predictions": {},
+            "realtime_update": True
+        }
+
+        if not self.trend_engine:
+            result["status"] = "no_trend_engine"
+            return result
+
+        try:
+            # 获取状态
+            status = self.trend_engine.get_status()
+            result["trend_predictions"]["status"] = status.get("status", "unknown")
+            result["trend_predictions"]["overall_health"] = status.get("overall_health", "unknown")
+            result["trend_predictions"]["total_rounds"] = status.get("total_history_rounds", 0)
+
+            # 获取分析结果
+            analysis = self.trend_engine.analyze_and_predict()
+            if analysis.get("status") == "success":
+                result["trend_predictions"]["predictions"] = analysis.get("predictions", {})
+                result["trend_predictions"]["trends"] = analysis.get("trends", {})
+                result["trend_predictions"]["recommendations"] = analysis.get("optimization_suggestions", [])
+
+            # 更新本地状态
+            self.state["dashboard_data"]["trend_predictions"] = result["trend_predictions"]
+            self.state["statistics"]["trend_predictions_count"] += 1
+            self._save_state(self.state)
+
+        except Exception as e:
+            result["status"] = "error"
+            result["error"] = str(e)
+            _safe_print(f"[反馈驾驶舱集成] 获取趋势预测失败: {e}")
+
+        return result
+
+    def enable_realtime_push(self, enabled: bool = True):
+        """启用/禁用实时推送（round 426 新增）"""
+        self.state["dashboard_data"]["realtime_push_enabled"] = enabled
+        self._save_state(self.state)
+        _safe_print(f"[反馈驾驶舱集成] 实时推送已{'启用' if enabled else '禁用'}")
 
     def execute_full_integration_loop(self, strategy_name: str, execution_data: Dict[str, Any]) -> Dict[str, Any]:
         """执行完整的集成闭环：跟踪→反馈→分析→建议→驾驶舱更新"""
@@ -415,10 +505,12 @@ class ExecutionFeedbackCockpitIntegrationEngine:
             "last_update": self.state.get("last_update"),
             "engines_status": {
                 "cockpit": self.cockpit_engine is not None,
-                "feedback": self.feedback_engine is not None
+                "feedback": self.feedback_engine is not None,
+                "trend": self.trend_engine is not None  # round 426 新增
             },
             "statistics": self.state["statistics"],
-            "tracked_strategies": list(self.state["execution_tracking"].keys())
+            "tracked_strategies": list(self.state["execution_tracking"].keys()),
+            "realtime_push": self.state["dashboard_data"].get("realtime_push_enabled", True)  # round 426 新增
         }
 
     def health_check(self) -> Dict[str, Any]:
@@ -432,6 +524,7 @@ class ExecutionFeedbackCockpitIntegrationEngine:
         # 检查引擎状态
         health["checks"]["cockpit_engine"] = "ok" if self.cockpit_engine else "not_loaded"
         health["checks"]["feedback_engine"] = "ok" if self.feedback_engine else "not_loaded"
+        health["checks"]["trend_engine"] = "ok" if self.trend_engine else "not_loaded"  # round 426 新增
 
         # 检查状态文件
         health["checks"]["state_file"] = "ok" if self.state_file.exists() else "missing"
@@ -450,8 +543,8 @@ def main():
     """主函数 - 用于命令行调用"""
     import argparse
 
-    parser = argparse.ArgumentParser(description="进化环执行效果反馈与驾驶舱深度集成引擎")
-    parser.add_argument("command", choices=["track", "status", "adjustments", "suggestions", "dashboard", "health", "loop"],
+    parser = argparse.ArgumentParser(description="进化环执行效果反馈与驾驶舱深度集成引擎 (v1.1.0)")
+    parser.add_argument("command", choices=["track", "status", "adjustments", "suggestions", "dashboard", "health", "loop", "trend_predictions", "enable_push", "disable_push"],
                         help="要执行的命令")
     parser.add_argument("--strategy", type=str, help="策略名称")
     parser.add_argument("--data", type=str, help="执行数据 (JSON 字符串)")
@@ -509,6 +602,21 @@ def main():
 
         result = engine.execute_full_integration_loop(args.strategy, execution_data)
         print(json.dumps(result, indent=2, ensure_ascii=False))
+
+    elif args.command == "trend_predictions":
+        # round 426 新增：获取趋势预测数据
+        result = engine.get_trend_predictions_for_cockpit()
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+
+    elif args.command == "enable_push":
+        # round 426 新增：启用实时推送
+        engine.enable_realtime_push(True)
+        print(json.dumps({"status": "success", "message": "实时推送已启用"}, indent=2, ensure_ascii=False))
+
+    elif args.command == "disable_push":
+        # round 426 新增：禁用实时推送
+        engine.enable_realtime_push(False)
+        print(json.dumps({"status": "success", "message": "实时推送已禁用"}, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

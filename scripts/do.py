@@ -3715,12 +3715,12 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
-    # 智能全场景进化环执行效果实时反馈与进化驾驶舱深度集成引擎（round 420）
-    elif "反馈驾驶舱" in intent or "执行效果显示" in intent or "反馈驾驶舱集成" in intent or "feedback cockpit" in intent.lower() or "execution display" in intent.lower() or "feedback integration" in intent.lower() or "执行反馈驾驶舱" in intent or "效果驾驶舱" in intent or "execution feedback cockpit" in intent.lower():
-        print(f"[进化环执行效果实时反馈与进化驾驶舱深度集成引擎] 正在启动执行效果反馈与驾驶舱集成...", file=sys.stderr)
+    # 智能全场景进化环执行效果实时反馈与进化驾驶舱深度集成引擎（round 420, 426 增强）
+    elif "反馈驾驶舱" in intent or "执行效果显示" in intent or "反馈驾驶舱集成" in intent or "feedback cockpit" in intent.lower() or "execution display" in intent.lower() or "feedback integration" in intent.lower() or "执行反馈驾驶舱" in intent or "效果驾驶舱" in intent or "execution feedback cockpit" in intent.lower() or "实时反馈驾驶舱" in intent or "执行效果反馈" in intent or "趋势反馈集成" in intent or "realtime feedback" in intent.lower():
+        print(f"[进化环执行效果实时反馈与进化驾驶舱深度集成引擎 v1.1.0] 正在启动执行效果反馈与驾驶舱集成...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_execution_feedback_cockpit_integration_engine.py")
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
-        filtered_args = [arg for arg in cmd_args if arg not in ["反馈驾驶舱", "执行效果显示", "反馈驾驶舱集成", "feedback cockpit", "execution display", "feedback integration", "执行反馈驾驶舱", "效果驾驶舱", "execution feedback cockpit"]]
+        filtered_args = [arg for arg in cmd_args if arg not in ["反馈驾驶舱", "执行效果显示", "反馈驾驶舱集成", "feedback cockpit", "execution display", "feedback integration", "执行反馈驾驶舱", "效果驾驶舱", "execution feedback cockpit", "实时反馈驾驶舱", "执行效果反馈", "趋势反馈集成", "realtime feedback"]]
         if not filtered_args:
             filtered_args = ["dashboard"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
