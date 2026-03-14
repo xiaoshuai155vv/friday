@@ -1412,6 +1412,19 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环进化知识动态管理与自优化引擎（round 459）- 自动从最新进化成果中提炼核心知识、智能识别并遗忘过时知识、基于使用频率和价值自动调整知识权重
+    elif "动态知识" in intent or "知识权重" in intent or "知识归档" in intent or "知识动态管理" in intent or "knowledge dynamic" in intent.lower() or "知识蒸馏" in intent or "智能遗忘" in intent or "知识优化" in intent:
+        print(f"[进化知识动态管理与自优化引擎] 正在启动知识动态管理与自优化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_dynamic_management_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["动态知识", "知识权重", "知识归档", "知识动态管理", "knowledge dynamic", "知识蒸馏", "智能遗忘", "知识优化"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化知识深度传承与自适应遗忘引擎（Round 347）
     elif "知识传承" in intent or "自适应遗忘" in intent or "知识管理" in intent or "遗忘引擎" in intent or "knowledge inheritance" in intent.lower() or "knowledge forgetting" in intent.lower() or "knowledge management" in intent.lower() or "知识老化" in intent or "知识价值" in intent or "遗忘知识" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
@@ -4334,6 +4347,20 @@ def main():
         filtered_args = [arg for arg in cmd_args if arg not in ["蒸馏优化", "模式提取", "knowledge_distillation", "模式发现", "wisdom_library", "蒸馏引擎", "智能蒸馏", "success_pattern"]]
         if not filtered_args:
             filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环进化知识动态管理与自优化引擎（round 459）- 自动从最新进化成果中提炼核心知识、智能识别并遗忘过时知识、基于使用频率和价值自动调整知识权重
+    elif "知识管理" in intent or "知识优化" in intent or "知识蒸馏" in intent or "智能遗忘" in intent or "动态知识" in intent or "knowledge management" in intent.lower() or "knowledge optimization" in intent.lower() or "dynamic knowledge" in intent.lower() or "知识动态" in intent or "知识权重" in intent or "遗忘引擎" in intent or "知识归档" in intent:
+        print(f"[进化知识动态管理与自优化引擎] 正在启动知识动态管理与自优化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_dynamic_management_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["知识管理", "知识优化", "知识蒸馏", "智能遗忘", "动态知识", "knowledge management", "knowledge optimization", "dynamic knowledge", "知识动态", "知识权重", "遗忘引擎", "知识归档"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
             print(result.stdout)
