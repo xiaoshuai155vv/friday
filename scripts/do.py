@@ -2219,6 +2219,23 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景智能体自主决策与执行闭环引擎 (Round 276)
+    elif "自主决策" in intent or "决策执行" in intent or "自主执行" in intent or "autonomous decision" in intent.lower() or "auto decision" in intent.lower() or "decision execution" in intent.lower() or "自主决策执行" in intent or "智能决策闭环" in intent:
+        print(f"[智能全场景智能体自主决策与执行闭环引擎] 正在启动自主决策与执行...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "autonomous_decision_execution_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--help"]
+        # 过滤掉意图关键词
+        filtered_args = [arg for arg in cmd_args if arg not in ["自主决策", "决策执行", "自主执行", "autonomous decision", "auto decision", "decision execution", "自主决策执行", "智能决策闭环"]]
+        if not filtered_args:
+            filtered_args = ["--help"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能文件管理引擎
     elif "文件管理" in intent or "整理文件" in intent or "文件整理" in intent or "搜索文件" in intent or "文件搜索" in intent or "分析文件" in intent or "文件分析" in intent or "file manager" in intent.lower() or "organize files" in intent.lower():
         print(f"[智能文件管理引擎] 正在处理文件管理请求...", file=sys.stderr)
