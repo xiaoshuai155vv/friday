@@ -3771,6 +3771,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环执行效果跨轮对比分析与趋势预测增强引擎（round 425）
+    elif "跨轮对比" in intent or "趋势分析" in intent or "进化趋势" in intent or "趋势预测" in intent or "cross round comparison" in intent.lower() or "trend analysis" in intent.lower() or "evolution trend" in intent.lower() or "trend prediction" in intent.lower() or "效果对比" in intent or "执行对比" in intent or "轮次对比" in intent or "优化建议" in intent and "趋势" in intent or "趋势建议" in intent:
+        print(f"[进化环执行效果跨轮对比分析与趋势预测增强引擎] 正在启动跨轮对比分析与趋势预测...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_execution_trend_analysis_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["跨轮对比", "趋势分析", "进化趋势", "趋势预测", "cross round comparison", "trend analysis", "evolution trend", "trend prediction", "效果对比", "执行对比", "轮次对比", "优化建议", "趋势建议"]]
+        if not filtered_args:
+            filtered_args = ["analyze"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环策略知识图谱深度融合与自适应优化引擎（round 422）
     elif "策略知识图谱融合" in intent or "策略知识融合" in intent or "知识驱动策略" in intent or "strategy kg fusion" in intent.lower() or "strategy knowledge" in intent.lower() or "knowledge driven strategy" in intent.lower() or "策略KG融合" in intent or "知识化策略" in intent or "策略自适应优化" in intent:
         print(f"[策略知识图谱深度融合与自适应优化引擎] 正在启动策略知识融合与自适应优化...", file=sys.stderr)
