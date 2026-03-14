@@ -3190,6 +3190,39 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能主动价值发现与智能决策闭环增强引擎（round 339）
+    elif ("主动价值发现" in intent or "价值发现" in intent or "主动决策" in intent or
+          "active value discovery" in intent.lower() or "value discovery engine" in intent.lower() or
+          "智能决策闭环" in intent or "决策闭环" in intent or "价值驱动" in intent or
+          "主动发现" in intent or "发现机会" in intent):
+        print(f"[智能主动价值发现与智能决策闭环增强引擎 v1.0] 正在执行主动价值发现与智能决策...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_active_value_discovery_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "发现" in intent or "discover" in intent.lower():
+            action = "--discover"
+        elif "完整闭环" in intent or "full cycle" in intent.lower() or "执行闭环" in intent:
+            action = "--full-cycle"
+        elif "配置" in intent or "config" in intent.lower():
+            action = "--config"
+        # 过滤掉意图关键词
+        filter_words = ["主动价值发现", "价值发现", "主动决策", "active value discovery", "value discovery engine",
+                       "智能决策闭环", "决策闭环", "价值驱动", "主动发现", "发现机会",
+                       "发现", "discover", "完整闭环", "full cycle", "执行闭环",
+                       "配置", "config", "状态", "status"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作前缀
+        if action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能主动洞察与建议引擎（round 213）
     elif "主动洞察" in intent or "主动建议" in intent or "洞察" in intent or "主动价值" in intent or "proactive insight" in intent.lower() or "insight advisor" in intent.lower() or "洞察引擎" in intent or "建议引擎" in intent or "趋势分析" in intent or "进化趋势" in intent or "预测" in intent:
         print(f"[智能主动洞察与建议引擎] 正在分析跨引擎知识、进化趋势和系统状态，生成主动洞察与建议...", file=sys.stderr)
