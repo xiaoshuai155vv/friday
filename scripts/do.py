@@ -3287,6 +3287,42 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化体动态负载均衡与弹性伸缩引擎（round 343）
+    elif ("负载均衡" in intent or "load balancer" in intent.lower() or
+          "弹性伸缩" in intent or "elastic scaling" in intent.lower() or
+          "动态调度" in intent or "dynamic scheduling" in intent.lower() or
+          "自动扩容" in intent or "auto scale" in intent.lower() or
+          "缩容" in intent or "scale in" in intent.lower() or
+          "扩容" in intent or "scale out" in intent.lower() or
+          "资源调度" in intent or "resource scheduling" in intent.lower()):
+        print(f"[智能全场景进化体动态负载均衡与弹性伸缩引擎 v1.0] 正在执行负载均衡与伸缩调度...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_dynamic_load_balancer.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        action = ""  # 不添加 action 前缀，让模块自行处理
+        if "完整闭环" in intent or "full cycle" in intent.lower() or "执行闭环" in intent:
+            action = "--full-cycle"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "--status"
+        elif "分发" in intent or "dispatch" in intent.lower():
+            action = "--dispatch"
+        elif "指标" in intent or "metrics" in intent.lower():
+            action = "--metrics"
+        elif "配置" in intent or "config" in intent.lower():
+            action = "--config"
+        filter_words = ["负载均衡", "load balancer", "弹性伸缩", "elastic scaling",
+                       "动态调度", "dynamic scheduling", "自动扩容", "auto scale",
+                       "缩容", "scale in", "扩容", "scale out", "资源调度", "resource scheduling",
+                       "完整闭环", "full cycle", "状态", "status", "分发", "dispatch",
+                       "指标", "metrics", "配置", "config"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action and action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能主动价值发现与智能决策闭环增强引擎（round 339）
     elif ("主动价值发现" in intent or "价值发现" in intent or "主动决策" in intent or
           "active value discovery" in intent.lower() or "value discovery engine" in intent.lower() or
