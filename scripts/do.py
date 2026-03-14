@@ -3743,6 +3743,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环策略知识图谱深度融合与自适应优化引擎（round 422）
+    elif "策略知识图谱融合" in intent or "策略知识融合" in intent or "知识驱动策略" in intent or "strategy kg fusion" in intent.lower() or "strategy knowledge" in intent.lower() or "knowledge driven strategy" in intent.lower() or "策略KG融合" in intent or "知识化策略" in intent or "策略自适应优化" in intent:
+        print(f"[策略知识图谱深度融合与自适应优化引擎] 正在启动策略知识融合与自适应优化...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_strategy_kg_fusion_optimizer.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["策略知识图谱融合", "策略知识融合", "知识驱动策略", "strategy kg fusion", "strategy knowledge", "knowledge driven strategy", "策略KG融合", "知识化策略", "策略自适应优化"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化策略自动生成与动态评估引擎（round 310）
     elif "策略生成" in intent or "策略评估" in intent or "动态策略" in intent or "智能策略选择" in intent or "strategy generation" in intent.lower() or "strategy evaluate" in intent.lower() or "generate strategy" in intent.lower() or "策略智能选择" in intent or "进化策略生成" in intent or "生成进化策略" in intent:
         print(f"[智能进化策略自动生成与动态评估引擎] 正在生成和评估进化策略...", file=sys.stderr)
