@@ -1380,6 +1380,26 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨引擎协同知识蒸馏引擎（Round 410）- 从多个进化引擎执行结果中自动提取和蒸馏关键知识
+    elif "知识蒸馏" in intent or "蒸馏知识" in intent or "知识提取" in intent or "knowledge distillation" in intent.lower() or "distill knowledge" in intent.lower() or "知识提炼" in intent or "跨引擎知识" in intent or "引擎知识提取" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["distill"]
+        if not cmd or (cmd and cmd[0] not in ["distill", "auto_distill", "get", "statistics", "stats", "help"]):
+            cmd = ["distill"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_cross_engine_knowledge_distillation_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环知识驱动自动触发与自优化引擎（Round 411）- 基于 round 410 蒸馏的知识，自动分析系统状态、智能识别进化方向、自动触发相应进化引擎
+    elif "知识触发" in intent or "知识驱动" in intent or "知识优化" in intent or "自动触发优化" in intent or "knowledge trigger" in intent.lower() or "knowledge driven" in intent.lower() or "knowledge optimize" in intent.lower() or "知识分析" in intent or "进化方向识别" in intent or "触发推荐" in intent or "自优化" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["analyze"]
+        if not cmd or (cmd and cmd[0] not in ["analyze", "trigger", "recommend", "recommends", "optimize", "optimization", "record", "status", "help"]):
+            cmd = ["analyze"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_knowledge_driven_trigger_optimizer.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎协同自优化与深度集成引擎（Round 349）
     elif "进化协同" in intent or "引擎协同优化" in intent or "跨引擎健康" in intent or "协同自优化" in intent or "跨引擎" in intent or "引擎健康" in intent or "进化引擎健康" in intent or "cross engine" in intent.lower() or "engine collaboration" in intent.lower() or "collaboration optimizer" in intent.lower() or "跨引擎协同" in intent or "引擎协作" in intent or "协同优化" in intent or "进化环健康" in intent or "evolution health" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
