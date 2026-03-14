@@ -1308,6 +1308,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "evaluate", "opportunities", "suggestions", "execute", "integrate", "cycle", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_self_evaluation_optimizer.py")] + cmd, cwd=PROJECT)
+    # 智能全场景进化闭环健康自评估与自适应优化引擎（Round 294）
+    elif "进化健康自评估" in intent or "健康自评估" in intent or "进化闭环健康" in intent or "健康评估引擎" in intent or "evolution health self" in intent.lower() or "health evaluation" in intent.lower() or "进化健康报告" in intent or "生成健康报告" in intent or "优化建议" in intent and "进化" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "health", "check", "report", "recommendations", "advice", "trends", "analyze", "help"]):
+            cmd = ["report"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_health_self_evaluation_engine.py")] + cmd, cwd=PROJECT)
     # 智能全场景进化环健康自愈引擎（Round 283）- 放在前面优先匹配
     elif "进化健康自愈" in intent or "健康自愈引擎" in intent or "evolution health healer" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
