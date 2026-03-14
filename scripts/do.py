@@ -4378,6 +4378,44 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 知识推理与决策增强引擎 - 知识驱动决策、决策分析、决策模式分析
+    elif "知识驱动决策" in intent or "决策增强" in intent or "决策分析" in intent or "决策模式" in intent or "knowledge decision" in intent.lower() or "decision enhancer" in intent.lower() or "决策建议" in intent or "智能决策建议" in intent:
+        print(f"[知识推理与决策增强引擎] 正在分析并生成决策建议...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "knowledge_driven_decision_enhancer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "决策" in intent and ("建议" in intent or "分析" in intent or "evaluate" in intent.lower()):
+            action = "decide"
+        elif "模式" in intent or "pattern" in intent.lower():
+            action = "patterns"
+        elif "查询" in intent or "query" in intent.lower() or "搜索" in intent:
+            action = "query"
+        elif "推理" in intent or "reasoning" in intent.lower():
+            action = "reason"
+        elif "洞察" in intent or "insight" in intent.lower():
+            action = "insight"
+        # 过滤掉意图关键词
+        filter_words = ["知识驱动决策", "决策增强", "决策分析", "决策模式", "knowledge decision", "decision enhancer", "决策建议", "智能决策建议", "查询", "推理", "洞察", "模式"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加命令
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        if not filtered_args:
+            filtered_args = ["status"]
+        # 提取上下文内容
+        query = intent
+        for word in filter_words:
+            query = query.replace(word, "").strip()
+        if query:
+            filtered_args.extend(["--context", query])
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 增强多模态场景理解与智能场景联动引擎 - 界面结构解析、场景联动推荐、跨场景上下文传递
     elif "场景理解" in intent or "场景联动" in intent or "智能场景推荐" in intent or "multimodal" in intent.lower() or "scene understanding" in intent.lower() or "scene linkage" in intent.lower() or "scene_recommend" in intent.lower():
         print(f"[增强多模态场景理解引擎] 正在分析场景...", file=sys.stderr)
