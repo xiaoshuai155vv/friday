@@ -1750,6 +1750,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环自我评估与策略迭代优化引擎（Round 388）- 自我评估、策略优化、决策迭代、评估驱动
+    elif "自我评估" in intent or "策略优化" in intent or "决策迭代" in intent or "评估驱动" in intent or "self evaluation" in intent.lower() or "strategy iteration" in intent.lower() or "decision iteration" in intent.lower() or "evaluation driven" in intent.lower() or "策略迭代" in intent or "自我评价" in intent or "决策评估" in intent or "策略调整" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "evaluate", "identify", "optimize", "full_cycle", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_self_evaluation_strategy_iteration_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化驾驶舱深度集成引擎（Round 381）- 将元进化自动化引擎与进化驾驶舱深度集成
     elif "元进化驾驶舱" in intent or "驾驶舱集成" in intent or "无人值守进化环" in intent or "完全自主进化" in intent or "auto evolution" in intent.lower() or "unmanned evolution" in intent.lower() or "cockpit meta" in intent.lower() or "进化驾驶舱" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
