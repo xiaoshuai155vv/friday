@@ -1320,6 +1320,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "schedule", "load", "efficiency", "urgency", "adjust", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_global_scheduler.py")] + cmd, cwd=PROJECT)
+    # 智能进化环自主创新能力增强引擎（Round 285）
+    elif "自主创新能力" in intent or "进化创新" in intent or "创新引擎" in intent or "autonomous innovation" in intent.lower() or "innovation engine" in intent.lower() or "创新发现" in intent or "发现创新" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "scan", "discover", "evaluate", "plan", "history", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_autonomous_innovation_engine.py")] + cmd, cwd=PROJECT)
     # 智能进化闭环自愈与预防引擎（Round 280）
     elif "进化自愈" in intent or "进化修复" in intent or "进化预防" in intent or "evolution self heal" in intent.lower() or "self healing" in intent.lower() or "进化健康" in intent or "进化闭环自愈" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
@@ -2986,6 +2992,23 @@ def main():
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
         # 过滤掉意图关键词
         filter_words = ["创意生成", "智能创意", "创新想法", "新组合", "创意建议", "creative generation", "creative", "创意"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能创新实现增强引擎 (Round 285)
+    elif "创新实现" in intent or "增强创新" in intent or "实现创新" in intent or "创新增强" in intent or "innovation enhancement" in intent.lower() or "enhance innovation" in intent.lower() or "实现创新能力" in intent:
+        print(f"[智能创新实现增强引擎] 正在增强创新能力...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "innovation_enhancement_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["创新实现", "增强创新", "实现创新", "创新增强", "innovation enhancement", "enhance innovation", "实现创新能力"]
         filtered_args = [arg for arg in cmd_args if arg not in filter_words and not any(w in arg for w in filter_words)]
         if not filtered_args:
             filtered_args = ["status"]
