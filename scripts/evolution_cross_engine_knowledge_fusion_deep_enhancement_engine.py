@@ -77,6 +77,8 @@ class EvolutionCrossEngineKnowledgeFusionDeepEnhancementEngine:
         self.cross_round_fusion = self._load_engine("evolution_cross_round_knowledge_fusion_engine", "EvolutionCrossRoundKnowledgeFusionEngine")
         self.kg_reasoning = self._load_engine("evolution_kg_deep_reasoning_insight_engine", "EvolutionKGDeepReasoningInsightEngine")
         self.cockpit_engine = self._load_engine("evolution_cockpit_engine", "EvolutionCockpitEngine")
+        # 加载假设执行引擎（round 431）- 新增用于深度集成
+        self.hypothesis_execution_engine = self._load_engine("evolution_hypothesis_execution_engine", "EvolutionHypothesisExecutionEngine")
 
         # 融合知识库
         self.fusion_knowledge = self._load_fusion_data()
@@ -453,6 +455,112 @@ class EvolutionCrossEngineKnowledgeFusionDeepEnhancementEngine:
             'timestamp': datetime.now().isoformat()
         }
 
+    def run_knowledge_to_execution_closed_loop(self, max_tasks: int = 3) -> Dict:
+        """运行从知识融合到假设执行的完整闭环（round 436 新增）
+
+        实现从知识融合 → 洞察生成 → 假设执行 → 价值实现的完整闭环
+        深度集成 round 435 的知识融合引擎与 round 431 的假设执行引擎
+        """
+        result = {
+            'status': 'initiated',
+            'steps': [],
+            'hypotheses_generated': 0,
+            'tasks_executed': 0,
+            'errors': []
+        }
+
+        try:
+            # Step 1: 运行知识融合闭环
+            fusion_result = self.run_closed_loop()
+            result['steps'].append({
+                'step': 'knowledge_fusion',
+                'status': 'success',
+                'insights_count': fusion_result.get('inferred_insights', 0)
+            })
+
+            # Step 2: 将洞察转化为假设并执行（如果假设执行引擎可用）
+            if self.hypothesis_execution_engine:
+                # 创建实例（_load_engine 返回的是类，需要实例化）
+                hypothesis_engine = None
+                try:
+                    if isinstance(self.hypothesis_execution_engine, type):
+                        hypothesis_engine = self.hypothesis_execution_engine(self.base_path)
+                    else:
+                        hypothesis_engine = self.hypothesis_execution_engine
+                except:
+                    pass
+
+                if not hypothesis_engine:
+                    result['steps'].append({
+                        'step': 'hypothesis_execution',
+                        'status': 'skipped',
+                        'reason': 'Failed to instantiate hypothesis engine'
+                    })
+                else:
+                    insights = self.get_inferred_insights()
+
+                    # 将洞察转化为假设
+                    for insight in insights[:max_tasks]:
+                        insight_key = insight.get('key', '')
+                        insight_desc = insight.get('description', '')
+
+                        if not insight_desc:
+                            continue
+
+                        # 构建假设
+                        hypothesis = {
+                            'id': f"insight_{insight_key}_{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                            'goal': f"基于知识融合洞察执行优化：{insight_desc[:100]}",
+                            'description': insight_desc,
+                            'credibility_score': insight.get('confidence', 0.7),
+                            'source': 'knowledge_fusion_deep_enhancement'
+                        }
+
+                        # 评估可执行性
+                        evaluation = hypothesis_engine.evaluate_hypothesis_executability(hypothesis)
+
+                        if evaluation.get('can_execute', False):
+                            # 转化为任务
+                            task = hypothesis_engine.transform_hypothesis_to_task(hypothesis, evaluation)
+
+                            # 添加到执行队列
+                            add_result = hypothesis_engine.add_task_to_queue(task)
+                            if add_result.get('status') in ['added', 'skipped']:
+                                result['hypotheses_generated'] += 1
+
+                    # 执行队列中的任务
+                    if hypothesis_engine.execution_queue:
+                        tasks_to_exec = hypothesis_engine.execution_queue[:max_tasks]
+                        for task in tasks_to_exec:
+                            exec_result = hypothesis_engine.execute_task(task)
+                            if exec_result.get('status') == 'success':
+                                result['tasks_executed'] += 1
+
+                        result['steps'].append({
+                            'step': 'hypothesis_execution',
+                            'status': 'success',
+                            'hypotheses_generated': result['hypotheses_generated'],
+                            'tasks_executed': result['tasks_executed']
+                        })
+
+                    # 更新驾驶舱
+                    hypothesis_engine.integrate_with_cockpit()
+            else:
+                result['steps'].append({
+                    'step': 'hypothesis_execution',
+                    'status': 'skipped',
+                    'reason': 'hypothesis_execution_engine not available'
+                })
+
+            result['status'] = 'completed'
+
+        except Exception as e:
+            result['errors'].append(str(e))
+            result['status'] = 'failed'
+
+        result['timestamp'] = datetime.now().isoformat()
+        return result
+
 
 # CLI 接口
 def main():
@@ -462,7 +570,7 @@ def main():
         description='智能全场景进化环跨引擎深度知识融合与主动推理增强引擎'
     )
     parser.add_argument('command', choices=[
-        'status', 'knowledge', 'insights', 'links', 'refresh', 'reason', 'cockpit', 'closed_loop', 'initialize'
+        'status', 'knowledge', 'insights', 'links', 'refresh', 'reason', 'cockpit', 'closed_loop', 'initialize', 'execute_loop'
     ], help='要执行的命令')
     parser.add_argument('--query', type=str, help='查询内容（用于 reason 命令）')
 
@@ -494,6 +602,9 @@ def main():
         _safe_print(json.dumps(result, ensure_ascii=False, indent=2))
     elif args.command == 'closed_loop':
         result = engine.run_closed_loop()
+        _safe_print(json.dumps(result, ensure_ascii=False, indent=2))
+    elif args.command == 'execute_loop':
+        result = engine.run_knowledge_to_execution_closed_loop()
         _safe_print(json.dumps(result, ensure_ascii=False, indent=2))
     elif args.command == 'initialize':
         result = {

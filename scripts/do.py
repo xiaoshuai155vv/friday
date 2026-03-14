@@ -3855,6 +3855,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环从知识融合到假设执行的完整闭环（round 436）- 新增
+    elif "知识融合执行" in intent or "知识到执行" in intent or "融合执行闭环" in intent or "knowledge to execution" in intent.lower() or "fusion execution loop" in intent.lower() or "知识闭环执行" in intent:
+        print(f"[知识融合到假设执行闭环引擎] 正在启动从知识融合到假设执行的完整闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_engine_knowledge_fusion_deep_enhancement_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["知识融合执行", "知识到执行", "融合执行闭环", "knowledge to execution", "fusion execution loop", "知识闭环执行"]]
+        if not filtered_args:
+            filtered_args = ["execute_loop"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环跨引擎深度协同自适应优化增强引擎（round 421）
     elif "跨引擎深度协同" in intent or "深度协同优化" in intent or "自适应协同" in intent or "collaboration optimization" in intent.lower() or "deep collaboration" in intent.lower() or "cross engine optimization" in intent.lower() or "协作优化" in intent or "协同自适应" in intent:
         print(f"[跨引擎深度协同自适应优化增强引擎] 正在启动跨引擎深度协同与自适应优化...", file=sys.stderr)
