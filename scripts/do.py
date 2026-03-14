@@ -1308,6 +1308,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "evaluate", "opportunities", "suggestions", "execute", "integrate", "cycle", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_self_evaluation_optimizer.py")] + cmd, cwd=PROJECT)
+    # 智能进化闭环自愈与预防引擎（Round 280）
+    elif "进化自愈" in intent or "进化修复" in intent or "进化预防" in intent or "evolution self heal" in intent.lower() or "self healing" in intent.lower() or "进化健康" in intent or "进化闭环自愈" in intent or "自愈引擎" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "health", "analyze", "patterns", "repair", "prevent", "heal", "cycle", "help"]):
+            cmd = ["status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_loop_self_healing_engine.py")] + cmd, cwd=PROJECT)
     # 统一引擎调度中心
     elif "引擎" in intent or "engine hub" in intent.lower() or "统一调度" in intent or "引擎列表" in intent or "所有引擎" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["list"]
