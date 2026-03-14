@@ -1340,12 +1340,31 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
-    # 智能全场景进化方法论自动优化引擎（Round 345）
+    # 智能全场景进化方法论自动优化引擎（Round 345，Round 444 增强）- 自动分析历代进化方法论效果、识别进化模式、自动优化进化参数
     elif "方法论优化" in intent or "进化方法论" in intent or "方法论自动优化" in intent or "methodology optimizer" in intent.lower() or "evolution methodology" in intent.lower() or "进化优化" in intent and "策略" not in intent or "自我优化进化" in intent or "学会进化" in intent:
-        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
-        if not cmd or (cmd and cmd[0] not in ["status", "optimize", "analyze", "history", "config", "help"]):
-            cmd = ["status"]
-        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_methodology_optimizer.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        print(f"[进化方法论自动优化引擎 - 增强版] 正在启动方法论优化分析...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_methodology_auto_optimizer.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+
+        # 确定要执行的命令
+        if "分析" in intent or "analyze" in intent.lower():
+            filtered_args = ["--analyze"]
+        elif "模式" in intent or "patterns" in intent.lower():
+            filtered_args = ["--patterns"]
+        elif "建议" in intent or "suggestions" in intent.lower():
+            filtered_args = ["--suggestions"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "推送" in intent or "push" in intent.lower():
+            filtered_args = ["--push-cockpit"]
+        elif "完整" in intent or "full" in intent.lower() or "周期" in intent:
+            filtered_args = ["--full-cycle"]
+        elif "验证" in intent or "verify" in intent.lower():
+            filtered_args = ["--verify"]
+        else:
+            filtered_args = ["--analyze"]  # 默认分析
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
