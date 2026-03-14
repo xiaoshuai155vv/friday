@@ -2,24 +2,21 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/evolution_strategy_cockpit_integration_engine.py, scripts/do.py, references/evolution_self_proposed.md
+scripts/evolution_system_diagnosis_self_healing_enhanced_engine.py, scripts/do.py, references/evolution_self_proposed.md
 
-## 2026-03-15 round 450
-- **current_goal**：智能全场景进化环执行策略自优化与进化驾驶舱深度集成引擎 - 在 round 449 完成的执行策略自优化深度增强引擎基础上，进一步将自优化能力与进化驾驶舱深度集成。让系统能够将策略优化过程和结果实时推送到驾驶舱、实现可视化展示和驾驶舱控制，形成「优化执行→数据推送→可视化展示→驾驶舱控制→持续优化」的完整集成闭环。让进化环的执行优化成果能够直观展示
+## 2026-03-15 round 451
+- **current_goal**：智能全场景进化环进化系统自诊断与深度自愈增强引擎 - 让系统能够自动诊断100+进化引擎的运行状态，识别性能瓶颈和潜在问题，生成智能修复策略并自动执行修复，形成「自动诊断→问题识别→修复策略生成→自动执行→效果验证」的完整自愈闭环
 - **做了什么**：
-  1. 创建 evolution_strategy_cockpit_integration_engine.py 模块（version 1.0.0）
-  2. 实现驾驶舱状态获取（get_cockpit_status）
-  3. 实现优化摘要收集（collect_optimization_summary）
-  4. 实现可视化数据生成（generate_visualization_data）
-  5. 实现数据推送到驾驶舱（push_to_cockpit）
-  6. 实现从驾驶舱触发优化（trigger_optimization_from_cockpit）
-  7. 实现优化仪表盘数据接口（get_optimization_dashboard_data）
-  8. 实现优化历史查询（get_optimization_history）
-  9. 实现趋势分析（get_trend_analysis）
-  10. 实现持续集成模式（run_continuous_integration）
-  11. 集成到 do.py 支持驾驶舱优化、优化驾驶舱、驾驶舱集成等关键词触发
-  12. 测试通过：--status/--summary/--viz/--dashboard/--trigger/--history/--trend/--push/--continuous均正常工作
+  1. 创建 evolution_system_diagnosis_self_healing_enhanced_engine.py 模块（version 1.0.0）
+  2. 实现多维度系统健康状态评估（系统资源、进化引擎、执行历史、知识图谱）
+  3. 实现自动问题识别与根因分析
+  4. 实现智能修复策略生成（基于历史修复经验）
+  5. 实现自动修复执行与闭环验证
+  6. 实现预测性健康分析（基于历史数据预测潜在问题）
+  7. 实现与进化驾驶舱数据集成
+  8. 集成到 do.py 支持系统自诊断、自诊断、深度自愈、预测诊断等关键词触发
+  9. 测试通过：--diagnose/--cockpit/--predict/--repair/--history命令均正常工作
 - **是否完成**：已完成
-- **基线校验**：子进程链正常通过
-- **针对性校验**：通过 - 模块创建成功，do.py集成验证通过，各命令功能正常
-- **下一轮建议**：可继续增强优化效果的预测能力，或将知识推荐引擎与驾驶舱进一步集成
+- **基线校验**：5/6通过（剪贴板远程限制为已知问题）
+- **针对性校验**：通过 - 模块创建成功，diagnose/cockpit/predict命令均正常工作，do.py已集成关键词触发
+- **下一轮建议**：可继续增强自愈策略的自动化执行能力，或与主动预警引擎深度集成
