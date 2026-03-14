@@ -1770,6 +1770,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环评估-预测-预防一体化深度集成引擎（Round 390）- 将 round 389 的趋势预测预防引擎与 round 388 的自我评估引擎深度集成
+    elif "评估预测融合" in intent or "评估预测一体化" in intent or "融合分析" in intent or "evaluation prediction" in intent.lower() or "evaluation fusion" in intent.lower() or "评估-预测" in intent or "评估和预测" in intent or "动态策略闭环" in intent or "闭环优化" in intent or "adaptive prevention" in intent.lower() or "prevention闭环" in intent or "prediction learning" in intent.lower() or "预测学习" in intent or "模型优化" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "fusion", "prevention", "closed_loop", "learning", "full_cycle", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_evaluation_prediction_prevention_integration_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化驾驶舱深度集成引擎（Round 381）- 将元进化自动化引擎与进化驾驶舱深度集成
     elif "元进化驾驶舱" in intent or "驾驶舱集成" in intent or "无人值守进化环" in intent or "完全自主进化" in intent or "auto evolution" in intent.lower() or "unmanned evolution" in intent.lower() or "cockpit meta" in intent.lower() or "进化驾驶舱" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
