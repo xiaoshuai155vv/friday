@@ -3031,6 +3031,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环价值创造与意义实现引擎（round 318）
+    elif "价值创造" in intent or "意义实现" in intent or "价值评估" in intent or "进化价值" in intent or "value creation" in intent.lower() or "value assessment" in intent.lower() or "价值驱动" in intent or "意义" in intent and "进化" in intent or "价值链" in intent:
+        print(f"[智能全场景进化环价值创造与意义实现引擎] 正在评估进化的真实价值贡献，连接进化与用户实际价值...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_creation_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["价值创造", "意义实现", "价值评估", "进化价值", "value creation", "value assessment", "价值驱动", "意义", "价值链", "状态", "查询", "分析"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能跨引擎知识融合与持续学习引擎（round 212）
     elif "跨引擎学习" in intent or "跨引擎知识" in intent or "引擎持续学习" in intent or "cross engine learning" in intent.lower() or "知识融合" in intent or "模式发现" in intent or "创新组合" in intent:
         print(f"[智能跨引擎知识融合与持续学习引擎] 正在分析跨引擎交互数据并生成创新建议...", file=sys.stderr)
