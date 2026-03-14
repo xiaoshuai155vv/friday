@@ -3743,6 +3743,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环知识驱动决策-执行闭环深度增强引擎（round 423）
+    elif "知识驱动决策" in intent or "决策执行闭环" in intent or "知识决策" in intent or "knowledge driven decision" in intent.lower() or "decision execution" in intent.lower() or "知识驱动执行" in intent or "决策知识闭环" in intent or "knowledge execution loop" in intent.lower() or "知识闭环" in intent:
+        print(f"[知识驱动决策-执行闭环深度增强引擎] 正在启动知识驱动的决策-执行闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_driven_decision_execution_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["知识驱动决策", "决策执行闭环", "知识决策", "knowledge driven decision", "decision execution", "知识驱动执行", "决策知识闭环", "knowledge execution loop", "知识闭环"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环策略知识图谱深度融合与自适应优化引擎（round 422）
     elif "策略知识图谱融合" in intent or "策略知识融合" in intent or "知识驱动策略" in intent or "strategy kg fusion" in intent.lower() or "strategy knowledge" in intent.lower() or "knowledge driven strategy" in intent.lower() or "策略KG融合" in intent or "知识化策略" in intent or "策略自适应优化" in intent:
         print(f"[策略知识图谱深度融合与自适应优化引擎] 正在启动策略知识融合与自适应优化...", file=sys.stderr)
