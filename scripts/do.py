@@ -2694,6 +2694,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化学习策略自动优化引擎（round 282）
+    elif "进化学习策略" in intent or "策略自动优化" in intent or "学习如何进化" in intent or "自动策略应用" in intent or "learning strategy" in intent.lower() or "strategy learning" in intent.lower() or "学会进化" in intent or "进化策略自动" in intent or "自动学习策略" in intent:
+        print(f"[智能进化学习策略自动优化引擎] 正在从历史进化中学习最优策略...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_learning_strategy_optimizer.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化学习策略", "策略自动优化", "学习如何进化", "自动策略应用", "learning strategy", "strategy learning", "学会进化", "进化策略自动", "自动学习策略"]]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能跨引擎知识融合与持续学习引擎（round 212）
     elif "跨引擎学习" in intent or "跨引擎知识" in intent or "引擎持续学习" in intent or "cross engine learning" in intent.lower() or "知识融合" in intent or "模式发现" in intent or "创新组合" in intent:
         print(f"[智能跨引擎知识融合与持续学习引擎] 正在分析跨引擎交互数据并生成创新建议...", file=sys.stderr)
