@@ -1375,11 +1375,11 @@ def main():
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_intent_awakening_engine.py")] + cmd, cwd=PROJECT)
     # 智能全场景自主进化意图执行闭环引擎（Round 289）
-    elif "自主进化执行" in intent or "进化闭环" in intent or "意图执行" in intent or "execution loop" in intent.lower() or "进化循环" in intent or "闭环进化" in intent:
+    elif "自主进化执行" in intent or "进化闭环" in intent or "意图执行" in intent or "execution loop" in intent.lower() or "进化循环" in intent or "闭环进化" in intent or "意图闭环" in intent or "进化意图执行" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
-        if not cmd or (cmd and cmd[0] not in ["status", "execute", "loop", "history", "metrics", "help"]):
+        if not cmd or (cmd and cmd[0] not in ["execute", "status", "history", "loops", "insights", "help"]):
             cmd = ["status"]
-        subprocess.run([sys.executable, os.path.join(SCRIPTS, "autonomous_evolution_execution_loop.py")] + cmd, cwd=PROJECT)
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_intent_execution_loop.py")] + cmd, cwd=PROJECT)
     # 统一引擎调度中心
     elif "引擎" in intent or "engine hub" in intent.lower() or "统一调度" in intent or "引擎列表" in intent or "所有引擎" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["list"]
