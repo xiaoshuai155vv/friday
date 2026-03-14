@@ -1430,6 +1430,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化引擎集群统一导航与智能入口引擎（Round 355）
+    elif "进化引擎导航" in intent or "引擎导航" in intent or "进化导航" in intent or "进化引擎集群" in intent or "引擎列表" in intent or "搜索进化引擎" in intent or "evolution engine navigator" in intent.lower() or "engine navigator" in intent.lower() or "engine cluster" in intent.lower() or "evolution cluster" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["list"]
+        if not cmd or (cmd and cmd[0] not in ["list", "search", "info", "status", "run", "--refresh", "help"]):
+            cmd = ["list"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_engine_cluster_navigator.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
