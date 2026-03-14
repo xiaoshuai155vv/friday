@@ -3251,6 +3251,42 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化体自我克隆与分布式协作引擎（round 342）
+    elif ("自我克隆" in intent or "clone" in intent.lower() or
+          "分布式协作" in intent or "distributed collaboration" in intent.lower() or
+          "群体智慧" in intent or "swarm intelligence" in intent.lower() or
+          "协作引擎" in intent or "collaboration engine" in intent.lower() or
+          "多实例" in intent or "multi-instance" in intent.lower() or
+          "克隆协作" in intent):
+        print(f"[智能全场景进化体自我克隆与分布式协作引擎 v1.0] 正在执行克隆与协作...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_clone_collaboration_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        action = ""  # 不添加 action 前缀，让模块自行处理
+        if "完整闭环" in intent or "full cycle" in intent.lower() or "执行闭环" in intent:
+            action = "--full-cycle"
+        elif "克隆" in intent and "任务" in intent:
+            action = "--clone"
+        elif "实例" in intent and "状态" in intent:
+            action = "--instances"
+        elif "协作" in intent and "任务" in intent:
+            action = "--collaborate"
+        elif "知识" in intent and "共享" in intent:
+            action = "--knowledge"
+        elif "聚合" in intent or "aggregate" in intent.lower():
+            action = "--aggregation"
+        filter_words = ["进化体自我克隆与分布式协作", "自我克隆", "clone", "分布式协作", "distributed collaboration",
+                       "群体智慧", "swarm intelligence", "协作引擎", "collaboration engine",
+                       "多实例", "multi-instance", "克隆协作", "完整闭环", "full cycle",
+                       "克隆", "任务", "协作", "知识", "共享", "聚合", "状态", "status", "--status"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action and action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能主动价值发现与智能决策闭环增强引擎（round 339）
     elif ("主动价值发现" in intent or "价值发现" in intent or "主动决策" in intent or
           "active value discovery" in intent.lower() or "value discovery engine" in intent.lower() or
