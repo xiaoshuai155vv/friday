@@ -6026,6 +6026,40 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景跨维度健康态势感知与预测防御引擎 (Round 327)
+    elif (("健康" in intent and "态势" in intent) or "跨维度健康" in intent or
+          "health situation awareness" in intent.lower() or "预测防御" in intent or
+          "前瞻防御" in intent or "风险预测" in intent or
+          "preemptive defense" in intent.lower() or
+          "health_situation" in intent.lower() or ("跨时间" in intent and "健康" in intent)):
+        print(f"[智能全场景跨维度健康态势感知与预测防御引擎 v1.0] 正在执行态势感知与预测...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "health_situation_awareness_prediction_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "full"
+        if "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "态势" in intent or "situation" in intent.lower():
+            action = "situation"
+        elif "趋势" in intent or "trend" in intent.lower():
+            action = "trends"
+        elif "预测" in intent or "predict" in intent.lower() or "风险" in intent:
+            action = "predict"
+        elif "完整周期" in intent or "full" in intent.lower() or "报告" in intent:
+            action = "full"
+        # 过滤掉意图关键词
+        filter_words = ["健康态势", "跨维度健康", "health situation awareness", "预测防御", "前瞻防御", "风险预测", "preemptive defense", "health_situation", "跨时间健康", "状态", "status", "趋势", "trend", "预测", "predict", "风险", "完整周期", "full", "报告", "态势"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加 -- 前缀
+        if action not in filtered_args:
+            filtered_args.insert(0, "--" + action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能进化方向自动发现与优先级排序引擎 (Round 239)
     elif "进化发现" in intent or "方向发现" in intent or "优先级排序" in intent or "evolution discovery" in intent.lower() or "方向排序" in intent or "进化机会" in intent or "发现进化" in intent or "自动发现进化" in intent:
         print(f"[智能进化方向自动发现引擎] 正在分析进化机会...", file=sys.stderr)
