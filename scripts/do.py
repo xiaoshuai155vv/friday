@@ -1360,6 +1360,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化知识深度传承与自适应遗忘引擎（Round 347）
+    elif "知识传承" in intent or "自适应遗忘" in intent or "知识管理" in intent or "遗忘引擎" in intent or "knowledge inheritance" in intent.lower() or "knowledge forgetting" in intent.lower() or "knowledge management" in intent.lower() or "知识老化" in intent or "知识价值" in intent or "遗忘知识" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "cycle", "forget", "aging", "inherit", "evaluate", "record", "config", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_knowledge_inheritance_forgetting_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
