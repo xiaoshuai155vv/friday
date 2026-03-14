@@ -4478,6 +4478,32 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化环深度集成引擎 (Round 252) - 将深度集成引擎与进化环进一步集成
+    elif "进化环深度集成" in intent or "进化深度集成" in intent or "evolution deep" in intent.lower() or "进化智能决策" in intent or "evolution integration" in intent.lower():
+        print(f"[智能进化环深度集成引擎] 正在处理进化环深度集成请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_deep_integration.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "分析" in intent or "analyze" in intent.lower():
+            action = "analyze"
+        elif "洞察" in intent or "insights" in intent.lower():
+            action = "insights"
+        elif "建议" in intent or "suggest" in intent.lower() or "下一轮" in intent:
+            action = "suggest"
+        # 过滤掉意图关键词
+        filter_words = ["进化环深度集成", "进化深度集成", "evolution deep", "进化智能决策", "evolution integration", "分析", "洞察", "建议", "下一轮"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能多维融合智能分析引擎 (Round 204)
     elif "多维分析" in intent or "态势感知" in intent or "智能分析" in intent or "统一分析" in intent or "跨引擎分析" in intent or "multi-dim" in intent.lower() or "situation" in intent.lower() or "智能洞察" in intent:
         print(f"[智能多维融合智能分析引擎] 正在运行多维度分析...", file=sys.stderr)
