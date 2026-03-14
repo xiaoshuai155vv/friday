@@ -3323,6 +3323,39 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+
+    # 智能全场景进化体创新实现深化引擎（round 344）
+    elif ("创新实现" in intent or "创新深化" in intent or "闭环创新" in intent or
+          "innovation implementation" in intent.lower() or "innovation engine" in intent.lower() or
+          "创新机会" in intent or "发现创新" in intent or "创新方案" in intent):
+        print(f"[智能全场景进化体创新实现深化引擎 v1.0] 正在执行创新实现与闭环...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_implementation_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        action = ""  # 不添加 action 前缀，让模块自行处理
+        if "完整闭环" in intent or "full cycle" in intent.lower() or "执行闭环" in intent:
+            action = "--full-cycle"
+        elif "状态" in intent or "status" in intent.lower():
+            action = "status"
+        elif "发现" in intent or "discover" in intent.lower():
+            action = "discover"
+        elif "评估" in intent or "evaluate" in intent.lower():
+            action = "evaluate"
+        elif "方案" in intent or "plan" in intent.lower():
+            action = "plan"
+        filter_words = ["创新实现", "创新深化", "闭环创新", "innovation implementation",
+                       "innovation engine", "创新机会", "发现创新", "创新方案",
+                       "完整闭环", "full cycle", "状态", "status", "发现", "discover",
+                       "评估", "evaluate", "方案", "plan"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        if action and action not in filtered_args and not any(arg.startswith("--") for arg in filtered_args):
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能主动价值发现与智能决策闭环增强引擎（round 339）
     elif ("主动价值发现" in intent or "价值发现" in intent or "主动决策" in intent or
           "active value discovery" in intent.lower() or "value discovery engine" in intent.lower() or
