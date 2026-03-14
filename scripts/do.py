@@ -1410,6 +1410,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环健康分数阈值自动触发进化引擎（Round 398）- 在统一监控驾驶舱与完全无人值守进化环深度集成基础上，实现基于健康分数阈值的自动触发进化能力
+    elif "健康分数阈值" in intent or "阈值触发" in intent or "健康阈值" in intent or "health threshold" in intent.lower() or "阈值自动触发" in intent or "基于阈值的触发" in intent or "auto trigger" in intent and ("health" in intent.lower() or "阈值" in intent or "健康" in intent) or "阈值进化" in intent or "健康驱动" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "check", "thresholds", "set", "reset", "history", "stats", "enable", "disable", "health", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_health_threshold_trigger_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环全局智能驾驶舱与一键启动引擎（Round 350）
     elif "驾驶舱" in intent or "进化驾驶舱" in intent or "一键启动" in intent or "进化控制台" in intent or "cockpit" in intent.lower() or "evolution cockpit" in intent.lower() or "一键进化" in intent or "进化状态" in intent and ("控制" in intent or "台" in intent or "一键" in intent):
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
