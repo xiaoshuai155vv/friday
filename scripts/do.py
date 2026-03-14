@@ -1627,6 +1627,39 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环进化价值实现追踪与自动优化引擎（Round 453）- 在预警与干预能力基础上，增强价值量化追踪与自动优化能力
+    elif "价值实现追踪" in intent or "价值自动优化" in intent or "价值优化" in intent or "价值追踪" in intent or "value optimization" in intent.lower() or "value tracking" in intent.lower() or "价值分析" in intent or "价值评估" in intent or "价值预测" in intent:
+        print(f"[进化价值实现追踪与自动优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_realization_optimization_engine.py")
+
+        # 确定要执行的命令
+        if "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--track" in sys.argv or "追踪" in intent:
+            filtered_args = ["--track"]
+        elif "--quantify" in sys.argv or "量化" in intent:
+            filtered_args = ["--quantify"]
+        elif "--suggestions" in sys.argv or "建议" in intent or "优化建议" in intent:
+            filtered_args = ["--suggestions"]
+        elif "--auto-execute" in sys.argv or "自动执行" in intent or "执行优化" in intent:
+            filtered_args = ["--auto-execute"]
+        elif "--verify" in sys.argv or "验证" in intent or "效果" in intent:
+            filtered_args = ["--verify"]
+        elif "--predict" in sys.argv or "预测" in intent:
+            filtered_args = ["--predict"]
+        elif "--cycle" in sys.argv or "闭环" in intent or "自动循环" in intent:
+            filtered_args = ["--cycle"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：获取状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎统一知识索引与智能检索引擎（Round 446）- 聚合所有进化引擎产生的知识资产、建立统一知识索引、实现智能检索、生成知识关联图谱
     elif "知识索引" in intent or "知识检索" in intent or "跨引擎知识" in intent or "查询知识" in intent or "知识图谱" in intent or "knowledge index" in intent.lower() or "knowledge search" in intent.lower() or "knowledge graph" in intent.lower() or "知识发现" in intent or "搜索知识" in intent:
         print(f"[跨引擎知识索引与检索引擎] 正在处理...", file=sys.stderr)
