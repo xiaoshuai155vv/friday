@@ -4534,6 +4534,36 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能进化架构自省与自我重构引擎 (Round 254) - 让系统主动分析自身架构问题、识别优化机会、自动进行结构优化
+    elif "架构自省" in intent or "自我重构" in intent or "架构优化" in intent or "进化架构" in intent or "architecture" in intent.lower() or "self-reflect" in intent.lower() or "架构分析" in intent or "自省" in intent:
+        print(f"[智能进化架构自省与自我重构引擎] 正在处理架构自省请求...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_architecture_self_refactor.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 判断动作
+        action = "status"
+        if "分析" in intent or "analyze" in intent.lower() or "架构" in intent:
+            action = "analyze"
+        elif "问题" in intent or "issue" in intent.lower():
+            action = "issues"
+        elif "建议" in intent or "suggestion" in intent.lower() or "优化" in intent:
+            action = "suggestions"
+        elif "自省" in intent or "reflect" in intent.lower() or "完整" in intent:
+            action = "reflect"
+        elif "重构" in intent or "refactor" in intent.lower() or "重整" in intent:
+            action = "refactor"
+        # 过滤掉意图关键词
+        filter_words = ["架构自省", "自我重构", "架构优化", "进化架构", "architecture", "self-reflect", "架构分析", "自省", "分析", "问题", "建议", "优化", "重构", "重整", "完整"]
+        filtered_args = [arg for arg in cmd_args if arg not in filter_words]
+        # 添加动作
+        if action not in filtered_args:
+            filtered_args.insert(0, action)
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能多维融合智能分析引擎 (Round 204)
     elif "多维分析" in intent or "态势感知" in intent or "智能分析" in intent or "统一分析" in intent or "跨引擎分析" in intent or "multi-dim" in intent.lower() or "situation" in intent.lower() or "智能洞察" in intent:
         print(f"[智能多维融合智能分析引擎] 正在运行多维度分析...", file=sys.stderr)
