@@ -1540,6 +1540,26 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环价值驱动自动执行闭环引擎（Round 366）
+    elif "价值驱动自动闭环" in intent or "价值驱动自动执行" in intent or "价值闭环" in intent or "价值进化闭环" in intent or "value driven loop" in intent.lower() or "value driven auto" in intent.lower() or "价值驱动进化" in intent or "价值自动进化" in intent or "自动进化闭环" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "check", "conditions", "execute", "run", "loop", "closed-loop", "enable", "disable", "config", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_value_driven_loop_integration.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+    # 智能全场景多维智能协同闭环增强引擎（Round 367）
+    elif "多维智能协同" in intent or "多维协同" in intent or "智能协同闭环" in intent or "multi dim" in intent.lower() or "multi-dim" in intent.lower() or "协同增强" in intent or "多维融合" in intent or "协同编排" in intent or "smart orchestration" in intent.lower() or "多维" in intent and ("协同" in intent or "智能" in intent):
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "execute", "analyze", "history", "plan", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_multi_dim_smart_orchestration_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
