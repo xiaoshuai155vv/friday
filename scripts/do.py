@@ -1650,6 +1650,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环统一智能体协同引擎（Round 377）- 统一智能体、跨引擎协同、智能组合、引擎组合、协同执行
+    elif "统一智能体" in intent or "跨引擎协同" in intent or "智能组合" in intent or "引擎组合" in intent or "协同执行" in intent or "unified agent" in intent.lower() or "engine collaboration" in intent.lower() or "multi engine" in intent.lower() or "engine coordination" in intent.lower() or "统一进化智能体" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "list", "analyze", "execute", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "unified_evolution_agent_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
