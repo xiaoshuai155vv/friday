@@ -1480,6 +1480,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景跨会话状态持久化与恢复引擎（Round 360）
+    elif "会话持久化" in intent or "状态保存" in intent or "状态恢复" in intent or "跨会话" in intent or "session persistence" in intent.lower() or "save state" in intent.lower() or "restore state" in intent.lower() or "中断恢复" in intent or "长时任务" in intent or "checkpoint" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["save", "load", "checkpoint", "recover", "task", "status", "list", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_session_persistence_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环目标自优化引擎（Round 317）
     elif "目标自优化" in intent or "进化目标优化" in intent or "目标评估" in intent or "目标价值" in intent or "goal self" in intent.lower() or "goal optimize" in intent.lower() or "目标体系" in intent or "目标遗漏" in intent or "发现目标" in intent or "目标优化" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
