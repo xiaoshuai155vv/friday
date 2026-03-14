@@ -2,9 +2,9 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/evolution_deep_integration.py, scripts/do.py, runtime/state/evolution_completed_ev_20260314_005141.json
+scripts/evolution_deep_integration.py, scripts/do.py, references/evolution_self_proposed.md, runtime/state/evolution_completed_ev_20260314_005320.json
 
-## 2026-03-14 round 255
+## 2026-03-14 round 252
 - **current_goal**：智能进化环深度集成引擎 - 将深度集成引擎与进化环进一步集成，让进化环能够利用深度集成引擎的智能决策能力，实现自动进化优化
 - **做了什么**：
   1. 创建 evolution_deep_integration.py 模块（version 1.0.0）
