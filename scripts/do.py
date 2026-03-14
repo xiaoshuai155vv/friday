@@ -1480,6 +1480,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化引擎集群可视化一键自愈增强引擎（Round 386）
+    elif "可视化一键自愈" in intent or "增强自愈" in intent or "可视化自愈" in intent or "visual one click heal" in intent.lower() or "一键自愈增强" in intent or "visual one-click" in intent.lower() or "增强可视化自愈" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["dashboard", "health", "self_heal", "visualize", "status", "verify", "monitor", "start_monitor", "stop_monitor", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_visual_oneclick_heal_enhanced_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环主动创新实现引擎（Round 358）
     elif "主动创新" in intent or "创新实现" in intent or "创新发现" in intent or "创新机会" in intent or "主动发现创新" in intent or "innovation realization" in intent.lower() or "创新闭环" in intent or "创新引擎" in intent or "发现并实现" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
