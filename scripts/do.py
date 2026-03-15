@@ -3203,6 +3203,28 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 659: 智能全场景进化环元进化策略演化推演引擎 V2 - 在 round 658 元元学习能力基础上，构建让系统能够基于当前进化状态自动推演未来进化策略演化路径的能力
+    # 实现从「评估现在」到「推演未来」的范式升级
+    elif "策略推演" in intent or "演化预测" in intent or "未来规划" in intent or "strategy deduction" in intent.lower() or "evolution prediction" in intent.lower() or "future planning" in intent.lower() or "策略演化" in intent or "推演未来" in intent or "演化路径" in intent:
+        print(f"[元进化策略演化推演引擎 V2 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_strategy_evolution_deduction_engine_v2.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--full"]
+        filter_words = ["策略推演", "演化预测", "未来规划", "strategy deduction", "evolution prediction", "future planning", "策略演化", "推演未来", "演化路径"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg.lower() for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--full"]
+        result = subprocess.run(
+            [sys.executable, script_path] + filtered_args,
+            cwd=PROJECT,
+            capture_output=True,
+            text=True
+        )
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 634: 智能全场景进化环创新建议自动验证与价值优先级排序引擎 - 基于 round 633 知识图谱引擎（已发现388条待执行创新建议）基础上，构建让系统能够自动验证创新建议价值并智能排序优先级的增强能力
     # 实现「发现→验证→排序→优化→执行」的完整创新价值实现闭环
     elif "创新验证" in intent or "价值排序" in intent or "优先级" in intent or "innovation verify" in intent.lower() or "value priority" in intent.lower() or "priority rank" in intent.lower() or "价值评估" in intent or "创新价值" in intent or "价值评分" in intent:
