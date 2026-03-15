@@ -2098,6 +2098,35 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环多引擎协同智能调度深度优化引擎（Round 517）- 让系统能够智能调度多个进化引擎，实现更高效的资源利用和协同工作，包括任务智能分发、负载均衡优化、执行顺序动态调整、调度效率实时分析等核心功能
+    elif "多引擎调度" in intent or "引擎协同调度" in intent or "智能调度优化" in intent or "调度优化" in intent or "multi engine schedule" in intent.lower() or "engine schedule optimizer" in intent.lower() or "多引擎协同优化" in intent or "调度效率" in intent or "任务分发" in intent or "执行顺序优化" in intent or "load balance optimization" in intent.lower():
+        print(f"[智能全场景进化环多引擎协同智能调度深度优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_multi_engine_collaboration_scheduling_optimizer.py")
+
+        # 解析命令参数
+        filtered_args = []
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in intent or "状态" in intent:
+            filtered_args = ["status"]
+        elif "--dispatch" in sys.argv or "分发" in intent or "dispatch" in intent.lower():
+            filtered_args = ["dispatch"]
+        elif "--optimize" in sys.argv or "优化" in intent:
+            filtered_args = ["optimize"]
+        elif "--efficiency" in sys.argv or "效率" in intent or "efficiency" in intent.lower():
+            filtered_args = ["efficiency"]
+        elif "--order" in sys.argv or "顺序" in intent or "order" in intent.lower():
+            filtered_args = ["order"]
+        else:
+            filtered_args = ["status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环决策自动执行与动态调整引擎（Round 510）- 将多引擎协同智能决策结果自动转化为可执行动作、智能调整执行参数、动态处理异常、验证执行效果，形成从「智能决策→自动执行→动态调整→效果验证」的完整闭环
     elif "决策执行" in intent or "自动执行" in intent or "执行决策" in intent or "decision execution" in intent.lower() or "auto execute decision" in intent.lower() or "决策动态调整" in intent or "decision auto" in intent.lower():
         print(f"[智能全场景进化环决策自动执行与动态调整引擎] 正在处理...", file=sys.stderr)
