@@ -1823,6 +1823,48 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
 
+    # 智能全场景进化环创新假设自动生成与验证引擎（Round 501）- 主动发现优化机会、生成创新性假设、验证假设价值，形成从被动修复到主动创新的范式升级
+    elif "创新假设" in intent or "假设生成" in intent or "创新假设" in intent or "hypothesis generation" in intent.lower() or "假设验证" in intent or "验证假设" in intent or "创新发现" in intent or "主动创新" in intent or "假设执行" in intent or "创新假设生成" in intent or "生成创新假设" in intent:
+        print(f"[创新假设自动生成与验证引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_hypothesis_generation_verification_engine.py")
+
+        # 确定要执行的命令 - 更具体的关键词优先
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--discover" in sys.argv or "发现机会" in intent or "发现创新" in intent or "创新机会" in intent:
+            filtered_args = ["--discover"]
+        elif "--run" in sys.argv or "完整周期" in intent or "运行周期" in intent:
+            filtered_args = ["--run"]
+            if "--max-hypotheses" in sys.argv:
+                idx = sys.argv.index("--max-hypotheses")
+                if idx + 1 < len(sys.argv):
+                    filtered_args.extend(["--max-hypotheses", sys.argv[idx + 1]])
+        elif "--generate" in sys.argv or "生成假设" in intent or ("假设" in intent and "驾驶舱" not in intent and "状态" not in intent and "完整周期" not in intent):
+            filtered_args = ["--generate"]
+            if "--max-hypotheses" in sys.argv:
+                idx = sys.argv.index("--max-hypotheses")
+                if idx + 1 < len(sys.argv):
+                    filtered_args.extend(["--max-hypotheses", sys.argv[idx + 1]])
+            else:
+                filtered_args.extend(["--max-hypotheses", "3"])
+        elif "--validate" in sys.argv:
+            if "--hypothesis" in sys.argv:
+                idx = sys.argv.index("--hypothesis")
+                if idx + 1 < len(sys.argv):
+                    filtered_args = ["--validate", sys.argv[idx + 1]]
+            else:
+                filtered_args = ["--status"]
+        else:
+            filtered_args = ["--run", "--max-hypotheses", "3"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+
     # 智能全场景进化环执行策略自优化深度增强引擎（Round 449）- 自动分析引擎执行效果、识别协作低效模式、智能生成并执行优化策略
     elif "策略优化" in intent or "执行优化" in intent or "自优化" in intent or "优化策略" in intent or "strategy optimization" in intent.lower() or "execution optimization" in intent.lower() or "self-optimization" in intent.lower() or "optimize strategy" in intent.lower() or "策略自优化" in intent or "执行策略优化" in intent:
         print(f"[执行策略自优化深度增强引擎] 正在处理...", file=sys.stderr)
