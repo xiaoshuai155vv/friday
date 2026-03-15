@@ -3104,6 +3104,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 652: 智能全场景进化环元进化主动进化触发与自驱动闭环引擎 - 让系统能够自动评估进化价值、主动识别优化空间、形成完全自驱的进化闭环
+    # 实现从「被动响应进化需求」到「主动驱动自身进化」的范式升级
+    elif "主动进化触发" in intent or "自驱动" in intent or "自驱动闭环" in intent or "主动驱动" in intent or "auto trigger" in intent.lower() or "self-driven" in intent.lower() or "主动评估进化" in intent or "进化触发" in intent or "trigger evolution" in intent.lower() or "evolution trigger" in intent.lower():
+        print(f"[智能全场景进化环元进化主动进化触发与自驱动闭环引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_active_evolution_trigger_self_driven_loop_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--check"]
+        # 过滤掉意图关键词
+        filter_words = ["主动进化触发", "自驱动", "自驱动闭环", "主动驱动", "auto trigger", "self-driven", "主动评估进化", "进化触发", "trigger evolution", "evolution trigger"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--check"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 647: cross-round innovation pattern discovery engine
     elif "innovation pattern" in intent.lower() or "cross round" in intent.lower() or "pattern discovery" in intent.lower() or "auto emergence" in intent.lower() or "emergence" in intent.lower():
         print(f"[Evolution Meta Cross-Round Innovation Pattern Discovery Engine v1.0.0] Processing...", file=sys.stderr)
