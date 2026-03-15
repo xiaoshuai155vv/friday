@@ -5191,6 +5191,24 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环进化驾驶舱可视化增强与智能交互引擎 (Round 480)
+    elif "驾驶舱可视化增强" in intent or "可视化增强" in intent or "驾驶舱增强" in intent or "cockpit visualization" in intent.lower() or "visualization enhanced" in intent.lower() or "智能交互" in intent or "interaction" in intent.lower() or "进化路径可视化" in intent or "path visualization" in intent.lower():
+        print(f"[智能全场景进化环进化驾驶舱可视化增强与智能交互引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cockpit_visualization_enhanced_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["驾驶舱可视化增强", "可视化增强", "驾驶舱增强", "cockpit visualization", "visualization enhanced", "智能交互", "interaction", "进化路径可视化", "path visualization"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能决策质量预测性优化与预防性增强引擎（round 337）
     elif ("预测性" in intent or "predictive" in intent.lower() or
           "预防性" in intent or "preventive" in intent.lower() or
