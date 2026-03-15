@@ -1973,6 +1973,33 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环价值驱动进化执行闭环引擎（Round 580）- 在 round 579 完成的元进化价值预测与战略投资决策增强引擎基础上，构建从投资策略到自动执行的完整闭环。让系统能够将投资决策转化为可执行任务、执行并追踪结果、反馈到决策优化，形成「预测→决策→执行→验证→优化」的完整闭环
+    elif "价值驱动执行" in intent or "执行闭环" in intent or "投资执行" in intent or "价值执行" in intent or "value driven execution" in intent.lower() or "execution closed loop" in intent.lower() or "投资策略执行" in intent or "策略执行" in intent or "execution loop" in intent.lower() or "执行优化反馈" in intent or "执行效果评估" in intent or "价值反馈" in intent:
+        print(f"[价值驱动进化执行闭环引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_driven_execution_closed_loop_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--status"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "执行" in intent or "运行" in intent or "完整" in intent or "full" in intent.lower():
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--execute-cycle" in sys.argv or "执行周期" in intent:
+            filtered_args = ["--execute-cycle"]
+        elif "--tasks" in sys.argv or "任务" in intent:
+            filtered_args = ["--tasks"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化知识图谱自涌现与主动创新引擎（Round 574）- 在 round 573 完成的价值实现闭环基础上，构建让系统能够从进化历史和知识图谱中主动涌现创新方向、生成创新假设、验证创新价值的能力，形成「价值驱动→知识涌现→主动创新」的完整闭环
     elif "知识图谱涌现" in intent or "知识涌现" in intent or "涌现创新" in intent or "knowledge emergence" in intent.lower() or "emergence innovation" in intent.lower() or "知识图谱创新" in intent or "创新涌现" in intent or "emergence" in intent.lower() and "创新" in intent or "涌现" in intent and "创新" in intent or "kg emergence" in intent.lower():
         print(f"[元进化知识图谱自涌现与主动创新引擎] 正在处理...", file=sys.stderr)
