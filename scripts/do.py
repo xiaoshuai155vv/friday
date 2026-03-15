@@ -1944,6 +1944,26 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+
+    # Round 603: 在 round 602 完成的创新投资组合优化与战略决策增强引擎基础上，构建让系统能够将战略决策转化为可执行的进化任务、自动执行并验证效果的能力
+    # 形成「投资分析→战略决策→自动执行→价值验证」的完整创新投资执行闭环
+    elif "创新投资决策执行" in intent or "创新执行闭环" in intent or "investment execution" in intent.lower() or "投资任务执行" in intent or "创新投资执行" in intent or "投资决策自动化" in intent:
+        print(f"[智能全场景进化环元进化创新投资决策自动执行引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_innovation_investment_execution_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--run"]
+        # 过滤掉意图关键词
+        filter_words = ["创新投资决策执行", "创新执行闭环", "investment execution", "投资任务执行", "创新投资执行", "投资决策自动化"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--run"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环元进化价值预测与战略投资决策增强引擎（Round 579）- 在 round 578 完成的价值实现闭环追踪能力基础上，构建价值预测与战略投资决策能力。让系统能够基于价值实现追踪数据，预测未来进化投资回报、动态调整投资组合、实现战略级价值最大化
     elif "元进化价值预测" in intent or "战略投资决策" in intent or "投资决策" in intent or "价值投资" in intent or "meta value prediction" in intent.lower() or "value investment decision" in intent.lower() or "strategic investment" in intent.lower() or "价值预测战略" in intent or "战略级价值" in intent or "价值最大化" in intent:
         print(f"[元进化价值预测与战略投资决策增强引擎] 正在处理...", file=sys.stderr)
