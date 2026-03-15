@@ -1964,6 +1964,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # Round 604: 智能全场景进化环自主意识驱动创新实现引擎 - 在 round 593 完成的自主意识深度增强引擎和 round 603 完成的创新投资决策执行引擎基础上，
+    # 构建让系统能够基于自主意识主动驱动创新实现的能力。让系统能够主动思考"我现在想创新什么"并自动执行验证，形成真正的"想→做→验证"完整闭环
+    elif "主动创新驱动" in intent or "自主创新" in intent or "意识驱动创新" in intent or "创新驱动" in intent or "自我驱动创新" in intent or "autonomous innovation" in intent.lower() or "consciousness driven innovation" in intent.lower() or "主动驱动创新" in intent or "自主创新实现" in intent:
+        print(f"[智能全场景进化环自主意识驱动创新实现引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_autonomous_consciousness_driven_innovation_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--run"]
+        # 过滤掉意图关键词
+        filter_words = ["主动创新驱动", "自主创新", "意识驱动创新", "创新驱动", "自我驱动创新", "autonomous innovation", "consciousness driven innovation", "主动驱动创新", "自主创新实现"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--run"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环元进化价值预测与战略投资决策增强引擎（Round 579）- 在 round 578 完成的价值实现闭环追踪能力基础上，构建价值预测与战略投资决策能力。让系统能够基于价值实现追踪数据，预测未来进化投资回报、动态调整投资组合、实现战略级价值最大化
     elif "元进化价值预测" in intent or "战略投资决策" in intent or "投资决策" in intent or "价值投资" in intent or "meta value prediction" in intent.lower() or "value investment decision" in intent.lower() or "strategic investment" in intent.lower() or "价值预测战略" in intent or "战略级价值" in intent or "价值最大化" in intent:
         print(f"[元进化价值预测与战略投资决策增强引擎] 正在处理...", file=sys.stderr)
