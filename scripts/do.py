@@ -6682,6 +6682,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环跨引擎协作元优化与智能编排引擎 (Round 543)
+    # 在 round 541 价值风险平衡优化、round 538 自我进化意识基础上，构建跨引擎协作元优化能力
+    elif "跨引擎优化" in intent or "引擎编排优化" in intent or "协作优化" in intent or "编排建议" in intent or "引擎调度" in intent or "cross engine" in intent.lower() or "orchestration" in intent.lower() or "engine scheduling" in intent.lower() or "cross-engine" in intent.lower() or "meta optimization" in intent.lower():
+        print(f"[智能全场景进化环跨引擎协作元优化与智能编排引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_engine_orchestration_meta_optimizer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["跨引擎优化", "引擎编排优化", "协作优化", "编排建议", "引擎调度", "cross engine", "orchestration", "engine scheduling", "cross-engine", "meta optimization"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--analyze"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环自我进化效能深度分析与自适应优化引擎 (Round 475/487)
     # Round 487 增强：支持策略参数自动调整、模式提取、迭代优化等自适应学习能力
     elif "效能分析" in intent or "自我优化" in intent or "进化效能" in intent or "效能瓶颈" in intent or "effectiveness" in intent.lower() or "self optimization" in intent.lower() or "evolution effectiveness" in intent.lower() or "自适应学习" in intent or "策略调整" in intent or "模式提取" in intent or "迭代优化" in intent or "recursive optimization" in intent.lower() or "strategy adjustment" in intent.lower() or "pattern extraction" in intent.lower():
