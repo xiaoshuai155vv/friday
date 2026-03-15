@@ -2824,6 +2824,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化自演进方案自动实施与持续优化引擎 (Round 623)
+    # 基于 round 622 完成的元进化系统自演进架构优化引擎（架构自省评分87分，识别5个优化机会，生成3个优化方案）基础上，
+    # 构建让系统能够自动实施优化方案并持续跟踪效果的增强能力
+    elif "自演进实施" in intent or "优化实施" in intent or "方案执行" in intent or "自演进执行" in intent or "自演进方案" in intent or "方案自动实施" in intent or "自演进持续优化" in intent or "plan execution" in intent.lower() or "optimization execution" in intent.lower():
+        print(f"[智能全场景进化环元进化自演进方案自动实施与持续优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_self_evolution_plan_execution_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["自演进实施", "优化实施", "方案执行", "自演进执行", "自演进方案", "方案自动实施", "自演进持续优化", "plan execution", "optimization execution"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环元进化系统自涌现深度增强引擎（Round 576）- 在 round 575 完成的创新价值自动化实现与迭代深化引擎基础上，进一步增强系统的自涌现能力。让系统能够基于已有能力组合、进化历史数据、知识图谱，自动涌现新的创新方向、生成高价值创新假设、形成自驱动创新涌现的深度增强能力
     elif "元涌现" in intent or "自涌现" in intent or "创新涌现" in intent or "能力涌现" in intent or "meta emergence" in intent.lower() or "system emergence" in intent.lower() or "emergence deep" in intent.lower() or "元进化系统" in intent or "系统自涌现" in intent or "涌现增强" in intent or "涌现引擎" in intent or "涌现分析" in intent:
         print(f"[元进化系统自涌现深度增强引擎] 正在处理...", file=sys.stderr)
