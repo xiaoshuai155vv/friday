@@ -1776,6 +1776,31 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化自我意识深度增强引擎（Round 568）- 在 round 567 完成的元进化全链路自主运行自动化引擎基础上，进一步增强系统的自我意识能力。让系统不仅能自主运行，还能理解自己「为什么能自主运行」、评估自主决策的质量、追溯进化意图的来源，形成「自主运行→自我理解→自我优化」的递归增强闭环
+    elif "元自我意识" in intent or "自我意识增强" in intent or "meta self awareness" in intent.lower() or "self awareness" in intent.lower() or "自我理解" in intent or "自主运行理解" in intent or "意图来源" in intent or "意图追溯" in intent:
+        print(f"[元进化自我意识深度增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_self_awareness_deep_enhancement_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱数据" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--analyze" in sys.argv or "分析" in intent:
+            filtered_args = ["--analyze"]
+        elif "--check" in sys.argv or "检查" in intent:
+            filtered_args = ["--check"]
+        else:
+            # 默认：执行分析
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨轮次价值实现追踪与量化增强引擎（Round 559）- 在 round 558 完成的元进化自我反思与深度自省引擎基础上，进一步将自省结果量化为可衡量的价值指标，实现「自省→量化→价值反馈→优化决策」的完整价值驱动进化闭环
     elif "价值追踪" in intent or "价值量化" in intent or "价值反馈" in intent or "价值驱动" in intent or "value tracking" in intent.lower() or "value quantum" in intent.lower() or "value realization" in intent.lower() or "价值实现" in intent or "跨轮次价值" in intent or "价值增强" in intent:
         print(f"[跨轮次价值实现追踪与量化增强引擎] 正在处理...", file=sys.stderr)
@@ -6999,6 +7024,33 @@ def main():
         filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
         if not filtered_args:
             filtered_args = ["--execute"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True, encoding='utf-8', errors='replace')
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
+    # 智能全场景进化环元进化全链路自主运行自动化引擎 (Round 567)
+    elif "元进化全链路" in intent or "元进化自主运行" in intent or "元进化无人值守" in intent or "全链路自动化进化" in intent or "meta evolution full auto" in intent.lower() or "meta auto loop" in intent.lower() or "evolution full automation" in intent.lower():
+        print(f"[智能全场景进化环元进化全链路自主运行自动化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_evolution_full_auto_loop_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 检测功能关键词
+        if "运行" in intent or "run" in intent.lower() or "执行" in intent.lower():
+            cmd_args = ["--run"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        elif "状态" in intent or "status" in intent.lower():
+            cmd_args = ["--status"]
+        elif "检查" in intent or "check" in intent.lower():
+            cmd_args = ["--check"]
+        # 过滤掉意图关键词
+        filter_words = ["元进化全链路", "元进化自主运行", "元进化无人值守", "全链路自动化进化", "meta evolution full auto", "meta auto loop", "evolution full automation", "运行", "run", "执行", "驾驶舱", "cockpit", "状态", "status", "检查", "check"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True, encoding='utf-8', errors='replace')
         if result.stdout:
             print(result.stdout)
