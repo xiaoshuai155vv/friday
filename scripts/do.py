@@ -6512,6 +6512,33 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环预防性干预效果评估与持续优化引擎 (Round 527)
+    elif "干预效果评估" in intent or "效果评估" in intent or "干预优化" in intent or "评估优化" in intent or "intervention evaluation" in intent.lower() or "effectiveness evaluation" in intent.lower() or "intervention optimization" in intent.lower() or "效果趋势分析" in intent or "趋势分析" in intent:
+        print(f"[智能全场景进化环预防性干预效果评估与持续优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_preventive_intervention_evaluation_optimizer_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--metrics"]
+        # 检测功能关键词
+        if "趋势" in intent or "trend" in intent.lower() or "分析" in intent:
+            cmd_args = ["--analyze-trend"]
+        elif "建议" in intent or "recommendation" in intent.lower() or "优化建议" in intent:
+            cmd_args = ["--recommendations"]
+        elif "评估" in intent or "evaluate" in intent.lower():
+            cmd_args = ["--evaluate", "--intervention-id", "iv001", "--strategy-type", "ps001"]
+        elif "指标" in intent or "metrics" in intent.lower():
+            cmd_args = ["--metrics"]
+        # 过滤掉意图关键词
+        filter_words = ["干预效果评估", "效果评估", "干预优化", "评估优化", "intervention evaluation", "effectiveness evaluation", "intervention optimization", "效果趋势分析", "趋势分析", "趋势", "trend", "分析", "建议", "recommendation", "优化建议", "评估", "evaluate", "指标", "metrics"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--metrics"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环价值干预自动执行引擎 (Round 471)
     elif "价值干预自动执行" in intent or "干预自动执行" in intent or "自动干预" in intent or "干预执行" in intent or "价值干预执行" in intent or "auto intervention" in intent.lower() or "execute intervention" in intent.lower():
         print(f"[智能全场景进化环价值干预自动执行引擎] 正在处理...", file=sys.stderr)
