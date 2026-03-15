@@ -1566,6 +1566,37 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨引擎知识实时更新与智能同步深度集成引擎（Round 491）- 监控知识库变化、自动同步最新知识、实现知识一致性保障、形成知识动态更新闭环
+    elif "知识实时更新" in intent or "知识同步" in intent or "动态知识" in intent or "实时同步" in intent or "knowledge realtime" in intent.lower() or "knowledge sync" in intent.lower() or "realtime update" in intent.lower() or "知识更新" in intent or "同步知识" in intent or "更新知识" in intent:
+        print(f"[跨引擎知识实时更新与智能同步深度集成引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_realtime_update_sync_engine.py")
+
+        # 确定要执行的命令
+        if "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--sync" in sys.argv or "同步" in intent:
+            filtered_args = ["--sync"]
+        elif "--detect-changes" in sys.argv or "检测变化" in intent or "变化检测" in intent:
+            filtered_args = ["--detect-changes"]
+        elif "--start-monitor" in sys.argv or "启动监控" in intent or "开始监控" in intent:
+            filtered_args = ["--start-monitor"]
+        elif "--stop-monitor" in sys.argv or "停止监控" in intent:
+            filtered_args = ["--stop-monitor"]
+        elif "--verify" in sys.argv or "验证" in intent:
+            filtered_args = ["--verify"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--summary" in sys.argv or "摘要" in intent:
+            filtered_args = ["--summary"]
+        else:
+            # 默认：显示状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环执行策略自优化深度增强引擎（Round 449）- 自动分析引擎执行效果、识别协作低效模式、智能生成并执行优化策略
     elif "策略优化" in intent or "执行优化" in intent or "自优化" in intent or "优化策略" in intent or "strategy optimization" in intent.lower() or "execution optimization" in intent.lower() or "self-optimization" in intent.lower() or "optimize strategy" in intent.lower() or "策略自优化" in intent or "执行策略优化" in intent:
         print(f"[执行策略自优化深度增强引擎] 正在处理...", file=sys.stderr)
