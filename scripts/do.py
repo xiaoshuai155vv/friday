@@ -6739,6 +6739,44 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环进化效能智能对话分析与趋势预测引擎 (Round 546)
+    # 基于 round 545 归因引擎，进一步构建对话式效能分析与趋势预测能力
+    elif "效能对话" in intent or "进化效能问答" in intent or "效能趋势" in intent or "效能预测" in intent or "智能效能顾问" in intent or "efficiency dialog" in intent.lower() or "efficiency trend" in intent.lower() or "efficiency prediction" in intent.lower() or "efficiency advisor" in intent.lower() or "问我效能" in intent or "效能报告" in intent or "对话效能" in intent:
+        print(f"[智能全场景进化环进化效能智能对话分析与趋势预测引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_efficiency_dialog_analysis_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        # 过滤意图关键词
+        filter_words = ["效能对话", "进化效能问答", "效能趋势", "效能预测", "智能效能顾问", "efficiency dialog", "efficiency trend", "efficiency prediction", "efficiency advisor", "问我效能", "效能报告", "对话效能"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+
+        # 检测功能关键词
+        if "--report" in cmd_args or "报告" in intent:
+            cmd_args = ["--report"]
+        elif "--predict" in cmd_args:
+            cmd_args = ["--predict"]
+        elif "--recent" in cmd_args:
+            cmd_args = ["--recent"]
+        elif "--cockpit-data" in cmd_args:
+            cmd_args = ["--cockpit-data"]
+        elif "--version" in cmd_args:
+            cmd_args = ["--version"]
+        elif not filtered_args:
+            # 无额外参数时默认生成报告
+            cmd_args = ["--report"]
+        else:
+            # 将过滤后的参数作为问题
+            if filtered_args:
+                cmd_args = ["--ask", ' '.join(filtered_args)]
+            else:
+                cmd_args = ["--report"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环自我进化效能深度分析与自适应优化引擎 (Round 475/487)
     # Round 487 增强：支持策略参数自动调整、模式提取、迭代优化等自适应学习能力
     elif "效能分析" in intent or "自我优化" in intent or "进化效能" in intent or "效能瓶颈" in intent or "effectiveness" in intent.lower() or "self optimization" in intent.lower() or "evolution effectiveness" in intent.lower() or "自适应学习" in intent or "策略调整" in intent or "模式提取" in intent or "迭代优化" in intent or "recursive optimization" in intent.lower() or "strategy adjustment" in intent.lower() or "pattern extraction" in intent.lower():
