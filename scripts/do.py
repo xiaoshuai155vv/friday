@@ -6663,6 +6663,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环全维度价值-风险平衡自适应优化引擎 (Round 541)
+    # 在 round 540 决策执行质量闭环、round 539 战略执行闭环、round 538 自我进化意识基础上，构建全维度价值-风险平衡优化能力
+    elif "价值风险平衡" in intent or "风险评估" in intent or "多维度优化" in intent or "risk balance" in intent.lower() or "value risk" in intent.lower() or "风险平衡" in intent or "价值平衡" in intent or "多维度价值" in intent or "价值-风险" in intent or "risk assessment" in intent.lower():
+        print(f"[智能全场景进化环全维度价值-风险平衡自适应优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_risk_balance_optimizer_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["价值风险平衡", "风险评估", "多维度优化", "risk balance", "value risk", "风险平衡", "价值平衡", "多维度价值", "价值-风险", "risk assessment"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--analyze"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环自我进化效能深度分析与自适应优化引擎 (Round 475/487)
     # Round 487 增强：支持策略参数自动调整、模式提取、迭代优化等自适应学习能力
     elif "效能分析" in intent or "自我优化" in intent or "进化效能" in intent or "效能瓶颈" in intent or "effectiveness" in intent.lower() or "self optimization" in intent.lower() or "evolution effectiveness" in intent.lower() or "自适应学习" in intent or "策略调整" in intent or "模式提取" in intent or "迭代优化" in intent or "recursive optimization" in intent.lower() or "strategy adjustment" in intent.lower() or "pattern extraction" in intent.lower():
