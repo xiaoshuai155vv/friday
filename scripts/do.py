@@ -5658,6 +5658,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环自我进化效能趋势预测与预防性策略动态调整引擎（round 550）- 基于历史效能数据预测未来趋势，提前识别风险并生成预防性策略
+    elif "进化趋势预测" in intent or "效能趋势预测" in intent or "预防性策略调整" in intent or "趋势预防性" in intent or "进化风险预测" in intent or "自我进化趋势" in intent or "evolution trend prediction" in intent.lower() or "trend prevention" in intent.lower() or "risk prediction" in intent.lower() or "策略动态调整" in intent or "动态策略" in intent:
+        print(f"[智能全场景进化环自我进化效能趋势预测与预防性策略动态调整引擎] 正在分析进化效能趋势并生成预防性策略...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_evolution_trend_prediction_prevention_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["进化趋势预测", "效能趋势预测", "预防性策略调整", "趋势预防性", "进化风险预测", "自我进化趋势", "evolution trend prediction", "trend prevention", "risk prediction", "策略动态调整", "动态策略", "状态", "status", "仪表盘", "dashboard", "执行", "execute", "循环", "cycle", "预测", "predict", "风险", "risk", "策略", "strategy"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环自我进化与决策深度集成引擎（round 325）
     elif "进化决策集成" in intent or "自我决策集成" in intent or "分析决策执行" in intent or "integrated evolution" in intent.lower() or "进化闭环" in intent or "进化自优化" in intent or "自动化进化优化" in intent:
         print(f"[智能全场景进化环自我进化与决策深度集成引擎] 正在深度集成自我进化引擎与决策引擎，形成分析→决策→执行→验证→优化完整闭环...", file=sys.stderr)
