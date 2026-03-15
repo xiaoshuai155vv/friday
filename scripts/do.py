@@ -5208,6 +5208,32 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环全自动化闭环深度增强引擎 (Round 643)
+    # 在 round 642 完成的创新价值闭环基础上，进一步增强完全无人值守的进化能力
+    # 让系统能够自主触发、主动发现优化机会、自动执行验证，形成真正的自主进化闭环
+    elif ("全自动化闭环" in intent or "自动化闭环增强" in intent or "auto loop deep" in intent.lower()
+          or "全自动化进化" in intent or "无人值守进化" in intent or "auto evolution" in intent.lower()
+          or "闭环深度增强" in intent or "deep enhancement" in intent.lower()
+          or ("自动" in intent and "闭环" in intent)
+          or "自动触发进化" in intent
+          or "智能触发" in intent):
+        print(f"[智能全场景进化环全自动化闭环深度增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_full_auto_loop_deep_enhancement_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["全自动化闭环", "自动化闭环增强", "auto loop deep", "全自动化进化", "无人值守进化", "auto evolution",
+                        "闭环深度增强", "deep enhancement", "自动", "闭环", "自动触发进化", "智能触发"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景超级预测与主动价值创造引擎（Round 287）
     elif "超级预测" in intent or "主动价值创造" in intent or "机会发现" in intent or "super prediction" in intent.lower() or "opportunity discovery" in intent.lower() or "create value" in intent.lower() or "价值创造" in intent or "趋势分析" in intent or "trends analysis" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
