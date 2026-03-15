@@ -2127,6 +2127,37 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环自动化性能基准测试与回归检测引擎（Round 518）- 让系统能够追踪进化环自身的执行效率变化、自动发现性能回归、预测优化机会，实现从被动响应性能问题到主动预防的范式升级
+    elif "性能基准" in intent or "回归检测" in intent or "性能回归" in intent or "performance benchmark" in intent.lower() or "regression detection" in intent.lower() or "性能趋势" in intent or "performance trend" in intent.lower() or "基准测试" in intent or "性能分析" in intent:
+        print(f"[智能全场景进化环自动化性能基准测试与回归检测引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_performance_benchmark_regression_engine.py")
+
+        # 解析命令参数
+        filtered_args = []
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--establish-baseline" in sys.argv or "建立基准" in intent or "establish baseline" in intent.lower():
+            filtered_args = ["--establish-baseline"]
+        elif "--detect-regression" in sys.argv or "检测回归" in intent or "detect regression" in intent.lower():
+            filtered_args = ["--detect-regression"]
+        elif "--predict-trend" in sys.argv or "预测趋势" in intent or "predict trend" in intent.lower():
+            filtered_args = ["--predict-trend"]
+        elif "--identify-optimizations" in sys.argv or "识别优化" in intent or "identify optimizations" in intent.lower():
+            filtered_args = ["--identify-optimizations"]
+        elif "--run" in sys.argv or "运行" in intent or "完整分析" in intent:
+            filtered_args = ["--run"]
+        else:
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环决策自动执行与动态调整引擎（Round 510）- 将多引擎协同智能决策结果自动转化为可执行动作、智能调整执行参数、动态处理异常、验证执行效果，形成从「智能决策→自动执行→动态调整→效果验证」的完整闭环
     elif "决策执行" in intent or "自动执行" in intent or "执行决策" in intent or "decision execution" in intent.lower() or "auto execute decision" in intent.lower() or "决策动态调整" in intent or "decision auto" in intent.lower():
         print(f"[智能全场景进化环决策自动执行与动态调整引擎] 正在处理...", file=sys.stderr)
