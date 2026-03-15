@@ -8356,6 +8356,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环跨维度价值平衡全局决策与自适应优化引擎 (Round 611)
+    # 在 round 608-610 完成的创新投资组合优化引擎、价值预测预防优化引擎 V2、创新生态系统治理引擎基础上
+    # 实现跨维度价值全局评估、价值平衡智能决策、自适应价值优化
+    elif "全局价值决策" in intent or "跨维度全局价值" in intent or "价值中枢" in intent or "自适应价值优化" in intent or "跨维度价值平衡" in intent or "全局价值优化" in intent:
+        print(f"[智能全场景进化环跨维度价值平衡全局决策与自适应优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_dimension_value_balance_global_decision_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["全局价值决策", "跨维度全局价值", "价值中枢", "自适应价值优化", "跨维度价值平衡", "全局价值优化"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环进化效能自动化归因与智能建议引擎 (Round 545)
     # 基于540+轮进化历史，自动分析每轮进化的成效，识别成功/失败的根本原因，并智能生成可执行的改进建议
     elif "归因分析" in intent or "根因分析" in intent or "改进建议" in intent or "效果归因" in intent or "attribution" in intent.lower() or "root cause" in intent.lower() or "improvement advice" in intent.lower() or "进化归因" in intent or "成效分析" in intent:
