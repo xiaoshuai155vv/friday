@@ -1785,8 +1785,8 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
-    # 智能全场景进化环代码理解与架构优化引擎（Round 499）- 大规模分析70+进化引擎代码结构、识别重复代码模式、发现可复用模块、生成优化建议
-    elif "代码分析" in intent or "代码理解" in intent or "架构优化" in intent or "code analysis" in intent.lower() or "code understanding" in intent.lower() or "architecture optimization" in intent.lower() or "代码优化" in intent or "架构分析" in intent or "pattern" in intent.lower() or "模式发现" in intent or "代码模式" in intent or "代码架构" in intent:
+    # 智能全场景进化环代码理解与架构优化引擎（Round 499/500）- 大规模分析70+进化引擎代码结构、识别重复代码模式、发现可复用模块、生成优化建议、自动修复
+    elif "代码分析" in intent or "代码理解" in intent or "架构优化" in intent or "code analysis" in intent.lower() or "code understanding" in intent.lower() or "architecture optimization" in intent.lower() or "代码优化" in intent or "架构分析" in intent or "pattern" in intent.lower() or "模式发现" in intent or "代码模式" in intent or "代码架构" in intent or "代码自动修复" in intent or "自动修复代码" in intent or "代码质量优化" in intent or "code auto fix" in intent.lower() or "代码修复" in intent or "代码自优化" in intent:
         print(f"[代码理解与架构优化引擎] 正在处理...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_code_understanding_architecture_optimizer.py")
 
@@ -1805,6 +1805,14 @@ def main():
             filtered_args = ["--report"]
         elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
             filtered_args = ["--cockpit-data"]
+        elif "--detect-issues" in sys.argv or "检测问题" in intent or "质量问题" in intent:
+            filtered_args = ["--detect-issues"]
+        elif "--auto-fix" in sys.argv or "自动修复" in intent or "auto fix" in intent.lower() or "代码自动修复" in intent:
+            filtered_args = ["--auto-fix"]
+        elif "--dry-run" in sys.argv or "模拟运行" in intent:
+            filtered_args = ["--auto-fix", "--dry-run"]
+        elif "--optimization-status" in sys.argv or "优化状态" in intent:
+            filtered_args = ["--optimization-status"]
         else:
             # 默认：运行完整分析
             filtered_args = ["--analyze"]

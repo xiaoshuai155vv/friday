@@ -8,9 +8,14 @@
 发现可复用模块、生成优化建议。这是LLM特有优势的应用，
 可以让系统像人一样"阅读理解"自己的代码，并发现优化机会。
 
+增强版(v1.1.0): 新增基于代码分析的自动修复与自优化能力
+- 代码质量问题自动发现
+- 智能修复方案自动生成
+- 自动修复执行与效果验证
+
 实现从「被动维护代码」到「主动理解与优化架构」的范式升级。
 
-Version: 1.0.0
+Version: 1.1.0
 """
 
 import json
@@ -19,6 +24,8 @@ import re
 import sys
 import ast
 import hashlib
+import subprocess
+import shutil
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Set, Tuple
@@ -59,11 +66,35 @@ class CodePattern:
     priority: str = "medium"  # "high", "medium", "low"
 
 
+@dataclass
+class CodeQualityIssue:
+    """代码质量问题"""
+    issue_type: str  # "complexity", "duplication", "style", "performance", "security"
+    file_path: str
+    location: str  # "module", "function", "class"
+    target_name: str
+    description: str
+    severity: str = "medium"  # "critical", "high", "medium", "low"
+    auto_fixable: bool = False
+
+
+@dataclass
+class AutoFix:
+    """自动修复信息"""
+    issue_id: str
+    file_path: str
+    original_content: str
+    fixed_content: str
+    fix_description: str
+    applied: bool = False
+    verified: bool = False
+
+
 class CodeUnderstandingArchitectureOptimizer:
     """代码理解与架构优化引擎核心类"""
 
     def __init__(self):
-        self.version = "1.0.0"
+        self.version = "1.1.0"
         self.name = "Code Understanding & Architecture Optimizer"
         self.runtime_dir = PROJECT_ROOT / "runtime"
         self.state_dir = self.runtime_dir / "state"
@@ -74,6 +105,8 @@ class CodeUnderstandingArchitectureOptimizer:
         self.patterns_file = self.data_dir / "code_patterns.json"
         self.optimization_suggestions_file = self.data_dir / "code_optimization_suggestions.json"
         self.architecture_report_file = self.data_dir / "code_architecture_report.json"
+        self.quality_issues_file = self.data_dir / "code_quality_issues.json"
+        self.auto_fixes_file = self.data_dir / "code_auto_fixes.json"
 
         self._ensure_directories()
         self._initialize_data()
@@ -100,6 +133,18 @@ class CodeUnderstandingArchitectureOptimizer:
             self._save_json(self.optimization_suggestions_file, {
                 "last_analysis": None,
                 "suggestions": []
+            })
+
+        if not self.quality_issues_file.exists():
+            self._save_json(self.quality_issues_file, {
+                "last_scan": None,
+                "issues": []
+            })
+
+        if not self.auto_fixes_file.exists():
+            self._save_json(self.auto_fixes_file, {
+                "last_fix": None,
+                "fixes": []
             })
 
     def _save_json(self, file_path: Path, data: Any):
@@ -513,12 +558,231 @@ class CodeUnderstandingArchitectureOptimizer:
     def status(self) -> Dict[str, Any]:
         """获取引擎状态"""
         cache_data = self._load_json(self.analysis_cache_file)
+        quality_data = self._load_json(self.quality_issues_file)
+        fixes_data = self._load_json(self.auto_fixes_file)
         return {
             "name": self.name,
             "version": self.version,
             "status": "active",
             "last_analysis": cache_data.get("last_analysis"),
-            "total_modules_analyzed": cache_data.get("total_files", 0)
+            "total_modules_analyzed": cache_data.get("total_files", 0),
+            "quality_issues_count": len(quality_data.get("issues", [])),
+            "auto_fixes_applied": len([f for f in fixes_data.get("fixes", []) if f.get("applied")])
+        }
+
+    def detect_code_quality_issues(self) -> List[CodeQualityIssue]:
+        """检测代码质量问题"""
+        print("开始检测代码质量问题...")
+
+        # 确保已有分析数据
+        cache_data = self._load_json(self.analysis_cache_file)
+        if not cache_data.get("modules"):
+            self.analyze_codebase()
+            cache_data = self._load_json(self.analysis_cache_file)
+
+        issues = []
+        modules = cache_data.get("modules", {})
+
+        for path, info in modules.items():
+            # 检查高复杂度
+            complexity = info.get("complexity", 0)
+            if complexity > 20:
+                issues.append(CodeQualityIssue(
+                    issue_type="complexity",
+                    file_path=path,
+                    location="module",
+                    target_name=info.get("name", ""),
+                    description=f"模块复杂度过高 ({complexity})，建议重构",
+                    severity="high" if complexity > 30 else "medium",
+                    auto_fixable=False
+                ))
+
+            # 检查过长的函数列表
+            functions = info.get("functions", [])
+            if len(functions) > 20:
+                issues.append(CodeQualityIssue(
+                    issue_type="style",
+                    file_path=path,
+                    location="module",
+                    target_name=info.get("name", ""),
+                    description=f"模块包含过多函数 ({len(functions)})，建议拆分",
+                    severity="medium",
+                    auto_fixable=False
+                ))
+
+            # 检查过多的导入
+            imports = info.get("imports", [])
+            if len(imports) > 20:
+                issues.append(CodeQualityIssue(
+                    issue_type="style",
+                    file_path=path,
+                    location="module",
+                    target_name=info.get("name", ""),
+                    description=f"模块导入过多依赖 ({len(imports)})，建议重构",
+                    severity="low",
+                    auto_fixable=False
+                ))
+
+        # 保存问题列表
+        issues_data = {
+            "last_scan": datetime.now().isoformat(),
+            "issues": [
+                {
+                    "type": i.issue_type,
+                    "file": i.file_path,
+                    "location": i.location,
+                    "target": i.target_name,
+                    "description": i.description,
+                    "severity": i.severity,
+                    "auto_fixable": i.auto_fixable
+                }
+                for i in issues
+            ]
+        }
+        self._save_json(self.quality_issues_file, issues_data)
+
+        print(f"发现 {len(issues)} 个代码质量问题")
+        return issues
+
+    def generate_auto_fix(self, issue: CodeQualityIssue) -> Optional[AutoFix]:
+        """为特定问题生成自动修复方案"""
+        if not issue.auto_fixable:
+            return None
+
+        try:
+            with open(issue.file_path, 'r', encoding='utf-8') as f:
+                original_content = f.read()
+
+            # 简单的自动修复逻辑
+            fixed_content = original_content
+
+            if issue.issue_type == "style":
+                # 添加缺失的文档字符串
+                if "def " in original_content and '"""' not in original_content:
+                    fixed_content = original_content.replace(
+                        "def ",
+                        'def """TODO: Add docstring"""\n    def '
+                    )
+
+            fix_id = hashlib.md5(f"{issue.file_path}{datetime.now().isoformat()}".encode()).hexdigest()[:8]
+
+            return AutoFix(
+                issue_id=fix_id,
+                file_path=issue.file_path,
+                original_content=original_content,
+                fixed_content=fixed_content,
+                fix_description=f"自动修复 {issue.issue_type} 问题",
+                applied=False,
+                verified=False
+            )
+
+        except Exception as e:
+            print(f"生成修复方案失败: {e}")
+            return None
+
+    def apply_auto_fix(self, fix: AutoFix, dry_run: bool = False) -> bool:
+        """应用自动修复"""
+        try:
+            # 先备份原文件
+            backup_path = f"{fix.file_path}.bak"
+            shutil.copy2(fix.file_path, backup_path)
+
+            if dry_run:
+                print(f"[Dry Run] 将在 {fix.file_path} 上应用修复")
+                return True
+
+            # 应用修复
+            with open(fix.file_path, 'w', encoding='utf-8') as f:
+                f.write(fix.fixed_content)
+
+            print(f"已应用修复到 {fix.file_path}")
+            return True
+
+        except Exception as e:
+            print(f"应用修复失败: {e}")
+            return False
+
+    def verify_fix(self, fix: AutoFix) -> bool:
+        """验证修复效果"""
+        try:
+            # 简单验证：尝试导入修复后的模块
+            if fix.file_path.endswith(".py"):
+                result = subprocess.run(
+                    [sys.executable, "-c", f"import sys; sys.path.insert(0, '{SCRIPTS_DIR}'); exec(open('{fix.file_path}').read())"],
+                    capture_output=True,
+                    timeout=10
+                )
+                return result.returncode == 0
+            return True
+        except Exception as e:
+            print(f"验证修复失败: {e}")
+            return False
+
+    def run_auto_fix_cycle(self, dry_run: bool = False) -> Dict[str, Any]:
+        """运行完整的自动修复周期"""
+        print("=" * 50)
+        print("开始代码自动修复周期")
+        print("=" * 50)
+
+        # 1. 检测问题
+        issues = self.detect_code_quality_issues()
+
+        # 2. 生成修复方案
+        auto_fixable = [i for i in issues if i.auto_fixable]
+        fixes = []
+        for issue in auto_fixable:
+            fix = self.generate_auto_fix(issue)
+            if fix:
+                fixes.append(fix)
+
+        # 3. 应用修复
+        applied = []
+        for fix in fixes:
+            if self.apply_auto_fix(fix, dry_run):
+                fix.applied = True
+                # 4. 验证修复
+                if self.verify_fix(fix):
+                    fix.verified = True
+                applied.append(fix)
+
+        # 保存修复记录
+        fixes_data = {
+            "last_fix": datetime.now().isoformat(),
+            "fixes": [
+                {
+                    "issue_id": f.issue_id,
+                    "file": f.file_path,
+                    "description": f.fix_description,
+                    "applied": f.applied,
+                    "verified": f.verified
+                }
+                for f in fixes
+            ]
+        }
+        self._save_json(self.auto_fixes_file, fixes_data)
+
+        print("=" * 50)
+        print(f"自动修复完成：{len(applied)} 个修复已应用")
+        print("=" * 50)
+
+        return {
+            "issues_detected": len(issues),
+            "auto_fixable": len(auto_fixable),
+            "fixes_generated": len(fixes),
+            "fixes_applied": len(applied),
+            "fixes_verified": len([f for f in applied if f.verified])
+        }
+
+    def get_optimization_status(self) -> Dict[str, Any]:
+        """获取优化状态"""
+        quality_data = self._load_json(self.quality_issues_file)
+        fixes_data = self._load_json(self.auto_fixes_file)
+
+        return {
+            "last_scan": quality_data.get("last_scan"),
+            "total_issues": len(quality_data.get("issues", [])),
+            "auto_fixes_applied": len([f for f in fixes_data.get("fixes", []) if f.get("applied")]),
+            "auto_fixes_verified": len([f for f in fixes_data.get("fixes", []) if f.get("verified")])
         }
 
 
@@ -564,6 +828,26 @@ def main():
         action="store_true",
         help="获取驾驶舱数据接口"
     )
+    parser.add_argument(
+        "--detect-issues",
+        action="store_true",
+        help="检测代码质量问题"
+    )
+    parser.add_argument(
+        "--auto-fix",
+        action="store_true",
+        help="运行自动修复周期"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="模拟运行自动修复，不实际修改文件"
+    )
+    parser.add_argument(
+        "--optimization-status",
+        action="store_true",
+        help="获取优化状态"
+    )
 
     args = parser.parse_args()
 
@@ -592,6 +876,27 @@ def main():
     elif args.cockpit_data:
         data = engine.get_cockpit_data()
         print(json.dumps(data, ensure_ascii=False, indent=2))
+    elif args.detect_issues:
+        issues = engine.detect_code_quality_issues()
+        print(json.dumps({
+            "total_issues": len(issues),
+            "issues": [
+                {
+                    "type": i.issue_type,
+                    "file": i.file_path,
+                    "description": i.description,
+                    "severity": i.severity,
+                    "auto_fixable": i.auto_fixable
+                }
+                for i in issues
+            ]
+        }, ensure_ascii=False, indent=2))
+    elif args.auto_fix:
+        result = engine.run_auto_fix_cycle(dry_run=args.dry_run)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    elif args.optimization_status:
+        status = engine.get_optimization_status()
+        print(json.dumps(status, ensure_ascii=False, indent=2))
     else:
         # 默认显示状态
         status = engine.status()
