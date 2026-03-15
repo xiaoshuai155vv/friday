@@ -5714,6 +5714,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环元健康诊断与自愈增强引擎（round 554）- 让系统能够持续监控元进化环本身的健康状态，实时检测进化过程中的异常模式，自动诊断问题根因并生成自愈方案，形成元进化层面的免疫系统
+    elif "元进化健康" in intent or "meta immune" in intent.lower() or "元免疫" in intent or "meta_health" in intent.lower():
+        print(f"[智能全场景进化环元健康诊断与自愈增强引擎] 正在监控元进化环健康状态并执行自愈...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_health_diagnosis_self_healing_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["元健康诊断", "元自愈", "进化环健康", "meta health", "meta healing", "evolution health", "元免疫", "meta immune", "自愈增强", "健康自愈", "状态", "status", "仪表盘", "dashboard", "检测", "detect", "诊断", "diagnose", "自愈", "heal", "循环", "cycle", "完整", "full"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环自我进化与决策深度集成引擎（round 325）
     elif "进化决策集成" in intent or "自我决策集成" in intent or "分析决策执行" in intent or "integrated evolution" in intent.lower() or "进化闭环" in intent or "进化自优化" in intent or "自动化进化优化" in intent:
         print(f"[智能全场景进化环自我进化与决策深度集成引擎] 正在深度集成自我进化引擎与决策引擎，形成分析→决策→执行→验证→优化完整闭环...", file=sys.stderr)
