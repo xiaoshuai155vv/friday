@@ -3247,6 +3247,28 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 661: 智能全场景进化环元进化架构自省与认知迭代引擎 - 在 round 660 完成的元进化策略自动执行与自驱动进化闭环引擎基础上，构建让系统能够深度反思自身架构的合理性，评估不同进化策略对系统长期发展的影响，形成架构层面的自我进化能力
+    # 实现「架构自省→策略评估→自动执行→效果验证」的完整闭环，形成「反思如何进化」的元架构进化
+    elif "架构自省" in intent or "认知迭代" in intent or "architecture reflection" in intent.lower() or "cognition iteration" in intent.lower() or "架构反思" in intent or "架构演进" in intent or "self reflection" in intent.lower() or "元架构" in intent or "架构优化" in intent:
+        print(f"[元进化架构自省与认知迭代引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_architecture_self_reflection_cognition_iteration_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--run-iteration"]
+        filter_words = ["架构自省", "认知迭代", "architecture reflection", "cognition iteration", "架构反思", "架构演进", "self reflection", "元架构", "架构优化"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg.lower() for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--run-iteration"]
+        result = subprocess.run(
+            [sys.executable, script_path] + filtered_args,
+            cwd=PROJECT,
+            capture_output=True,
+            text=True
+        )
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 634: 智能全场景进化环创新建议自动验证与价值优先级排序引擎 - 基于 round 633 知识图谱引擎（已发现388条待执行创新建议）基础上，构建让系统能够自动验证创新建议价值并智能排序优先级的增强能力
     # 实现「发现→验证→排序→优化→执行」的完整创新价值实现闭环
     elif "创新验证" in intent or "价值排序" in intent or "优先级" in intent or "innovation verify" in intent.lower() or "value priority" in intent.lower() or "priority rank" in intent.lower() or "价值评估" in intent or "创新价值" in intent or "价值评分" in intent:
