@@ -8516,6 +8516,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化执行效能实时优化引擎 (Round 620)
+    # 让系统能够实时监控进化执行过程中的效率指标，自动识别性能瓶颈，
+    # 动态生成优化策略并执行验证，形成「监控→分析→优化→验证」的持续效能提升闭环
+    elif "效能优化" in intent or "执行效能" in intent or "效率优化" in intent or "效能监控" in intent or "瓶颈分析" in intent or "efficiency optimization" in intent.lower() or "execution efficiency" in intent.lower() or "bottleneck analysis" in intent.lower() or "performance bottleneck" in intent.lower() or "优化策略" in intent or "效能趋势" in intent or "元进化效能" in intent:
+        print(f"[智能全场景进化环元进化执行效能实时优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_execution_efficiency_realtime_optimizer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["效能优化", "执行效能", "效率优化", "效能监控", "瓶颈分析", "efficiency optimization", "execution efficiency", "bottleneck analysis", "performance bottleneck", "优化策略", "效能趋势", "元进化效能"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环进化效能自动化归因与智能建议引擎 (Round 545)
     # 基于540+轮进化历史，自动分析每轮进化的成效，识别成功/失败的根本原因，并智能生成可执行的改进建议
     elif "归因分析" in intent or "根因分析" in intent or "改进建议" in intent or "效果归因" in intent or "attribution" in intent.lower() or "root cause" in intent.lower() or "improvement advice" in intent.lower() or "进化归因" in intent or "成效分析" in intent:
