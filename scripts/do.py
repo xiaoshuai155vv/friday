@@ -2218,6 +2218,35 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环优化建议自动执行与价值验证引擎（Round 591）- 在 round 590 完成的优化机会发现与智能决策能力基础上，构建让系统能够自动执行优化建议、验证执行效果、学习执行经验的完整优化闭环。形成「机会发现→智能决策→自动执行→效果验证→学习迭代」的完整优化闭环
+    elif "优化执行" in intent or "执行优化" in intent or "optimization execution" in intent.lower() or "优化验证" in intent or "execution validation" in intent.lower() or "优化学习" in intent or "execution learning" in intent.lower() or "价值验证" in intent or "优化闭环" in intent:
+        print(f"[优化建议自动执行与价值验证引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_optimization_execution_validation_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "运行周期" in intent or "完整周期" in intent or "run cycle" in intent.lower():
+            filtered_args = ["--run"]
+        elif "--execute" in sys.argv or "执行" in intent and "优化" in intent:
+            filtered_args = ["--execute"]
+        elif "--validate" in sys.argv or "验证" in intent:
+            filtered_args = ["--validate"]
+        elif "--history" in sys.argv or "历史" in intent or "execution history" in intent.lower():
+            filtered_args = ["--history"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：运行完整执行周期
+            filtered_args = ["--run"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环知识驱动自动化执行增强引擎（Round 581）- 在 round 580 完成的价值驱动进化执行闭环引擎基础上，构建从知识推理到自动执行的完整自动化链路。让系统能够从知识图谱推理结果自动生成并执行行动计划，形成「推理→洞察→行动→验证」的完整知识驱动闭环
     elif "知识行动转换" in intent or "推理到行动" in intent or "insight to action" in intent.lower() or "知识自动化执行增强" in intent or "insight execution automation" in intent.lower():
         print(f"[知识驱动自动化执行增强引擎] 正在处理...", file=sys.stderr)
