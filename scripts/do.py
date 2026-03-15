@@ -1481,6 +1481,25 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # round 671: 智能全场景进化环元进化知识价值主动发现与创新实现引擎 - 在 round 670 完成的知识动态融合与自适应重组引擎基础上，
+    # 构建让系统能够主动发现知识应用价值、识别知识创新机会、实现知识价值最大化的能力
+    if "知识价值发现" in intent or "知识创新" in intent or "知识应用场景" in intent or "knowledge value discovery" in intent.lower() or "knowledge innovation" in intent.lower() or "知识价值最大化" in intent:
+        print(f"[智能全场景进化环元进化知识价值主动发现与创新实现引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_knowledge_value_discovery_innovation_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["知识价值发现", "知识创新", "知识应用场景", "knowledge value discovery", "knowledge innovation", "知识价值最大化"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化知识深度传承与自适应遗忘引擎（Round 347）
     elif "知识传承" in intent or "自适应遗忘" in intent or "知识管理" in intent or "遗忘引擎" in intent or "knowledge inheritance" in intent.lower() or "knowledge forgetting" in intent.lower() or "knowledge management" in intent.lower() or "知识老化" in intent or "知识价值" in intent or "遗忘知识" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
