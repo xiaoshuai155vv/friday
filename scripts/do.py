@@ -6512,14 +6512,24 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
-    # 智能全场景进化环预防性干预效果评估与持续优化引擎 (Round 527)
-    elif "干预效果评估" in intent or "效果评估" in intent or "干预优化" in intent or "评估优化" in intent or "intervention evaluation" in intent.lower() or "effectiveness evaluation" in intent.lower() or "intervention optimization" in intent.lower() or "效果趋势分析" in intent or "趋势分析" in intent:
-        print(f"[智能全场景进化环预防性干预效果评估与持续优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+    # 智能全场景进化环预防性干预效果评估与持续优化引擎 (Round 527-528)
+    elif "干预效果评估" in intent or "效果评估" in intent or "干预优化" in intent or "评估优化" in intent or "intervention evaluation" in intent.lower() or "effectiveness evaluation" in intent.lower() or "intervention optimization" in intent.lower() or "效果趋势分析" in intent or "趋势分析" in intent or "价值趋势预测" in intent or "预防性干预" in intent or "预测价值" in intent:
+        print(f"[智能全场景进化环预防性干预效果评估与持续优化引擎 v1.1.0] 正在处理...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_preventive_intervention_evaluation_optimizer_engine.py")
         # 解析命令参数
-        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--metrics"]
-        # 检测功能关键词
-        if "趋势" in intent or "trend" in intent.lower() or "分析" in intent:
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--cockpit-data"]
+        # 检测功能关键词（增强 round 528）
+        if "价值趋势预测" in intent or "预测价值" in intent or "predict" in intent.lower():
+            cmd_args = ["--predict", "--prediction-days", "7"]
+        elif "完整闭环" in intent or "full loop" in intent.lower() or "闭环" in intent:
+            cmd_args = ["--full-loop"]
+        elif "预防性策略" in intent or "策略生成" in intent or "strategy" in intent.lower():
+            cmd_args = ["--generate-strategy"]
+        elif "执行干预" in intent or "execute" in intent.lower():
+            cmd_args = ["--execute"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        elif "趋势" in intent or "trend" in intent.lower() or "分析" in intent:
             cmd_args = ["--analyze-trend"]
         elif "建议" in intent or "recommendation" in intent.lower() or "优化建议" in intent:
             cmd_args = ["--recommendations"]
@@ -6528,10 +6538,10 @@ def main():
         elif "指标" in intent or "metrics" in intent.lower():
             cmd_args = ["--metrics"]
         # 过滤掉意图关键词
-        filter_words = ["干预效果评估", "效果评估", "干预优化", "评估优化", "intervention evaluation", "effectiveness evaluation", "intervention optimization", "效果趋势分析", "趋势分析", "趋势", "trend", "分析", "建议", "recommendation", "优化建议", "评估", "evaluate", "指标", "metrics"]
+        filter_words = ["干预效果评估", "效果评估", "干预优化", "评估优化", "intervention evaluation", "effectiveness evaluation", "intervention optimization", "效果趋势分析", "趋势分析", "趋势", "trend", "分析", "建议", "recommendation", "优化建议", "评估", "evaluate", "指标", "metrics", "价值趋势预测", "预防性干预", "预测价值", "完整闭环", "闭环", "预防性策略", "策略生成", "执行干预", "驾驶舱", "cockpit"]
         filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
         if not filtered_args:
-            filtered_args = ["--metrics"]
+            filtered_args = ["--cockpit-data"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
         if result.stdout:
             print(result.stdout)
