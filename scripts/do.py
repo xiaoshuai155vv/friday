@@ -3066,6 +3066,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 655: 智能全场景进化环元进化自适应学习与策略自动优化引擎 V3 - 在 round 654 完成的元进化投资回报智能评估与战略优化引擎基础上
+    # 构建基于 ROI 评估结果的自适应学习能力，实现更智能的资源分配与优先级动态优化
+    elif "自适应学习V3" in intent or "ROI自适应" in intent or "资源动态分配" in intent or "优先级优化" in intent or "adaptive learning v3" in intent.lower() or "roi adaptive" in intent.lower() or "dynamic resource" in intent.lower() or "priority optimization" in intent.lower():
+        print(f"[智能全场景进化环元进化自适应学习与策略自动优化引擎 V3 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_adaptive_learning_strategy_optimizer_v3.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["自适应学习V3", "ROI自适应", "资源动态分配", "优先级优化", "adaptive learning v3", "roi adaptive", "dynamic resource", "priority optimization"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 645: 智能全场景进化环元进化执行过程深度监控与智能预警增强引擎 - 在 round 644 完成的元进化自适应学习与策略自动优化引擎 V2 基础上
     # 构建更深层次的执行过程深度监控能力，让系统能够实时追踪进化执行状态、智能预测执行风险、主动部署预防性措施
     elif "执行监控" in intent or "智能预警" in intent or "风险预测" in intent or "预防性措施" in intent or "execution monitoring" in intent.lower() or "smart warning" in intent.lower() or "risk prediction" in intent.lower() or "preventive" in intent.lower() or "执行风险" in intent or "深度监控" in intent:
