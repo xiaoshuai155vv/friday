@@ -8416,6 +8416,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化能力缺口主动发现与自愈引擎 (Round 615)
+    # 在 round 614 完成的元进化价值自循环与进化飞轮增强引擎基础上，构建让系统能够主动发现能力缺口
+    # 并自动修复的完整自愈闭环。实现从「被动修复问题」到「主动预防并自愈」的范式升级
+    elif "能力缺口" in intent or "自愈" in intent or "缺口发现" in intent or "主动修复" in intent or "capability gap" in intent.lower() or "self healing" in intent.lower() or "gap discovery" in intent.lower() or "自愈引擎" in intent or "能力自愈" in intent or "缺口自愈" in intent:
+        print(f"[智能全场景进化环元进化能力缺口主动发现与自愈引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_capability_gap_discovery_self_healing_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["能力缺口", "自愈", "缺口发现", "主动修复", "capability gap", "self healing", "gap discovery", "自愈引擎", "能力自愈", "缺口自愈"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环进化效能自动化归因与智能建议引擎 (Round 545)
     # 基于540+轮进化历史，自动分析每轮进化的成效，识别成功/失败的根本原因，并智能生成可执行的改进建议
     elif "归因分析" in intent or "根因分析" in intent or "改进建议" in intent or "效果归因" in intent or "attribution" in intent.lower() or "root cause" in intent.lower() or "improvement advice" in intent.lower() or "进化归因" in intent or "成效分析" in intent:
