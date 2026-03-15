@@ -3047,6 +3047,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 635: 智能全场景进化环创新建议自动执行与迭代深化引擎 - 基于 round 633 知识图谱发现创新建议和 round 634 价值验证排序基础上，构建让系统能够自动将高优先级创新建议转化为可执行任务、执行验证、迭代优化的完整闭环
+    # 实现「发现→验证→排序→执行→迭代」的完整创新价值实现闭环
+    elif "创新执行" in intent or "执行创新" in intent or "创新迭代" in intent or "innovation execution" in intent.lower() or "execute innovation" in intent.lower() or "innovation iterate" in intent.lower() or "执行建议" in intent or "任务执行" in intent or "执行任务" in intent or "创新转化" in intent:
+        print(f"[智能全场景进化环创新建议自动执行与迭代深化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_execution_iteration_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["创新执行", "执行创新", "创新迭代", "innovation execution", "execute innovation", "innovation iterate", "执行建议", "任务执行", "执行任务", "创新转化"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 633: 智能全场景进化环元进化知识图谱动态推理与主动创新发现引擎 - 基于 round 625 记忆整合和 round 632 方法论学习，构建让系统能够构建动态进化的知识图谱、进行图谱实时推理、主动发现创新机会并生成可执行创新建议
     # 实现「构建→推理→发现→建议→演化」的完整知识图谱创新闭环
     elif "知识图谱" in intent or "图谱推理" in intent or "创新发现" in intent or "knowledge graph" in intent.lower() or "kg" in intent.lower() or "图谱动态" in intent or "kg reasoning" in intent.lower() or "innovation discovery" in intent.lower() or "graph reasoning" in intent.lower() or "图谱分析" in intent or "kg reasoning" in intent.lower():
