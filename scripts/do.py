@@ -5352,6 +5352,32 @@ def main():
 
     # 智能全场景进化环元进化知识自动涌现与创新实现深度增强引擎 (Round 649)
     # 基于 round 648 完成的全自动化闭环增强能力，进一步增强知识自动涌现与创新实现能力
+    # 元进化知识自动涌现与创新实现深度增强引擎 V2 - 超越人类想象的创新涌现
+    elif ("知识涌现V2" in intent or "创新实现V2" in intent or "knowledge emergence v2" in intent.lower()
+          or "超越想象" in intent or "beyond imagination" in intent.lower()
+          or ("涌现" in intent and "V2" in intent) or "创新涌现V2" in intent
+          or "元元进化" in intent or "meta meta" in intent.lower()
+          or ("知识" in intent and "涌现" in intent and "增强" in intent and "V2" in intent)
+          or "knowledge_emergence_v2" in intent.lower() or "innovation_v2" in intent.lower()
+          or "超越人类" in intent or "beyond human" in intent.lower()):
+        print(f"[智能全场景进化环元进化知识自动涌现与创新实现深度增强引擎 V2 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_knowledge_emergence_innovation_v2_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--analyze"]
+        # 过滤掉意图关键词
+        filter_words = ["知识涌现V2", "创新实现V2", "knowledge emergence v2", "超越想象", "beyond imagination",
+                       "涌现", "V2", "创新涌现V2", "元元进化", "meta meta", "知识", "涌现", "增强",
+                       "knowledge_emergence_v2", "innovation_v2", "超越人类", "beyond human"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--analyze"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 让系统能够从进化历史和知识图谱中主动涌现新知识、自动生成创新方案并执行验证
     elif ("知识涌现增强" in intent or "创新实现增强" in intent or "knowledge emergence deep" in intent.lower()
           or "创新深度增强" in intent or "知识创新增强" in intent or "元进化知识增强" in intent
