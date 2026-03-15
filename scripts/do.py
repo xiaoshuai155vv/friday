@@ -1865,6 +1865,24 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
 
+    # 智能全场景进化环创新方案智能执行与深度优化引擎 (Round 505) - 在 round 504 跨引擎深度融合创新实现引擎基础上，进一步增强创新方案的智能执行能力，将高价值创新方案自动转化为可执行代码、自动执行优化、验证优化效果
+    elif "创新方案执行" in intent or "方案智能执行" in intent or "创新优化执行" in intent or "代码生成执行创新" in intent or "方案转代码" in intent or "代码执行创新" in intent:
+        print(f"[智能全场景进化环创新方案智能执行与深度优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_execution_optimizer_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["创新方案执行", "方案智能执行", "创新优化执行", "代码生成执行创新", "方案转代码", "代码执行创新"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环创新验证结果自动执行与价值实现引擎（Round 502）- 将验证通过的创新假设自动转化为可执行任务、智能评估执行价值、自动执行创新方案、追踪价值实现
     elif "创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent:
         print(f"[创新验证结果自动执行与价值实现引擎] 正在处理...", file=sys.stderr)
