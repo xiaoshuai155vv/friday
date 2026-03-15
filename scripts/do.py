@@ -5312,6 +5312,31 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化知识自动涌现与创新实现深度增强引擎 (Round 649)
+    # 基于 round 648 完成的全自动化闭环增强能力，进一步增强知识自动涌现与创新实现能力
+    # 让系统能够从进化历史和知识图谱中主动涌现新知识、自动生成创新方案并执行验证
+    elif ("知识涌现增强" in intent or "创新实现增强" in intent or "knowledge emergence deep" in intent.lower()
+          or "创新深度增强" in intent or "知识创新增强" in intent or "元进化知识增强" in intent
+          or ("涌现" in intent and "创新" in intent and "深度" in intent)
+          or ("知识" in intent and "自动" in intent and "涌现" in intent)
+          or "meta knowledge emergence" in intent.lower()):
+        print(f"[智能全场景进化环元进化知识自动涌现与创新实现深度增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_knowledge_emergence_innovation_deep_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["知识涌现增强", "创新实现增强", "knowledge emergence deep", "创新深度增强", "知识创新增强",
+                       "元进化知识增强", "涌现", "创新", "深度", "知识", "自动", "meta knowledge emergence"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景超级预测与主动价值创造引擎（Round 287）
     elif "超级预测" in intent or "主动价值创造" in intent or "机会发现" in intent or "super prediction" in intent.lower() or "opportunity discovery" in intent.lower() or "create value" in intent.lower() or "价值创造" in intent or "趋势分析" in intent or "trends analysis" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
