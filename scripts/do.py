@@ -5617,6 +5617,35 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环跨引擎协同学习与知识共享深度增强引擎 (Round 488)
+    elif "跨引擎协同学习" in intent or "协同学习" in intent or "知识共享" in intent or "跨引擎学习" in intent or "模式复用" in intent or "cross engine collaborative" in intent.lower() or "collaborative learning" in intent.lower() or "knowledge sharing" in intent.lower() or "pattern reuse" in intent.lower() or "跨引擎知识" in intent:
+        print(f"[智能全场景进化环跨引擎协同学习与知识共享深度增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_engine_collaborative_learning_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 检测功能关键词
+        if "收集经验" in intent or "collect" in intent.lower():
+            cmd_args = ["--collect"]
+        elif "识别模式" in intent or "identify pattern" in intent.lower() or "可复用模式" in intent:
+            cmd_args = ["--identify-patterns"]
+        elif "共享知识" in intent or "share" in intent.lower() or "知识分享" in intent:
+            cmd_args = ["--share"]
+        elif "效果" in intent or "effectiveness" in intent.lower() or "学习效果" in intent:
+            cmd_args = ["--effectiveness"]
+        elif "驾驶舱数据" in intent or "cockpit data" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        # 过滤掉意图关键词
+        filter_words = ["跨引擎协同学习", "协同学习", "知识共享", "跨引擎学习", "模式复用", "cross engine collaborative", "collaborative learning", "knowledge sharing", "pattern reuse", "跨引擎知识", "收集经验", "识别模式", "共享知识", "学习效果", "驾驶舱数据"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环效能实时数据推送与驾驶舱智能预警深度集成引擎 (Round 482)
     elif "实时推送" in intent or "智能预警" in intent or "自动刷新" in intent or "效能推送" in intent or "预警阈值" in intent or "realtime push" in intent.lower() or "smart warning" in intent.lower() or "auto refresh" in intent.lower() or "效能预警" in intent:
         print(f"[智能全场景进化环效能实时数据推送与驾驶舱智能预警深度集成引擎] 正在处理...", file=sys.stderr)
