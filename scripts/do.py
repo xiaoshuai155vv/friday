@@ -6705,6 +6705,42 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环进化效能深度分析-优化执行闭环增强引擎 (Round 524)
+    # 在已有的效能分析引擎基础上，增强从效能分析→智能优化→自动执行→效果验证的完整闭环能力
+    elif "效能深度分析" in intent or "分析优化闭环" in intent or "分析优化执行" in intent or "deep analysis" in intent.lower() or "analysis optimization" in intent.lower() or "analysis optimizer" in intent.lower() or "效能分析优化" in intent or "进化效能" in intent and "优化" in intent:
+        print(f"[智能全场景进化环进化效能深度分析-优化执行闭环增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_effectiveness_deep_analysis_optimizer_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 检测功能关键词
+        if "收集数据" in intent or "collect" in intent.lower():
+            cmd_args = ["--collect"]
+        elif "深度分析" in intent or "analyze" in intent.lower() or "分析" in intent:
+            cmd_args = ["--analyze"]
+        elif "生成建议" in intent or "proposal" in intent.lower() or "优化建议" in intent:
+            cmd_args = ["--generate-proposals"]
+        elif "执行优化" in intent or "execute" in intent.lower():
+            cmd_args = ["--execute"]
+        elif "自动执行" in intent or "auto execute" in intent.lower():
+            cmd_args = ["--auto-execute"]
+        elif "验证" in intent or "verify" in intent.lower():
+            cmd_args = ["--verify"]
+        elif "完整闭环" in intent or "closed loop" in intent.lower() or "full loop" in intent.lower():
+            cmd_args = ["--closed-loop"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        # 过滤掉意图关键词
+        filter_words = ["效能深度分析", "分析优化闭环", "分析优化执行", "deep analysis", "analysis optimization", "analysis optimizer", "效能分析优化", "进化效能", "收集数据", "collect", "深度分析", "analyze", "生成建议", "proposal", "优化建议", "执行优化", "execute", "自动执行", "auto execute", "验证", "verify", "完整闭环", "closed loop", "full loop", "驾驶舱", "cockpit"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环效能实时数据推送与驾驶舱智能预警深度集成引擎 (Round 482)
     elif "实时推送" in intent or "智能预警" in intent or "自动刷新" in intent or "效能推送" in intent or "预警阈值" in intent or "realtime push" in intent.lower() or "smart warning" in intent.lower() or "auto refresh" in intent.lower() or "效能预警" in intent:
         print(f"[智能全场景进化环效能实时数据推送与驾驶舱智能预警深度集成引擎] 正在处理...", file=sys.stderr)
