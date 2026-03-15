@@ -13325,6 +13325,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化知识创新价值驾驶舱深度可视化引擎 (Round 687)
+    # 在 round 686 完成的知识创新价值实现自动化闭环引擎基础上，
+    # 构建让系统能够将知识创新价值实现过程在进化驾驶舱中深度可视化的能力
+    elif "知识创新价值可视化" in intent or "价值驾驶舱" in intent or "value cockpit" in intent.lower() or "价值可视化" in intent or "价值趋势分析" in intent or "价值指标" in intent or "价值仪表盘" in intent:
+        print(f"[元进化知识创新价值驾驶舱深度可视化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_knowledge_innovation_value_cockpit_visualization_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["知识创新价值可视化", "价值驾驶舱", "value cockpit", "价值可视化", "价值趋势分析", "价值指标", "价值仪表盘"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     else:
         # 未知意图时，先检查是否包含情感关键词
         import json
