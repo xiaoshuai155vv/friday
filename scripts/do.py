@@ -1686,6 +1686,37 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环自我进化元认知深度优化引擎（Round 495）- 在 round 494 的元进化智能决策引擎基础上，进一步增强自我进化的元认知深度优化能力。主动分析进化过程质量、评估元进化策略有效性、生成认知优化反馈，形成更深入的自我反思与递归优化闭环
+    elif "元认知深度优化" in intent or "自我反思" in intent or "元认知优化" in intent or "meta cognition" in intent.lower() or "deep reflection" in intent.lower() or "自我进化反思" in intent or "认知反馈" in intent or "自我反思优化" in intent:
+        print(f"[自我进化元认知深度优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_evolution_meta_cognition_deep_optimization_engine.py")
+
+        # 确定要执行的命令
+        if "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "运行" in intent or "执行" in intent or "完整循环" in intent:
+            filtered_args = ["--run"]
+        elif "--dry-run" in sys.argv or "模拟" in intent or "模拟运行" in intent:
+            filtered_args = ["--run", "--dry-run"]
+        elif "--analyze-quality" in sys.argv or "分析质量" in intent or "进化质量" in intent:
+            filtered_args = ["--analyze-quality"]
+        elif "--evaluate-strategy" in sys.argv or "评估策略" in intent or "策略评估" in intent:
+            filtered_args = ["--evaluate-strategy"]
+        elif "--generate-feedback" in sys.argv or "生成反馈" in intent or "认知反馈" in intent:
+            filtered_args = ["--generate-feedback"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--history" in sys.argv or "历史" in intent:
+            filtered_args = ["--history"]
+        else:
+            # 默认：显示状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环执行策略自优化深度增强引擎（Round 449）- 自动分析引擎执行效果、识别协作低效模式、智能生成并执行优化策略
     elif "策略优化" in intent or "执行优化" in intent or "自优化" in intent or "优化策略" in intent or "strategy optimization" in intent.lower() or "execution optimization" in intent.lower() or "self-optimization" in intent.lower() or "optimize strategy" in intent.lower() or "策略自优化" in intent or "执行策略优化" in intent:
         print(f"[执行策略自优化深度增强引擎] 正在处理...", file=sys.stderr)
