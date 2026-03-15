@@ -1917,6 +1917,36 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环跨引擎统一元知识图谱深度推理引擎 (Round 507) - 在已有知识索引与推理能力基础上，构建统一的元知识图谱，实现跨引擎知识的深度语义关联与创新性推理发现
+    elif "元知识图谱" in intent or "知识图谱推理" in intent or "深度推理" in intent or "知识推理" in intent or "meta knowledge" in intent.lower() or "knowledge graph" in intent.lower() or "kg reasoning" in intent.lower() or ("图谱" in intent and "推理" in intent) or ("知识" in intent and "关联" in intent) or ("跨引擎" in intent and "知识" in intent):
+        print(f"[智能全场景进化环跨引擎统一元知识图谱深度推理引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_knowledge_graph_reasoning_engine.py")
+
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["元知识图谱", "知识图谱推理", "深度推理", "知识推理", "meta knowledge", "knowledge graph", "kg reasoning", "图谱", "关联", "跨引擎知识"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+
+        # 确定要执行的命令
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--build-kg" in sys.argv or "构建图谱" in intent or "build kg" in intent.lower():
+            filtered_args = ["--build-kg"]
+        elif "--reasoning" in sys.argv or "推理" in intent or "reasoning" in intent.lower():
+            filtered_args = ["--reasoning"]
+        elif "--discover" in sys.argv or "发现" in intent or "discover" in intent.lower() or "创新" in intent:
+            filtered_args = ["--discover"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环创新验证结果自动执行与价值实现引擎（Round 502）- 将验证通过的创新假设自动转化为可执行任务、智能评估执行价值、自动执行创新方案、追踪价值实现
     elif "创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent:
         print(f"[创新验证结果自动执行与价值实现引擎] 正在处理...", file=sys.stderr)
