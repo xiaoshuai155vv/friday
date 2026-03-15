@@ -1308,6 +1308,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["--status", "--analyze-history", "--assess-state", "--identify-gaps", "--plan-direction", "--cockpit-data", "--focus-areas", "help"]):
             cmd = ["--status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_self_evolution_consciousness_strategic_planning_engine.py")] + cmd, cwd=PROJECT)
+    # 智能全场景进化环进化战略智能执行与闭环验证引擎（Round 532）
+    elif "战略执行" in intent or "闭环验证" in intent or "执行验证" in intent or "智能调度" in intent or "战略闭环" in intent or "strategy execution" in intent.lower() or "closed loop verification" in intent.lower() or "execution verification" in intent.lower() or "smart scheduling" in intent.lower() or "strategy closed loop" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["--status"]
+        if not cmd or (cmd and cmd[0] not in ["--status", "--run", "--generate-tasks", "--cockpit-data", "--auto-execute", "help"]):
+            cmd = ["--status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_strategy_execution_closed_loop_engine.py")] + cmd, cwd=PROJECT)
     # 智能全场景系统自我进化评估与优化引擎（Round 279）
     elif "进化评估" in intent or "自我评估" in intent or "进化优化" in intent or "evolution_evaluation" in intent.lower() or "self evaluation" in intent.lower() or "评估优化" in intent or "进化自评" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
