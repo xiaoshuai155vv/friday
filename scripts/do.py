@@ -2247,6 +2247,41 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化效能自适应持续优化引擎（Round 592）- 在 round 591 完成的优化建议自动执行与价值验证引擎基础上，构建效能自适应持续优化能力。让系统能够从历史执行数据中自动分析优化策略的有效性、识别高效与低效模式、生成自适应持续优化方案，形成「执行→验证→学习→优化→再执行」的完整效能持续进化闭环。让系统不仅能执行优化建议，还能从执行结果中持续学习、不断自我改进，实现真正的「学会如何优化得更好」
+    elif "效能优化" in intent or "持续优化" in intent or "efficiency optimization" in intent.lower() or "continual optimization" in intent.lower() or "自适应优化" in intent or "adaptive optimization" in intent.lower() or "效能分析" in intent or "efficiency analysis" in intent.lower() or "元进化效能" in intent or "meta efficiency" in intent.lower() or "效能自适应" in intent:
+        print(f"[元进化效能自适应持续优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_efficiency_adaptive_continual_optimizer.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "运行周期" in intent or "完整周期" in intent or "run cycle" in intent.lower():
+            filtered_args = ["--run"]
+        elif "--analyze" in sys.argv or "分析" in intent:
+            filtered_args = ["--analyze"]
+        elif "--patterns" in sys.argv or "模式" in intent or "pattern" in intent.lower():
+            filtered_args = ["--patterns"]
+        elif "--optimize" in sys.argv or "生成优化" in intent:
+            filtered_args = ["--optimize"]
+        elif "--learn" in intent or "学习" in intent or "learning" in intent.lower():
+            filtered_args = ["--learn"]
+        elif "--strategy-library" in sys.argv or "策略库" in intent:
+            filtered_args = ["--strategy-library"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--report" in sys.argv or "报告" in intent:
+            filtered_args = ["--report"]
+        else:
+            # 默认：运行完整分析周期
+            filtered_args = ["--run"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环知识驱动自动化执行增强引擎（Round 581）- 在 round 580 完成的价值驱动进化执行闭环引擎基础上，构建从知识推理到自动执行的完整自动化链路。让系统能够从知识图谱推理结果自动生成并执行行动计划，形成「推理→洞察→行动→验证」的完整知识驱动闭环
     elif "知识行动转换" in intent or "推理到行动" in intent or "insight to action" in intent.lower() or "知识自动化执行增强" in intent or "insight execution automation" in intent.lower():
         print(f"[知识驱动自动化执行增强引擎] 正在处理...", file=sys.stderr)
