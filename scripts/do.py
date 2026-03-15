@@ -2864,6 +2864,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化记忆深度整合与跨轮次智慧涌现引擎 (Round 625)
+    # 基于 round 599 完成的智慧自动提取与战略规划引擎和 round 606 完成的元进化方法论自省与递归优化引擎基础上，
+    # 构建让系统能够深度整合600+轮进化记忆、发现跨轮次隐藏模式、生成前瞻性战略洞察、实现智慧涌现的增强能力
+    elif "记忆整合" in intent or "跨轮次" in intent or "智慧涌现" in intent or "模式发现" in intent or "memory integration" in intent.lower() or "wisdom emergence" in intent.lower() or "cross-round" in intent.lower() or "pattern discovery" in intent.lower() or "洞察生成" in intent or "前瞻洞察" in intent or "历史整合" in intent or "进化记忆" in intent or "记忆深度" in intent or "跨轮学习" in intent:
+        print(f"[智能全场景进化环元进化记忆深度整合与跨轮次智慧涌现引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_memory_deep_integration_wisdom_emergence_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["记忆整合", "跨轮次", "智慧涌现", "模式发现", "memory integration", "wisdom emergence", "cross-round", "pattern discovery", "洞察生成", "前瞻洞察", "历史整合", "进化记忆", "记忆深度", "跨轮学习"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环元进化系统自涌现深度增强引擎（Round 576）- 在 round 575 完成的创新价值自动化实现与迭代深化引擎基础上，进一步增强系统的自涌现能力。让系统能够基于已有能力组合、进化历史数据、知识图谱，自动涌现新的创新方向、生成高价值创新假设、形成自驱动创新涌现的深度增强能力
     elif "元涌现" in intent or "自涌现" in intent or "创新涌现" in intent or "能力涌现" in intent or "meta emergence" in intent.lower() or "system emergence" in intent.lower() or "emergence deep" in intent.lower() or "元进化系统" in intent or "系统自涌现" in intent or "涌现增强" in intent or "涌现引擎" in intent or "涌现分析" in intent:
         print(f"[元进化系统自涌现深度增强引擎] 正在处理...", file=sys.stderr)
