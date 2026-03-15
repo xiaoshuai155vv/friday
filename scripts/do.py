@@ -1801,6 +1801,33 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化自我优化引擎（Round 569）- 在 round 568 完成的元进化自我意识深度增强引擎基础上，进一步增强系统的自我优化能力。让系统不仅能理解自己，还能基于自我理解主动发现优化空间、生成并执行优化方案，形成「自我理解→主动发现优化空间→生成方案→执行验证→持续改进」的递归优化闭环
+    elif "元自我优化" in intent or "自我优化" in intent or "meta self optimization" in intent.lower() or "self optimization" in intent.lower() or "优化空间" in intent or "主动优化" in intent or "自我改进" in intent or "优化执行" in intent:
+        print(f"[元进化自我优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_self_optimization_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--check" in sys.argv or "检查" in intent or "校验" in intent:
+            filtered_args = ["--check"]
+        elif "--discover" in sys.argv or "发现优化" in intent or "发现" in intent:
+            filtered_args = ["--discover"]
+        elif "--plan" in sys.argv or "生成方案" in intent or "优化方案" in intent:
+            filtered_args = ["--plan"]
+        elif "--run" in sys.argv or "执行优化" in intent or "运行优化" in intent:
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：显示优化状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨轮次价值实现追踪与量化增强引擎（Round 559）- 在 round 558 完成的元进化自我反思与深度自省引擎基础上，进一步将自省结果量化为可衡量的价值指标，实现「自省→量化→价值反馈→优化决策」的完整价值驱动进化闭环
     elif "价值追踪" in intent or "价值量化" in intent or "价值反馈" in intent or "价值驱动" in intent or "value tracking" in intent.lower() or "value quantum" in intent.lower() or "value realization" in intent.lower() or "价值实现" in intent or "跨轮次价值" in intent or "价值增强" in intent:
         print(f"[跨轮次价值实现追踪与量化增强引擎] 正在处理...", file=sys.stderr)
