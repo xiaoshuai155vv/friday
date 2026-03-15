@@ -1973,6 +1973,89 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化价值战略预测与执行闭环增强引擎（Round 584）- 在 round 578 价值实现闭环追踪增强引擎基础上，构建让系统能够预测进化决策的长期价值影响、将价值预测结果转化为可执行策略、自动验证执行效果的引擎。形成「战略预测→策略生成→自动执行→价值验证→反馈优化」的完整闭环
+    elif "元进化价值战略预测" in intent or "价值战略执行" in intent or "meta value strategy execution" in intent.lower() or "value strategy execution closed loop" in intent.lower() or "战略预测执行" in intent or "价值执行闭环" in intent or "strategy execution closed loop" in intent.lower() or "预测执行闭环" in intent or "预测到执行" in intent or "预测转化" in intent or "预测策略执行" in intent or "价值预测执行" in intent or "战略预测执行闭环" in intent or "元进化执行闭环" in intent or "execution closed loop" in intent.lower() or "执行验证反馈" in intent or "执行优化闭环" in intent or "反馈优化" in intent:
+        print(f"[元进化价值战略预测与执行闭环增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_value_strategy_prediction_execution_closed_loop_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--status"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "执行" in intent or "运行" in intent or "闭环" in intent or "完整" in intent or "full" in intent.lower():
+            # 解析策略参数
+            strategy = None
+            if "--strategy" in sys.argv:
+                strategy_idx = sys.argv.index("--strategy")
+                if strategy_idx + 1 < len(sys.argv):
+                    strategy = sys.argv[strategy_idx + 1]
+            filtered_args = ["--run"] + ([strategy] if strategy else [])
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--predict" in sys.argv or "预测" in intent:
+            # 解析策略参数
+            strategy = None
+            if "--strategy" in sys.argv:
+                strategy_idx = sys.argv.index("--strategy")
+                if strategy_idx + 1 < len(sys.argv):
+                    strategy = sys.argv[strategy_idx + 1]
+            elif len(sys.argv) > 2:
+                strategy = " ".join(sys.argv[2:])
+            filtered_args = ["--predict", strategy] if strategy else ["--status"]
+        elif "--plan" in sys.argv or "生成计划" in intent or "执行计划" in intent:
+            filtered_args = ["--run"]
+        elif "--verify" in sys.argv or "验证" in intent or "价值验证" in intent:
+            filtered_args = ["--run"]
+        elif "--feedback" in sys.argv or "反馈" in intent or "优化" in intent:
+            filtered_args = ["--run"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环价值投资回报智能评估与持续优化引擎（Round 585）- 在 round 584 完成的价值战略预测与执行闭环基础上，构建价值投资的 ROI 智能评估能力。让系统能够量化每次进化的投入产出比、评估进化投资的真实回报、持续优化投资策略，形成从「价值预测」到「ROI 评估」再到「策略优化」的完整投资管理闭环
+    elif "价值投资回报" in intent or "投资回报" in intent or "ROI评估" in intent or "roi" in intent.lower() or "投资回报评估" in intent or "价值ROI" in intent or "回报评估" in intent or "投资回报率" in intent or "价值产出评估" in intent or "投入产出" in intent or "成本效益" in intent or "cost benefit" in intent.lower() or "cost analysis" in intent.lower() or "投入成本" in intent or "边际效益" in intent or "边际ROI" in intent or "净价值" in intent or "net value" in intent.lower():
+        print(f"[价值投资回报智能评估引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_investment_roi_assessment_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--status"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--cost" in sys.argv or "成本" in intent or "投入成本" in intent or "cost" in intent.lower():
+            filtered_args = ["--cost"]
+        elif "--value" in sys.argv or "价值" in intent or "产出" in intent or "价值产出" in intent:
+            filtered_args = ["--value"]
+        elif "--roi" in sys.argv or "ROI" in intent or "回报率" in intent or "return" in intent.lower():
+            filtered_args = ["--roi"]
+        elif "--optimize" in sys.argv or "优化" in intent or "策略优化" in intent or "optimize" in intent.lower():
+            filtered_args = ["--optimize"]
+            if "--target-roi" in sys.argv:
+                target_idx = sys.argv.index("--target-roi")
+                if target_idx + 1 < len(sys.argv):
+                    filtered_args.append("--target-roi")
+                    filtered_args.append(sys.argv[target_idx + 1])
+        elif "--integrate" in sys.argv or "集成" in intent or "integrate" in intent.lower():
+            filtered_args = ["--integrate"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--full" in sys.argv or "完整" in intent or "full" in intent.lower():
+            filtered_args = ["--full"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环知识驱动自动化执行增强引擎（Round 581）- 在 round 580 完成的价值驱动进化执行闭环引擎基础上，构建从知识推理到自动执行的完整自动化链路。让系统能够从知识图谱推理结果自动生成并执行行动计划，形成「推理→洞察→行动→验证」的完整知识驱动闭环
     elif "知识行动转换" in intent or "推理到行动" in intent or "insight to action" in intent.lower() or "知识自动化执行增强" in intent or "insight execution automation" in intent.lower():
         print(f"[知识驱动自动化执行增强引擎] 正在处理...", file=sys.stderr)
