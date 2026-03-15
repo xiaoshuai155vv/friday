@@ -3066,6 +3066,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 636: 智能全场景进化环元进化结果预测与自适应策略深度优化引擎 - 基于 round 635 创新执行迭代引擎和历史进化数据，构建让系统能够基于历史进化结果训练预测模型、预测不同进化方向的预期效果、主动选择最优进化路径的能力
+    # 实现「学习历史→预测未来→主动选择→优化执行」的完整闭环
+    elif "进化预测" in intent or "结果预测" in intent or "策略优化" in intent or "evolution prediction" in intent.lower() or "result prediction" in intent.lower() or "strategy optimization" in intent.lower() or "预测效果" in intent or "自适应策略" in intent or "路径选择" in intent or "预测未来" in intent or "效果预测" in intent:
+        print(f"[智能全场景进化环元进化结果预测与自适应策略深度优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_evolution_result_prediction_adaptive_strategy_optimizer_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["进化预测", "结果预测", "策略优化", "evolution prediction", "result prediction", "strategy optimization", "预测效果", "自适应策略", "路径选择", "预测未来", "效果预测"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 633: 智能全场景进化环元进化知识图谱动态推理与主动创新发现引擎 - 基于 round 625 记忆整合和 round 632 方法论学习，构建让系统能够构建动态进化的知识图谱、进行图谱实时推理、主动发现创新机会并生成可执行创新建议
     # 实现「构建→推理→发现→建议→演化」的完整知识图谱创新闭环
     elif "知识图谱" in intent or "图谱推理" in intent or "创新发现" in intent or "knowledge graph" in intent.lower() or "kg" in intent.lower() or "图谱动态" in intent or "kg reasoning" in intent.lower() or "innovation discovery" in intent.lower() or "graph reasoning" in intent.lower() or "图谱分析" in intent or "kg reasoning" in intent.lower():
