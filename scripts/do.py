@@ -2844,6 +2844,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化集群分布式协作与跨实例知识共享引擎 (Round 624)
+    # 基于 round 616 完成的元进化智能体集群协同优化引擎和 round 623 完成的自演进方案自动实施引擎基础上，
+    # 构建让系统能够实现多实例分布式协作进化与跨实例知识实时共享的增强能力
+    elif "分布式协作" in intent or "跨实例知识" in intent or "集群负载" in intent or "实例容错" in intent or "任务迁移" in intent or "distributed collaboration" in intent.lower() or "cluster" in intent.lower() or "知识共享" in intent or "跨实例" in intent or "集群协作" in intent or "多实例" in intent:
+        print(f"[智能全场景进化环元进化集群分布式协作与跨实例知识共享引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_cluster_distributed_collaboration_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["分布式协作", "跨实例知识", "集群负载", "实例容错", "任务迁移", "distributed collaboration", "cluster", "知识共享", "跨实例", "集群协作", "多实例"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环元进化系统自涌现深度增强引擎（Round 576）- 在 round 575 完成的创新价值自动化实现与迭代深化引擎基础上，进一步增强系统的自涌现能力。让系统能够基于已有能力组合、进化历史数据、知识图谱，自动涌现新的创新方向、生成高价值创新假设、形成自驱动创新涌现的深度增强能力
     elif "元涌现" in intent or "自涌现" in intent or "创新涌现" in intent or "能力涌现" in intent or "meta emergence" in intent.lower() or "system emergence" in intent.lower() or "emergence deep" in intent.lower() or "元进化系统" in intent or "系统自涌现" in intent or "涌现增强" in intent or "涌现引擎" in intent or "涌现分析" in intent:
         print(f"[元进化系统自涌现深度增强引擎] 正在处理...", file=sys.stderr)
