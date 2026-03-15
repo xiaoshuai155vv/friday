@@ -1744,9 +1744,9 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
-    # 智能全场景进化环元进化内部健康诊断与自愈深度增强引擎（Round 497）- 自动诊断进化引擎间的依赖问题、识别内部健康风险、智能生成修复方案并自动执行
-    elif "元进化健康诊断" in intent or "内部健康诊断" in intent or "引擎健康自愈" in intent or "meta health diagnosis" in intent.lower() or "engine health" in intent.lower() or "meta self healing" in intent.lower() or "自愈引擎" in intent or "健康自愈" in intent or ("元进化" in intent and "诊断" in intent) or ("meta" in intent.lower() and "health" in intent.lower()) or ("元进化" in intent and "自愈" in intent):
-        print(f"[元进化内部健康诊断与自愈引擎] 正在处理...", file=sys.stderr)
+    # 智能全场景进化环元进化内部健康诊断与自愈深度增强引擎（Round 497, 498增强）- 自动诊断进化引擎间的依赖问题、识别内部健康风险、智能生成修复方案并自动执行；增强版支持健康预警、趋势预测、预防性自愈
+    elif "元进化健康诊断" in intent or "内部健康诊断" in intent or "引擎健康自愈" in intent or "meta health diagnosis" in intent.lower() or "engine health" in intent.lower() or "meta self healing" in intent.lower() or "自愈引擎" in intent or "健康自愈" in intent or ("元进化" in intent and "诊断" in intent) or ("meta" in intent.lower() and "health" in intent.lower()) or ("元进化" in intent and "自愈" in intent) or "健康预警" in intent or "预防性自愈" in intent or "预警增强" in intent or "健康趋势" in intent or "趋势预测" in intent or "preventive" in intent.lower() or "prediction" in intent.lower():
+        print(f"[元进化内部健康诊断与自愈引擎（增强版）] 正在处理...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_meta_evolution_internal_health_diagnosis_self_healing_engine.py")
 
         # 确定要执行的命令
@@ -1768,6 +1768,14 @@ def main():
             filtered_args = ["--cockpit-data"]
         elif "--history" in sys.argv or "历史" in intent:
             filtered_args = ["--history"]
+        elif "--predict-trend" in sys.argv or "预测趋势" in intent or "趋势预测" in intent or "predict" in intent.lower() or "trend prediction" in intent.lower():
+            filtered_args = ["--predict-trend"]
+        elif "--preventive-strategies" in sys.argv or "预防策略" in intent or "预防性策略" in intent or "preventive strategy" in intent.lower():
+            filtered_args = ["--preventive-strategies"]
+        elif "--execute-prevention" in sys.argv or "执行预防" in intent or "预防执行" in intent or "execute prevention" in intent.lower():
+            filtered_args = ["--execute-prevention"]
+        elif "--check-warn" in sys.argv or "预警" in intent or "warn" in intent.lower() or "warning" in intent.lower():
+            filtered_args = ["--check-warn"]
         else:
             # 默认：显示状态
             filtered_args = ["--status"]
