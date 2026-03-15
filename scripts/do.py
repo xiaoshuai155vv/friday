@@ -1883,6 +1883,40 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环创新投资回报自动评估与策略优化引擎 (Round 506) - 在 round 505 完成的创新方案执行引擎基础上，进一步增强投资回报自动评估能力，自动分析各进化方向的投入产出比、智能选择最高效的进化路径、持续优化进化策略
+    elif "投资回报" in intent or "ROI" in intent or "策略优化" in intent or "价值评估" in intent or "进化投资" in intent or "回报评估" in intent or "roi" in intent.lower() or "return on investment" in intent.lower() or "投资回报优化" in intent or "创新回报" in intent or "价值优化" in intent and "进化" in intent:
+        print(f"[智能全场景进化环创新投资回报自动评估与策略优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_roi_auto_assessment_engine.py")
+
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["投资回报", "ROI", "策略优化", "价值评估", "进化投资", "回报评估", "投资回报优化", "创新回报", "价值优化"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+
+        # 确定要执行的命令
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--trends" in sys.argv or "趋势" in intent or "trend" in intent.lower():
+            filtered_args = ["--trends"]
+        elif "--predict" in sys.argv:
+            idx = sys.argv.index("--predict")
+            if idx + 1 < len(sys.argv):
+                filtered_args = ["--predict", sys.argv[idx + 1]]
+        elif "--optimize" in sys.argv or "优化" in intent or "optimize" in intent.lower():
+            filtered_args = ["--optimize"]
+        elif "--recommendations" in sys.argv or "建议" in intent or "recommendation" in intent.lower():
+            filtered_args = ["--recommendations"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环创新验证结果自动执行与价值实现引擎（Round 502）- 将验证通过的创新假设自动转化为可执行任务、智能评估执行价值、自动执行创新方案、追踪价值实现
     elif "创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent:
         print(f"[创新验证结果自动执行与价值实现引擎] 正在处理...", file=sys.stderr)
