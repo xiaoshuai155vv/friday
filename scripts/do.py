@@ -1828,6 +1828,33 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化认知蒸馏与自动传承引擎（Round 571）- 在 round 570 完成的元进化主动创新引擎基础上，构建让系统从 570+ 轮进化历史中自动提取可复用元知识、实现代际传承的引擎，形成「学习→蒸馏→传承→创新」的完整闭环
+    elif "认知蒸馏" in intent or "知识蒸馏" in intent or "自动传承" in intent or "元知识传承" in intent or "meta cognitive distillation" in intent.lower() or "distillation" in intent.lower() or "传承" in intent or "代际传承" in intent or "元进化传承" in intent:
+        print(f"[元进化认知蒸馏与自动传承引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_cognitive_distillation_inheritance_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--check" in sys.argv or "检查" in intent or "校验" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "执行" in intent or "运行" in intent or "蒸馏" in intent:
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--inherit" in sys.argv or "继承" in intent:
+            filtered_args = ["--inherit"]
+        elif "--distill" in sys.argv:
+            filtered_args = ["--distill"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化主动创新引擎（Round 570）- 在 round 569 完成的元进化自我优化引擎基础上，构建让系统主动发现创新机会、生成创新假设、验证创新价值的闭环，形成「理解→优化→创新」的递归增强，让系统不仅能优化已知问题，还能主动创造新价值
     elif "主动创新" in intent or "元进化主动创新" in intent or "meta active innovation" in intent.lower() or "innovation discovery" in intent.lower() or "创新发现" in intent or "创新假设" in intent or "创新验证" in intent or "创新价值" in intent or "创新引擎" in intent or "主动创新引擎" in intent:
         print(f"[元进化主动创新引擎] 正在处理...", file=sys.stderr)
