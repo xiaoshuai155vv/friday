@@ -1776,6 +1776,33 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨轮次价值实现追踪与量化增强引擎（Round 559）- 在 round 558 完成的元进化自我反思与深度自省引擎基础上，进一步将自省结果量化为可衡量的价值指标，实现「自省→量化→价值反馈→优化决策」的完整价值驱动进化闭环
+    elif "价值追踪" in intent or "价值量化" in intent or "价值反馈" in intent or "价值驱动" in intent or "value tracking" in intent.lower() or "value quantum" in intent.lower() or "value realization" in intent.lower() or "价值实现" in intent or "跨轮次价值" in intent or "价值增强" in intent:
+        print(f"[跨轮次价值实现追踪与量化增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_realization_tracking_quantum_engine.py")
+
+        # 确定要执行的命令
+        if "--track" in sys.argv or "追踪" in intent or "执行追踪" in intent:
+            filtered_args = ["--track"]
+        elif "--feedback" in sys.argv or "反馈" in intent or "生成反馈" in intent:
+            filtered_args = ["--feedback"]
+        elif "--summary" in sys.argv or "摘要" in intent or "汇总" in intent:
+            filtered_args = ["--summary"]
+        elif "--cockpit" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit"]
+        elif "--check" in sys.argv or "检查" in intent or "校验" in intent:
+            filtered_args = ["--check"]
+        elif "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        else:
+            # 默认：显示驾驶舱数据
+            filtered_args = ["--cockpit"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化智能决策自动策略生成与执行增强引擎（Round 494）- 在 round 474 认知-价值-元进化融合和 round 475/481 自我进化效能分析基础上，增强元进化智能决策能力，实现深度分析→智能决策→自动执行→效果验证闭环
     elif "元进化决策" in intent or "自动策略" in intent or "元决策" in intent or "智能策略生成" in intent or "meta decision" in intent.lower() or "auto strategy" in intent.lower() or "strategy generation" in intent.lower() or "meta evolution decision" in intent.lower() or "智能决策" in intent:
         print(f"[元进化智能决策自动策略生成与执行增强引擎] 正在处理...", file=sys.stderr)
