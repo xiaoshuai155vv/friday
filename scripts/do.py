@@ -5165,6 +5165,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化价值创造与知识资产持续变现引擎 (Round 641)
+    # 让系统能够将640轮积累的进化知识资产转化为实际价值，识别高价值应用机会，主动创造新价值，形成知识资产的价值实现闭环
+    elif "知识资产" in intent or "价值变现" in intent or "资产变现" in intent or "knowledge asset" in intent.lower() or "asset monetization" in intent.lower() or "知识价值" in intent or "资产价值" in intent or "价值创造引擎" in intent and "元进化" in intent or "知识资产变现" in intent:
+        print(f"[智能全场景进化环元进化价值创造与知识资产持续变现引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_value_creation_knowledge_asset_monetization_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["知识资产", "价值变现", "资产变现", "knowledge asset", "asset monetization", "知识价值", "资产价值", "价值创造引擎", "元进化", "知识资产变现"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景超级预测与主动价值创造引擎（Round 287）
     elif "超级预测" in intent or "主动价值创造" in intent or "机会发现" in intent or "super prediction" in intent.lower() or "opportunity discovery" in intent.lower() or "create value" in intent.lower() or "价值创造" in intent or "趋势分析" in intent or "trends analysis" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
