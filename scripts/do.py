@@ -5677,6 +5677,35 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环预防-诊断-修复完整闭环引擎 (Round 486)
+    # 将预防性维护引擎与自动诊断/修复引擎深度集成，形成「预测→诊断→修复→验证」完整闭环
+    elif "预防诊断修复" in intent or "预防-诊断" in intent or "预防诊断" in intent or "完整闭环" in intent or "预防→诊断→修复" in intent or "prevention diagnosis repair" in intent.lower() or "prevention loop" in intent.lower() or "closed loop" in intent.lower() or "闭环" in intent:
+        print(f"[智能全场景进化环预防-诊断-修复完整闭环引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_prevention_diagnosis_repair_closed_loop_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 检测是否需要运行完整闭环
+        if "运行" in intent or "执行" in intent or "run" in intent.lower():
+            cmd_args = ["--run"]
+        # 检测模拟模式
+        if "模拟" in intent or "dry" in intent.lower():
+            if "--run" in cmd_args:
+                cmd_args.append("--dry-run")
+        # 检测驾驶舱数据
+        if "驾驶舱" in intent or "cockpit" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        # 过滤掉意图关键词
+        filter_words = ["预防诊断修复", "预防-诊断", "预防诊断", "完整闭环", "预防→诊断→修复", "prevention diagnosis repair", "prevention loop", "closed loop", "闭环", "运行", "执行", "run", "模拟", "驾驶舱", "cockpit"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能创意生成与评估引擎
     elif "创意生成" in intent or "智能创意" in intent or "创新想法" in intent or "新组合" in intent or "创意建议" in intent or "creative generation" in intent.lower() or "creative" in intent.lower() or "创意" in intent:
         print(f"[智能创意生成与评估引擎] 正在分析创意机会...", file=sys.stderr)
