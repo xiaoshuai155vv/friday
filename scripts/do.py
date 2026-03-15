@@ -2012,6 +2012,33 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环主动创新假设自动生成与自涌现发现引擎（Round 582）- 在 round 581 完成的知识驱动自动化执行增强引擎基础上，构建让系统能够主动发现创新机会、生成创新假设、发现新的进化方向的引擎。让系统不仅能执行知识推理结果，还能主动思考"我可以进化什么新的方向"，实现从「被动执行知识推理结果」到「主动发现进化机会」的范式升级
+    elif "创新假设" in intent or "假设生成" in intent or "innovation hypothesis" in intent.lower() or "hypothesis generation" in intent.lower() or "创新发现" in intent or "主动发现" in intent or "emergence discovery" in intent.lower() or "创新涌现" in intent or "自涌现" in intent or "创新机会" in intent:
+        print(f"[主动创新假设自动生成与自涌现发现引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_hypothesis_emergence_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--status"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--discover" in sys.argv or "发现" in intent or "探索" in intent:
+            filtered_args = ["--discover"]
+        elif "--list-hypotheses" in sys.argv or "列出假设" in intent or "假设列表" in intent:
+            filtered_args = ["--list-hypotheses"]
+        elif "--list-patterns" in sys.argv or "模式" in intent or "patterns" in intent.lower():
+            filtered_args = ["--list-patterns"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环价值驱动进化执行闭环引擎（Round 580）- 在 round 579 完成的元进化价值预测与战略投资决策增强引擎基础上，构建从投资策略到自动执行的完整闭环。让系统能够将投资决策转化为可执行任务、执行并追踪结果、反馈到决策优化，形成「预测→决策→执行→验证→优化」的完整闭环
     elif "价值驱动执行" in intent or "执行闭环" in intent or "投资执行" in intent or "价值执行" in intent or "value driven execution" in intent.lower() or "execution closed loop" in intent.lower() or "投资策略执行" in intent or "策略执行" in intent or "execution loop" in intent.lower() or "执行优化反馈" in intent or "执行效果评估" in intent or "价值反馈" in intent:
         print(f"[价值驱动进化执行闭环引擎] 正在处理...", file=sys.stderr)
