@@ -3028,6 +3028,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 650: 智能全场景进化环元进化方法论递归优化引擎 - 让系统能够反思自身进化方法论的进化方法论，实现元元学习（meta-meta learning），构建「学会如何学会」的递归优化能力
+    # 这是对现有元进化能力的高阶递归增强：反思"分析进化方法论"这个行为本身的效率和准确性
+    elif "元元学习" in intent or "递归优化" in intent or "方法论递归" in intent or "meta-meta" in intent.lower() or "recursive optimization" in intent.lower() or "methodology recursion" in intent.lower() or "学会如何学会" in intent or "反思方法论" in intent:
+        print(f"[智能全场景进化环元进化方法论递归优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_methodology_recursive_optimizer_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["元元学习", "递归优化", "方法论递归", "meta-meta", "recursive optimization", "methodology recursion", "学会如何学会", "反思方法论"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 644: 智能全场景进化环元进化自适应学习与策略自动优化引擎 V2 - 在 round 551/606/632 的方法论学习基础上，构建更深层次的自适应学习能力
     # 让系统能够从进化历史中自动提取有效模式、基于执行反馈自动调整策略、实现进化方法的自我进化
     elif "自适应学习" in intent or "元学习" in intent or "策略优化" in intent or "adaptive learning" in intent.lower() or "meta learning" in intent.lower() or "strategy optimization" in intent.lower() or "参数调整" in intent or "模式提取" in intent or "进化模式" in intent:
