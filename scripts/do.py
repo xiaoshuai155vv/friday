@@ -3141,6 +3141,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 640: 智能全场景进化环元进化执行过程实时监控与自适应调整引擎 - 填补 round 639 目标设定后的执行监控与动态调整闭环，让系统能够实时追踪目标执行进度、根据执行反馈自动调整策略、形成「设定→执行→监控→调整」的完整闭环
+    # 实现「目标→执行→监控→调整」的完整闭环
+    elif "执行监控" in intent or "执行追踪" in intent or "自适应调整" in intent or "execution monitoring" in intent.lower() or "execution tracking" in intent.lower() or "adaptive adjustment" in intent.lower() or "执行调整" in intent or "执行反馈" in intent or "进度追踪" in intent or "目标监控" in intent or "execution adjust" in intent.lower() or "目标追踪" in intent or "监控调整" in intent or "execution monitor" in intent.lower():
+        print(f"[智能全场景进化环元进化执行过程实时监控与自适应调整引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_execution_monitoring_adaptive_adjustment_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--run"]
+        # 过滤掉意图关键词
+        filter_words = ["执行监控", "执行追踪", "自适应调整", "execution monitoring", "execution tracking", "adaptive adjustment", "执行调整", "执行反馈", "进度追踪", "目标监控", "execution adjust", "目标追踪", "监控调整", "execution monitor"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--run"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 633: 智能全场景进化环元进化知识图谱动态推理与主动创新发现引擎 - 基于 round 625 记忆整合和 round 632 方法论学习，构建让系统能够构建动态进化的知识图谱、进行图谱实时推理、主动发现创新机会并生成可执行创新建议
     # 实现「构建→推理→发现→建议→演化」的完整知识图谱创新闭环
     elif "知识图谱" in intent or "图谱推理" in intent or "创新发现" in intent or "knowledge graph" in intent.lower() or "kg" in intent.lower() or "图谱动态" in intent or "kg reasoning" in intent.lower() or "innovation discovery" in intent.lower() or "graph reasoning" in intent.lower() or "图谱分析" in intent or "kg reasoning" in intent.lower():
