@@ -6680,6 +6680,31 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环知识推理-涌现发现深度集成引擎 (Round 522)
+    # 在 round 521 知识涌现发现引擎和 round 447 知识推理引擎基础上，将两者深度集成
+    # 实现「知识推理→涌现发现→知识传承→持续进化」的完整自主闭环
+    elif "知识推理涌现" in intent or "推理驱动发现" in intent or "涌现推理集成" in intent or "reasoning emergence" in intent.lower() or "reasoning driven" in intent.lower():
+        print(f"[智能全场景进化环知识推理-涌现发现深度集成引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_reasoning_emergence_integration_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 检测功能关键词
+        if "执行闭环" in intent or "run" in intent.lower() or "闭环" in intent:
+            cmd_args = ["--run"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        # 过滤掉意图关键词
+        filter_words = ["知识推理涌现", "推理驱动发现", "涌现推理集成", "reasoning emergence", "reasoning driven", "执行闭环", "run", "闭环", "驾驶舱", "cockpit"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环效能实时数据推送与驾驶舱智能预警深度集成引擎 (Round 482)
     elif "实时推送" in intent or "智能预警" in intent or "自动刷新" in intent or "效能推送" in intent or "预警阈值" in intent or "realtime push" in intent.lower() or "smart warning" in intent.lower() or "auto refresh" in intent.lower() or "效能预警" in intent:
         print(f"[智能全场景进化环效能实时数据推送与驾驶舱智能预警深度集成引擎] 正在处理...", file=sys.stderr)
