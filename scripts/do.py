@@ -2980,6 +2980,27 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化跨引擎协同效能深度评估与全局优化引擎 (Round 677)
+    # 基于 round 627（引擎协同效能深度预测与预防性优化引擎）和 round 643（跨引擎协作元优化引擎）完成的协同效能预测与优化能力基础上，
+    # 构建更深层次的跨引擎协同效能全局评估与优化能力
+    # 实现从「单一引擎优化」升级到「跨引擎协同全局优化」
+    elif "跨引擎协同全局优化" in intent or "协同效能全局评估" in intent or "全局协同优化" in intent or "cross-engine global" in intent.lower() or "collaboration global" in intent.lower() or "global optimizer" in intent.lower() or "全局优化引擎" in intent or "跨引擎优化" in intent or "协同全局" in intent or "全局协同" in intent or "跨引擎协同优化" in intent or "引擎协同全局" in intent:
+        print(f"[智能全场景进化环元进化跨引擎协同效能深度评估与全局优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_cross_engine_collaboration_global_optimizer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["跨引擎协同全局优化", "协同效能全局评估", "全局协同优化", "cross-engine global", "collaboration global", "global optimizer", "全局优化引擎", "跨引擎优化", "协同全局", "全局协同", "跨引擎协同优化", "引擎协同全局"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环元进化自我诊断优化闭环增强引擎 (Round 629)
     # 基于 round 628 完成的元进化引擎健康预测与预防性自愈深度增强引擎（健康预测、故障预判、预防性自愈）、
     # round 618 完成的元进化系统深度健康诊断与智能修复闭环增强引擎、round 620 完成的元进化执行效能实时优化引擎、
