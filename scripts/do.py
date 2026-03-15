@@ -13284,6 +13284,27 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 685: 智能全场景进化环元进化知识深度创新与价值最大化引擎 V3
+    # 在 round 671-672 基础上，进一步增强系统从 600+ 轮进化历史中主动发现高价值创新机会的能力
+    # 构建让系统能够：1. 知识创新机会多维度价值评估 2. 知识组合创新自动发现 3. 创新价值最大化路径优化
+    # 实现从「被动执行创新」升级到「主动发现并最大化创新价值」的深度创新闭环
+    elif "知识深度创新V3" in intent or "价值最大化引擎" in intent or "knowledge deep innovation v3" in intent.lower() or "知识创新最大化" in intent or "深度创新引擎" in intent or "学会创新" in intent or "创新价值最大化" in intent or "知识组合创新" in intent:
+        print(f"[元进化知识深度创新与价值最大化引擎 V3] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_knowledge_deep_innovation_maximization_v3_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["知识深度创新V3", "价值最大化引擎", "knowledge deep innovation v3", "知识创新最大化", "深度创新引擎", "学会创新", "创新价值最大化", "知识组合创新"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     else:
         # 未知意图时，先检查是否包含情感关键词
         import json
