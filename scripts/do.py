@@ -2085,6 +2085,39 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环价值投资风险预警与自适应保护引擎（Round 587）- 在 round 586 完成的价值投资动态再平衡引擎基础上，构建价值投资的风险预警与自适应保护能力。让系统能够实时监控价值投资组合的风险状态、提前预警潜在风险、触发自适应保护机制，形成从「动态再平衡」到「风险预警」再到「自适应保护」的完整风险管控闭环
+    elif "风险预警" in intent or "风险保护" in intent or "投资风险" in intent or "risk warning" in intent.lower() or "自适应保护" in intent or "risk protection" in intent.lower() or "风险管控" in intent or "风险控制" in intent or "投资保护" in intent or "价值保护" in intent:
+        print(f"[价值投资风险预警与自适应保护引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_investment_risk_warning_adaptive_protection_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--status"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--risk-indicators" in sys.argv or "风险指标" in intent or "indicators" in intent.lower():
+            filtered_args = ["--risk-indicators"]
+        elif "--risk-assessment" in sys.argv or "风险评估" in intent or "assessment" in intent.lower():
+            filtered_args = ["--risk-assessment"]
+        elif "--check-protection" in sys.argv or "检查保护" in intent or "protection check" in intent.lower():
+            filtered_args = ["--check-protection"]
+        elif "--protect" in sys.argv or "执行保护" in intent or "保护" in intent or "protect" in intent.lower():
+            filtered_args = ["--protect"]
+        elif "--report" in sys.argv or "报告" in intent or "report" in intent.lower():
+            filtered_args = ["--report"]
+        elif "--run" in sys.argv or "执行" in intent or "run" in intent.lower():
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：运行完整风险管控周期
+            filtered_args = ["--run"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环知识驱动自动化执行增强引擎（Round 581）- 在 round 580 完成的价值驱动进化执行闭环引擎基础上，构建从知识推理到自动执行的完整自动化链路。让系统能够从知识图谱推理结果自动生成并执行行动计划，形成「推理→洞察→行动→验证」的完整知识驱动闭环
     elif "知识行动转换" in intent or "推理到行动" in intent or "insight to action" in intent.lower() or "知识自动化执行增强" in intent or "insight execution automation" in intent.lower():
         print(f"[知识驱动自动化执行增强引擎] 正在处理...", file=sys.stderr)
