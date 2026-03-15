@@ -2267,7 +2267,8 @@ def main():
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
     # 智能全场景进化环创新验证结果自动执行与价值实现引擎（Round 502）- 将验证通过的创新假设自动转化为可执行任务、智能评估执行价值、自动执行创新方案、追踪价值实现
-    elif "创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent:
+    # 排除"价值实现预测"以避免与 Round 516 引擎冲突
+    elif ("创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent) and "价值实现预测" not in intent:
         print(f"[创新验证结果自动执行与价值实现引擎] 正在处理...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_innovation_value_realization_engine.py")
 
@@ -2442,7 +2443,8 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
     # 智能全场景进化环进化价值实现追踪与自动优化引擎（Round 453）- 在预警与干预能力基础上，增强价值量化追踪与自动优化能力
-    elif "价值实现追踪" in intent or "价值自动优化" in intent or "价值优化" in intent or "价值追踪" in intent or "value optimization" in intent.lower() or "value tracking" in intent.lower() or "价值分析" in intent or "价值评估" in intent or "价值预测" in intent:
+    # 排除"价值实现预测"以避免与 Round 516 引擎冲突
+    elif ("价值实现追踪" in intent or "价值自动优化" in intent or "价值优化" in intent or "价值追踪" in intent or "value optimization" in intent.lower() or "value tracking" in intent.lower() or "价值分析" in intent or "价值评估" in intent) and "价值实现预测" not in intent:
         print(f"[进化价值实现追踪与自动优化引擎] 正在处理...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_value_realization_optimization_engine.py")
 
@@ -3022,7 +3024,7 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
     # 智能全场景进化环价值实现追踪深度量化引擎（Round 364，增强 Round 438）
-    elif "价值量化" in intent or "价值追踪" in intent and "量化" in intent or "ROI分析" in intent or "价值分析" in intent or "value quantization" in intent.lower() or "roi analysis" in intent.lower() or "量化价值" in intent or "价值得分" in intent or "价值指标" in intent or "量化分析" in intent or "价值优化" in intent or "价值模式" in intent or "价值预测" in intent or "价值闭环" in intent or "增强价值" in intent:
+    elif "价值量化" in intent or "价值追踪" in intent and "量化" in intent or "ROI分析" in intent or "价值分析" in intent or "value quantization" in intent.lower() or "roi analysis" in intent.lower() or "量化价值" in intent or "价值得分" in intent or "价值指标" in intent or "量化分析" in intent or "价值优化" in intent or "价值模式" in intent or "价值闭环" in intent or "增强价值" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
         if not cmd or (cmd and cmd[0] not in ["status", "analyze", "trends", "recommend", "report", "summary", "help", "optimize", "patterns", "predict", "cockpit", "adjust", "validate", "enhanced_loop", "full_loop"]):
             cmd = ["status"]
@@ -3142,7 +3144,8 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
     # 智能全场景进化环价值闭环自动执行增强引擎（Round 374）- 价值闭环、价值执行、机会实现、自动价值
-    elif "价值闭环" in intent or "价值执行" in intent or "机会实现" in intent or "自动价值" in intent or "value closed" in intent.lower() or "value loop" in intent.lower() or "value execution" in intent.lower() or "机会执行" in intent or "价值实现" in intent:
+    # 排除"价值实现预测"以避免与 Round 516 引擎冲突
+    elif ("价值闭环" in intent or "价值执行" in intent or "机会实现" in intent or "自动价值" in intent or "value closed" in intent.lower() or "value loop" in intent.lower() or "value execution" in intent.lower() or "机会执行" in intent or "价值实现" in intent) and "价值实现预测" not in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
         if not cmd or (cmd and cmd[0] not in ["status", "discover", "evaluate", "plan", "execute", "validate", "metrics", "cycle", "help"]):
             cmd = ["status"]
@@ -3402,7 +3405,7 @@ def main():
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "predictive_service_orchestrator.py")] + cmd, cwd=PROJECT)
     # 智能全场景超级预测与主动价值创造引擎（Round 287）
-    elif "超级预测" in intent or "主动价值创造" in intent or "机会发现" in intent or "价值预测" in intent or "super prediction" in intent.lower() or "opportunity discovery" in intent.lower() or "create value" in intent.lower() or "价值创造" in intent or "趋势分析" in intent or "trends analysis" in intent.lower():
+    elif "超级预测" in intent or "主动价值创造" in intent or "机会发现" in intent or "super prediction" in intent.lower() or "opportunity discovery" in intent.lower() or "create value" in intent.lower() or "价值创造" in intent or "趋势分析" in intent or "trends analysis" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
         if not cmd or (cmd and cmd[0] not in ["status", "analyze", "list", "proposal", "help"]):
             cmd = ["status"]
@@ -5438,7 +5441,8 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化价值实现追踪与闭环优化引擎（round 323）
-    elif "价值追踪" in intent or "价值实现" in intent or "价值闭环" in intent or "value tracking" in intent.lower() or "价值趋势" in intent or "价值驱动" in intent and "优化" in intent or "追踪价值" in intent or "价值量化" in intent:
+    # 排除"价值实现预测"以避免与 Round 516 引擎冲突
+    elif ("价值追踪" in intent or "价值实现" in intent or "价值闭环" in intent or "value tracking" in intent.lower() or "价值趋势" in intent or "价值驱动" in intent and "优化" in intent or "追踪价值" in intent or "价值量化" in intent) and "价值实现预测" not in intent:
         print(f"[智能全场景进化价值实现追踪与闭环优化引擎] 正在追踪进化的价值实现过程，进行价值量化和闭环优化...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_value_tracking_loop_engine.py")
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
@@ -6308,14 +6312,32 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
-    # 智能全场景进化环价值预测与主动干预引擎 (Round 470)
-    elif "价值预测" in intent or "主动干预" in intent or "预防性价值" in intent or "价值趋势预测" in intent or "proactive intervention" in intent.lower() or "value prediction" in intent.lower() or "prevention" in intent.lower() or "干预策略" in intent or "价值干预" in intent:
+    # 智能全场景进化环价值预测与主动干预引擎 (Round 470) - 移除了与 Round 516 冲突的关键词
+    elif "主动干预" in intent or "预防性价值" in intent or "价值趋势预测" in intent or "proactive intervention" in intent.lower() or "干预策略" in intent or "价值干预" in intent:
         print(f"[智能全场景进化环价值预测与主动干预引擎] 正在处理...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_value_prediction_intervention_engine.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
         # 过滤掉意图关键词
-        filter_words = ["价值预测", "主动干预", "预防性价值", "价值趋势预测", "proactive intervention", "value prediction", "prevention", "干预策略", "价值干预"]
+        filter_words = ["主动干预", "预防性价值", "价值趋势预测", "proactive intervention", "干预策略", "价值干预"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
+    # 智能全场景进化环价值实现预测与预防性增强引擎 (Round 516)
+    elif "价值实现预测" in intent or "预测预防增强" in intent or "价值预测预防" in intent or "value_pred_prevent" in intent.lower() or "predict_prevent" in intent.lower():
+        print(f"[智能全场景进化环价值实现预测与预防性增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_prediction_prevention_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["价值实现预测", "预测预防增强", "价值预测预防", "value_pred_prevent", "predict_prevent"]
         filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
         if not filtered_args:
             filtered_args = ["--status"]
