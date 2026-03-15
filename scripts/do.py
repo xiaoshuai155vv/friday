@@ -1913,6 +1913,35 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化知识图谱自涌现与主动创新引擎（Round 574）- 在 round 573 完成的价值实现闭环基础上，构建让系统能够从进化历史和知识图谱中主动涌现创新方向、生成创新假设、验证创新价值的能力，形成「价值驱动→知识涌现→主动创新」的完整闭环
+    elif "知识图谱涌现" in intent or "知识涌现" in intent or "涌现创新" in intent or "knowledge emergence" in intent.lower() or "emergence innovation" in intent.lower() or "知识图谱创新" in intent or "创新涌现" in intent or "emergence" in intent.lower() and "创新" in intent or "涌现" in intent and "创新" in intent or "kg emergence" in intent.lower():
+        print(f"[元进化知识图谱自涌现与主动创新引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_graph_emergence_innovation_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--status"]
+        elif "--check" in sys.argv or "检查" in intent or "校验" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "执行" in intent or "运行" in intent or "完整" in intent or "full" in intent.lower():
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--discover" in sys.argv or "发现" in intent or "涌现" in intent:
+            filtered_args = ["--discover"]
+        elif "--generate" in sys.argv or "生成假设" in intent or "假设生成" in intent:
+            filtered_args = ["--generate"]
+        elif "--validate" in sys.argv or "验证" in intent:
+            filtered_args = ["--validate"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化主动创新引擎（Round 570）- 在 round 569 完成的元进化自我优化引擎基础上，构建让系统主动发现创新机会、生成创新假设、验证创新价值的闭环，形成「理解→优化→创新」的递归增强，让系统不仅能优化已知问题，还能主动创造新价值
     elif "主动创新" in intent or "元进化主动创新" in intent or "meta active innovation" in intent.lower() or "innovation discovery" in intent.lower() or "创新发现" in intent or "创新假设" in intent or "创新验证" in intent or "创新价值" in intent or "创新引擎" in intent or "主动创新引擎" in intent:
         print(f"[元进化主动创新引擎] 正在处理...", file=sys.stderr)
