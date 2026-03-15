@@ -3195,6 +3195,36 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 675: 智能全场景进化环元进化执行稳定性深度保障与自愈引擎 V2 - 在 round 618/628/646 完成的健康诊断与自愈能力基础上，
+    # 构建让系统能够深度保障进化执行稳定性、预测风险、预防保护、实时自愈的增强能力
+    elif "执行稳定性保障" in intent or "深度自愈" in intent or "稳定性V2" in intent or "execution stability" in intent.lower() or "stability guarantee" in intent.lower() or "deep self-healing" in intent.lower() or "预防性保护" in intent or "执行风险预测" in intent or "stability protection" in intent.lower():
+        print(f"[元进化执行稳定性深度保障与自愈引擎 V2 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_execution_stability_deep_guarantee_self_healing_v2_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--check"]
+        # 检测功能关键词
+        if "风险预测" in intent or "predict risks" in intent.lower():
+            cmd_args = ["--predict-risks"]
+        elif "分析趋势" in intent or "analyze trend" in intent.lower():
+            cmd_args = ["--analyze-trend"]
+        elif "运行周期" in intent or "run cycle" in intent.lower():
+            cmd_args = ["--run-cycle"]
+        elif "部署保护" in intent or "deploy protection" in intent.lower():
+            cmd_args = ["--deploy-protection"]
+        elif "驾驶舱数据" in intent or "cockpit data" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        # 过滤掉意图关键词
+        filter_words = ["执行稳定性保障", "深度自愈", "稳定性V2", "execution stability", "stability guarantee", "deep self-healing", "预防性保护", "执行风险预测", "stability protection", "风险预测", "分析趋势", "运行周期", "部署保护", "驾驶舱数据"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--check"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 669: 智能全场景进化环元进化跨引擎知识自动蒸馏与深度传承引擎 - 让系统能够自动从600+轮进化历史和100+进化引擎中提取可复用的元知识
     # 形成结构化的知识传承体系，支持新引擎快速学习和复用历史经验
     elif "知识自动蒸馏" in intent or "跨引擎知识传承" in intent or "引擎知识提取" in intent or "cross engine knowledge" in intent.lower() or "engine knowledge distillation" in intent.lower() or "知识传承引擎" in intent or "元知识提取" in intent or "元知识传承" in intent or "跨引擎知识图谱" in intent:
