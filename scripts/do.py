@@ -8496,6 +8496,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 在 round 618 完成的元进化系统深度健康诊断与跨引擎智能修复闭环增强引擎基础上，
+    # 构建让系统能够主动预测进化趋势、预判风险机会、主动规划预防性演化策略的增强能力。
+    # 实现「预测→预判→规划→执行→验证」的完整主动演化闭环
+    elif "智能预测" in intent or "主动演化" in intent or "演化预测" in intent or "趋势预测" in intent or "进化预测" in intent or "prediction" in intent.lower() and "evolution" in intent.lower() or "proactive evolution" in intent.lower() or "风险预判" in intent or "机会预判" in intent or "预防性演化" in intent or "演化趋势" in intent or "元进化预测" in intent:
+        print(f"[智能全场景进化环元进化智能预测与主动演化增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_intelligent_prediction_proactive_evolution_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["智能预测", "主动演化", "演化预测", "趋势预测", "进化预测", "prediction", "proactive evolution", "风险预判", "机会预判", "预防性演化", "演化趋势", "元进化预测"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环进化效能自动化归因与智能建议引擎 (Round 545)
     # 基于540+轮进化历史，自动分析每轮进化的成效，识别成功/失败的根本原因，并智能生成可执行的改进建议
     elif "归因分析" in intent or "根因分析" in intent or "改进建议" in intent or "效果归因" in intent or "attribution" in intent.lower() or "root cause" in intent.lower() or "improvement advice" in intent.lower() or "进化归因" in intent or "成效分析" in intent:
