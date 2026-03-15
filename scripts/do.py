@@ -2051,6 +2051,37 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环决策执行结果学习与深度优化引擎（Round 511）- 从决策执行结果中自动学习、智能分析执行模式、生成优化建议并自动执行优化，形成从「决策→执行→学习→优化」的完整闭环。这是 round 510 完成的决策自动执行引擎的后续增强
+    elif "决策学习" in intent or "执行学习" in intent or "结果学习" in intent or "decision learning" in intent.lower() or "执行优化" in intent or "decision optimization" in intent.lower() or "学习优化" in intent or "学习与优化" in intent or "执行结果分析" in intent or "决策分析" in intent:
+        print(f"[智能全场景进化环决策执行结果学习与深度优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_decision_learning_optimizer_engine.py")
+
+        # 解析命令参数
+        filtered_args = []
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--collect" in sys.argv or "收集" in intent or "collect" in intent.lower():
+            filtered_args = ["--collect"]
+        elif "--analyze" in sys.argv or "分析" in intent or "analyze" in intent.lower():
+            filtered_args = ["--analyze"]
+        elif "--suggest" in sys.argv or "建议" in intent or "suggest" in intent.lower():
+            filtered_args = ["--suggest"]
+        elif "--apply" in sys.argv or "应用" in intent or "apply" in intent.lower():
+            filtered_args = ["--apply"]
+        elif "--full-cycle" in sys.argv or "完整循环" in intent or "full cycle" in intent.lower():
+            filtered_args = ["--full-cycle"]
+        else:
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环创新验证结果自动执行与价值实现引擎（Round 502）- 将验证通过的创新假设自动转化为可执行任务、智能评估执行价值、自动执行创新方案、追踪价值实现
     elif "创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent:
         print(f"[创新验证结果自动执行与价值实现引擎] 正在处理...", file=sys.stderr)
