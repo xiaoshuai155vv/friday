@@ -4768,6 +4768,27 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "predict", "orchestrate", "execute", "patterns", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "predictive_service_orchestrator.py")] + cmd, cwd=PROJECT)
+
+    # 智能全场景进化环元进化价值创造与自我增强引擎 (Round 621)
+    # 让系统能够主动评估自身能力组合的价值潜力，发现并创造新的价值实现方式，
+    # 基于价值驱动实现自我增强与持续进化，形成「价值发现→价值创造→价值实现→价值增强」的完整价值创造闭环
+    elif "元进化价值创造" in intent or "元进化自我增强" in intent or "能力组合价值" in intent or "meta value creation" in intent.lower() or "meta self enhancement" in intent.lower() or "capability value" in intent.lower() or "价值创造引擎" in intent or "自我增强引擎" in intent or "价值潜力评估" in intent or "能力价值" in intent:
+        print(f"[智能全场景进化环元进化价值创造与自我增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_value_creation_self_enhancement_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["元进化价值创造", "元进化自我增强", "能力组合价值", "meta value creation", "meta self enhancement", "capability value", "价值创造引擎", "自我增强引擎", "价值潜力评估", "能力价值"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景超级预测与主动价值创造引擎（Round 287）
     elif "超级预测" in intent or "主动价值创造" in intent or "机会发现" in intent or "super prediction" in intent.lower() or "opportunity discovery" in intent.lower() or "create value" in intent.lower() or "价值创造" in intent or "趋势分析" in intent or "trends analysis" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
