@@ -5728,6 +5728,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环元进化策略自动生成与自主决策增强引擎（round 555）- 让系统能够基于当前的元进化状态自动生成新的进化策略，并自主决定下一轮的进化方向，形成完整的元进化闭环
+    elif "策略自动生成" in intent or "元策略自动" in intent or "autonomous strategy" in intent.lower() or "strategy autonomous" in intent.lower() or "策略生成与决策" in intent or "元进化策略生成" in intent:
+        print(f"[智能全场景进化环元进化策略自动生成与自主决策增强引擎] 正在分析元进化状态并生成决策...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_strategy_autonomous_generation_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["策略自动生成", "元策略自动", "autonomous strategy", "strategy autonomous", "策略生成与决策", "元进化策略生成", "状态", "status", "仪表盘", "dashboard", "分析", "analyze", "生成", "generate", "决策", "decide", "循环", "cycle"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环自我进化与决策深度集成引擎（round 325）
     elif "进化决策集成" in intent or "自我决策集成" in intent or "分析决策执行" in intent or "integrated evolution" in intent.lower() or "进化闭环" in intent or "进化自优化" in intent or "自动化进化优化" in intent:
         print(f"[智能全场景进化环自我进化与决策深度集成引擎] 正在深度集成自我进化引擎与决策引擎，形成分析→决策→执行→验证→优化完整闭环...", file=sys.stderr)
