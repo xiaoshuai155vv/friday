@@ -8476,6 +8476,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化系统深度健康诊断与跨引擎智能修复闭环增强引擎 (Round 618)
+    # 在 round 497-498、451、615 完成的健康诊断与自愈引擎基础上，利用600+轮进化历史的模式识别能力，
+    # 构建深度诊断元进化系统健康状态并智能修复的增强能力。实现「深度诊断→智能修复→持续优化」的增强闭环
+    elif "健康诊断" in intent or "深度健康" in intent or "系统诊断" in intent or "health diagnosis" in intent.lower() or "health repair" in intent.lower() or "自愈" in intent and "元进化" in intent or "智能修复" in intent or "跨引擎修复" in intent or "深度诊断" in intent or "预防性健康" in intent or "健康预警" in intent or "meta health" in intent.lower():
+        print(f"[智能全场景进化环元进化系统深度健康诊断与跨引擎智能修复闭环增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_system_deep_health_diagnosis_repair_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["健康诊断", "深度健康", "系统诊断", "health diagnosis", "health repair", "自愈", "智能修复", "跨引擎修复", "深度诊断", "预防性健康", "健康预警", "meta health"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环进化效能自动化归因与智能建议引擎 (Round 545)
     # 基于540+轮进化历史，自动分析每轮进化的成效，识别成功/失败的根本原因，并智能生成可执行的改进建议
     elif "归因分析" in intent or "根因分析" in intent or "改进建议" in intent or "效果归因" in intent or "attribution" in intent.lower() or "root cause" in intent.lower() or "improvement advice" in intent.lower() or "进化归因" in intent or "成效分析" in intent:
