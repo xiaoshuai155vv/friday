@@ -6979,6 +6979,33 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化价值执行验证与持续学习引擎 (Round 566)
+    elif "价值执行" in intent or "执行验证" in intent or "持续学习" in intent or "价值学习" in intent or "value execution" in intent.lower() or "execution verification" in intent.lower() or "continuous learning" in intent.lower() or "value learning" in intent.lower():
+        print(f"[智能全场景进化环元进化价值执行验证与持续学习引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_execution_verification_continuous_learning_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--execute"]
+        # 检测功能关键词
+        if "执行" in intent or "execute" in intent.lower():
+            cmd_args = ["--execute"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        elif "任务" in intent or "task" in intent.lower():
+            cmd_args = ["--tasks"]
+        elif "验证" in intent or "verify" in intent.lower():
+            cmd_args = ["--verify"]
+        # 过滤掉意图关键词
+        filter_words = ["价值执行", "执行验证", "持续学习", "价值学习", "value execution", "execution verification", "continuous learning", "value learning", "执行", "execute", "驾驶舱", "cockpit", "任务", "task", "验证", "verify"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--execute"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True, encoding='utf-8', errors='replace')
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环价值干预自动执行引擎 (Round 471)
     elif "价值干预自动执行" in intent or "干预自动执行" in intent or "自动干预" in intent or "干预执行" in intent or "价值干预执行" in intent or "auto intervention" in intent.lower() or "execute intervention" in intent.lower():
         print(f"[智能全场景进化环价值干预自动执行引擎] 正在处理...", file=sys.stderr)
