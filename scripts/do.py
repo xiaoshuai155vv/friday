@@ -3335,6 +3335,28 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 665: 智能全场景进化环元进化决策质量深度自省与元认知增强引擎 V2 - 在 round 613 元认知引擎基础上，构建让系统能够对决策过程本身进行递归式深度反思的能力
+    # 实现决策质量多维度评估、思维盲区识别、决策策略递归优化，形成「学会如何决策」的递归闭环
+    elif "决策质量深度自省" in intent or "决策质量V2" in intent or "元认知增强V2" in intent or "deep decision reflection" in intent.lower() or "decision quality v2" in intent.lower() or "思维盲区" in intent or "决策盲区" in intent or "递归决策优化" in intent or "decision blindspot" in intent.lower():
+        print(f"[元进化决策质量深度自省与元认知增强引擎 V2 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_decision_quality_deep_self_reflection_v2_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--run-cycle"]
+        filter_words = ["决策质量深度自省", "决策质量V2", "元认知增强V2", "deep decision reflection", "decision quality v2", "思维盲区", "决策盲区", "递归决策优化", "decision blindspot"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg.lower() for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--run-cycle"]
+        result = subprocess.run(
+            [sys.executable, script_path] + filtered_args,
+            cwd=PROJECT,
+            capture_output=True,
+            text=True
+        )
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 634: 智能全场景进化环创新建议自动验证与价值优先级排序引擎 - 基于 round 633 知识图谱引擎（已发现388条待执行创新建议）基础上，构建让系统能够自动验证创新建议价值并智能排序优先级的增强能力
     # 实现「发现→验证→排序→优化→执行」的完整创新价值实现闭环
     elif "创新验证" in intent or "价值排序" in intent or "优先级" in intent or "innovation verify" in intent.lower() or "value priority" in intent.lower() or "priority rank" in intent.lower() or "价值评估" in intent or "创新价值" in intent or "价值评分" in intent:
