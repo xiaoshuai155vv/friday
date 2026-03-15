@@ -3357,6 +3357,28 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 666: 智能全场景进化环元进化决策质量预测与预防性优化引擎 - 在 round 665 决策质量深度自省 V2 基础上，构建让系统能够预测决策质量并主动部署预防性优化措施的能力
+    # 实现从「事后反思」到「事前预防」的范式升级，形成「预测→预防→执行→验证」的完整闭环
+    elif "决策质量预测" in intent or "预防性优化" in intent or "质量预测" in intent or "decision quality prediction" in intent.lower() or "quality prediction" in intent.lower() or "prevention optimization" in intent.lower() or "预测预防" in intent or "风险预警" in intent or "质量风险" in intent or "决策风险预测" in intent:
+        print(f"[元进化决策质量预测与预防性优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_decision_quality_prediction_prevention_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--run-cycle"]
+        filter_words = ["决策质量预测", "预防性优化", "质量预测", "decision quality prediction", "quality prediction", "prevention optimization", "预测预防", "风险预警", "质量风险", "决策风险预测"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg.lower() for w in [fw.lower() for fw in filter_words])]
+        if not filtered_args:
+            filtered_args = ["--run-cycle"]
+        result = subprocess.run(
+            [sys.executable, script_path] + filtered_args,
+            cwd=PROJECT,
+            capture_output=True,
+            text=True
+        )
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 634: 智能全场景进化环创新建议自动验证与价值优先级排序引擎 - 基于 round 633 知识图谱引擎（已发现388条待执行创新建议）基础上，构建让系统能够自动验证创新建议价值并智能排序优先级的增强能力
     # 实现「发现→验证→排序→优化→执行」的完整创新价值实现闭环
     elif "创新验证" in intent or "价值排序" in intent or "优先级" in intent or "innovation verify" in intent.lower() or "value priority" in intent.lower() or "priority rank" in intent.lower() or "价值评估" in intent or "创新价值" in intent or "价值评分" in intent:
