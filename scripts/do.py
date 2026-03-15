@@ -13345,6 +13345,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化价值预测与投资回报智能优化引擎 V3 (Round 688)
+    # 在 round 687 完成的知识创新价值驾驶舱可视化引擎基础上，
+    # 构建基于机器学习的价值预测能力和智能投资回报优化能力
+    elif "价值预测V3" in intent or "投资回报优化V3" in intent or "value prediction v3" in intent.lower() or "roi optimizer v3" in intent.lower() or "价值预测与投资回报" in intent or "投资回报智能优化" in intent or "智能价值预测" in intent or "价值预测优化" in intent or "机器学习价值预测" in intent:
+        print(f"[元进化价值预测与投资回报智能优化引擎 V3] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_value_prediction_roi_optimizer_v3_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["价值预测V3", "投资回报优化V3", "value prediction v3", "roi optimizer v3", "价值预测与投资回报", "投资回报智能优化", "智能价值预测", "价值预测优化", "机器学习价值预测"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     else:
         # 未知意图时，先检查是否包含情感关键词
         import json
