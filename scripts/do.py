@@ -8336,6 +8336,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环创新生态系统深度治理与价值最大化引擎 (Round 610)
+    # 在 round 608-609 完成的创新投资组合优化引擎和价值预测预防优化引擎 V2 基础上，构建完整的创新生态系统治理能力
+    # 实现创新资源全局优化配置、跨领域创新协同促进、创新风险预警与防控、创新价值链端到端管理
+    elif "创新生态系统" in intent or "生态系统治理" in intent or "创新治理" in intent or "生态系统管理" in intent or "innovation ecosystem" in intent.lower() or "ecosystem governance" in intent.lower() or "创新资源优化" in intent or "跨领域创新" in intent or "创新价值链" in intent or "价值链管理" in intent:
+        print(f"[智能全场景进化环创新生态系统深度治理与价值最大化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_ecosystem_governance_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["创新生态系统", "生态系统治理", "创新治理", "生态系统管理", "innovation ecosystem", "ecosystem governance", "创新资源优化", "跨领域创新", "创新价值链", "价值链管理", "资源优化", "跨领域"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环进化效能自动化归因与智能建议引擎 (Round 545)
     # 基于540+轮进化历史，自动分析每轮进化的成效，识别成功/失败的根本原因，并智能生成可执行的改进建议
     elif "归因分析" in intent or "根因分析" in intent or "改进建议" in intent or "效果归因" in intent or "attribution" in intent.lower() or "root cause" in intent.lower() or "improvement advice" in intent.lower() or "进化归因" in intent or "成效分析" in intent:
