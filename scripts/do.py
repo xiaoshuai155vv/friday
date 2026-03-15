@@ -6797,6 +6797,37 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化价值预测与预防性优化引擎 (Round 560)
+    elif "元进化价值预测" in intent or "元价值预测" in intent or "meta value predict" in intent.lower() or "meta_value_predict" in intent.lower() or "元价值预防" in intent or "价值趋势预警" in intent or "价值异常检测" in intent:
+        print(f"[智能全场景进化环元进化价值预测与预防性优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_value_prediction_prevention_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 检测功能关键词
+        if "预测趋势" in intent or "predict" in intent.lower() or "趋势预测" in intent:
+            cmd_args = ["--predict"]
+        elif "异常检测" in intent or "anomaly" in intent.lower():
+            cmd_args = ["--anomaly"]
+        elif "生成策略" in intent or "strategies" in intent.lower():
+            cmd_args = ["--strategies"]
+        elif "执行优化" in intent or "execute" in intent.lower() or "预防执行" in intent:
+            cmd_args = ["--execute"]
+        elif "完整闭环" in intent or "closed loop" in intent.lower():
+            cmd_args = ["--closed-loop"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        # 过滤掉意图关键词
+        filter_words = ["元进化价值预测", "元价值预测", "meta value predict", "meta_value_predict", "元价值预防", "价值趋势预警", "价值异常检测", "预测趋势", "predict", "趋势预测", "异常检测", "anomaly", "生成策略", "strategies", "执行优化", "execute", "预防执行", "完整闭环", "closed loop", "驾驶舱", "cockpit"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环价值干预自动执行引擎 (Round 471)
     elif "价值干预自动执行" in intent or "干预自动执行" in intent or "自动干预" in intent or "干预执行" in intent or "价值干预执行" in intent or "auto intervention" in intent.lower() or "execute intervention" in intent.lower():
         print(f"[智能全场景进化环价值干预自动执行引擎] 正在处理...", file=sys.stderr)
