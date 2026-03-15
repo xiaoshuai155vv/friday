@@ -8376,6 +8376,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化执行闭环全自动化深度增强引擎 (Round 612)
+    # 在 round 611 完成的跨维度价值平衡全局决策引擎基础上，构建真正的元进化执行闭环全自动化能力。
+    # 让系统能够自主识别进化机会、自动生成进化策略、智能执行进化任务、自动验证进化结果、持续优化进化方法
+    elif "元进化执行闭环" in intent or "全自动化进化" in intent or "执行闭环自动化" in intent or "meta execution closed loop" in intent.lower() or "evolution automation" in intent.lower() or "自主进化闭环" in intent or "进化自主运行" in intent or "自动进化" in intent:
+        print(f"[智能全场景进化环元进化执行闭环全自动化深度增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_execution_closed_loop_automation_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["元进化执行闭环", "全自动化进化", "执行闭环自动化", "meta execution", "evolution automation", "自主进化闭环", "进化自主运行", "自动进化"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环进化效能自动化归因与智能建议引擎 (Round 545)
     # 基于540+轮进化历史，自动分析每轮进化的成效，识别成功/失败的根本原因，并智能生成可执行的改进建议
     elif "归因分析" in intent or "根因分析" in intent or "改进建议" in intent or "效果归因" in intent or "attribution" in intent.lower() or "root cause" in intent.lower() or "improvement advice" in intent.lower() or "进化归因" in intent or "成效分析" in intent:
