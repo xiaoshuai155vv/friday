@@ -1865,6 +1865,62 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
 
+    # 智能全场景进化环创新验证结果自动执行与价值实现引擎（Round 502）- 将验证通过的创新假设自动转化为可执行任务、智能评估执行价值、自动执行创新方案、追踪价值实现
+    elif "创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent:
+        print(f"[创新验证结果自动执行与价值实现引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_value_realization_engine.py")
+
+        # 确定要执行的命令 - 更具体的关键词优先
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--collect-hypotheses" in sys.argv or "收集假设" in intent or "已验证假设" in intent:
+            filtered_args = ["--collect-hypotheses"]
+        elif "--evaluate" in sys.argv or "评估价值" in intent or "执行评估" in intent or "价值评估" in intent:
+            filtered_args = ["--evaluate"]
+            if "--hypothesis" in sys.argv:
+                idx = sys.argv.index("--hypothesis")
+                if idx + 1 < len(sys.argv):
+                    filtered_args = ["--evaluate", sys.argv[idx + 1]]
+        elif "--generate-task" in sys.argv or "生成任务" in intent or "任务生成" in intent:
+            filtered_args = ["--generate-task"]
+            if "--hypothesis" in sys.argv:
+                idx = sys.argv.index("--hypothesis")
+                if idx + 1 < len(sys.argv):
+                    filtered_args = ["--generate-task", sys.argv[idx + 1]]
+        elif "--execute-task" in sys.argv or "执行任务" in intent or "任务执行" in intent:
+            filtered_args = ["--execute-task"]
+            if "--task" in sys.argv:
+                idx = sys.argv.index("--task")
+                if idx + 1 < len(sys.argv):
+                    filtered_args = ["--execute-task", sys.argv[idx + 1]]
+            if "--dry-run" in sys.argv or "干运行" in intent:
+                filtered_args.append("--dry-run")
+        elif "--track-value" in sys.argv or "追踪价值" in intent or "价值追踪" in intent or "实现追踪" in intent:
+            filtered_args = ["--track-value"]
+            if "--task" in sys.argv:
+                idx = sys.argv.index("--task")
+                if idx + 1 < len(sys.argv):
+                    filtered_args = ["--track-value", sys.argv[idx + 1]]
+            if "--metrics" in sys.argv:
+                idx = sys.argv.index("--metrics")
+                if idx + 1 < len(sys.argv):
+                    filtered_args.extend(["--metrics", sys.argv[idx + 1]])
+        elif "--run" in sys.argv or "完整周期" in intent or "运行周期" in intent or "执行周期" in intent:
+            filtered_args = ["--run"]
+            if "--dry-run" in sys.argv or "干运行" in intent:
+                filtered_args.append("--dry-run")
+        else:
+            # 默认：获取状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+
     # 智能全场景进化环执行策略自优化深度增强引擎（Round 449）- 自动分析引擎执行效果、识别协作低效模式、智能生成并执行优化策略
     elif "策略优化" in intent or "执行优化" in intent or "自优化" in intent or "优化策略" in intent or "strategy optimization" in intent.lower() or "execution optimization" in intent.lower() or "self-optimization" in intent.lower() or "optimize strategy" in intent.lower() or "策略自优化" in intent or "执行策略优化" in intent:
         print(f"[执行策略自优化深度增强引擎] 正在处理...", file=sys.stderr)
