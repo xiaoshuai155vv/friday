@@ -5401,6 +5401,31 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化投资回报智能评估与战略优化引擎 (Round 654)
+    # 让系统能够深度分析 600+ 轮进化的投资回报率，识别哪些引擎/能力组合产生了最大价值，
+    # 发现进化过程中的隐藏模式（低效投资、重复建设等），为未来的进化资源分配提供智能决策支持
+    elif ("投资回报" in intent or "ROI评估" in intent or "战略优化" in intent or "资源分配" in intent
+          or "evolution roi" in intent.lower() or "投资回报率" in intent or "进化ROI" in intent
+          or "价值贡献" in intent or "低效投资" in intent or "重复建设" in intent
+          or "战略建议" in intent and "进化" in intent or "进化投资回报" in intent
+          or "资源优化" in intent and "进化" in intent):
+        print(f"[智能全场景进化环元进化投资回报智能评估与战略优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_roi_assessment_strategic_optimizer_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--cockpit-data"]
+        # 过滤掉意图关键词
+        filter_words = ["投资回报", "ROI评估", "战略优化", "资源分配", "evolution roi", "投资回报率", "进化ROI",
+                       "价值贡献", "低效投资", "重复建设", "战略建议", "进化投资回报", "资源优化"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--cockpit-data"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景超级预测与主动价值创造引擎（Round 287）
     elif "超级预测" in intent or "主动价值创造" in intent or "机会发现" in intent or "super prediction" in intent.lower() or "opportunity discovery" in intent.lower() or "create value" in intent.lower() or "价值创造" in intent or "趋势分析" in intent or "trends analysis" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
