@@ -1535,6 +1535,37 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨引擎知识自动推荐与智能预测触发引擎（Round 490）- 基于上下文主动推荐知识、预测用户潜在需求、智能触发知识准备，实现从被动响应到主动预测推送的范式升级
+    elif "智能预测" in intent or "知识预测" in intent or "预测触发" in intent or "主动推送" in intent or "知识推送" in intent or "intelligent prediction" in intent.lower() or "knowledge prediction" in intent.lower() or "prediction trigger" in intent.lower() or "proactive push" in intent.lower() or "predictive recommendation" in intent.lower() or "预测推荐" in intent:
+        print(f"[跨引擎知识自动推荐与智能预测触发引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_proactive_recommendation_prediction_engine.py")
+
+        # 确定要执行的命令
+        if "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--predict" in sys.argv or "预测" in intent:
+            filtered_args = ["--predict"]
+        elif "--recommend" in sys.argv or "推荐" in intent:
+            filtered_args = ["--recommend"]
+        elif "--prepare" in sys.argv or "预触发" in intent or "准备" in intent:
+            filtered_args = ["--prepare"]
+        elif "--trigger" in sys.argv:
+            filtered_args = ["--trigger"]
+        elif "--analyze-triggers" in sys.argv or "分析触发" in intent:
+            filtered_args = ["--analyze-triggers"]
+        elif "--cycle" in sys.argv or "完整" in intent or "循环" in intent:
+            filtered_args = ["--cycle"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：显示状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环执行策略自优化深度增强引擎（Round 449）- 自动分析引擎执行效果、识别协作低效模式、智能生成并执行优化策略
     elif "策略优化" in intent or "执行优化" in intent or "自优化" in intent or "优化策略" in intent or "strategy optimization" in intent.lower() or "execution optimization" in intent.lower() or "self-optimization" in intent.lower() or "optimize strategy" in intent.lower() or "策略自优化" in intent or "执行策略优化" in intent:
         print(f"[执行策略自优化深度增强引擎] 正在处理...", file=sys.stderr)
