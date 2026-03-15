@@ -6861,6 +6861,37 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环价值知识图谱深度推理与智能决策增强引擎 (Round 562)
+    elif "价值知识图谱" in intent or "知识图谱推理" in intent or "知识推理决策" in intent or "价值推理" in intent or "kg reasoning" in intent.lower() or "value kg" in intent.lower() or "知识图谱增强" in intent or "推理增强" in intent:
+        print(f"[智能全场景进化环价值知识图谱深度推理与智能决策增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_knowledge_graph_reasoning_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--cockpit-data"]
+        # 检测功能关键词
+        if "构建" in intent or "build" in intent.lower():
+            cmd_args = ["--build-kg"]
+        elif "推理" in intent or "reason" in intent.lower():
+            cmd_args = ["--reason"]
+        elif "推荐" in intent or "recommend" in intent.lower():
+            cmd_args = ["--recommend"]
+        elif "增强" in intent or "enhance" in intent.lower():
+            cmd_args = ["--enhance"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        elif "完整" in intent or "full" in intent.lower():
+            cmd_args = ["--full"]
+        # 过滤掉意图关键词
+        filter_words = ["价值知识图谱", "知识图谱推理", "知识推理决策", "价值推理", "kg reasoning", "value kg", "知识图谱增强", "推理增强", "构建", "build", "推理", "reason", "推荐", "recommend", "增强", "enhance", "驾驶舱", "cockpit", "完整", "full"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--cockpit-data"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True, encoding='utf-8', errors='replace')
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环价值干预自动执行引擎 (Round 471)
     elif "价值干预自动执行" in intent or "干预自动执行" in intent or "自动干预" in intent or "干预执行" in intent or "价值干预执行" in intent or "auto intervention" in intent.lower() or "execute intervention" in intent.lower():
         print(f"[智能全场景进化环价值干预自动执行引擎] 正在处理...", file=sys.stderr)
