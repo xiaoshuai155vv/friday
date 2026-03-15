@@ -1855,6 +1855,35 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化价值战略预测与自适应优化引擎（Round 572）- 在 round 571 完成的元进化认知蒸馏与自动传承引擎基础上，构建让系统能够预测每轮进化的长期价值影响、评估进化决策的战略价值、根据价值预测自适应调整进化策略的能力，形成「认知蒸馏→价值预测→战略优化→自适应决策」的完整闭环
+    elif "价值战略预测" in intent or "战略预测" in intent or "自适应优化" in intent or "价值预测" in intent or "meta value strategy" in intent.lower() or "value strategy prediction" in intent.lower() or "战略优化" in intent or "自适应" in intent or "价值优化" in intent:
+        print(f"[元进化价值战略预测与自适应优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_value_strategy_prediction_adaptive_optimizer.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--check" in sys.argv or "检查" in intent or "校验" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "执行" in intent or "运行" in intent or "预测" in intent or "优化" in intent:
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--predict" in sys.argv or "预测" in intent:
+            filtered_args = ["--predict"]
+        elif "--optimize" in sys.argv or "优化" in intent:
+            filtered_args = ["--optimize"]
+        elif "--evaluate" in sys.argv or "评估" in intent or "战略评估" in intent:
+            filtered_args = ["--evaluate"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化主动创新引擎（Round 570）- 在 round 569 完成的元进化自我优化引擎基础上，构建让系统主动发现创新机会、生成创新假设、验证创新价值的闭环，形成「理解→优化→创新」的递归增强，让系统不仅能优化已知问题，还能主动创造新价值
     elif "主动创新" in intent or "元进化主动创新" in intent or "meta active innovation" in intent.lower() or "innovation discovery" in intent.lower() or "创新发现" in intent or "创新假设" in intent or "创新验证" in intent or "创新价值" in intent or "创新引擎" in intent or "主动创新引擎" in intent:
         print(f"[元进化主动创新引擎] 正在处理...", file=sys.stderr)
