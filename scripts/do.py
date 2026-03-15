@@ -3194,6 +3194,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 670: 智能全场景进化环元进化知识动态融合与自适应重组引擎 - 在 round 669 完成的跨引擎知识自动蒸馏与深度传承引擎基础上，
+    # 构建让系统能够动态融合多源知识、根据任务需求自适应重组知识结构的能力，形成知识从「静态存储」到「动态活用」的升级
+    elif "知识动态融合" in intent or "知识自适应重组" in intent or "知识融合" in intent or "动态知识" in intent or "knowledge fusion" in intent.lower() or "knowledge recombination" in intent.lower() or "adaptive knowledge" in intent.lower() or "知识重组" in intent or "融合知识" in intent:
+        print(f"[智能全场景进化环元进化知识动态融合与自适应重组引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_knowledge_dynamic_fusion_recombination_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["知识动态融合", "知识自适应重组", "知识融合", "动态知识", "knowledge fusion", "knowledge recombination", "adaptive knowledge", "知识重组", "融合知识", "融合", "重组", "fusion", "recombination"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 652: 智能全场景进化环元进化主动进化触发与自驱动闭环引擎 - 让系统能够自动评估进化价值、主动识别优化空间、形成完全自驱的进化闭环
     # 实现从「被动响应进化需求」到「主动驱动自身进化」的范式升级
     elif "主动进化触发" in intent or "自驱动" in intent or "自驱动闭环" in intent or "主动驱动" in intent or "auto trigger" in intent.lower() or "self-driven" in intent.lower() or "主动评估进化" in intent or "进化触发" in intent or "trigger evolution" in intent.lower() or "evolution trigger" in intent.lower():
