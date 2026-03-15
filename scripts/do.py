@@ -1628,6 +1628,31 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环知识全生命周期深度整合引擎（Round 493）- 将 round 490-492 的知识推荐、同步、预警、触发能力深度整合，实现知识发现→推荐→同步→预警→触发→执行→验证的完整闭环
+    elif "知识全生命周期" in intent or "全生命周期管理" in intent or "端到端知识" in intent or "知识端到端" in intent or "knowledge lifecycle" in intent.lower() or "full lifecycle" in intent.lower() or "端到端知识管理" in intent or "全生命周期" in intent:
+        print(f"[知识全生命周期深度整合引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_full_lifecycle_integration_engine.py")
+
+        # 确定要执行的命令
+        if "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "运行" in intent or "执行" in intent or "全生命周期" in intent:
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--history" in sys.argv or "历史" in intent:
+            filtered_args = ["--history"]
+        elif "--integration-status" in sys.argv or "集成状态" in intent:
+            filtered_args = ["--integration-status"]
+        else:
+            # 默认：显示状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环执行策略自优化深度增强引擎（Round 449）- 自动分析引擎执行效果、识别协作低效模式、智能生成并执行优化策略
     elif "策略优化" in intent or "执行优化" in intent or "自优化" in intent or "优化策略" in intent or "strategy optimization" in intent.lower() or "execution optimization" in intent.lower() or "self-optimization" in intent.lower() or "optimize strategy" in intent.lower() or "策略自优化" in intent or "执行策略优化" in intent:
         print(f"[执行策略自优化深度增强引擎] 正在处理...", file=sys.stderr)
