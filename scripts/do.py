@@ -2006,6 +2006,50 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环决策-执行-学习完整闭环深度集成引擎（Round 514）- 将决策执行引擎（round 510）和决策学习优化引擎（round 511）深度集成，实现从决策到执行到学习的完整数据流转、决策效果的实时反馈、学习结果直接驱动下一轮决策，形成「决策→执行→学习→优化决策」的持续改进闭环
+    elif "决策执行学习闭环" in intent or "完整闭环" in intent or "决策执行集成" in intent or "decision execution learning" in intent.lower() or "decision execution integration" in intent.lower() or "闭环集成" in intent or "学习闭环" in intent or "decision learning loop" in intent.lower() or "决策闭环" in intent or "执行学习闭环" in intent:
+        print(f"[智能全场景进化环决策-执行-学习完整闭环深度集成引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_decision_execution_learning_integration_engine.py")
+
+        # 解析命令参数
+        filtered_args = []
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--recent" in sys.argv:
+            filtered_args = ["--recent"]
+            # 获取数量参数
+            for i, arg in enumerate(sys.argv):
+                if arg == "--recent" and i + 1 < len(sys.argv):
+                    try:
+                        filtered_args.append(str(int(sys.argv[i + 1])))
+                    except ValueError:
+                        filtered_args.append("5")
+                    break
+        elif "最近" in intent:
+            import re
+            match = re.search(r"最近(\d+)", intent)
+            if match:
+                filtered_args = ["--recent", match.group(1)]
+            else:
+                filtered_args = ["--recent", "5"]
+        elif "--execute-loop" in sys.argv or "执行闭环" in intent or "execute loop" in intent.lower():
+            filtered_args = ["--execute-loop", "{}"]
+        elif "--generate-insights" in sys.argv or "生成洞察" in intent or "generate insights" in intent.lower() or "洞察" in intent:
+            filtered_args = ["--generate-insights"]
+        elif "--apply-learning" in sys.argv or "应用学习" in intent or "apply learning" in intent.lower():
+            filtered_args = ["--apply-learning", "{}"]
+        else:
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环决策自动执行与动态调整引擎（Round 510）- 将多引擎协同智能决策结果自动转化为可执行动作、智能调整执行参数、动态处理异常、验证执行效果，形成从「智能决策→自动执行→动态调整→效果验证」的完整闭环
     elif "决策执行" in intent or "自动执行" in intent or "执行决策" in intent or "decision execution" in intent.lower() or "auto execute decision" in intent.lower() or "决策动态调整" in intent or "decision auto" in intent.lower():
         print(f"[智能全场景进化环决策自动执行与动态调整引擎] 正在处理...", file=sys.stderr)
