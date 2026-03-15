@@ -6701,6 +6701,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环创新投资组合优化引擎 (Round 544)
+    # 在 round 506 ROI 评估、round 541 价值风险平衡、round 543 跨引擎协作优化成果基础上，构建创新投资组合优化能力
+    elif "创新投资组合" in intent or "投资组合优化" in intent or "组合管理" in intent or "创新优化" in intent or "portfolio" in intent.lower() or "innovation portfolio" in intent.lower() or "投资组合" in intent or "组合分配" in intent:
+        print(f"[智能全场景进化环创新投资组合优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_portfolio_optimizer_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["创新投资组合", "投资组合优化", "组合管理", "创新优化", "portfolio", "innovation portfolio", "投资组合", "组合分配"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--analyze"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环自我进化效能深度分析与自适应优化引擎 (Round 475/487)
     # Round 487 增强：支持策略参数自动调整、模式提取、迭代优化等自适应学习能力
     elif "效能分析" in intent or "自我优化" in intent or "进化效能" in intent or "效能瓶颈" in intent or "effectiveness" in intent.lower() or "self optimization" in intent.lower() or "evolution effectiveness" in intent.lower() or "自适应学习" in intent or "策略调整" in intent or "模式提取" in intent or "迭代优化" in intent or "recursive optimization" in intent.lower() or "strategy adjustment" in intent.lower() or "pattern extraction" in intent.lower():
