@@ -2517,6 +2517,33 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化智慧自动提取与战略规划引擎（Round 599）- 在 round 598 完成的元进化认知深度自省基础上，进一步构建让系统能够从500+轮进化历史中自动提取可复用智慧、将智慧转化为战略规划输入、形成智慧驱动的自主战略规划能力
+    elif "智慧提取" in intent or "战略规划" in intent or "wisdom extraction" in intent.lower() or "strategic planning" in intent.lower() or "元智慧" in intent or "智慧驱动" in intent or "智慧应用" in intent or "提取智慧" in intent or "智慧库" in intent:
+        print(f"[元进化智慧自动提取与战略规划引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_wisdom_extraction_strategic_planning_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--run" in sys.argv or "执行" in intent or "运行" in intent or "run" in intent.lower() or "分析" in intent or "提取" in intent:
+            filtered_args = ["--run"]
+        else:
+            # 默认显示驾驶舱数据
+            filtered_args = ["--cockpit-data"]
+
+        # 过滤掉意图关键词
+        filter_words = ["智慧提取", "战略规划", "wisdom extraction", "strategic planning", "元智慧", "智慧驱动", "智慧应用", "提取智慧", "智慧库"]
+        filtered_args = [arg for arg in sys.argv[1:] if arg not in filter_words]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环主动创新假设自动生成与自涌现发现引擎（Round 582）- 在 round 581 完成的知识驱动自动化执行增强引擎基础上，构建让系统能够主动发现创新机会、生成创新假设、发现新的进化方向的引擎。让系统不仅能执行知识推理结果，还能主动思考"我可以进化什么新的方向"，实现从「被动执行知识推理结果」到「主动发现进化机会」的范式升级
     elif "创新假设" in intent or "假设生成" in intent or "innovation hypothesis" in intent.lower() or "hypothesis generation" in intent.lower() or "创新发现" in intent or "主动发现" in intent or "emergence discovery" in intent.lower() or "创新涌现" in intent or "自涌现" in intent or "创新机会" in intent:
         print(f"[主动创新假设自动生成与自涌现发现引擎] 正在处理...", file=sys.stderr)
