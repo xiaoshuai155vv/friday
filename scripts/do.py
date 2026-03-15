@@ -1785,6 +1785,36 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环代码理解与架构优化引擎（Round 499）- 大规模分析70+进化引擎代码结构、识别重复代码模式、发现可复用模块、生成优化建议
+    elif "代码分析" in intent or "代码理解" in intent or "架构优化" in intent or "code analysis" in intent.lower() or "code understanding" in intent.lower() or "architecture optimization" in intent.lower() or "代码优化" in intent or "架构分析" in intent or "pattern" in intent.lower() or "模式发现" in intent or "代码模式" in intent or "代码架构" in intent:
+        print(f"[代码理解与架构优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_code_understanding_architecture_optimizer.py")
+
+        # 确定要执行的命令
+        if "--analyze" in sys.argv or "分析" in intent:
+            filtered_args = ["--analyze"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--find-patterns" in sys.argv or "模式" in intent or "重复" in intent:
+            filtered_args = ["--find-patterns"]
+        elif "--discover-reusable" in sys.argv or "可复用" in intent or "复用" in intent:
+            filtered_args = ["--discover-reusable"]
+        elif "--suggestions" in sys.argv or "建议" in intent or "优化建议" in intent:
+            filtered_args = ["--suggestions"]
+        elif "--report" in sys.argv or "报告" in intent or "架构报告" in intent:
+            filtered_args = ["--report"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：运行完整分析
+            filtered_args = ["--analyze"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+
     # 智能全场景进化环执行策略自优化深度增强引擎（Round 449）- 自动分析引擎执行效果、识别协作低效模式、智能生成并执行优化策略
     elif "策略优化" in intent or "执行优化" in intent or "自优化" in intent or "优化策略" in intent or "strategy optimization" in intent.lower() or "execution optimization" in intent.lower() or "self-optimization" in intent.lower() or "optimize strategy" in intent.lower() or "策略自优化" in intent or "执行策略优化" in intent:
         print(f"[执行策略自优化深度增强引擎] 正在处理...", file=sys.stderr)
