@@ -5686,6 +5686,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环元进化方法论自动优化引擎（round 552）- 分析自身进化方法论的有效性，自动发现进化策略的优化空间，形成「学会如何进化得更好」的递归优化能力
+    elif "元进化方法论" in intent or "方法论优化" in intent or "元进化优化" in intent or "进化方法论分析" in intent or "meta methodology" in intent.lower() or "meta optimization" in intent.lower() or "methodology auto" in intent.lower() or "进化策略分析" in intent or "策略分析引擎" in intent:
+        print(f"[智能全场景进化环元进化方法论自动优化引擎] 正在分析进化方法论并生成优化建议...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_methodology_auto_optimizer.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["元进化方法论", "方法论优化", "元进化优化", "进化方法论分析", "meta methodology", "meta optimization", "methodology auto", "进化策略分析", "策略分析引擎", "状态", "status", "仪表盘", "dashboard", "执行", "execute", "循环", "cycle", "分析", "analyze", "优化", "optimize", "建议", "recommend", "机会", "opportunity"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环自我进化与决策深度集成引擎（round 325）
     elif "进化决策集成" in intent or "自我决策集成" in intent or "分析决策执行" in intent or "integrated evolution" in intent.lower() or "进化闭环" in intent or "进化自优化" in intent or "自动化进化优化" in intent:
         print(f"[智能全场景进化环自我进化与决策深度集成引擎] 正在深度集成自我进化引擎与决策引擎，形成分析→决策→执行→验证→优化完整闭环...", file=sys.stderr)
