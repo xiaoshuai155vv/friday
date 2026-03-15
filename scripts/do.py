@@ -1884,6 +1884,37 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化价值实现闭环追踪与自适应优化增强引擎（Round 578）- 在 round 577 完成的价值驱动元进化自适应决策引擎基础上，构建价值实现闭环追踪与自适应优化能力。让系统能够追踪决策后的实际价值实现过程，将实现结果反馈到决策优化中，形成真正的「决策→执行→价值实现→反馈→优化」价值驱动闭环
+    elif "价值实现闭环追踪" in intent or "价值闭环追踪" in intent or "自适应优化" in intent or "value realization closed loop optimization" in intent.lower() or "价值追踪优化" in intent or "决策价值闭环" in intent or "价值优化闭环" in intent or "value loop optimization" in intent.lower():
+        print(f"[元进化价值实现闭环追踪与自适应优化增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_realization_closed_loop_optimization_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--check" in sys.argv or "检查" in intent or "校验" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "执行" in intent or "运行" in intent or "闭环" in intent:
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit"]
+        elif "--track" in sys.argv or "追踪" in intent:
+            filtered_args = ["--track"]
+        elif "--analyze" in sys.argv or "分析" in intent or "有效性" in intent:
+            filtered_args = ["--analyze"]
+        elif "--feedback" in sys.argv or "反馈" in intent:
+            filtered_args = ["--feedback"]
+        elif "--optimize" in sys.argv or "策略优化" in intent or "自适应" in intent:
+            filtered_args = ["--optimize"]
+        else:
+            # 默认：运行完整闭环周期
+            filtered_args = ["--run"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化价值实现闭环增强引擎（Round 573）- 在 round 572 完成的元进化价值战略预测与自适应优化引擎基础上，构建让系统能够追踪价值预测与实际实现的差距、评估价值实现效率、智能调整价值实现策略的能力，形成「价值预测→价值执行→价值评估→价值优化」的完整闭环，增强价值实现的端到端能力
     elif "价值实现闭环" in intent or "价值闭环" in intent or "闭环增强" in intent or "value realization closed loop" in intent.lower() or "价值追踪" in intent or "价值评估" in intent or "价值效率" in intent or "价值优化" in intent:
         print(f"[元进化价值实现闭环增强引擎] 正在处理...", file=sys.stderr)
