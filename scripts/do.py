@@ -2630,6 +2630,16 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环价值量化评估增强引擎（Round 503）
+    elif "增强价值量化" in intent or "价值量化增强" in intent or "多维度价值" in intent or "多维价值分析" in intent or "enhanced value quantization" in intent.lower() or "value quantization enhanced" in intent.lower() or "多维度价值评估" in intent or "价值智能推荐" in intent or "智能任务推荐" in intent and "价值" in intent or "创新价值分析" in intent or "价值创新分析" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd or (cmd and cmd[0] not in ["status", "analyze", "innovation", "recommend", "trends", "cockpit", "full", "summary", "help"]):
+            cmd = ["status"]
+        result = subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_value_quantization_enhanced_engine.py")] + cmd, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环自适应进化路径规划与预测引擎（Round 439）
     elif "路径规划" in intent or "进化路径" in intent or "路径预测" in intent or "规划进化" in intent or "自适应路径" in intent or "path planning" in intent.lower() or "进化规划" in intent or "自适应规划" in intent or "智能规划" in intent and "进化" in intent or "战略规划" in intent or "路径选择" in intent or "最佳路径" in intent or "optimal path" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["report"]
