@@ -1973,6 +1973,45 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环知识驱动自动化执行增强引擎（Round 581）- 在 round 580 完成的价值驱动进化执行闭环引擎基础上，构建从知识推理到自动执行的完整自动化链路。让系统能够从知识图谱推理结果自动生成并执行行动计划，形成「推理→洞察→行动→验证」的完整知识驱动闭环
+    elif "知识行动转换" in intent or "推理到行动" in intent or "insight to action" in intent.lower() or "知识自动化执行增强" in intent or "insight execution automation" in intent.lower():
+        print(f"[知识驱动自动化执行增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_driven_automation_execution_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--status"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--generate-plans" in sys.argv or "生成计划" in intent or "行动计划" in intent:
+            filtered_args = ["--generate-plans"]
+        elif "--execute-plan" in sys.argv or "--plan-id" in sys.argv or "执行计划" in intent:
+            filtered_args = ["--execute-plan"]
+            if "--plan-id" in sys.argv:
+                plan_idx = sys.argv.index("--plan-id")
+                if plan_idx + 1 < len(sys.argv):
+                    filtered_args.append(sys.argv[plan_idx + 1])
+        elif "--validate" in sys.argv or "验证" in intent:
+            filtered_args = ["--validate"]
+            if "--plan-id" in sys.argv:
+                plan_idx = sys.argv.index("--plan-id")
+                if plan_idx + 1 < len(sys.argv):
+                    filtered_args.append(sys.argv[plan_idx + 1])
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--run-cycle" in sys.argv or "执行循环" in intent or "完整循环" in intent or "run cycle" in intent.lower():
+            filtered_args = ["--run-cycle"]
+        elif "--list-plans" in sys.argv or "列出计划" in intent or "计划列表" in intent:
+            filtered_args = ["--list-plans"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环价值驱动进化执行闭环引擎（Round 580）- 在 round 579 完成的元进化价值预测与战略投资决策增强引擎基础上，构建从投资策略到自动执行的完整闭环。让系统能够将投资决策转化为可执行任务、执行并追踪结果、反馈到决策优化，形成「预测→决策→执行→验证→优化」的完整闭环
     elif "价值驱动执行" in intent or "执行闭环" in intent or "投资执行" in intent or "价值执行" in intent or "value driven execution" in intent.lower() or "execution closed loop" in intent.lower() or "投资策略执行" in intent or "策略执行" in intent or "execution loop" in intent.lower() or "执行优化反馈" in intent or "执行效果评估" in intent or "价值反馈" in intent:
         print(f"[价值驱动进化执行闭环引擎] 正在处理...", file=sys.stderr)
