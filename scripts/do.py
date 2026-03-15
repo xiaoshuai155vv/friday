@@ -1326,6 +1326,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["--analyze", "--execute", "--full-cycle", "--status", "--cockpit-data", "--all", "help"]):
             cmd = ["--full-cycle"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_governance_auto_optimization_engine.py")] + cmd, cwd=PROJECT)
+    # 智能全场景进化环进化决策质量持续优化引擎（Round 535）- 基于 round 534 完成的治理审计与自动优化执行能力，进一步增强进化决策质量的持续评估与自动优化能力
+    elif "决策质量持续优化" in intent or "决策质量优化" in intent or "质量持续优化" in intent or "decision quality continuous" in intent.lower() or "quality continuous" in intent.lower() or "质量趋势" in intent or "质量监控" in intent or "quality monitoring" in intent.lower() or "质量分析" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["--trend"]
+        if not cmd or (cmd and cmd[0] not in ["--record", "--trend", "--detect", "--generate-strategy", "--execute", "--full-cycle", "--cockpit-data", "help"]):
+            cmd = ["--trend"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_decision_quality_continuous_optimization_engine.py")] + cmd, cwd=PROJECT)
     # 智能全场景系统自我进化评估与优化引擎（Round 279）
     elif "进化评估" in intent or "自我评估" in intent or "进化优化" in intent or "evolution_evaluation" in intent.lower() or "self evaluation" in intent.lower() or "评估优化" in intent or "进化自评" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
