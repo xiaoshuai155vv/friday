@@ -3379,6 +3379,28 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 667: 智能全场景进化环元进化决策质量持续优化与自驱动演进引擎 - 在 round 666 完成的决策质量预测与预防性优化引擎基础上，构建让系统能够自动评估预测准确性、根据偏差调整模型参数、实现持续自我优化的能力
+    # 形成从预测→验证→优化的完整自驱动闭环
+    elif "决策质量持续优化" in intent or "自驱动演进" in intent or "决策质量优化" in intent or "decision quality continuous" in intent.lower() or "continuous optimization" in intent.lower() or "self-driven evolution" in intent.lower() or "自驱动优化" in intent or "模型参数调整" in intent or "预测准确性评估" in intent or "决策质量演进" in intent:
+        print(f"[元进化决策质量持续优化与自驱动演进引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_decision_quality_continuous_optimizer_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--run-cycle"]
+        filter_words = ["决策质量持续优化", "自驱动演进", "决策质量优化", "decision quality continuous", "continuous optimization", "self-driven evolution", "自驱动优化", "模型参数调整", "预测准确性评估", "决策质量演进"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg.lower() for w in [fw.lower() for fw in filter_words])]
+        if not filtered_args:
+            filtered_args = ["--run-cycle"]
+        result = subprocess.run(
+            [sys.executable, script_path] + filtered_args,
+            cwd=PROJECT,
+            capture_output=True,
+            text=True
+        )
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 634: 智能全场景进化环创新建议自动验证与价值优先级排序引擎 - 基于 round 633 知识图谱引擎（已发现388条待执行创新建议）基础上，构建让系统能够自动验证创新建议价值并智能排序优先级的增强能力
     # 实现「发现→验证→排序→优化→执行」的完整创新价值实现闭环
     elif "创新验证" in intent or "价值排序" in intent or "优先级" in intent or "innovation verify" in intent.lower() or "value priority" in intent.lower() or "priority rank" in intent.lower() or "价值评估" in intent or "创新价值" in intent or "价值评分" in intent:
