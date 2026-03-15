@@ -1947,6 +1947,36 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环基于代码理解的跨引擎自动修复与深度自优化增强引擎 (Round 508) - 基于代码理解能力，对跨引擎进行自动问题诊断、智能修复方案生成、自动执行修复、效果验证，形成完整的「分析→诊断→修复→验证→优化」闭环
+    elif "跨引擎自动修复" in intent or "跨引擎自优化" in intent or "引擎自动修复" in intent or "引擎自优化" in intent or "cross engine" in intent.lower() and "repair" in intent.lower() or "cross engine" in intent.lower() and "optim" in intent.lower() or "auto repair" in intent.lower() or "self optimize" in intent.lower() or "自优化" in intent or "自动修复" in intent and "跨引擎" in intent or "跨引擎修复" in intent:
+        print(f"[智能全场景进化环基于代码理解的跨引擎自动修复与深度自优化增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_engine_auto_repair_self_optimizer_engine.py")
+
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["跨引擎自动修复", "跨引擎自优化", "引擎自动修复", "引擎自优化", "cross engine", "auto repair", "self optimize", "自优化", "自动修复", "跨引擎修复"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+
+        # 确定要执行的命令
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--analyze" in sys.argv or "分析" in intent or "analyze" in intent.lower():
+            filtered_args = ["--analyze"]
+        elif "--detect" in sys.argv or "检测" in intent or "detect" in intent.lower() or "问题" in intent:
+            filtered_args = ["--detect"]
+        elif "--optimize" in sys.argv or "优化" in intent or "optimize" in intent.lower() or "自优化" in intent:
+            filtered_args = ["--optimize"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环创新验证结果自动执行与价值实现引擎（Round 502）- 将验证通过的创新假设自动转化为可执行任务、智能评估执行价值、自动执行创新方案、追踪价值实现
     elif "创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent:
         print(f"[创新验证结果自动执行与价值实现引擎] 正在处理...", file=sys.stderr)
