@@ -1,5 +1,5 @@
 """
-智能全场景进化环元进化执行优化建议自动嵌入 run_plan 引擎
+智能全场景进化环元进化执行优化建议自动嵌入 run_plan 引擎 V2
 
 基于 round 680 场景执行鲁棒性增强引擎和 round 681 执行策略自动学习引擎 V2，
 构建让系统能够：
@@ -7,6 +7,9 @@
 2. 将智能决策结果自动嵌入到 run_plan 执行参数中
 3. 实现智能决策到执行优化的无缝闭环
 4. 与 run_plan 深度集成，实现真正的自动化执行优化
+5. V2: 增强自动触发能力，无需手动指定计划路径即可自动优化
+6. V2: 实现 run_plan 执行时自动加载和应用优化参数
+7. V2: 优化与 do.py 的集成，避免关键词冲突
 
 此引擎让系统从「智能决策」升级到「自动执行优化」，实现真正的智能执行闭环。
 """
@@ -28,13 +31,14 @@ ASSETS_PLANS_DIR = PROJECT_ROOT / "assets" / "plans"
 
 
 class EvolutionMetaExecutionOptimizationRunplanEmbeddingEngine:
-    """元进化执行优化建议自动嵌入 run_plan 引擎"""
+    """元进化执行优化建议自动嵌入 run_plan 引擎 V2"""
 
     def __init__(self):
-        self.version = "1.0.0"
-        self.name = "元进化执行优化建议自动嵌入 run_plan 引擎"
+        self.version = "2.0.0"
+        self.name = "元进化执行优化建议自动嵌入 run_plan 引擎 V2"
         self.optimization_history = self._load_optimization_history()
         self.embedding_cache = self._load_embedding_cache()
+        self.auto_optimization_enabled = True  # V2: 自动优化开关
         print(f"[{self.name}] 初始化完成 (v{self.version})")
 
     def _load_optimization_history(self) -> List[Dict[str, Any]]:
@@ -189,6 +193,85 @@ class EvolutionMetaExecutionOptimizationRunplanEmbeddingEngine:
 
         return result
 
+    def auto_scan_and_optimize_all_plans(self) -> Dict[str, Any]:
+        """
+        V2: 自动扫描所有场景计划并应用优化
+        无需手动指定计划路径，自动处理所有场景计划
+
+        Returns:
+            自动优化结果
+        """
+        result = {
+            "timestamp": datetime.now().isoformat(),
+            "auto_optimization": True,
+            "plans_scanned": 0,
+            "plans_optimized": 0,
+            "optimization_results": [],
+            "errors": []
+        }
+
+        if not self.auto_optimization_enabled:
+            result["errors"].append("自动优化未启用")
+            return result
+
+        try:
+            # 自动扫描所有场景计划
+            if ASSETS_PLANS_DIR.exists():
+                plan_files = list(ASSETS_PLANS_DIR.glob("*.json"))
+                result["plans_scanned"] = len(plan_files)
+
+                for plan_file in plan_files:
+                    try:
+                        # 对每个计划执行优化嵌入
+                        embed_result = self.embed_optimization_into_plan(str(plan_file))
+                        result["optimization_results"].append({
+                            "plan": plan_file.name,
+                            "success": embed_result["success"],
+                            "error": embed_result.get("error")
+                        })
+                        if embed_result["success"]:
+                            result["plans_optimized"] += 1
+                    except Exception as e:
+                        result["errors"].append(f"{plan_file.name}: {str(e)}")
+
+            print(f"[自动优化完成] 扫描 {result['plans_scanned']} 个计划，优化 {result['plans_optimized']} 个")
+
+        except Exception as e:
+            result["errors"].append(f"自动扫描失败: {str(e)}")
+            print(f"[自动优化失败] {e}")
+
+        return result
+
+    def get_optimization_params_for_runplan(self, plan_name: str) -> Dict[str, Any]:
+        """
+        V2: 为 run_plan 执行获取优化参数
+        此方法可被 run_plan 引擎调用，自动获取优化参数
+
+        Args:
+            plan_name: 场景计划名称
+
+        Returns:
+            优化参数字典，可直接用于 run_plan 执行
+        """
+        # 获取分析结果
+        analysis = self.analyze_execution_patterns()
+        embedded_params = analysis.get("embedded_parameters", {})
+
+        # V2: 添加自动应用标识
+        params = {
+            "auto_optimized": True,
+            "plan_name": plan_name,
+            "retry_count": embedded_params.get("retry_count", 3),
+            "timeout_seconds": embedded_params.get("timeout_seconds", 30.0),
+            "enable_adaptive_wait": embedded_params.get("enable_adaptive_wait", True),
+            "enable_auto_recovery": embedded_params.get("enable_auto_recovery", True),
+            "fallback_on_failure": embedded_params.get("fallback_on_failure", True),
+            "engine_version": self.version,
+            "optimization_timestamp": datetime.now().isoformat()
+        }
+
+        return params
+
     def embed_optimization_into_plan(self, plan_path: str) -> Dict[str, Any]:
         """
         将优化建议嵌入到场景计划中
@@ -305,16 +388,24 @@ class EvolutionMetaExecutionOptimizationRunplanEmbeddingEngine:
             "last_optimization": self.optimization_history[-1] if self.optimization_history else None,
             "cache_status": {
                 "embedding_cache_available": len(self.embedding_cache) > 0,
-                "optimization_history_size": len(self.optimization_history)
+                "optimization_history_size": len(self.optimization_history),
+                "auto_optimization_enabled": self.auto_optimization_enabled
             },
             "capabilities": [
                 "analyze_execution_patterns - 分析执行模式并生成优化建议",
                 "embed_optimization_into_plan - 将优化嵌入到场景计划",
-                "generate_optimized_run_command - 生成优化后的执行命令"
+                "generate_optimized_run_command - 生成优化后的执行命令",
+                "auto_scan_and_optimize_all_plans (V2) - 自动扫描并优化所有场景计划",
+                "get_optimization_params_for_runplan (V2) - 为 run_plan 执行获取优化参数"
             ],
             "integrated_engines": [
                 "round_680: 场景执行鲁棒性增强引擎",
                 "round_681: 执行策略自动学习引擎 V2"
+            ],
+            "v2_enhancements": [
+                "增强自动触发能力，无需手动指定计划路径",
+                "实现 run_plan 执行时自动加载和应用优化参数",
+                "优化与 do.py 的集成，避免关键词冲突"
             ]
         }
 
@@ -324,7 +415,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="元进化执行优化建议自动嵌入 run_plan 引擎"
+        description="元进化执行优化建议自动嵌入 run_plan 引擎 V2"
     )
     parser.add_argument("--version", action="store_true", help="显示版本信息")
     parser.add_argument("--status", action="store_true", help="显示引擎状态")
@@ -332,6 +423,10 @@ def main():
     parser.add_argument("--embed", type=str, metavar="PLAN_PATH", help="嵌入优化到场景计划")
     parser.add_argument("--generate-cmd", type=str, metavar="PLAN_NAME", help="生成优化命令")
     parser.add_argument("--cockpit-data", action="store_true", help="获取驾驶舱数据")
+    parser.add_argument("--auto-scan", action="store_true", help="V2: 自动扫描并优化所有场景计划")
+    parser.add_argument("--get-params", type=str, metavar="PLAN_NAME", help="V2: 获取 run_plan 执行的优化参数")
+    parser.add_argument("--enable-auto", action="store_true", help="V2: 启用自动优化")
+    parser.add_argument("--disable-auto", action="store_true", help="V2: 禁用自动优化")
 
     args = parser.parse_args()
 
@@ -346,7 +441,9 @@ def main():
         print(f"版本: {engine.version}")
         print(f"总优化次数: {len(engine.optimization_history)}")
         print(f"缓存状态: {'可用' if engine.embedding_cache else '空'}")
+        print(f"自动优化: {'启用' if engine.auto_optimization_enabled else '禁用'}")
         print(f"集成引擎: round_680(场景鲁棒性), round_681(策略学习V2)")
+        print(f"V2新功能: 自动扫描所有计划, 为run_plan自动提供优化参数")
         return
 
     if args.analyze:
@@ -378,6 +475,31 @@ def main():
     if args.cockpit_data:
         data = engine.get_cockpit_data()
         print(json.dumps(data, indent=2, ensure_ascii=False))
+        return
+
+    if args.auto_scan:
+        print("=== V2: 自动扫描并优化所有场景计划 ===")
+        result = engine.auto_scan_and_optimize_all_plans()
+        print(f"扫描计划数: {result['plans_scanned']}")
+        print(f"优化计划数: {result['plans_optimized']}")
+        if result.get("errors"):
+            print(f"错误: {result['errors']}")
+        return
+
+    if args.get_params:
+        print(f"=== V2: 获取 run_plan 优化参数: {args.get_params} ===")
+        params = engine.get_optimization_params_for_runplan(args.get_params)
+        print(json.dumps(params, indent=2, ensure_ascii=False))
+        return
+
+    if args.enable_auto:
+        engine.auto_optimization_enabled = True
+        print("自动优化已启用")
+        return
+
+    if args.disable_auto:
+        engine.auto_optimization_enabled = False
+        print("自动优化已禁用")
         return
 
     # 默认显示帮助

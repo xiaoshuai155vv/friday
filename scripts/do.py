@@ -13229,17 +13229,31 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
-    # round 682: 智能全场景进化环元进化执行优化建议自动嵌入 run_plan 引擎 - 基于 round 680 场景执行鲁棒性增强引擎和 round 681 执行策略自动学习引擎 V2
+    # round 682: 智能全场景进化环元进化执行优化建议自动嵌入 run_plan 引擎 V2 (round 683 增强)
+    # 基于 round 680 场景执行鲁棒性增强引擎和 round 681 执行策略自动学习引擎 V2
     # 构建让系统能够：1. 自动分析场景执行模式并生成优化建议 2. 将智能决策结果自动嵌入到 run_plan 执行参数中 3. 实现智能决策到执行优化的无缝闭环
+    # V2 增强：自动扫描所有场景计划并优化，为 run_plan 执行自动提供优化参数
     # 实现从「智能决策」升级到「自动执行优化」
-    elif "执行优化嵌入" in intent or "run_plan优化" in intent or "优化嵌入" in intent or "execution optimization embed" in intent.lower() or "runplan embedding" in intent.lower() or "optimization embed" in intent.lower() or "策略嵌入" in intent or "执行参数嵌入" in intent or "智能嵌入" in intent or "嵌入执行优化" in intent or "嵌入runplan" in intent:
-        print(f"[元进化执行优化建议自动嵌入 run_plan 引擎 v1.0.0] 正在处理...", file=sys.stderr)
+    elif "执行优化嵌入" in intent or "run_plan优化" in intent or "优化嵌入" in intent or "execution optimization embed" in intent.lower() or "runplan embedding" in intent.lower() or "optimization embed" in intent.lower() or "策略嵌入" in intent or "执行参数嵌入" in intent or "智能嵌入" in intent or "嵌入执行优化" in intent or "嵌入runplan" in intent or "自动执行优化" in intent or "执行优化自动化" in intent or "自动优化所有计划" in intent or "自动扫描优化" in intent:
+        print(f"[元进化执行优化建议自动嵌入 run_plan 引擎 V2.0.0] 正在处理...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_meta_execution_optimization_runplan_embedding_engine.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
-        # 过滤掉意图关键词
-        filter_words = ["执行优化嵌入", "run_plan优化", "优化嵌入", "execution optimization embed", "runplan embedding", "optimization embed", "策略嵌入", "执行参数嵌入", "智能嵌入", "嵌入执行优化", "嵌入runplan"]
+        # 过滤掉意图关键词（添加 V2 新关键词）
+        filter_words = ["执行优化嵌入", "run_plan优化", "优化嵌入", "execution optimization embed", "runplan embedding", "optimization embed", "策略嵌入", "执行参数嵌入", "智能嵌入", "嵌入执行优化", "嵌入runplan", "自动执行优化", "执行优化自动化", "自动优化所有计划", "自动扫描优化"]
         filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        # V2: 如果包含"自动扫描"或"优化所有"，自动使用 --auto-scan 参数
+        if "自动扫描" in intent or "优化所有" in intent or "auto scan" in intent.lower():
+            filtered_args = ["--auto-scan"]
+        # V2: 如果包含"获取参数"或"优化参数"，自动使用 --get-params 参数
+        if "获取参数" in intent or "优化参数" in intent or "get params" in intent.lower():
+            # 尝试提取计划名
+            plan_name = "default_plan"
+            for arg in cmd_args:
+                if arg.endswith(".json") or arg in ["test", "default"]:
+                    plan_name = arg
+                    break
+            filtered_args = ["--get-params", plan_name]
         if not filtered_args:
             filtered_args = ["--status"]
         result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
