@@ -8191,6 +8191,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化创新投资组合优化与战略决策增强引擎 (Round 602)
+    # 在 round 600-601 完成的创新涌现与创新价值自动实现引擎基础上，构建让系统能够从600+轮进化历史中分析创新投资回报、智能分配创新资源、形成创新战略决策能力
+    elif "创新投资组合优化" in intent or "创新战略决策" in intent or "战略决策增强" in intent or "创新投资优化" in intent or "innovation portfolio optimizer" in intent.lower() or "strategic decision" in intent.lower() or "创新资源配置" in intent:
+        print(f"[智能全场景进化环元进化创新投资组合优化与战略决策增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_portfolio_optimizer_strategic_decision_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["创新投资组合优化", "创新战略决策", "战略决策增强", "创新投资优化", "innovation portfolio optimizer", "strategic decision", "创新资源配置", "投资组合", "战略决策"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环进化效能自动化归因与智能建议引擎 (Round 545)
     # 基于540+轮进化历史，自动分析每轮进化的成效，识别成功/失败的根本原因，并智能生成可执行的改进建议
     elif "归因分析" in intent or "根因分析" in intent or "改进建议" in intent or "效果归因" in intent or "attribution" in intent.lower() or "root cause" in intent.lower() or "improvement advice" in intent.lower() or "进化归因" in intent or "成效分析" in intent:
