@@ -1695,6 +1695,29 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化决策自动执行引擎 V2（Round 556）- 集成 round 555 策略生成引擎、round 553 验证引擎、round 554 健康引擎，实现「策略→自动执行→验证→健康」完整闭环
+    elif "元进化决策自动执行" in intent or "决策自动执行" in intent or "meta decision auto" in intent.lower() or "decision v2" in intent.lower() or "元决策v2" in intent or "自动执行闭环" in intent or "v2闭环" in intent:
+        print(f"[元进化决策自动执行引擎 V2] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_decision_auto_execution_engine.py")
+
+        # V2 模式命令
+        if "--run-v2" in sys.argv or "运行v2" in intent or "v2运行" in intent or "完整闭环" in intent:
+            filtered_args = ["--run-v2"]
+        elif "--fetch-decision" in sys.argv or "获取决策" in intent:
+            filtered_args = ["--fetch-decision"]
+        elif "--cockpit-v2" in sys.argv or "驾驶舱v2" in intent or "v2驾驶舱" in intent:
+            filtered_args = ["--cockpit-v2"]
+        elif "--v2" in sys.argv:
+            filtered_args = ["--v2"]
+        else:
+            # 默认：显示 V2 状态
+            filtered_args = ["--cockpit-v2"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化智能决策自动策略生成与执行增强引擎（Round 494）- 在 round 474 认知-价值-元进化融合和 round 475/481 自我进化效能分析基础上，增强元进化智能决策能力，实现深度分析→智能决策→自动执行→效果验证闭环
     elif "元进化决策" in intent or "自动策略" in intent or "元决策" in intent or "智能策略生成" in intent or "meta decision" in intent.lower() or "auto strategy" in intent.lower() or "strategy generation" in intent.lower() or "meta evolution decision" in intent.lower() or "智能决策" in intent:
         print(f"[元进化智能决策自动策略生成与执行增强引擎] 正在处理...", file=sys.stderr)
