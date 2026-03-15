@@ -5644,6 +5644,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环自我进化能力深度增强引擎 V2（round 549）- 集成健康监测和效能分析数据，实现更智能的自我进化评估
+    elif "自我进化能力" in intent or "进化能力深度" in intent or "能力增强" in intent or "自我进化评估" in intent or "进化状态评估" in intent or "self evolution capability" in intent.lower() or "deep enhancement" in intent.lower() or "进化指数" in intent or "能力指数" in intent:
+        print(f"[智能全场景进化环自我进化能力深度增强引擎 V2] 正在评估进化能力，整合健康监测和效能分析数据...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_self_evolution_enhancement_v2.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["自我进化能力", "进化能力深度", "能力增强", "自我进化评估", "进化状态评估", "self evolution capability", "deep enhancement", "进化指数", "能力指数", "状态", "查询", "分析", "仪表盘", "dashboard", "执行", "execute", "循环", "cycle"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环自我进化与决策深度集成引擎（round 325）
     elif "进化决策集成" in intent or "自我决策集成" in intent or "分析决策执行" in intent or "integrated evolution" in intent.lower() or "进化闭环" in intent or "进化自优化" in intent or "自动化进化优化" in intent:
         print(f"[智能全场景进化环自我进化与决策深度集成引擎] 正在深度集成自我进化引擎与决策引擎，形成分析→决策→执行→验证→优化完整闭环...", file=sys.stderr)
