@@ -5619,6 +5619,24 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环主动诊断与优化建议引擎 (Round 483)
+    elif "主动诊断" in intent or "诊断引擎" in intent or "健康诊断" in intent or "优化建议" in intent or "智能诊断" in intent or "proactive diagnosis" in intent.lower() or "diagnosis engine" in intent.lower() or "health diagnosis" in intent.lower() or "auto diagnosis" in intent.lower():
+        print(f"[智能全场景进化环主动诊断与优化建议引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_proactive_diagnosis_optimizer_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["主动诊断", "诊断引擎", "健康诊断", "优化建议", "智能诊断", "proactive diagnosis", "diagnosis engine", "health diagnosis", "auto diagnosis"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能创意生成与评估引擎
     elif "创意生成" in intent or "智能创意" in intent or "创新想法" in intent or "新组合" in intent or "创意建议" in intent or "creative generation" in intent.lower() or "creative" in intent.lower() or "创意" in intent:
         print(f"[智能创意生成与评估引擎] 正在分析创意机会...", file=sys.stderr)
