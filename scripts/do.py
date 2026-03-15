@@ -5601,6 +5601,24 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环效能实时数据推送与驾驶舱智能预警深度集成引擎 (Round 482)
+    elif "实时推送" in intent or "智能预警" in intent or "自动刷新" in intent or "效能推送" in intent or "预警阈值" in intent or "realtime push" in intent.lower() or "smart warning" in intent.lower() or "auto refresh" in intent.lower() or "效能预警" in intent:
+        print(f"[智能全场景进化环效能实时数据推送与驾驶舱智能预警深度集成引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_realtime_performance_push_cockpit_integration_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["实时推送", "智能预警", "自动刷新", "效能推送", "预警阈值", "realtime push", "smart warning", "auto refresh", "效能预警"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能创意生成与评估引擎
     elif "创意生成" in intent or "智能创意" in intent or "创新想法" in intent or "新组合" in intent or "创意建议" in intent or "creative generation" in intent.lower() or "creative" in intent.lower() or "创意" in intent:
         print(f"[智能创意生成与评估引擎] 正在分析创意机会...", file=sys.stderr)
