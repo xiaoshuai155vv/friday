@@ -5619,14 +5619,24 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
-    # 智能全场景进化环主动诊断与优化建议引擎 (Round 483)
-    elif "主动诊断" in intent or "诊断引擎" in intent or "健康诊断" in intent or "优化建议" in intent or "智能诊断" in intent or "proactive diagnosis" in intent.lower() or "diagnosis engine" in intent.lower() or "health diagnosis" in intent.lower() or "auto diagnosis" in intent.lower():
+    # 智能全场景进化环主动诊断与优化建议引擎 (Round 483/484)
+    # Round 484 增强：支持自动修复功能
+    elif "主动诊断" in intent or "诊断引擎" in intent or "健康诊断" in intent or "优化建议" in intent or "智能诊断" in intent or "proactive diagnosis" in intent.lower() or "diagnosis engine" in intent.lower() or "health diagnosis" in intent.lower() or "auto diagnosis" in intent.lower() or "自动修复" in intent or "auto fix" in intent.lower() or "诊断修复" in intent or "自动修复" in intent:
         print(f"[智能全场景进化环主动诊断与优化建议引擎] 正在处理...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_proactive_diagnosis_optimizer_engine.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 检测是否需要执行自动修复
+        if "自动修复" in intent or "auto fix" in intent.lower() or "诊断修复" in intent:
+            # 检查是否模拟模式
+            if "模拟" in intent or "dry" in intent.lower():
+                cmd_args = ["--auto-fix", "--dry-run"]
+            else:
+                cmd_args = ["--auto-fix"]
+        elif "验证修复" in intent or "verify fix" in intent.lower():
+            cmd_args = ["--verify-fix"]
         # 过滤掉意图关键词
-        filter_words = ["主动诊断", "诊断引擎", "健康诊断", "优化建议", "智能诊断", "proactive diagnosis", "diagnosis engine", "health diagnosis", "auto diagnosis"]
+        filter_words = ["主动诊断", "诊断引擎", "健康诊断", "优化建议", "智能诊断", "proactive diagnosis", "diagnosis engine", "health diagnosis", "auto diagnosis", "自动修复", "auto fix", "诊断修复", "验证修复", "verify fix", "模拟"]
         filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
         if not filtered_args:
             filtered_args = ["--status"]
