@@ -3066,6 +3066,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 646: 智能全场景进化环元进化系统整体健康自检与预防性整体修复引擎 - 让系统能够主动进行全面体检、预测潜在问题、主动部署预防措施
+    # 形成完整的元进化系统健康保障闭环。基于 round 645 的执行监控与预警能力，构建更深层次的系统级健康自检与预防性修复能力
+    elif "系统健康" in intent or "健康自检" in intent or "健康检查" in intent or "预防性修复" in intent or "整体健康" in intent or "system health" in intent.lower() or "health check" in intent.lower() or "preventive repair" in intent.lower() or "holistic health" in intent.lower() or "健康评估" in intent or "问题预测" in intent or "系统体检" in intent:
+        print(f"[智能全场景进化环元进化系统整体健康自检与预防性整体修复引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_system_holistic_health_check_preventive_repair_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--check"]
+        # 过滤掉意图关键词
+        filter_words = ["系统健康", "健康自检", "健康检查", "预防性修复", "整体健康", "system health", "health check", "preventive repair", "holistic health", "健康评估", "问题预测", "系统体检"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--check"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 634: 智能全场景进化环创新建议自动验证与价值优先级排序引擎 - 基于 round 633 知识图谱引擎（已发现388条待执行创新建议）基础上，构建让系统能够自动验证创新建议价值并智能排序优先级的增强能力
     # 实现「发现→验证→排序→优化→执行」的完整创新价值实现闭环
     elif "创新验证" in intent or "价值排序" in intent or "优先级" in intent or "innovation verify" in intent.lower() or "value priority" in intent.lower() or "priority rank" in intent.lower() or "价值评估" in intent or "创新价值" in intent or "价值评分" in intent:
