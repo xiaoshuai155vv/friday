@@ -1944,6 +1944,35 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化价值预测与战略投资决策增强引擎（Round 579）- 在 round 578 完成的价值实现闭环追踪能力基础上，构建价值预测与战略投资决策能力。让系统能够基于价值实现追踪数据，预测未来进化投资回报、动态调整投资组合、实现战略级价值最大化
+    elif "元进化价值预测" in intent or "战略投资决策" in intent or "投资决策" in intent or "价值投资" in intent or "meta value prediction" in intent.lower() or "value investment decision" in intent.lower() or "strategic investment" in intent.lower() or "价值预测战略" in intent or "战略级价值" in intent or "价值最大化" in intent:
+        print(f"[元进化价值预测与战略投资决策增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_value_prediction_strategic_investment_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--check" in sys.argv or "检查" in intent or "校验" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "执行" in intent or "运行" in intent or "分析" in intent:
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--predict" in sys.argv or "预测" in intent:
+            filtered_args = ["--predict"]
+        elif "--strategy" in sys.argv or "策略" in intent or "投资策略" in intent:
+            filtered_args = ["--strategy"]
+        elif "--history" in sys.argv or "历史" in intent:
+            filtered_args = ["--history"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化知识图谱自涌现与主动创新引擎（Round 574）- 在 round 573 完成的价值实现闭环基础上，构建让系统能够从进化历史和知识图谱中主动涌现创新方向、生成创新假设、验证创新价值的能力，形成「价值驱动→知识涌现→主动创新」的完整闭环
     elif "知识图谱涌现" in intent or "知识涌现" in intent or "涌现创新" in intent or "knowledge emergence" in intent.lower() or "emergence innovation" in intent.lower() or "知识图谱创新" in intent or "创新涌现" in intent or "emergence" in intent.lower() and "创新" in intent or "涌现" in intent and "创新" in intent or "kg emergence" in intent.lower():
         print(f"[元进化知识图谱自涌现与主动创新引擎] 正在处理...", file=sys.stderr)
