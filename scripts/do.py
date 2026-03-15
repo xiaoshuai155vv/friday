@@ -5155,6 +5155,24 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环动态阈值自适应优化引擎 (Round 478)
+    elif "动态阈值自适应优化" in intent or "阈值自适应优化" in intent or "自适应阈值优化" in intent or "adaptive threshold optimization" in intent.lower() or "threshold adaptive optimization" in intent.lower() or "动态阈值优化" in intent or "阈值自优化" in intent or "智能阈值自适应" in intent:
+        print(f"[智能全场景进化环动态阈值自适应优化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_dynamic_threshold_adaptive_optimization_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["动态阈值自适应优化", "阈值自适应优化", "自适应阈值优化", "adaptive threshold optimization", "threshold adaptive optimization", "动态阈值优化", "阈值自优化", "智能阈值自适应"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能决策质量预测性优化与预防性增强引擎（round 337）
     elif ("预测性" in intent or "predictive" in intent.lower() or
           "预防性" in intent or "preventive" in intent.lower() or
