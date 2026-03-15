@@ -2158,6 +2158,50 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环预防性维护自动化深度集成引擎（Round 520）- 在 round 519 完成的性能趋势预测与预防性优化增强引擎基础上，进一步将预防性优化与元进化引擎深度集成，实现完全无人值守的自动化预防性维护
+    # 注意：此引擎必须放在 round 519 引擎之前，因为 round 519 的关键词会匹配"预防性"
+    elif "预防性维护自动化" in intent or "自动化预防" in intent or "维护自动化" in intent or "preventive maintenance automation" in intent.lower() or "maintenance automation" in intent.lower() or "自动维护" in intent or "预防维护" in intent:
+        print(f"[智能全场景进化环预防性维护自动化深度集成引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_preventive_maintenance_automation_integration_engine.py")
+
+        # 解析命令参数
+        filtered_args = []
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "运行" in intent or "执行维护" in intent:
+            filtered_args = ["--run"]
+        elif "--check-trigger" in sys.argv or "检查触发" in intent or "check trigger" in intent.lower():
+            filtered_args = ["--check-trigger"]
+        elif "--configure" in sys.argv or "配置" in intent or "configure" in intent.lower():
+            filtered_args = ["--configure"]
+            if "--performance-threshold" in sys.argv:
+                idx = sys.argv.index("--performance-threshold")
+                if idx + 1 < len(sys.argv):
+                    filtered_args.extend(["--performance-threshold", sys.argv[idx + 1]])
+            if "--trend-threshold" in sys.argv:
+                idx = sys.argv.index("--trend-threshold")
+                if idx + 1 < len(sys.argv):
+                    filtered_args.extend(["--trend-threshold", sys.argv[idx + 1]])
+            if "--health-threshold" in sys.argv:
+                idx = sys.argv.index("--health-threshold")
+                if idx + 1 < len(sys.argv):
+                    filtered_args.extend(["--health-threshold", sys.argv[idx + 1]])
+            if "--auto-trigger" in sys.argv:
+                idx = sys.argv.index("--auto-trigger")
+                if idx + 1 < len(sys.argv):
+                    filtered_args.extend(["--auto-trigger", sys.argv[idx + 1]])
+        else:
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环性能趋势预测与预防性优化增强引擎（Round 519）- 在 round 518 完成的性能基准测试与回归检测引擎基础上，进一步增强趋势预测能力，实现从「检测回归」到「预测趋势→预防性优化」的完整闭环
     elif "性能趋势预测" in intent or "预防性优化" in intent or "趋势预防" in intent or "performance trend prediction" in intent.lower() or "prevention" in intent.lower() or "预防性" in intent:
         print(f"[智能全场景进化环性能趋势预测与预防性优化增强引擎] 正在处理...", file=sys.stderr)
