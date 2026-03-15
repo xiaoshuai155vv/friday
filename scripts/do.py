@@ -1320,6 +1320,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["--audit", "--metrics", "--diagnose", "--cockpit-data", "--all", "help"]):
             cmd = ["--audit"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_governance_quality_audit_engine.py")] + cmd, cwd=PROJECT)
+    # 智能全场景进化环基于治理审计的自动优化执行引擎（Round 534）- 在 round 533 完成的全息治理审计能力基础上，构建基于审计结果的自动优化执行能力
+    elif "治理自动优化" in intent or "审计优化" in intent or "自动修复" in intent or "governance optimization" in intent.lower() or "governance auto" in intent.lower() or "自动治理" in intent or "优化执行" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["--full-cycle"]
+        if not cmd or (cmd and cmd[0] not in ["--analyze", "--execute", "--full-cycle", "--status", "--cockpit-data", "--all", "help"]):
+            cmd = ["--full-cycle"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_governance_auto_optimization_engine.py")] + cmd, cwd=PROJECT)
     # 智能全场景系统自我进化评估与优化引擎（Round 279）
     elif "进化评估" in intent or "自我评估" in intent or "进化优化" in intent or "evolution_evaluation" in intent.lower() or "self evaluation" in intent.lower() or "评估优化" in intent or "进化自评" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
