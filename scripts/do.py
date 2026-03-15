@@ -13305,6 +13305,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化知识创新价值实现自动化闭环引擎 (Round 686)
+    # 在 round 671/685 完成的知识价值发现与知识深度创新V3引擎基础上，
+    # 构建让系统能够自动将知识创新转化为实际价值的完整闭环
+    elif "知识创新价值实现" in intent or "创新价值闭环" in intent or "knowledge innovation value" in intent.lower() or "知识价值实现" in intent or "创新价值自动化" in intent or "价值实现自动化" in intent or "价值实现闭环" in intent:
+        print(f"[元进化知识创新价值实现自动化闭环引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_knowledge_innovation_value_implementation_closed_loop_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["知识创新价值实现", "创新价值闭环", "knowledge innovation value", "知识价值实现", "创新价值自动化", "价值实现自动化", "价值实现闭环"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     else:
         # 未知意图时，先检查是否包含情感关键词
         import json
