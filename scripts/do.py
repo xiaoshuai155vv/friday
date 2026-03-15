@@ -1492,6 +1492,37 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨引擎知识更新预警与自动触发深度集成引擎（Round 492）- 监控知识库变化、自动预警、基于条件自动触发、与预警引擎深度集成
+    elif "知识更新预警" in intent or "预警触发" in intent or "知识触发" in intent or "知识库预警" in intent or "knowledge update warning" in intent.lower() or "update warning trigger" in intent.lower() or "trigger warning" in intent.lower() or "warning trigger" in intent.lower() or "知识变化预警" in intent or "知识同步预警" in intent or "自动触发规则" in intent:
+        print(f"[跨引擎知识更新预警与自动触发深度集成引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_knowledge_update_warning_trigger_engine.py")
+
+        # 确定要执行的命令
+        if "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "运行" in intent or "执行" in intent or "运行周期" in intent:
+            filtered_args = ["--run"]
+        elif "--detect" in sys.argv or "检测" in intent or "变化检测" in intent:
+            filtered_args = ["--detect"]
+        elif "--start-monitor" in sys.argv or "启动监控" in intent or "开始监控" in intent:
+            filtered_args = ["--start-monitor"]
+        elif "--stop-monitor" in sys.argv or "停止监控" in intent:
+            filtered_args = ["--stop-monitor"]
+        elif "--warning-summary" in sys.argv or "预警摘要" in intent:
+            filtered_args = ["--warning-summary"]
+        elif "--trigger-rules" in sys.argv or "触发规则" in intent or "规则" in intent:
+            filtered_args = ["--trigger-rules"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：显示状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨引擎知识主动推荐与智能预警引擎（Round 448）- 基于上下文主动推荐知识、预测用户需求、预警潜在问题
     elif "知识推荐" in intent or "智能推荐" in intent or "推荐知识" in intent or "主动预警" in intent or "知识预警" in intent or "knowledge recommendation" in intent.lower() or "proactive recommendation" in intent.lower() or "主动推荐" in intent or "智能预警" in intent or "预警" in intent:
         print(f"[跨引擎知识主动推荐与智能预警引擎] 正在处理...", file=sys.stderr)
