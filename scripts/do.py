@@ -1977,6 +1977,35 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环多引擎协同智能决策深度集成引擎（Round 509）- 聚合多个进化引擎的决策信息、统一权重计算、智能冲突仲裁、决策执行路径优化，形成真正的「多引擎协同智能决策」闭环
+    elif "多引擎协同决策" in intent or "协同决策" in intent or "多引擎决策" in intent or "决策集成" in intent or "multi engine" in intent.lower() and "decision" in intent.lower() or "collaborative decision" in intent.lower() or "决策深度集成" in intent:
+        print(f"[智能全场景进化环多引擎协同智能决策深度集成引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_multi_engine_collaborative_decision_integration_engine.py")
+
+        # 解析命令参数
+        filtered_args = []
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--decide" in sys.argv or "决策" in intent or "decide" in intent.lower():
+            filtered_args = ["--decide"]
+        elif "--collect" in sys.argv or "收集" in intent or "collect" in intent.lower():
+            filtered_args = ["--collect"]
+        elif "--weights" in sys.argv or "权重" in intent or "weights" in intent.lower():
+            filtered_args = ["--weights"]
+        elif "--path" in sys.argv or "路径" in intent or "path" in intent.lower():
+            filtered_args = ["--path"]
+        else:
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环创新验证结果自动执行与价值实现引擎（Round 502）- 将验证通过的创新假设自动转化为可执行任务、智能评估执行价值、自动执行创新方案、追踪价值实现
     elif "创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent:
         print(f"[创新验证结果自动执行与价值实现引擎] 正在处理...", file=sys.stderr)
