@@ -1717,6 +1717,33 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元认知-元进化深度集成引擎（Round 496）- 在 round 494 元进化智能决策引擎和 round 495 元认知深度优化引擎基础上，将元认知分析结果直接驱动策略生成和参数调整，形成认知→决策→执行→验证→认知更新完整闭环
+    elif "元认知决策" in intent or "认知驱动策略" in intent or "元认知元进化" in intent or "元认知集成" in intent or "cognition decision" in intent.lower() or "cognition driven" in intent.lower() or "cognitive strategy" in intent.lower() or "元认知驱动" in intent or "认知驱动" in intent or ("元认知" in intent and "决策" in intent) or ("meta cognition" in intent.lower() and "decision" in intent.lower()) or "cognition_meta_integration" in intent.lower() or "元认知-元进化" in intent:
+        print(f"[元认知-元进化深度集成引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_cognition_meta_decision_integration_engine.py")
+
+        # 确定要执行的命令
+        if "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--analyze" in sys.argv or "分析" in intent:
+            filtered_args = ["--analyze"]
+        elif "--run" in sys.argv or "执行闭环" in intent or "运行闭环" in intent:
+            filtered_args = ["--run"]
+        elif "--dry-run" in sys.argv or "模拟" in intent or "dry run" in intent.lower():
+            filtered_args = ["--dry-run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--history" in sys.argv or "历史" in intent:
+            filtered_args = ["--history"]
+        else:
+            # 默认：显示状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环执行策略自优化深度增强引擎（Round 449）- 自动分析引擎执行效果、识别协作低效模式、智能生成并执行优化策略
     elif "策略优化" in intent or "执行优化" in intent or "自优化" in intent or "优化策略" in intent or "strategy optimization" in intent.lower() or "execution optimization" in intent.lower() or "self-optimization" in intent.lower() or "optimize strategy" in intent.lower() or "策略自优化" in intent or "执行策略优化" in intent:
         print(f"[执行策略自优化深度增强引擎] 正在处理...", file=sys.stderr)
