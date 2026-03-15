@@ -2185,6 +2185,39 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化优化机会主动发现与智能决策增强引擎（Round 590）- 让系统能够主动从进化历史、跨引擎协同、知识图谱中发现优化机会，生成智能优化建议，并能够自主决策是否执行优化，形成「机会发现→智能评估→自动决策→执行优化→效果验证」的完整优化闭环
+    elif "优化机会发现" in intent or "机会发现" in intent or "opportunity discovery" in intent.lower() or "优化决策" in intent or "智能优化决策" in intent or "发现优化机会" in intent or "优化建议" in intent or "智能优化建议" in intent or "元优化" in intent or "meta optimization" in intent.lower() or "进化优化机会" in intent:
+        print(f"[元进化优化机会主动发现与智能决策增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_optimization_opportunity_discovery_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--discover" in sys.argv or "发现" in intent or "discover" in intent.lower():
+            filtered_args = ["--discover"]
+        elif "--history" in sys.argv or "历史分析" in intent or "history" in intent.lower():
+            filtered_args = ["--history"]
+        elif "--cross-engine" in sys.argv or "跨引擎" in intent or "cross engine" in intent.lower():
+            filtered_args = ["--cross-engine"]
+        elif "--knowledge" in sys.argv or "知识" in intent or "knowledge" in intent.lower():
+            filtered_args = ["--knowledge"]
+        elif "--decide" in sys.argv or "决策" in intent or "decide" in intent.lower() or "评估" in intent:
+            filtered_args = ["--decide"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--summary" in sys.argv or "摘要" in intent or "summary" in intent.lower():
+            filtered_args = ["--summary"]
+        else:
+            # 默认：执行综合优化机会发现
+            filtered_args = ["--discover"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环知识驱动自动化执行增强引擎（Round 581）- 在 round 580 完成的价值驱动进化执行闭环引擎基础上，构建从知识推理到自动执行的完整自动化链路。让系统能够从知识图谱推理结果自动生成并执行行动计划，形成「推理→洞察→行动→验证」的完整知识驱动闭环
     elif "知识行动转换" in intent or "推理到行动" in intent or "insight to action" in intent.lower() or "知识自动化执行增强" in intent or "insight execution automation" in intent.lower():
         print(f"[知识驱动自动化执行增强引擎] 正在处理...", file=sys.stderr)
