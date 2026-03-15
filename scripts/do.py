@@ -3001,6 +3001,29 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化策略智能推荐与优先级自动优化引擎 V2 (Round 678)
+    # 基于 round 655/656 的自适应学习和能力评估能力，构建让系统能够：
+    # 1. 自动分析当前系统状态（健康、效率、能力缺口、价值潜力）
+    # 2. 智能推荐最佳进化方向
+    # 3. 自动优化进化优先级
+    # 实现从「被动等待进化需求」升级到「主动智能推荐最优进化方向」
+    elif "策略智能推荐" in intent or "进化方向推荐" in intent or "智能推荐进化" in intent or "strategy intelligent recommendation" in intent.lower() or "intelligent recommendation" in intent.lower() or "priority optimization" in intent.lower() or "优先级优化" in intent or "进化优先级" in intent or "智能策略" in intent or "策略推荐" in intent or "方向推荐" in intent or "智能推荐" in intent or "进化方向" in intent:
+        print(f"[智能全场景进化环元进化策略智能推荐与优先级自动优化引擎 V2 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_strategy_intelligent_recommendation_v2_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["策略智能推荐", "进化方向推荐", "智能推荐进化", "strategy intelligent recommendation", "intelligent recommendation", "priority optimization", "优先级优化", "进化优先级", "智能策略", "策略推荐", "方向推荐", "智能推荐", "进化方向"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环元进化自我诊断优化闭环增强引擎 (Round 629)
     # 基于 round 628 完成的元进化引擎健康预测与预防性自愈深度增强引擎（健康预测、故障预判、预防性自愈）、
     # round 618 完成的元进化系统深度健康诊断与智能修复闭环增强引擎、round 620 完成的元进化执行效能实时优化引擎、
