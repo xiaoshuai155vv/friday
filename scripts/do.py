@@ -3047,6 +3047,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 645: 智能全场景进化环元进化执行过程深度监控与智能预警增强引擎 - 在 round 644 完成的元进化自适应学习与策略自动优化引擎 V2 基础上
+    # 构建更深层次的执行过程深度监控能力，让系统能够实时追踪进化执行状态、智能预测执行风险、主动部署预防性措施
+    elif "执行监控" in intent or "智能预警" in intent or "风险预测" in intent or "预防性措施" in intent or "execution monitoring" in intent.lower() or "smart warning" in intent.lower() or "risk prediction" in intent.lower() or "preventive" in intent.lower() or "执行风险" in intent or "深度监控" in intent:
+        print(f"[智能全场景进化环元进化执行过程深度监控与智能预警增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_execution_deep_monitoring_smart_warning_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["执行监控", "智能预警", "风险预测", "预防性措施", "execution monitoring", "smart warning", "risk prediction", "preventive", "执行风险", "深度监控"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 634: 智能全场景进化环创新建议自动验证与价值优先级排序引擎 - 基于 round 633 知识图谱引擎（已发现388条待执行创新建议）基础上，构建让系统能够自动验证创新建议价值并智能排序优先级的增强能力
     # 实现「发现→验证→排序→优化→执行」的完整创新价值实现闭环
     elif "创新验证" in intent or "价值排序" in intent or "优先级" in intent or "innovation verify" in intent.lower() or "value priority" in intent.lower() or "priority rank" in intent.lower() or "价值评估" in intent or "创新价值" in intent or "价值评分" in intent:
