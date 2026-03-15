@@ -3125,13 +3125,32 @@ def main():
 
     # round 646: 智能全场景进化环元进化系统整体健康自检与预防性整体修复引擎 - 让系统能够主动进行全面体检、预测潜在问题、主动部署预防措施
     # 形成完整的元进化系统健康保障闭环。基于 round 645 的执行监控与预警能力，构建更深层次的系统级健康自检与预防性修复能力
-    elif "系统健康" in intent or "健康自检" in intent or "健康检查" in intent or "预防性修复" in intent or "整体健康" in intent or "system health" in intent.lower() or "health check" in intent.lower() or "preventive repair" in intent.lower() or "holistic health" in intent.lower() or "健康评估" in intent or "问题预测" in intent or "系统体检" in intent:
+    elif ("系统健康" in intent or "健康自检" in intent or "健康检查" in intent or "预防性修复" in intent or "整体健康" in intent or "system health" in intent.lower() or "health check" in intent.lower() or "preventive repair" in intent.lower() or "holistic health" in intent.lower() or "健康评估" in intent or "问题预测" in intent or "系统体检" in intent) and "V2" not in intent and "v2" not in intent:
         print(f"[智能全场景进化环元进化系统整体健康自检与预防性整体修复引擎 v1.0.0] 正在处理...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_meta_system_holistic_health_check_preventive_repair_engine.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--check"]
         # 过滤掉意图关键词
         filter_words = ["系统健康", "健康自检", "健康检查", "预防性修复", "整体健康", "system health", "health check", "preventive repair", "holistic health", "健康评估", "问题预测", "系统体检"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--check"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
+    # round 668: 智能全场景进化环元进化系统整体健康自检与预防性整体修复引擎 V2 - 在 round 651/618/646 完成的健康诊断与修复能力基础上
+    # 构建更深层次的跨引擎协同健康评估、预测性问题识别与预防性自愈能力，形成完整的元进化系统健康保障闭环 V2
+    elif "系统健康V2" in intent or "健康自检V2" in intent or "健康检查V2" in intent or "整体健康V2" in intent or "system health V2" in intent.lower() or "health check V2" in intent.lower() or "holistic health V2" in intent.lower() or "跨引擎健康" in intent or "协同健康评估" in intent:
+        print(f"[智能全场景进化环元进化系统整体健康自检与预防性整体修复引擎 V2 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_system_holistic_health_check_preventive_repair_v2_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--check"]
+        # 过滤掉意图关键词
+        filter_words = ["系统健康V2", "健康自检V2", "健康检查V2", "整体健康V2", "system health V2", "health check V2", "holistic health V2", "跨引擎健康", "协同健康评估"]
         filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
         if not filtered_args:
             filtered_args = ["--check"]
