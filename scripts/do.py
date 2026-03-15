@@ -2578,6 +2578,42 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
 
+    # 智能全场景进化环元进化创新价值自动实现与迭代深化引擎（Round 601）- 在 round 600 完成的元进化主动创新涌现引擎基础上，构建让系统能够自动执行创新假设、验证价值实现、持续迭代深化的完整创新价值闭环
+    elif "创新价值自动实现" in intent or "价值自动实现" in intent or "创新价值实现" in intent or "价值迭代深化" in intent or "迭代深化" in intent or "创新闭环" in intent or "创新价值" in intent or "innovation value automated" in intent.lower() or "value iteration" in intent.lower() or "迭代深化引擎" in intent:
+        print(f"[元进化创新价值自动实现与迭代深化引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_value_automated_execution_iteration_deepening_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--run" in sys.argv or "执行" in intent or "运行" in intent or "run" in intent.lower() or "价值实现" in intent:
+            filtered_args = ["--run"]
+        elif "--execute" in sys.argv or "执行任务" in intent:
+            filtered_args = ["--execute"]
+        elif "--verify" in sys.argv or "验证" in intent:
+            filtered_args = ["--verify"]
+        elif "--iterate" in sys.argv or "迭代" in intent:
+            filtered_args = ["--iterate"]
+        elif "--summary" in sys.argv or "摘要" in intent:
+            filtered_args = ["--summary"]
+        else:
+            # 默认显示驾驶舱数据
+            filtered_args = ["--cockpit-data"]
+
+        # 过滤掉意图关键词
+        filter_words = ["创新价值自动实现", "价值自动实现", "创新价值实现", "价值迭代深化", "迭代深化", "创新闭环", "创新价值", "innovation value automated", "value iteration", "迭代深化引擎"]
+        filtered_args_base = [arg for arg in sys.argv[1:] if arg not in filter_words]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args + filtered_args_base, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+
     # 智能全场景进化环主动创新假设自动生成与自涌现发现引擎（Round 582）- 在 round 581 完成的知识驱动自动化执行增强引擎基础上，构建让系统能够主动发现创新机会、生成创新假设、发现新的进化方向的引擎。让系统不仅能执行知识推理结果，还能主动思考"我可以进化什么新的方向"，实现从「被动执行知识推理结果」到「主动发现进化机会」的范式升级
     elif "创新假设" in intent or "假设生成" in intent or "innovation hypothesis" in intent.lower() or "hypothesis generation" in intent.lower() or "创新发现" in intent or "主动发现" in intent or "emergence discovery" in intent.lower() or "创新涌现" in intent or "自涌现" in intent or "创新机会" in intent:
         print(f"[主动创新假设自动生成与自涌现发现引擎] 正在处理...", file=sys.stderr)
