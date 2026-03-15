@@ -5672,6 +5672,20 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环跨轮次深度学习与自适应策略迭代优化引擎（round 551）- 从500+轮进化历史中深度学习，自动识别高效进化模式，智能优化策略参数
+    elif "跨轮次深度学习" in intent or "跨轮学习" in intent or "策略迭代优化" in intent or "自适应策略优化" in intent or "cross round learning" in intent.lower() or "deep learning iteration" in intent.lower() or "策略参数优化" in intent or "学习迭代" in intent or "adaptive strategy" in intent.lower() or "迭代优化" in intent or "模式识别" in intent and "进化" in intent:
+        print(f"[智能全场景进化环跨轮次深度学习与自适应策略迭代优化引擎] 正在分析进化历史并优化策略参数...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_round_deep_learning_iteration_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+        filtered_args = [arg for arg in cmd_args if arg not in ["跨轮次深度学习", "跨轮学习", "策略迭代优化", "自适应策略优化", "cross round learning", "deep learning iteration", "策略参数优化", "学习迭代", "adaptive strategy", "迭代优化", "模式识别", "状态", "status", "仪表盘", "dashboard", "执行", "execute", "循环", "cycle", "分析", "analyze", "优化", "optimize"]]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环自我进化与决策深度集成引擎（round 325）
     elif "进化决策集成" in intent or "自我决策集成" in intent or "分析决策执行" in intent or "integrated evolution" in intent.lower() or "进化闭环" in intent or "进化自优化" in intent or "自动化进化优化" in intent:
         print(f"[智能全场景进化环自我进化与决策深度集成引擎] 正在深度集成自我进化引擎与决策引擎，形成分析→决策→执行→验证→优化完整闭环...", file=sys.stderr)
