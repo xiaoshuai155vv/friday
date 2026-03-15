@@ -3085,6 +3085,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 656: 智能全场景进化环元进化能力评估与认证引擎 V2 - 在 round 655 完成的 V3 自适应学习引擎基础上
+    # 构建多维度的元进化能力评估与认证系统，让系统能够多维度量化评估自身元进化能力、生成针对性改进建议、形成持续自我提升闭环
+    elif "能力评估" in intent or "认证引擎" in intent or "元进化评估" in intent or "能力评分" in intent or "capability assessment" in intent.lower() or "meta evolution assessment" in intent.lower() or "能力认证" in intent or "元能力" in intent or "自我评估" in intent or "认证等级" in intent:
+        print(f"[智能全场景进化环元进化能力评估与认证引擎 V2 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_capability_assessment_certification_v2_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--cockpit-data"]
+        # 过滤掉意图关键词
+        filter_words = ["能力评估", "认证引擎", "元进化评估", "能力评分", "capability assessment", "meta evolution assessment", "能力认证", "元能力", "自我评估", "认证等级"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--cockpit-data"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 645: 智能全场景进化环元进化执行过程深度监控与智能预警增强引擎 - 在 round 644 完成的元进化自适应学习与策略自动优化引擎 V2 基础上
     # 构建更深层次的执行过程深度监控能力，让系统能够实时追踪进化执行状态、智能预测执行风险、主动部署预防性措施
     elif "执行监控" in intent or "智能预警" in intent or "风险预测" in intent or "预防性措施" in intent or "execution monitoring" in intent.lower() or "smart warning" in intent.lower() or "risk prediction" in intent.lower() or "preventive" in intent.lower() or "执行风险" in intent or "深度监控" in intent:

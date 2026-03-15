@@ -2,25 +2,25 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/evolution_meta_adaptive_learning_strategy_optimizer_v3.py, scripts/do.py, references/evolution_self_proposed.md, references/evolution_auto_last.md, runtime/state/current_mission.json, runtime/state/evolution_completed_ev_20260315_185839.json
+scripts/evolution_meta_capability_assessment_certification_v2_engine.py, scripts/do.py, references/evolution_auto_last.md, references/evolution_self_proposed.md, runtime/state/current_mission.json, runtime/state/evolution_completed_ev_20260315_190407.json
 
-## 2026-03-16 round 655
-- **current_goal**：智能全场景进化环元进化自适应学习与策略自动优化引擎 V3 - 让系统能够基于最新投资回报评估结果自动调整进化策略，实现更智能的资源分配与优先级动态优化
+## 2026-03-16 round 656
+- **current_goal**：智能全场景进化环元进化能力评估与认证引擎 V2 - 让系统能够多维度量化评估自身元进化能力、生成针对性改进建议、形成持续自我提升闭环
 - **做了什么**：
-  1. 创建 evolution_meta_adaptive_learning_strategy_optimizer_v3.py 模块（version 1.0.0）
-  2. 实现基于 ROI 评估结果的策略自动调整能力（5项策略调整）
-  3. 实现进化资源动态分配算法（5项资源分配）
-  4. 实现优先级自动优化机制（2项优先级优化）
-  5. 实现与 round 654 ROI 评估引擎的深度集成
+  1. 创建 evolution_meta_capability_assessment_certification_v2_engine.py 模块（version 1.0.0）
+  2. 实现多维度能力评估算法（7个维度：自主学习、自我优化、创新、协同、价值实现、健康维护、自主决策）
+  3. 实现元进化能力评分体系（5个认证等级：novice/intermediate/advanced/expert/master）
+  4. 实现改进建议自动生成（7条优先级建议）
+  5. 与 round 655 V3 自适应学习引擎深度集成
   6. 实现驾驶舱数据接口
-  7. 集成到 do.py 支持自适应学习V3、ROI自适应、资源动态分配、优先级优化等关键词触发
+  7. 集成到 do.py 支持能力评估、认证引擎、自我评估等关键词触发
 - **是否完成**：已完成
 - **基线校验**：通过
-- **针对性校验**：通过 - 模块创建成功，--version/--adjust-strategy/--allocate-resources/--optimize-priorities/--cockpit-data 命令均正常工作，成功读取 round 654 ROI 数据（40轮进化，完成率72.5%），完成5项策略调整、5项资源分配、2项优先级优化，效果评分31.0%，do.py 集成成功
+- **针对性校验**：通过 - 模块创建成功，--version/--cockpit-data/--run-assessment 命令均正常工作，评估得分为53.35分（advanced高级），7个维度评估完成，7条改进建议生成成功，do.py 集成成功
 
-- **依赖**：round 654 ROI 评估引擎
+- **依赖**：round 655 V3 自适应学习引擎
 - **创新点**：
-  1. ROI 驱动策略调整 - 基于价值贡献类别自动调整进化策略参数
-  2. 资源动态分配 - 基于 ROI 评估结果智能分配进化资源
-  3. 优先级自动优化 - 基于完成数量自动调整进化优先级
-  4. ROI 策略联动 - 创建完整的「ROI评估→策略调整→资源分配→优先级优化→执行验证」闭环
+  1. 多维度量化评估 - 从7个维度全面评估元进化能力
+  2. 认证等级体系 - 建立 novice→master 的成长路径
+  3. 改进建议生成 - 自动生成7条优先级改进建议
+  4. 与 V3 引擎集成 - 与自适应学习形成「评估→学习→再评估」的闭环
