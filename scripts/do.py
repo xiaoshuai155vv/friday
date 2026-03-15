@@ -6820,6 +6820,47 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环健康监测-效能对话深度集成引擎 (Round 548)
+    # 将 round 547 的系统性健康持续监测与预警增强引擎与 round 546 的进化效能智能对话分析引擎深度集成
+    elif "健康对话" in intent or "健康集成" in intent or "监测对话" in intent or "health dialog" in intent.lower() or "health integration" in intent.lower() or "monitoring dialog" in intent.lower() or "健康问答" in intent or "health qa" in intent.lower() or "health question" in intent.lower() or "问我健康" in intent:
+        print(f"[智能全场景进化环健康监测-效能对话深度集成引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_health_monitoring_dialog_integration_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else []
+
+        # 检测功能关键词
+        if "报告" in intent:
+            cmd_args = ["--report"]
+        elif "问" in intent:
+            # 提取问题
+            import re
+            match = re.search(r'问[道](.+)', intent)
+            if match:
+                question = match.group(1).strip()
+                cmd_args = ["--ask", question]
+            else:
+                cmd_args = ["--ask", "健康状态如何"]
+        elif "预警" in intent:
+            cmd_args = ["--warnings"]
+        elif "通知" in intent:
+            cmd_args = ["--notify"]
+        elif "状态" in intent:
+            cmd_args = ["--status"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        elif "--version" in cmd_args:
+            cmd_args = ["--version"]
+        else:
+            # 无额外参数时默认生成报告
+            cmd_args = ["--report"]
+
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环自我进化效能深度分析与自适应优化引擎 (Round 475/487)
     # Round 487 增强：支持策略参数自动调整、模式提取、迭代优化等自适应学习能力
     elif "效能分析" in intent or "自我优化" in intent or "进化效能" in intent or "效能瓶颈" in intent or "effectiveness" in intent.lower() or "self optimization" in intent.lower() or "evolution effectiveness" in intent.lower() or "自适应学习" in intent or "策略调整" in intent or "模式提取" in intent or "迭代优化" in intent or "recursive optimization" in intent.lower() or "strategy adjustment" in intent.lower() or "pattern extraction" in intent.lower():
