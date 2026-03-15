@@ -5184,6 +5184,30 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环创新价值完整实现闭环引擎 (Round 642)
+    # 填补 round 633-641 构建的「创新发现→验证排序→价值变现」体系中的执行闭环缺口
+    # 让验证通过的创新建议能够自动执行并转化为实际价值
+    elif ("创新价值闭环" in intent or "创新实现闭环" in intent or "价值实现闭环" in intent
+          or "innovation closed loop" in intent.lower() or "value closed loop" in intent.lower()
+          or "创新价值完整实现" in intent
+          or ("完整实现" in intent and "创新" in intent)
+          or "创新闭环执行" in intent):
+        print(f"[智能全场景进化环创新价值完整实现闭环引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_value_closed_loop_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["创新价值闭环", "创新实现闭环", "价值实现闭环", "innovation closed loop", "value closed loop", "创新价值完整实现", "完整实现", "创新闭环执行"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景超级预测与主动价值创造引擎（Round 287）
     elif "超级预测" in intent or "主动价值创造" in intent or "机会发现" in intent or "super prediction" in intent.lower() or "opportunity discovery" in intent.lower() or "create value" in intent.lower() or "价值创造" in intent or "趋势分析" in intent or "trends analysis" in intent.lower():
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
