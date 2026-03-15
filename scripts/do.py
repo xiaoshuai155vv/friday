@@ -2158,6 +2158,35 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环性能趋势预测与预防性优化增强引擎（Round 519）- 在 round 518 完成的性能基准测试与回归检测引擎基础上，进一步增强趋势预测能力，实现从「检测回归」到「预测趋势→预防性优化」的完整闭环
+    elif "性能趋势预测" in intent or "预防性优化" in intent or "趋势预防" in intent or "performance trend prediction" in intent.lower() or "prevention" in intent.lower() or "预防性" in intent:
+        print(f"[智能全场景进化环性能趋势预测与预防性优化增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_performance_trend_prediction_prevention_engine.py")
+
+        # 解析命令参数
+        filtered_args = []
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--predict-trend" in sys.argv or "预测趋势" in intent or "predict trend" in intent.lower():
+            filtered_args = ["--predict-trend"]
+        elif "--execute-prevention" in sys.argv or "执行预防" in intent or "execute prevention" in intent.lower():
+            filtered_args = ["--execute-prevention"]
+        elif "--verify-effect" in sys.argv or "验证效果" in intent or "verify effect" in intent.lower():
+            filtered_args = ["--verify-effect"]
+        elif "--run" in sys.argv or "运行" in intent or "完整分析" in intent:
+            filtered_args = ["--run"]
+        else:
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环决策自动执行与动态调整引擎（Round 510）- 将多引擎协同智能决策结果自动转化为可执行动作、智能调整执行参数、动态处理异常、验证执行效果，形成从「智能决策→自动执行→动态调整→效果验证」的完整闭环
     elif "决策执行" in intent or "自动执行" in intent or "执行决策" in intent or "decision execution" in intent.lower() or "auto execute decision" in intent.lower() or "决策动态调整" in intent or "decision auto" in intent.lower():
         print(f"[智能全场景进化环决策自动执行与动态调整引擎] 正在处理...", file=sys.stderr)
