@@ -2006,6 +2006,51 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环决策自动执行与动态调整引擎（Round 510）- 将多引擎协同智能决策结果自动转化为可执行动作、智能调整执行参数、动态处理异常、验证执行效果，形成从「智能决策→自动执行→动态调整→效果验证」的完整闭环
+    elif "决策执行" in intent or "自动执行" in intent or "执行决策" in intent or "decision execution" in intent.lower() or "auto execute decision" in intent.lower() or "决策动态调整" in intent or "decision auto" in intent.lower():
+        print(f"[智能全场景进化环决策自动执行与动态调整引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_decision_auto_execution_engine.py")
+
+        # 解析命令参数
+        filtered_args = []
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--load-decisions" in sys.argv or "加载决策" in intent or "load decisions" in intent.lower():
+            filtered_args = ["--load-decisions"]
+        elif "--execute" in sys.argv or "执行" in intent:
+            # 尝试获取决策ID
+            decision_id = None
+            if "--execute" in sys.argv:
+                idx = sys.argv.index("--execute")
+                if idx + 1 < len(sys.argv):
+                    decision_id = sys.argv[idx + 1]
+            if decision_id:
+                filtered_args = ["--execute", decision_id]
+            else:
+                filtered_args = ["--status"]
+        elif "--report" in sys.argv or "报告" in intent or "report" in intent.lower():
+            # 尝试获取决策ID
+            decision_id = None
+            if "--report" in sys.argv:
+                idx = sys.argv.index("--report")
+                if idx + 1 < len(sys.argv):
+                    decision_id = sys.argv[idx + 1]
+            if decision_id:
+                filtered_args = ["--report", decision_id]
+            else:
+                filtered_args = ["--status"]
+        else:
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环创新验证结果自动执行与价值实现引擎（Round 502）- 将验证通过的创新假设自动转化为可执行任务、智能评估执行价值、自动执行创新方案、追踪价值实现
     elif "创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent:
         print(f"[创新验证结果自动执行与价值实现引擎] 正在处理...", file=sys.stderr)
