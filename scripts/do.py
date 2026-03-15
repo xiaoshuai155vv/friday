@@ -2946,6 +2946,28 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化自我诊断优化闭环增强引擎 (Round 629)
+    # 基于 round 628 完成的元进化引擎健康预测与预防性自愈深度增强引擎（健康预测、故障预判、预防性自愈）、
+    # round 618 完成的元进化系统深度健康诊断与智能修复闭环增强引擎、round 620 完成的元进化执行效能实时优化引擎、
+    # round 622 完成的元进化系统自演进架构优化引擎基础上，构建让系统能够自动整合多引擎诊断结果、生成综合优化方案并自动执行的增强能力
+    # 实现从「单一引擎优化」升级到「多引擎协同优化」
+    elif "自我诊断优化" in intent or "多维诊断" in intent or "综合优化" in intent or "闭环优化" in intent or "self diagnosis" in intent.lower() or "self-diagnosis" in intent.lower() or "comprehensive optimization" in intent.lower() or "multi-dimensional diagnosis" in intent.lower() or "closed loop" in intent.lower() or "自诊断" in intent or "诊断优化" in intent or "诊断闭环" in intent:
+        print(f"[智能全场景进化环元进化自我诊断优化闭环增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_self_diagnosis_optimization_closed_loop_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["自我诊断优化", "多维诊断", "综合优化", "闭环优化", "self diagnosis", "self-diagnosis", "comprehensive optimization", "multi-dimensional diagnosis", "closed loop", "自诊断", "诊断优化", "诊断闭环"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环元进化系统自涌现深度增强引擎（Round 576）- 在 round 575 完成的创新价值自动化实现与迭代深化引擎基础上，进一步增强系统的自涌现能力。让系统能够基于已有能力组合、进化历史数据、知识图谱，自动涌现新的创新方向、生成高价值创新假设、形成自驱动创新涌现的深度增强能力
     elif "元涌现" in intent or "自涌现" in intent or "创新涌现" in intent or "能力涌现" in intent or "meta emergence" in intent.lower() or "system emergence" in intent.lower() or "emergence deep" in intent.lower() or "元进化系统" in intent or "系统自涌现" in intent or "涌现增强" in intent or "涌现引擎" in intent or "涌现分析" in intent:
         print(f"[元进化系统自涌现深度增强引擎] 正在处理...", file=sys.stderr)
