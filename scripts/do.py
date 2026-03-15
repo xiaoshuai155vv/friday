@@ -1828,6 +1828,35 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化主动创新引擎（Round 570）- 在 round 569 完成的元进化自我优化引擎基础上，构建让系统主动发现创新机会、生成创新假设、验证创新价值的闭环，形成「理解→优化→创新」的递归增强，让系统不仅能优化已知问题，还能主动创造新价值
+    elif "主动创新" in intent or "元进化主动创新" in intent or "meta active innovation" in intent.lower() or "innovation discovery" in intent.lower() or "创新发现" in intent or "创新假设" in intent or "创新验证" in intent or "创新价值" in intent or "创新引擎" in intent or "主动创新引擎" in intent:
+        print(f"[元进化主动创新引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_active_innovation_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--check" in sys.argv or "检查" in intent or "校验" in intent:
+            filtered_args = ["--check"]
+        elif "--discover" in sys.argv or "发现创新" in intent or "发现" in intent:
+            filtered_args = ["--discover"]
+        elif "--hypotheses" in sys.argv or "生成假设" in intent or "创新假设" in intent:
+            filtered_args = ["--hypotheses"]
+        elif "--validate" in sys.argv or "验证创新" in intent or "创新验证" in intent:
+            filtered_args = ["--validate"]
+        elif "--run" in sys.argv or "执行创新" in intent or "运行创新" in intent:
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环跨轮次价值实现追踪与量化增强引擎（Round 559）- 在 round 558 完成的元进化自我反思与深度自省引擎基础上，进一步将自省结果量化为可衡量的价值指标，实现「自省→量化→价值反馈→优化决策」的完整价值驱动进化闭环
     elif "价值追踪" in intent or "价值量化" in intent or "价值反馈" in intent or "价值驱动" in intent or "value tracking" in intent.lower() or "value quantum" in intent.lower() or "value realization" in intent.lower() or "价值实现" in intent or "跨轮次价值" in intent or "价值增强" in intent:
         print(f"[跨轮次价值实现追踪与量化增强引擎] 正在处理...", file=sys.stderr)
