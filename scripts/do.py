@@ -2457,6 +2457,39 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化全链路智能编排与自主演进引擎（Round 597）- 将已有的元进化组件（自省596、决策555-556、验证553、健康554、跨维度594-595）统一编排，形成从自省→智能决策→自动执行→效果验证→持续优化的完整自主演进闭环。系统能够感知多引擎状态、统一编排决策、执行闭环、持续演进，实现真正的元进化全链路自主运行
+    elif "元进化全链路" in intent or "全链路编排" in intent or "全链路演进" in intent or "full link orchestration" in intent.lower() or "meta full link" in intent.lower() or "全链路智能编排" in intent or "自主演进" in intent or "autonomous evolution" in intent.lower() or "编排引擎" in intent or "orchestration engine" in intent.lower() or "元进化编排" in intent or "全链路" in intent:
+        print(f"[元进化全链路智能编排与自主演进引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_evolution_full_link_smart_orchestration_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--sense" in sys.argv or "感知" in intent or "sense" in intent.lower() or "引擎状态" in intent:
+            filtered_args = ["--sense"]
+        elif "--decision" in sys.argv or "决策" in intent or "编排决策" in intent:
+            filtered_args = ["--decision"]
+        elif "--closed-loop" in sys.argv or "闭环" in intent or "closed loop" in intent.lower() or "演进" in intent:
+            filtered_args = ["--closed-loop"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--run" in sys.argv or "执行" in intent or "运行" in intent or "run" in intent.lower() or "全链路运行" in intent:
+            filtered_args = ["--run"]
+        else:
+            # 默认显示驾驶舱数据
+            filtered_args = ["--cockpit-data"]
+
+        # 过滤掉意图关键词
+        filter_words = ["元进化全链路", "全链路编排", "全链路演进", "full link orchestration", "meta full link", "全链路智能编排", "自主演进", "autonomous evolution", "编排引擎", "orchestration engine", "元进化编排", "全链路"]
+        filtered_args = [arg for arg in sys.argv[1:] if arg not in filter_words]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环主动创新假设自动生成与自涌现发现引擎（Round 582）- 在 round 581 完成的知识驱动自动化执行增强引擎基础上，构建让系统能够主动发现创新机会、生成创新假设、发现新的进化方向的引擎。让系统不仅能执行知识推理结果，还能主动思考"我可以进化什么新的方向"，实现从「被动执行知识推理结果」到「主动发现进化机会」的范式升级
     elif "创新假设" in intent or "假设生成" in intent or "innovation hypothesis" in intent.lower() or "hypothesis generation" in intent.lower() or "创新发现" in intent or "主动发现" in intent or "emergence discovery" in intent.lower() or "创新涌现" in intent or "自涌现" in intent or "创新机会" in intent:
         print(f"[主动创新假设自动生成与自涌现发现引擎] 正在处理...", file=sys.stderr)
