@@ -3028,6 +3028,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 644: 智能全场景进化环元进化自适应学习与策略自动优化引擎 V2 - 在 round 551/606/632 的方法论学习基础上，构建更深层次的自适应学习能力
+    # 让系统能够从进化历史中自动提取有效模式、基于执行反馈自动调整策略、实现进化方法的自我进化
+    elif "自适应学习" in intent or "元学习" in intent or "策略优化" in intent or "adaptive learning" in intent.lower() or "meta learning" in intent.lower() or "strategy optimization" in intent.lower() or "参数调整" in intent or "模式提取" in intent or "进化模式" in intent:
+        print(f"[智能全场景进化环元进化自适应学习与策略自动优化引擎 V2 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_adaptive_learning_strategy_optimizer_v2.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["自适应学习", "元学习", "策略优化", "adaptive learning", "meta learning", "strategy optimization", "参数调整", "模式提取", "进化模式"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 634: 智能全场景进化环创新建议自动验证与价值优先级排序引擎 - 基于 round 633 知识图谱引擎（已发现388条待执行创新建议）基础上，构建让系统能够自动验证创新建议价值并智能排序优先级的增强能力
     # 实现「发现→验证→排序→优化→执行」的完整创新价值实现闭环
     elif "创新验证" in intent or "价值排序" in intent or "优先级" in intent or "innovation verify" in intent.lower() or "value priority" in intent.lower() or "priority rank" in intent.lower() or "价值评估" in intent or "创新价值" in intent or "价值评分" in intent:
