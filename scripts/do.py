@@ -3225,6 +3225,34 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 676: 智能全场景进化环元进化执行闭环全自动化深度增强引擎 V2 - 在 round 675 完成的执行稳定性保障 V2 能力基础上，
+    # 构建让系统能够真正完全无人值守的进化闭环，实现从自动执行到自主决策→自主执行→自主验证的完整自主进化能力
+    elif "全自动化闭环V2" in intent or "无人值守进化V2" in intent or "执行闭环V2" in intent or "full automation v2" in intent.lower() or "autonomous loop v2" in intent.lower() or "自主决策执行验证" in intent or "自主进化闭环V2" in intent:
+        print(f"[元进化执行闭环全自动化深度增强引擎 V2 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_execution_closed_loop_full_automation_v2_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 检测功能关键词
+        if "运行" in intent or "run" in intent.lower():
+            cmd_args = ["--run"]
+        elif "分析" in intent or "analyze" in intent.lower():
+            cmd_args = ["--analyze"]
+        elif "驾驶舱数据" in intent or "cockpit data" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        elif "状态" in intent or "status" in intent.lower():
+            cmd_args = ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["全自动化闭环V2", "无人值守进化V2", "执行闭环V2", "full automation v2", "autonomous loop v2", "自主决策执行验证", "自主进化闭环V2", "运行", "分析", "驾驶舱数据", "状态"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 669: 智能全场景进化环元进化跨引擎知识自动蒸馏与深度传承引擎 - 让系统能够自动从600+轮进化历史和100+进化引擎中提取可复用的元知识
     # 形成结构化的知识传承体系，支持新引擎快速学习和复用历史经验
     elif "知识自动蒸馏" in intent or "跨引擎知识传承" in intent or "引擎知识提取" in intent or "cross engine knowledge" in intent.lower() or "engine knowledge distillation" in intent.lower() or "知识传承引擎" in intent or "元知识提取" in intent or "元知识传承" in intent or "跨引擎知识图谱" in intent:
