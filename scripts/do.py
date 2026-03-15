@@ -7917,6 +7917,41 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化价值预测与预防性优化引擎 V2 (Round 609) - 优先匹配
+    elif "元进化价值预测V2" in intent or "元价值预测V2" in intent or "价值预测V2" in intent or "meta value predict v2" in intent.lower() or "meta_value_predict_v2" in intent.lower() or "价值预测增强" in intent or "价值预防优化V2" in intent or "价值预测与预防" in intent:
+        print(f"[智能全场景进化环元进化价值预测与预防性优化引擎 V2.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_value_prediction_prevention_v2_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 检测功能关键词
+        if "趋势分析" in intent or "trend" in intent.lower():
+            cmd_args = ["--trend"]
+        elif "预测" in intent or "predict" in intent.lower():
+            cmd_args = ["--predict"]
+        elif "异常检测" in intent or "anomaly" in intent.lower():
+            cmd_args = ["--anomaly"]
+        elif "优化" in intent or "optimize" in intent.lower():
+            cmd_args = ["--optimize"]
+        elif "调整" in intent or "adjust" in intent.lower():
+            cmd_args = ["--adjust"]
+        elif "集成" in intent or "integrate" in intent.lower():
+            cmd_args = ["--integrate"]
+        elif "完整循环" in intent or "run" in intent.lower():
+            cmd_args = ["--run"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        # 过滤掉意图关键词
+        filter_words = ["元进化价值预测V2", "元价值预测V2", "价值预测V2", "meta value predict v2", "meta_value_predict_v2", "价值预测增强", "价值预防优化V2", "价值预测与预防", "趋势分析", "trend", "预测", "predict", "异常检测", "anomaly", "优化", "optimize", "调整", "adjust", "集成", "integrate", "完整循环", "run", "驾驶舱", "cockpit"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环元进化价值预测与预防性优化引擎 (Round 560)
     elif "元进化价值预测" in intent or "元价值预测" in intent or "meta value predict" in intent.lower() or "meta_value_predict" in intent.lower() or "元价值预防" in intent or "价值趋势预警" in intent or "价值异常检测" in intent:
         print(f"[智能全场景进化环元进化价值预测与预防性优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
