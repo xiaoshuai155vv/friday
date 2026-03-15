@@ -2082,6 +2082,47 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环跨轮次长期学习记忆引擎（Round 512）- 在 round 511 完成的决策执行结果学习引擎基础上，进一步增强跨轮次的长期学习记忆能力。让系统能够长期记忆存储关键学习成果、自动从历史进化中提取学习数据、基于上下文智能检索和复用历史学习成果、评估记忆复用效果并持续优化
+    elif "长期学习记忆" in intent or "长期记忆" in intent or "跨轮次学习" in intent or "跨轮记忆" in intent or "long term learning" in intent.lower() or "long term memory" in intent.lower() or "cross round learning" in intent.lower() or "learning memory" in intent or "记忆引擎" in intent:
+        print(f"[智能全场景进化环跨轮次长期学习记忆引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_long_term_learning_memory_engine.py")
+
+        # 解析命令参数
+        filtered_args = []
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--collect" in sys.argv or "收集" in intent or "collect" in intent.lower():
+            filtered_args = ["--collect"]
+        elif "--store" in sys.argv or "存储" in intent or "store" in intent.lower():
+            filtered_args = ["--store"]
+        elif "--retrieve" in sys.argv or "检索" in intent or "retrieve" in intent.lower():
+            filtered_args = ["--retrieve"]
+            # 尝试获取检索关键词
+            for i, arg in enumerate(sys.argv):
+                if arg in ["--retrieve", "检索"] and i + 1 < len(sys.argv):
+                    filtered_args.append(sys.argv[i + 1])
+                    break
+        elif "--full-cycle" in sys.argv or "完整循环" in intent or "full cycle" in intent.lower():
+            filtered_args = ["--full-cycle"]
+        elif "--patterns" in sys.argv or "模式" in intent or "patterns" in intent.lower():
+            filtered_args = ["--patterns"]
+            # 尝试获取上下文关键词
+            for i, arg in enumerate(sys.argv):
+                if arg in ["--patterns", "模式"] and i + 1 < len(sys.argv):
+                    filtered_args.append(sys.argv[i + 1])
+                    break
+        else:
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环创新验证结果自动执行与价值实现引擎（Round 502）- 将验证通过的创新假设自动转化为可执行任务、智能评估执行价值、自动执行创新方案、追踪价值实现
     elif "创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent:
         print(f"[创新验证结果自动执行与价值实现引擎] 正在处理...", file=sys.stderr)
