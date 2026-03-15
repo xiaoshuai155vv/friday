@@ -5889,6 +5889,24 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环跨引擎深度融合创新实现引擎 (Round 504) - 深度融合代码理解引擎、价值量化引擎、知识推荐引擎等已有能力，构建跨引擎创新组合自动发现与价值实现闭环
+    elif "跨引擎融合" in intent or "融合创新" in intent or "跨引擎创新" in intent or "深度融合" in intent or "cross engine fusion" in intent.lower() or "fusion innovation" in intent.lower() or "引擎融合" in intent or "融合引擎" in intent or "创新融合" in intent or "跨引擎深度融合" in intent or "deep fusion" in intent.lower() or "cross-fusion" in intent.lower():
+        print(f"[智能全场景进化环跨引擎深度融合创新实现引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_engine_deep_fusion_innovation_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["跨引擎融合", "融合创新", "跨引擎创新", "深度融合", "cross engine fusion", "fusion innovation", "引擎融合", "融合引擎", "创新融合", "跨引擎深度融合", "deep fusion", "cross-fusion"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环价值预测与主动干预引擎 (Round 470)
     elif "价值预测" in intent or "主动干预" in intent or "预防性价值" in intent or "价值趋势预测" in intent or "proactive intervention" in intent.lower() or "value prediction" in intent.lower() or "prevention" in intent.lower() or "干预策略" in intent or "价值干预" in intent:
         print(f"[智能全场景进化环价值预测与主动干预引擎] 正在处理...", file=sys.stderr)
