@@ -2123,6 +2123,57 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环跨轮次学习记忆深度增强引擎（Round 513）- 在 round 512 完成的长期学习记忆引擎基础上，进一步增强跨轮次的学习记忆能力。实现跨时间窗口知识整合（跨月/季/年的学习成果聚合）、记忆衰减与强化机制（重要知识强化，过时知识淡化）、基于当前上下文智能检索相关经验
+    elif "跨轮次学习记忆深度增强" in intent or "跨轮次学习增强" in intent or "学习记忆增强" in intent or "记忆深度增强" in intent or "cross round learning enhanced" in intent.lower() or "enhanced learning memory" in intent.lower() or "学习记忆深度" in intent or "记忆强化" in intent or "记忆衰减" in intent or "时间窗口" in intent or "time window" in intent.lower() or "上下文感知" in intent or "context aware" in intent.lower():
+        print(f"[智能全场景进化环跨轮次学习记忆深度增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_round_learning_memory_engine.py")
+
+        # 解析命令参数
+        filtered_args = []
+        if "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--status" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--migrate" in sys.argv or "迁移" in intent or "migrate" in intent.lower():
+            filtered_args = ["--migrate"]
+        elif "--decay" in sys.argv or "衰减" in intent or "decay" in intent.lower():
+            filtered_args = ["--decay"]
+        elif "--decay-dry-run" in sys.argv:
+            filtered_args = ["--decay-dry-run"]
+        elif "--aggregate" in sys.argv:
+            filtered_args = ["--aggregate"]
+            # 获取聚合类型
+            for i, arg in enumerate(sys.argv):
+                if arg == "--aggregate" and i + 1 < len(sys.argv):
+                    filtered_args.append(sys.argv[i + 1])
+                    break
+        elif "monthly" in intent.lower() or "月度" in intent:
+            filtered_args = ["--aggregate", "monthly"]
+        elif "quarterly" in intent.lower() or "季度" in intent:
+            filtered_args = ["--aggregate", "quarterly"]
+        elif "yearly" in intent.lower() or "年度" in intent:
+            filtered_args = ["--aggregate", "yearly"]
+        elif "--integrate" in sys.argv or "整合" in intent or "integrate" in intent.lower():
+            filtered_args = ["--integrate"]
+        elif "--retrieve" in sys.argv or "检索" in intent or "retrieve" in intent.lower():
+            filtered_args = ["--retrieve"]
+            # 尝试获取检索关键词
+            for i, arg in enumerate(sys.argv):
+                if arg in ["--retrieve", "检索"] and i + 1 < len(sys.argv):
+                    filtered_args.append(sys.argv[i + 1])
+                    break
+        elif "--full-cycle" in sys.argv or "完整循环" in intent or "full cycle" in intent.lower():
+            filtered_args = ["--full-cycle"]
+        else:
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环创新验证结果自动执行与价值实现引擎（Round 502）- 将验证通过的创新假设自动转化为可执行任务、智能评估执行价值、自动执行创新方案、追踪价值实现
     elif "创新执行" in intent or "价值实现" in intent or "执行验证" in intent or "创新实现" in intent or "假设执行" in intent or "验证执行" in intent or "value realization" in intent.lower() or "execute innovation" in intent.lower() or "创新价值" in intent or "创新任务" in intent or "实现创新" in intent or "创新方案执行" in intent or "方案执行" in intent:
         print(f"[创新验证结果自动执行与价值实现引擎] 正在处理...", file=sys.stderr)
