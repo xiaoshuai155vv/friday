@@ -8436,6 +8436,26 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化智能体集群协同优化引擎 (Round 616)
+    # 在 round 615 完成的元进化能力缺口主动发现与自愈引擎基础上，构建让系统能够自动协调
+    # 多个元进化引擎的工作，实现更高效的协同进化。实现从「单引擎独立工作」到「多引擎智能协同」的范式升级
+    elif "集群协同" in intent or "多引擎协同" in intent or "引擎集群" in intent or "cluster collaboration" in intent.lower() or "multi engine" in intent.lower() or "engine cluster" in intent.lower() or "元进化协同" in intent or "智能体集群" in intent or "agent cluster" in intent.lower() or "协同优化" in intent:
+        print(f"[智能全场景进化环元进化智能体集群协同优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_agent_cluster_collaboration_optimizer.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["集群协同", "多引擎协同", "引擎集群", "cluster collaboration", "multi engine", "engine cluster", "元进化协同", "智能体集群", "agent cluster", "协同优化"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环进化效能自动化归因与智能建议引擎 (Round 545)
     # 基于540+轮进化历史，自动分析每轮进化的成效，识别成功/失败的根本原因，并智能生成可执行的改进建议
     elif "归因分析" in intent or "根因分析" in intent or "改进建议" in intent or "效果归因" in intent or "attribution" in intent.lower() or "root cause" in intent.lower() or "improvement advice" in intent.lower() or "进化归因" in intent or "成效分析" in intent:
