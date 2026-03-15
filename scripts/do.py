@@ -2056,6 +2056,35 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环价值投资动态再平衡与持续优化引擎（Round 586）- 在 round 585 完成的 ROI 智能评估引擎基础上，构建价值投资的动态再平衡能力。让系统能够基于 ROI 评估结果动态调整进化投资组合、实时优化资源配置、实现价值最大化的持续优化，形成从「ROI 评估」到「动态再平衡」再到「持续优化」的完整价值投资管理闭环
+    elif "动态再平衡" in intent or "投资再平衡" in intent or "rebalance" in intent.lower() or "投资优化" in intent or "资源配置" in intent or "资源优化" in intent or "投资调整" in intent or "价值调整" in intent or "投资组合优化" in intent or "组合优化" in intent or "价值再平衡" in intent or "投资再配置" in intent:
+        print(f"[价值投资动态再平衡引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_investment_dynamic_rebalancing_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--status"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--analyze-trends" in sys.argv or "趋势分析" in intent or "趋势" in intent or "trends" in intent.lower():
+            filtered_args = ["--analyze-trends"]
+        elif "--rebalance-plan" in sys.argv or "再平衡计划" in intent or "计划" in intent or "plan" in intent.lower():
+            filtered_args = ["--rebalance-plan"]
+        elif "--optimize" in sys.argv or "优化" in intent or "optimize" in intent.lower():
+            filtered_args = ["--optimize"]
+        elif "--run" in sys.argv or "执行" in intent or "run" in intent.lower():
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环知识驱动自动化执行增强引擎（Round 581）- 在 round 580 完成的价值驱动进化执行闭环引擎基础上，构建从知识推理到自动执行的完整自动化链路。让系统能够从知识图谱推理结果自动生成并执行行动计划，形成「推理→洞察→行动→验证」的完整知识驱动闭环
     elif "知识行动转换" in intent or "推理到行动" in intent or "insight to action" in intent.lower() or "知识自动化执行增强" in intent or "insight execution automation" in intent.lower():
         print(f"[知识驱动自动化执行增强引擎] 正在处理...", file=sys.stderr)
