@@ -3122,6 +3122,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 639: 智能全场景进化环元进化目标自主设定与价值驱动闭环引擎 - 让系统能够基于三角闭环引擎(635-638)的能力，主动分析自身状态、评估进化价值、设定进化目标，形成从「被动执行」到「主动设定目标并驱动执行」的范式升级
+    # 实现「状态分析→价值评估→目标设定→驱动执行」的完整闭环
+    elif "目标设定" in intent or "自主目标" in intent or "价值目标" in intent or "目标驱动" in intent or "goal setting" in intent.lower() or "autonomous goal" in intent.lower() or "value goal" in intent.lower() or "目标自主" in intent or "目标融合" in intent or "跨维目标" in intent or "目标闭环" in intent:
+        print(f"[智能全场景进化环元进化目标自主设定与价值驱动闭环引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_goal_autonomous_setting_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--run"]
+        # 过滤掉意图关键词
+        filter_words = ["目标设定", "自主目标", "价值目标", "目标驱动", "goal setting", "autonomous goal", "value goal", "目标自主", "目标融合", "跨维目标", "目标闭环"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--run"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 633: 智能全场景进化环元进化知识图谱动态推理与主动创新发现引擎 - 基于 round 625 记忆整合和 round 632 方法论学习，构建让系统能够构建动态进化的知识图谱、进行图谱实时推理、主动发现创新机会并生成可执行创新建议
     # 实现「构建→推理→发现→建议→演化」的完整知识图谱创新闭环
     elif "知识图谱" in intent or "图谱推理" in intent or "创新发现" in intent or "knowledge graph" in intent.lower() or "kg" in intent.lower() or "图谱动态" in intent or "kg reasoning" in intent.lower() or "innovation discovery" in intent.lower() or "graph reasoning" in intent.lower() or "图谱分析" in intent or "kg reasoning" in intent.lower():
