@@ -2039,6 +2039,31 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环创新假设自动验证与执行闭环引擎（Round 583）- 在 round 582 完成的创新假设自动生成与自涌现发现引擎基础上，构建让系统能够自动验证创新假设价值并执行的引擎。形成「假设生成→自动验证→执行→价值评估→迭代优化」的完整创新价值实现闭环。让系统不仅能生成创新假设，还能自动设计验证实验、执行验证、评估假设价值，实现从「有创新假设」到「真正验证并实现价值」的范式升级
+    elif "假设验证" in intent or "验证假设" in intent or "hypothesis verification" in intent.lower() or "假设执行" in intent or "hypothesis execution" in intent.lower() or "创新闭环" in intent or "创新执行" in intent or "验证执行" in intent or "innovation closed loop" in intent.lower() or "假设价值" in intent or "价值验证" in intent or "迭代优化" in intent or "iteration optimization" in intent.lower() or "创新价值实现" in intent:
+        print(f"[创新假设自动验证与执行闭环引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_innovation_hypothesis_verification_execution_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--status"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--verify" in sys.argv or "验证" in intent or "运行" in intent or "执行" in intent or "完整" in intent or "full" in intent.lower():
+            filtered_args = ["--verify"]
+        elif "--list-verified" in sys.argv or "已验证" in intent or "验证列表" in intent:
+            filtered_args = ["--list-verified"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环价值驱动进化执行闭环引擎（Round 580）- 在 round 579 完成的元进化价值预测与战略投资决策增强引擎基础上，构建从投资策略到自动执行的完整闭环。让系统能够将投资决策转化为可执行任务、执行并追踪结果、反馈到决策优化，形成「预测→决策→执行→验证→优化」的完整闭环
     elif "价值驱动执行" in intent or "执行闭环" in intent or "投资执行" in intent or "价值执行" in intent or "value driven execution" in intent.lower() or "execution closed loop" in intent.lower() or "投资策略执行" in intent or "策略执行" in intent or "execution loop" in intent.lower() or "执行优化反馈" in intent or "执行效果评估" in intent or "价值反馈" in intent:
         print(f"[价值驱动进化执行闭环引擎] 正在处理...", file=sys.stderr)
