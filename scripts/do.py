@@ -13263,6 +13263,27 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 684: 智能全场景进化环元进化执行闭环全自动化深度增强引擎 V3
+    # 基于 round 676/683 完成的执行优化嵌入引擎与 run_plan 深度集成能力
+    # 构建让系统能够：1. 进化价值自主评估 2. 优化空间主动识别 3. 自动触发进化机制
+    # 实现从「自动执行」升级到「自主价值驱动」的完全无人值守进化闭环
+    elif "执行闭环自动化V3" in intent or "元进化自动化V3" in intent or "execution closed loop v3" in intent.lower() or "全自动化V3" in intent or "自驱动进化" in intent or "价值驱动进化" in intent or "自主价值评估" in intent or "优化空间发现" in intent:
+        print(f"[元进化执行闭环全自动化深度增强引擎 V3] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_execution_closed_loop_automation_v3_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["status"]
+        # 过滤掉意图关键词
+        filter_words = ["执行闭环自动化V3", "元进化自动化V3", "execution closed loop v3", "全自动化V3", "自驱动进化", "价值驱动进化", "自主价值评估", "优化空间发现"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     else:
         # 未知意图时，先检查是否包含情感关键词
         import json
