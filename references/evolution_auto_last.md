@@ -2,27 +2,27 @@
 scripts/ references/ assets/ runtime/ 等（一行即可）
 
 # 本轮影响文件
-scripts/evolution_meta_value_prediction_prevention_engine.py, scripts/do.py, references/evolution_auto_last.md, runtime/state/current_mission.json, runtime/state/evolution_completed_ev_20260315_084256.json, references/evolution_self_proposed.md
+scripts/evolution_value_investment_portfolio_optimizer.py, scripts/do.py, references/evolution_auto_last.md, runtime/state/current_mission.json, runtime/state/evolution_completed_ev_20260315_084256.json, references/evolution_self_proposed.md
 
-## 2026-03-15 round 560
-- **current_goal**：智能全场景进化环元进化价值预测与预防性优化引擎 - 让系统能够基于已有的价值追踪能力，构建价值预测模型，预测未来进化的价值实现趋势，提前预防低价值进化，形成「追踪→预测→预防→优化」的完整价值驱动进化闭环
+## 2026-03-15 round 561
+- **current_goal**：智能全场景进化环元进化价值投资组合优化与风险对冲引擎 - 在 round 560 完成的元进化价值预测与预防性优化引擎基础上，构建价值投资组合优化能力。让系统能够基于价值预测结果，智能分配进化投资、优化组合策略、构建风险对冲，形成「预测→投资决策→组合优化→风险对冲→价值实现」的完整价值投资闭环
 - **做了什么**：
-  1. 创建 evolution_meta_value_prediction_prevention_engine.py 模块（version 1.0.0）
-  2. 实现价值趋势预测功能（基于历史价值数据预测未来价值走势，使用线性回归算法）
-  3. 实现预防性优化功能（根据风险等级生成对应优化策略）
-  4. 实现价值异常预警功能（检测各维度价值实现的异常变化）
-  5. 实现与 round 559 价值追踪引擎的深度集成
+  1. 创建 evolution_value_investment_portfolio_optimizer.py 模块（version 1.0.0）
+  2. 实现进化投资组合分析功能（分析多轮进化的价值贡献、风险敞口、资源分配）
+  3. 实现智能投资分配功能（基于价值预测和风险评估，智能分配进化投资比例）
+  4. 实现组合策略优化功能（动态调整投资组合，实现风险收益最优）
+  5. 实现风险对冲策略（构建风险对冲机制，降低低价值投资风险）
   6. 实现驾驶舱数据接口
-  7. 集成到 do.py 支持元进化价值预测、预防性优化、价值预警等关键词触发
+  7. 集成到 do.py 支持价值投资、组合优化、风险对冲、投资组合等关键词触发
 - **是否完成**：已完成
-- **基线校验**：通过 - 模块状态正常，各功能测试通过（--status/--predict/--anomaly/--strategies/--cockpit-data）
-- **针对性校验**：通过 - 模块功能正常，预测基于价值追踪数据，策略生成根据风险等级动态调整，do.py 集成成功
+- **基线校验**：通过 - 模块状态正常，各功能测试通过（--allocation/--optimize/--hedge/--cockpit-data/--full）
+- **针对性校验**：通过 - 模块功能正常，投资分配基于风险承受能力和价值贡献动态调整，组合策略根据风险敞口生成优化建议，风险对冲根据风险等级配置对应策略，do.py 集成成功
 - **风险等级**：低（在现有进化引擎架构基础上构建新模块，不影响既有能力）
 
-- **依赖**：round 559 价值实现追踪与量化增强引擎
+- **依赖**：round 560 元进化价值预测与预防性优化引擎
 - **创新点**：
-  1. 元进化价值预测能力 - 从「追踪过去价值」升级到「预测未来价值」
-  2. 线性回归预测算法 - 基于历史数据预测未来价值走势
-  3. 风险等级评估 - 自动评估风险等级（高/中/低）
-  4. 预防性优化策略 - 根据风险等级生成对应的优化策略
-  5. 价值异常检测 - 多维度异常检测与预警
+  1. 元进化价值投资组合优化能力 - 从「预测价值」升级到「最优投资决策」
+  2. 智能投资分配算法 - 基于价值贡献和风险承受能力动态调整投资比例
+  3. 组合策略优化 - 根据风险敞口和成功率生成个性化策略建议
+  4. 多层次风险对冲 - 多元化、预防性、保险、止损等多层风险对冲机制
+  5. 与 round 560 价值预测引擎深度集成 - 预测→投资→优化→对冲→实现的完整闭环
