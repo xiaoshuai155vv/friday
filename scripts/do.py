@@ -3291,6 +3291,28 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 663: 智能全场景进化环元进化优化策略自评估与自适应调整引擎 - 在 round 662 完成的系统自驱动持续优化引擎基础上，构建让系统能够评估自身优化策略有效性的能力，形成「优化→评估→自适应调整」的完整递归闭环
+    # 实现元元优化（meta-optimization）能力，让系统从「能优化」升级到「学会如何优化」
+    elif "元优化" in intent or "策略评估" in intent or "策略自评估" in intent or "meta optimization" in intent.lower() or "strategy evaluation" in intent.lower() or "self evaluation" in intent.lower() or "优化评估" in intent or "学会如何优化" in intent or "自适应调整" in intent:
+        print(f"[元进化优化策略自评估与自适应调整引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_optimization_strategy_self_evaluation_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--run-cycle"]
+        filter_words = ["元优化", "策略评估", "策略自评估", "meta optimization", "strategy evaluation", "self evaluation", "优化评估", "学会如何优化", "自适应调整"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg.lower() for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--run-cycle"]
+        result = subprocess.run(
+            [sys.executable, script_path] + filtered_args,
+            cwd=PROJECT,
+            capture_output=True,
+            text=True
+        )
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 634: 智能全场景进化环创新建议自动验证与价值优先级排序引擎 - 基于 round 633 知识图谱引擎（已发现388条待执行创新建议）基础上，构建让系统能够自动验证创新建议价值并智能排序优先级的增强能力
     # 实现「发现→验证→排序→优化→执行」的完整创新价值实现闭环
     elif "创新验证" in intent or "价值排序" in intent or "优先级" in intent or "innovation verify" in intent.lower() or "value priority" in intent.lower() or "priority rank" in intent.lower() or "价值评估" in intent or "创新价值" in intent or "价值评分" in intent:
