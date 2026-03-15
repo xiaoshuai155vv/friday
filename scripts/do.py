@@ -2118,6 +2118,40 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环价值投资组合智能复盘与持续学习引擎（Round 588）- 在 round 587 完成的价值投资风险预警与自适应保护引擎基础上，构建价值投资组合的智能复盘与持续学习能力。让系统能够自动分析每轮投资决策的成功/失败因素、从历史投资案例中学习、持续优化投资策略，形成从「风险预警」到「智能复盘」再到「策略进化」的完整投资进化闭环
+    elif "投资复盘" in intent or "投资学习" in intent or "策略复盘" in intent or "决策复盘" in intent or "investment review" in intent.lower() or "investment learning" in intent.lower() or "strategy review" in intent.lower() or "decision review" in intent.lower() or "智能复盘" in intent or "价值复盘" in intent or "投资分析" in intent or "投资回顾" in intent:
+        print(f"[价值投资智能复盘与学习引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_investment_intelligent_review_learning_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = []
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = []
+        elif "--review-report" in sys.argv or "复盘报告" in intent or "review report" in intent.lower():
+            filtered_args = ["--review-report"]
+            if "--round" in sys.argv:
+                round_idx = sys.argv.index("--round")
+                if round_idx + 1 < len(sys.argv):
+                    filtered_args.append("--round")
+                    filtered_args.append(sys.argv[round_idx + 1])
+        elif "--analyze-portfolio" in sys.argv or "分析投资组合" in intent or "analyze portfolio" in intent.lower() or "投资组合分析" in intent:
+            filtered_args = ["--analyze-portfolio"]
+        elif "--extract-patterns" in sys.argv or "提取模式" in intent or "模式提取" in intent or "extract patterns" in intent.lower() or "学习模式" in intent:
+            filtered_args = ["--extract-patterns"]
+        elif "--evolve-strategy" in sys.argv or "策略优化" in intent or "优化策略" in intent or "evolve strategy" in intent.lower() or "策略进化" in intent:
+            filtered_args = ["--evolve-strategy"]
+        elif "--cockpit" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit"]
+        else:
+            # 默认：运行复盘报告
+            filtered_args = ["--review-report"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环知识驱动自动化执行增强引擎（Round 581）- 在 round 580 完成的价值驱动进化执行闭环引擎基础上，构建从知识推理到自动执行的完整自动化链路。让系统能够从知识图谱推理结果自动生成并执行行动计划，形成「推理→洞察→行动→验证」的完整知识驱动闭环
     elif "知识行动转换" in intent or "推理到行动" in intent or "insight to action" in intent.lower() or "知识自动化执行增强" in intent or "insight execution automation" in intent.lower():
         print(f"[知识驱动自动化执行增强引擎] 正在处理...", file=sys.stderr)
