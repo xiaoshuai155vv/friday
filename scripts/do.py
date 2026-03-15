@@ -6892,6 +6892,37 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环多维度价值协同融合与自适应决策增强引擎 (Round 563)
+    elif "多维度价值" in intent or "价值协同" in intent or "价值融合" in intent or "自适应决策" in intent or "多维价值优化" in intent or "multi dimension value" in intent.lower() or "value synergy" in intent.lower() or "value fusion" in intent.lower() or "adaptive decision" in intent.lower():
+        print(f"[智能全场景进化环多维度价值协同融合与自适应决策增强引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_multi_dimension_value_synergy_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--cockpit-data"]
+        # 检测功能关键词
+        if "整合" in intent or "integrate" in intent.lower():
+            cmd_args = ["--integrate"]
+        elif "协同" in intent or "synergy" in intent.lower():
+            cmd_args = ["--reason"]
+        elif "决策" in intent or "decision" in intent.lower():
+            cmd_args = ["--decide"]
+        elif "路径" in intent or "path" in intent.lower():
+            cmd_args = ["--path"]
+        elif "驾驶舱" in intent or "cockpit" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        elif "完整" in intent or "full" in intent.lower():
+            cmd_args = ["--full"]
+        # 过滤掉意图关键词
+        filter_words = ["多维度价值", "价值协同", "价值融合", "自适应决策", "多维价值优化", "multi dimension value", "value synergy", "value fusion", "adaptive decision", "整合", "integrate", "协同", "synergy", "决策", "decision", "路径", "path", "驾驶舱", "cockpit", "完整", "full"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--cockpit-data"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True, encoding='utf-8', errors='replace')
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环价值干预自动执行引擎 (Round 471)
     elif "价值干预自动执行" in intent or "干预自动执行" in intent or "自动干预" in intent or "干预执行" in intent or "价值干预执行" in intent or "auto intervention" in intent.lower() or "execute intervention" in intent.lower():
         print(f"[智能全场景进化环价值干预自动执行引擎] 正在处理...", file=sys.stderr)
