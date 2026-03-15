@@ -5173,6 +5173,19 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环元进化多模态感知深度融合与自适应增强引擎（round 607）
+    elif "多模态融合" in intent or "跨模态感知" in intent or "多模态感知" in intent or "multimodal fusion" in intent.lower() or "multimodal perception" in intent.lower() or "跨模态" in intent or "模态融合" in intent or "模态感知" in intent or "multimodal" in intent.lower() or "多模态增强" in intent or "多模态分析" in intent:
+        print(f"[元进化多模态感知深度融合与自适应增强引擎] 正在处理多模态感知融合...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_multimodal_perception_deep_fusion_engine.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["--status"]
+        if not cmd_args:
+            cmd_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景跨引擎知识深度融合与主动洞察生成引擎（round 320）
     elif "知识融合" in intent or "跨引擎洞察" in intent or "主动洞察" in intent or "深度融合" in intent or "智能洞察" in intent or "洞察生成" in intent or "cross engine fusion" in intent.lower() or "knowledge fusion" in intent.lower() or "proactive insight" in intent.lower() or "主动洞察生成" in intent or "跨引擎知识" in intent:
         print(f"[智能全场景跨引擎知识深度融合与主动洞察生成引擎] 正在融合跨引擎知识并生成洞察...", file=sys.stderr)
