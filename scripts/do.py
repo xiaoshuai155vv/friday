@@ -3085,6 +3085,27 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 647: cross-round innovation pattern discovery engine
+    elif "innovation pattern" in intent.lower() or "cross round" in intent.lower() or "pattern discovery" in intent.lower() or "auto emergence" in intent.lower() or "emergence" in intent.lower():
+        print(f"[Evolution Meta Cross-Round Innovation Pattern Discovery Engine v1.0.0] Processing...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_cross_round_innovation_pattern_discovery_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--analyze"]
+        filter_words = ["innovation pattern", "cross round", "pattern discovery", "auto emergence", "emergence"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg.lower() for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--analyze"]
+        result = subprocess.run(
+            [sys.executable, script_path] + filtered_args,
+            cwd=PROJECT,
+            capture_output=True,
+            text=True
+        )
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 634: 智能全场景进化环创新建议自动验证与价值优先级排序引擎 - 基于 round 633 知识图谱引擎（已发现388条待执行创新建议）基础上，构建让系统能够自动验证创新建议价值并智能排序优先级的增强能力
     # 实现「发现→验证→排序→优化→执行」的完整创新价值实现闭环
     elif "创新验证" in intent or "价值排序" in intent or "优先级" in intent or "innovation verify" in intent.lower() or "value priority" in intent.lower() or "priority rank" in intent.lower() or "价值评估" in intent or "创新价值" in intent or "价值评分" in intent:
@@ -12718,6 +12739,6 @@ def main():
             sys.exit(1)
 
 
-# 入口点
+# Entry point
 if __name__ == '__main__':
     main()
