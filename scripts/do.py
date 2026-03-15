@@ -1499,6 +1499,21 @@ def main():
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
+    # round 672: 智能全场景进化环元进化跨轮次知识关联深度挖掘引擎
+    if "跨轮次知识" in intent or "跨轮知识" in intent or "知识关联" in intent or "知识模式" in intent or "前瞻洞察" in intent or "cross round knowledge" in intent.lower() or "knowledge pattern" in intent.lower() or "forward looking insight" in intent.lower() or "知识挖掘" in intent or "隐藏模式" in intent:
+        print(f"[智能全场景进化环元进化跨轮次知识关联深度挖掘引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_cross_round_knowledge_deep_mining_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        filter_words = ["跨轮次知识", "跨轮知识", "知识关联", "知识模式", "前瞻洞察", "cross round knowledge", "knowledge pattern", "forward looking insight", "知识挖掘", "隐藏模式"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
 
     # 智能全场景进化知识深度传承与自适应遗忘引擎（Round 347）
     elif "知识传承" in intent or "自适应遗忘" in intent or "知识管理" in intent or "遗忘引擎" in intent or "knowledge inheritance" in intent.lower() or "knowledge forgetting" in intent.lower() or "knowledge management" in intent.lower() or "知识老化" in intent or "知识价值" in intent or "遗忘知识" in intent:
