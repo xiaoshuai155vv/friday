@@ -2354,6 +2354,41 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨维度智能融合自适应编排与持续进化引擎（Round 594）- 让系统能够将已有的分散智能能力（价值驱动、创新涌现、知识图谱、自我意识、元进化决策等）进行更高层次的融合编排。系统能够感知多维度智能状态、智能融合决策、自适应编排执行、持续学习进化，形成「感知→融合→编排→执行→进化」的完整自适应闭环
+    elif "跨维智能融合" in intent or "智能融合" in intent or "cross dimension" in intent.lower() or "dimension fusion" in intent.lower() or "跨维度" in intent or "维度融合" in intent or "自适应编排" in intent or "融合编排" in intent or "跨维编排" in intent or "智能编排" in intent or "fusion orchestration" in intent.lower() or "orchestration" in intent.lower():
+        print(f"[跨维度智能融合自适应编排引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_dimension_intelligent_fusion_adaptive_orchestration_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--perceive" in sys.argv or "感知" in intent or "perceive" in intent.lower():
+            filtered_args = ["--perceive"]
+        elif "--decision" in sys.argv or "决策" in intent or "decision" in intent.lower():
+            filtered_args = ["--decision"]
+        elif "--orchestrate" in sys.argv or "编排" in intent or "orchestrate" in intent.lower():
+            filtered_args = ["--orchestrate"]
+        elif "--learn" in sys.argv or "学习" in intent or "learn" in intent.lower():
+            filtered_args = ["--learn"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--run" in sys.argv or "执行" in intent or "run" in intent.lower():
+            filtered_args = ["--run"]
+        else:
+            # 默认显示驾驶舱数据
+            filtered_args = ["--cockpit-data"]
+
+        # 过滤掉意图关键词
+        filter_words = ["跨维智能融合", "智能融合", "cross dimension", "dimension fusion", "跨维度", "维度融合", "自适应编排", "融合编排", "跨维编排", "智能编排", "fusion orchestration", "orchestration"]
+        filtered_args = [arg for arg in sys.argv[1:] if arg not in filter_words]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环主动创新假设自动生成与自涌现发现引擎（Round 582）- 在 round 581 完成的知识驱动自动化执行增强引擎基础上，构建让系统能够主动发现创新机会、生成创新假设、发现新的进化方向的引擎。让系统不仅能执行知识推理结果，还能主动思考"我可以进化什么新的方向"，实现从「被动执行知识推理结果」到「主动发现进化机会」的范式升级
     elif "创新假设" in intent or "假设生成" in intent or "innovation hypothesis" in intent.lower() or "hypothesis generation" in intent.lower() or "创新发现" in intent or "主动发现" in intent or "emergence discovery" in intent.lower() or "创新涌现" in intent or "自涌现" in intent or "创新机会" in intent:
         print(f"[主动创新假设自动生成与自涌现发现引擎] 正在处理...", file=sys.stderr)
