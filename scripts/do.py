@@ -1302,6 +1302,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["status", "build_model", "reflect", "goals", "plan", "help"]):
             cmd = ["status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "autonomous_awareness_engine.py")] + cmd, cwd=PROJECT)
+    # 智能全场景进化环自我进化意识与战略规划引擎（Round 531）
+    elif "进化意识" in intent or "自我进化意识" in intent or "战略规划" in intent or "进化方向规划" in intent or "self evolution consciousness" in intent.lower() or "strategic planning" in intent.lower() or "evolution direction" in intent.lower():
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["--status"]
+        if not cmd or (cmd and cmd[0] not in ["--status", "--analyze-history", "--assess-state", "--identify-gaps", "--plan-direction", "--cockpit-data", "--focus-areas", "help"]):
+            cmd = ["--status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_self_evolution_consciousness_strategic_planning_engine.py")] + cmd, cwd=PROJECT)
     # 智能全场景系统自我进化评估与优化引擎（Round 279）
     elif "进化评估" in intent or "自我评估" in intent or "进化优化" in intent or "evolution_evaluation" in intent.lower() or "self evaluation" in intent.lower() or "评估优化" in intent or "进化自评" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
