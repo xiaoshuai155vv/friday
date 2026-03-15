@@ -5583,14 +5583,30 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
-    # 智能全场景进化环自我进化效能深度分析与自适应优化引擎 (Round 475)
-    elif "效能分析" in intent or "自我优化" in intent or "进化效能" in intent or "效能瓶颈" in intent or "effectiveness" in intent.lower() or "self optimization" in intent.lower() or "evolution effectiveness" in intent.lower():
-        print(f"[智能全场景进化环自我进化效能深度分析与自适应优化引擎] 正在处理...", file=sys.stderr)
+    # 智能全场景进化环自我进化效能深度分析与自适应优化引擎 (Round 475/487)
+    # Round 487 增强：支持策略参数自动调整、模式提取、迭代优化等自适应学习能力
+    elif "效能分析" in intent or "自我优化" in intent or "进化效能" in intent or "效能瓶颈" in intent or "effectiveness" in intent.lower() or "self optimization" in intent.lower() or "evolution effectiveness" in intent.lower() or "自适应学习" in intent or "策略调整" in intent or "模式提取" in intent or "迭代优化" in intent or "recursive optimization" in intent.lower() or "strategy adjustment" in intent.lower() or "pattern extraction" in intent.lower():
+        print(f"[智能全场景进化环自我进化效能深度分析与自适应优化引擎 v1.1.0] 正在处理...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_self_evolution_effectiveness_analysis_engine.py")
         # 解析命令参数
         cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 检测新功能关键词
+        if "提取模式" in intent or "extract pattern" in intent.lower():
+            cmd_args = ["--extract-patterns"]
+        elif "自动调整" in intent or "auto adjust" in intent.lower() or "策略调整" in intent:
+            cmd_args = ["--auto-adjust"]
+        elif "应用策略" in intent or "apply strategy" in intent.lower():
+            cmd_args = ["--apply-strategy"]
+        elif "迭代优化" in intent or "iterative" in intent.lower():
+            # 提取迭代次数
+            import re
+            match = re.search(r'(\d+)', intent)
+            iterations = int(match.group(1)) if match else 3
+            cmd_args = ["--iterative", str(iterations)]
+        elif "完整闭环" in intent or "full loop" in intent.lower() or "自适应学习" in intent:
+            cmd_args = ["--full-loop"]
         # 过滤掉意图关键词
-        filter_words = ["效能分析", "自我优化", "进化效能", "效能瓶颈", "effectiveness", "self optimization", "evolution effectiveness"]
+        filter_words = ["效能分析", "自我优化", "进化效能", "效能瓶颈", "effectiveness", "self optimization", "evolution effectiveness", "自适应学习", "策略调整", "模式提取", "迭代优化", "recursive optimization", "strategy adjustment", "pattern extraction", "完整闭环", "full loop", "提取模式", "自动调整", "应用策略"]
         filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
         if not filtered_args:
             filtered_args = ["--status"]
