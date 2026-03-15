@@ -67,7 +67,7 @@ class MetaCrossEngineCollaborationGlobalOptimizer:
         self.deployment_file = self.state_dir / "cross_engine_deployment.json"
         self.verification_file = self.state_dir / "cross_engine_verification.json"
         # 引擎状态
-        self.current_loop_round = 677
+        self.current_loop_round = 679
         self.instance_id = f"instance_{uuid.uuid4().hex[:8]}"
         # 关联引擎（round 627 协同效能预测引擎、round 643 协作元优化引擎）
         self.related_engines = [
