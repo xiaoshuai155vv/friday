@@ -2904,6 +2904,27 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # 智能全场景进化环元进化引擎协同效能深度预测与预防性优化引擎 (Round 627)
+    # 基于 round 626 完成的元进化引擎精简优化与自我迭代引擎（已识别58个引擎、231对重叠引擎、35个低效引擎、生成5个优化方案）基础上，
+    # 构建让系统能够深度预测引擎间协同效能、预判协同瓶颈、主动部署预防性优化措施的增强能力
+    # 实现从「被动优化」（问题发生后分析）升级到「主动预防」（问题发生前预测并避免）
+    elif "协同预测" in intent or "瓶颈预警" in intent or "预防性优化" in intent or "协同效能预测" in intent or "collaboration prediction" in intent.lower() or "bottleneck warning" in intent.lower() or "preventive optimization" in intent.lower() or "efficiency prediction" in intent.lower() or "协同瓶颈" in intent or "效能趋势" in intent or "趋势预测" in intent or "efficiency trend" in intent.lower() or "协同效能" in intent or "collaboration efficiency" in intent.lower():
+        print(f"[智能全场景进化环元进化引擎协同效能深度预测与预防性优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_collaboration_efficiency_prediction_prevention_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["协同预测", "瓶颈预警", "预防性优化", "协同效能预测", "collaboration prediction", "bottleneck warning", "preventive optimization", "efficiency prediction", "协同瓶颈", "效能趋势", "趋势预测", "efficiency trend", "协同效能", "collaboration efficiency", "引擎协同"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # 智能全场景进化环元进化系统自涌现深度增强引擎（Round 576）- 在 round 575 完成的创新价值自动化实现与迭代深化引擎基础上，进一步增强系统的自涌现能力。让系统能够基于已有能力组合、进化历史数据、知识图谱，自动涌现新的创新方向、生成高价值创新假设、形成自驱动创新涌现的深度增强能力
     elif "元涌现" in intent or "自涌现" in intent or "创新涌现" in intent or "能力涌现" in intent or "meta emergence" in intent.lower() or "system emergence" in intent.lower() or "emergence deep" in intent.lower() or "元进化系统" in intent or "系统自涌现" in intent or "涌现增强" in intent or "涌现引擎" in intent or "涌现分析" in intent:
         print(f"[元进化系统自涌现深度增强引擎] 正在处理...", file=sys.stderr)
