@@ -3225,6 +3225,28 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 660: 智能全场景进化环元进化策略自动执行与自驱动进化闭环引擎 - 在 round 659 完成的策略推演引擎 V2 基础上，构建让系统能够将推演结果自动转化为可执行的进化计划并执行验证的引擎
+    # 形成「推演→决策→执行→验证→优化→再推演」的完整闭环，实现真正的自驱动进化
+    elif "策略执行" in intent or "自动执行" in intent or "自驱动进化" in intent or "strategy execution" in intent.lower() or "auto execution" in intent.lower() or "self-driven evolution" in intent.lower() or "执行闭环" in intent or "自动化进化" in intent or "策略闭环" in intent:
+        print(f"[元进化策略自动执行与自驱动进化闭环引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_strategy_auto_execution_closed_loop_engine.py")
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--run-loop"]
+        filter_words = ["策略执行", "自动执行", "自驱动进化", "strategy execution", "auto execution", "self-driven evolution", "执行闭环", "自动化进化", "策略闭环"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg.lower() for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--run-loop"]
+        result = subprocess.run(
+            [sys.executable, script_path] + filtered_args,
+            cwd=PROJECT,
+            capture_output=True,
+            text=True
+        )
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 634: 智能全场景进化环创新建议自动验证与价值优先级排序引擎 - 基于 round 633 知识图谱引擎（已发现388条待执行创新建议）基础上，构建让系统能够自动验证创新建议价值并智能排序优先级的增强能力
     # 实现「发现→验证→排序→优化→执行」的完整创新价值实现闭环
     elif "创新验证" in intent or "价值排序" in intent or "优先级" in intent or "innovation verify" in intent.lower() or "value priority" in intent.lower() or "priority rank" in intent.lower() or "价值评估" in intent or "创新价值" in intent or "价值评分" in intent:
