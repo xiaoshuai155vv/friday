@@ -2732,6 +2732,19 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环知识图谱主动推理与前瞻性洞察生成引擎（round 605）
+    elif "前瞻洞察生成" in intent or "洞察预测引擎" in intent or "insight prediction" in intent.lower() or "insight engine" in intent.lower() and "kg" in intent.lower():
+        print(f"[知识图谱主动推理与前瞻性洞察生成引擎] 正在分析知识图谱并生成前瞻性洞察...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_kg_proactive_reasoning_insight_engine.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd_args:
+            cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
     # 智能全场景进化环元进化知识图谱自涌现与主动创新引擎（Round 574）- 在 round 573 完成的价值实现闭环基础上，构建让系统能够从进化历史和知识图谱中主动涌现创新方向、生成创新假设、验证创新价值的能力，形成「价值驱动→知识涌现→主动创新」的完整闭环
     elif "知识图谱涌现" in intent or "知识涌现" in intent or "涌现创新" in intent or "knowledge emergence" in intent.lower() or "emergence innovation" in intent.lower() or "知识图谱创新" in intent or "创新涌现" in intent or "emergence" in intent.lower() and "创新" in intent or "涌现" in intent and "创新" in intent or "kg emergence" in intent.lower():
         print(f"[元进化知识图谱自涌现与主动创新引擎] 正在处理...", file=sys.stderr)
@@ -5125,6 +5138,19 @@ def main():
     elif "知识图谱元优化" in intent or "图谱元优化" in intent or "kg meta" in intent.lower() or "图谱优化" in intent or "图谱推理优化" in intent or "知识图谱深度集成" in intent or "evolution kg meta" in intent.lower() or "kg_meta" in intent.lower() or "图谱驱动优化" in intent or "深度集成闭环" in intent:
         print(f"[智能全场景进化知识图谱推理与元优化深度集成引擎] 正在执行深度集成闭环...", file=sys.stderr)
         script_path = os.path.join(SCRIPTS, "evolution_kg_meta_integration.py")
+        cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
+        if not cmd_args:
+            cmd_args = ["status"]
+        result = subprocess.run([sys.executable, script_path] + cmd_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+    # 智能全场景进化环知识图谱主动推理与前瞻性洞察生成引擎（round 605）
+    elif "知识图谱前瞻" in intent or "kg前瞻" in intent or "kg预测" in intent or "图谱主动推理" in intent or "proactive insight engine" in intent.lower() or "kg_proactive" in intent.lower() or "insight generation engine" in intent.lower() or "洞察生成引擎" in intent or ("前瞻" in intent and "洞察" in intent):
+        print(f"[知识图谱主动推理与前瞻性洞察生成引擎] 正在分析知识图谱并生成前瞻性洞察...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_kg_proactive_reasoning_insight_engine.py")
         cmd_args = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
         if not cmd_args:
             cmd_args = ["status"]
