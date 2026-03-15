@@ -2389,6 +2389,74 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环跨维度智能自主闭环驱动与持续演化引擎（Round 595）- 在 round 594 完成的跨维度智能融合自适应编排引擎基础上，构建真正的自主闭环驱动能力。让系统能够主动评估跨维度融合效果、识别优化机会、触发优化行动、持续演化改进，形成「评估→优化→执行→演化」的完整自主闭环
+    elif "跨维自主闭环" in intent or "自主闭环驱动" in intent or "autonomous closed loop" in intent.lower() or "closed loop drive" in intent.lower() or "自主演化" in intent or "闭环驱动" in intent or "自主驱动" in intent or "跨维闭环" in intent:
+        print(f"[跨维度智能自主闭环驱动引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_cross_dimension_autonomous_closed_loop_drive_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--evaluate" in sys.argv or "评估" in intent or "evaluate" in intent.lower():
+            filtered_args = ["--evaluate"]
+        elif "--identify" in sys.argv or "识别" in intent or "identify" in intent.lower() or "优化机会" in intent:
+            filtered_args = ["--identify"]
+        elif "--trigger" in sys.argv or "触发" in intent or "trigger" in intent.lower() or "优化行动" in intent:
+            filtered_args = ["--trigger"]
+        elif "--evolve" in sys.argv or "演化" in intent or "evolve" in intent.lower() or "持续演化" in intent:
+            filtered_args = ["--evolve"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--run" in sys.argv or "执行" in intent or "run" in intent.lower() or "闭环" in intent:
+            filtered_args = ["--run"]
+        else:
+            # 默认显示驾驶舱数据
+            filtered_args = ["--cockpit-data"]
+
+        # 过滤掉意图关键词
+        filter_words = ["跨维自主闭环", "自主闭环驱动", "autonomous closed loop", "closed loop drive", "自主演化", "闭环驱动", "自主驱动", "跨维闭环"]
+        filtered_args = [arg for arg in sys.argv[1:] if arg not in filter_words]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化系统自省与智能决策增强引擎（Round 596）- 在 round 595 完成的跨维度智能自主闭环驱动能力基础上，构建更深层次的自省能力与智能决策增强。让系统能够主动反思跨维度融合决策的有效性，评估融合效果，生成智能优化建议，形成「自省→决策→执行→验证」的完整闭环
+    elif "元自省决策" in intent or "系统自省" in intent or "meta self reflection" in intent.lower() or "self reflection decision" in intent.lower() or "自省增强" in intent or "智能决策分析" in intent or "决策自省" in intent or "元决策增强" in intent or "reflection" in intent.lower() and "meta" in intent.lower():
+        print(f"[元进化系统自省与智能决策增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_self_reflection_intelligent_decision_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--status" in sys.argv or "检查" in intent or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--reflect" in sys.argv or "自省" in intent or "reflect" in intent.lower() or "决策自省" in intent:
+            filtered_args = ["--reflect"]
+        elif "--evaluate" in sys.argv or "评估" in intent or "evaluate" in intent.lower() or "效果评估" in intent:
+            filtered_args = ["--evaluate"]
+        elif "--suggest" in sys.argv or "建议" in intent or "suggest" in intent.lower() or "优化建议" in intent:
+            filtered_args = ["--suggest"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--run" in sys.argv or "执行" in intent or "run" in intent.lower() or "自省闭环" in intent:
+            filtered_args = ["--run"]
+        else:
+            # 默认显示驾驶舱数据
+            filtered_args = ["--cockpit-data"]
+
+        # 过滤掉意图关键词
+        filter_words = ["元自省决策", "系统自省", "meta self reflection", "self reflection decision", "自省增强", "智能决策分析", "决策自省", "元决策增强"]
+        filtered_args = [arg for arg in sys.argv[1:] if arg not in filter_words]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环主动创新假设自动生成与自涌现发现引擎（Round 582）- 在 round 581 完成的知识驱动自动化执行增强引擎基础上，构建让系统能够主动发现创新机会、生成创新假设、发现新的进化方向的引擎。让系统不仅能执行知识推理结果，还能主动思考"我可以进化什么新的方向"，实现从「被动执行知识推理结果」到「主动发现进化机会」的范式升级
     elif "创新假设" in intent or "假设生成" in intent or "innovation hypothesis" in intent.lower() or "hypothesis generation" in intent.lower() or "创新发现" in intent or "主动发现" in intent or "emergence discovery" in intent.lower() or "创新涌现" in intent or "自涌现" in intent or "创新机会" in intent:
         print(f"[主动创新假设自动生成与自涌现发现引擎] 正在处理...", file=sys.stderr)
