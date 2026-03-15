@@ -1338,6 +1338,12 @@ def main():
         if not cmd or (cmd and cmd[0] not in ["--status", "--quality-status", "--correlations", "--recommendations", "--optimize", "--full-cycle", "--cockpit-data", "help"]):
             cmd = ["--status"]
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_decision_quality_driven_cross_engine_optimization_engine.py")] + cmd, cwd=PROJECT)
+    # 智能全场景进化环决策质量趋势预测与预防性进化策略自适应引擎（Round 537）- 基于 round 535-536 完成的决策质量能力，进一步增强决策质量趋势预测与预防性策略生成能力
+    elif "决策质量趋势预测" in intent or "质量趋势预测" in intent or "预防性策略" in intent or "decision quality prediction" in intent.lower() or "quality prediction" in intent.lower() or "prevention" in intent.lower() or "预防性进化" in intent or "预测预防" in intent:
+        cmd = sys.argv[2:] if len(sys.argv) > 2 else ["--status"]
+        if not cmd or (cmd and cmd[0] not in ["--status", "--predict", "--generate-strategy", "--execute", "--dry-run", "--full-cycle", "--cockpit-data", "help"]):
+            cmd = ["--status"]
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "evolution_decision_quality_prediction_prevention_engine.py")] + cmd, cwd=PROJECT)
     # 智能全场景系统自我进化评估与优化引擎（Round 279）
     elif "进化评估" in intent or "自我评估" in intent or "进化优化" in intent or "evolution_evaluation" in intent.lower() or "self evaluation" in intent.lower() or "评估优化" in intent or "进化自评" in intent:
         cmd = sys.argv[2:] if len(sys.argv) > 2 else ["status"]
