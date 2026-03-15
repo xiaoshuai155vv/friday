@@ -3161,6 +3161,39 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 669: 智能全场景进化环元进化跨引擎知识自动蒸馏与深度传承引擎 - 让系统能够自动从600+轮进化历史和100+进化引擎中提取可复用的元知识
+    # 形成结构化的知识传承体系，支持新引擎快速学习和复用历史经验
+    elif "知识自动蒸馏" in intent or "跨引擎知识传承" in intent or "引擎知识提取" in intent or "cross engine knowledge" in intent.lower() or "engine knowledge distillation" in intent.lower() or "知识传承引擎" in intent or "元知识提取" in intent or "元知识传承" in intent or "跨引擎知识图谱" in intent:
+        print(f"[智能全场景进化环元进化跨引擎知识自动蒸馏与深度传承引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_cross_engine_knowledge_distillation_inheritance_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 检测功能关键词
+        if "扫描" in intent or "scan" in intent.lower():
+            cmd_args = ["--scan"]
+        elif "获取知识" in intent or "get knowledge" in intent.lower() or "获取相关知识" in intent:
+            # 提取目标引擎名称
+            target_keywords = [w for w in sys.argv[1:] if not w.startswith("-") and "知识" not in w]
+            cmd_args = ["--get-knowledge", target_keywords[0]] if target_keywords else ["--status"]
+        elif "关联引擎" in intent or "relationships" in intent.lower():
+            target_keywords = [w for w in sys.argv[1:] if not w.startswith("-") and "关联" not in w]
+            cmd_args = ["--relationships", target_keywords[0]] if target_keywords else ["--status"]
+        elif "驾驶舱数据" in intent or "cockpit data" in intent.lower():
+            cmd_args = ["--cockpit-data"]
+        elif "统计" in intent or "statistics" in intent.lower():
+            cmd_args = ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["知识自动蒸馏", "跨引擎知识传承", "引擎知识提取", "cross engine knowledge", "engine knowledge distillation", "知识传承引擎", "元知识提取", "元知识传承", "跨引擎知识图谱", "扫描", "获取知识", "关联引擎", "驾驶舱数据", "统计"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 652: 智能全场景进化环元进化主动进化触发与自驱动闭环引擎 - 让系统能够自动评估进化价值、主动识别优化空间、形成完全自驱的进化闭环
     # 实现从「被动响应进化需求」到「主动驱动自身进化」的范式升级
     elif "主动进化触发" in intent or "自驱动" in intent or "自驱动闭环" in intent or "主动驱动" in intent or "auto trigger" in intent.lower() or "self-driven" in intent.lower() or "主动评估进化" in intent or "进化触发" in intent or "trigger evolution" in intent.lower() or "evolution trigger" in intent.lower():
