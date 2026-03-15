@@ -1884,6 +1884,35 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化价值实现闭环增强引擎（Round 573）- 在 round 572 完成的元进化价值战略预测与自适应优化引擎基础上，构建让系统能够追踪价值预测与实际实现的差距、评估价值实现效率、智能调整价值实现策略的能力，形成「价值预测→价值执行→价值评估→价值优化」的完整闭环，增强价值实现的端到端能力
+    elif "价值实现闭环" in intent or "价值闭环" in intent or "闭环增强" in intent or "value realization closed loop" in intent.lower() or "价值追踪" in intent or "价值评估" in intent or "价值效率" in intent or "价值优化" in intent:
+        print(f"[元进化价值实现闭环增强引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_value_realization_closed_loop_engine.py")
+
+        # 确定要执行的命令
+        if "--version" in sys.argv or "版本" in intent:
+            filtered_args = ["--version"]
+        elif "--check" in sys.argv or "检查" in intent or "校验" in intent:
+            filtered_args = ["--status"]
+        elif "--run" in sys.argv or "执行" in intent or "运行" in intent or "闭环" in intent:
+            filtered_args = ["--run"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--track" in sys.argv or "追踪" in intent or "预测追踪" in intent:
+            filtered_args = ["--track"]
+        elif "--evaluate" in sys.argv or "评估" in intent or "效率评估" in intent:
+            filtered_args = ["--evaluate"]
+        elif "--optimize" in sys.argv or "策略优化" in intent:
+            filtered_args = ["--optimize"]
+        else:
+            # 默认：显示引擎状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环元进化主动创新引擎（Round 570）- 在 round 569 完成的元进化自我优化引擎基础上，构建让系统主动发现创新机会、生成创新假设、验证创新价值的闭环，形成「理解→优化→创新」的递归增强，让系统不仅能优化已知问题，还能主动创造新价值
     elif "主动创新" in intent or "元进化主动创新" in intent or "meta active innovation" in intent.lower() or "innovation discovery" in intent.lower() or "创新发现" in intent or "创新假设" in intent or "创新验证" in intent or "创新价值" in intent or "创新引擎" in intent or "主动创新引擎" in intent:
         print(f"[元进化主动创新引擎] 正在处理...", file=sys.stderr)
