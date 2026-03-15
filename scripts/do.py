@@ -1744,6 +1744,39 @@ def main():
             print(result.stdout)
         if result.returncode != 0 and result.stderr:
             print(result.stderr, file=sys.stderr)
+    # 智能全场景进化环元进化内部健康诊断与自愈深度增强引擎（Round 497）- 自动诊断进化引擎间的依赖问题、识别内部健康风险、智能生成修复方案并自动执行
+    elif "元进化健康诊断" in intent or "内部健康诊断" in intent or "引擎健康自愈" in intent or "meta health diagnosis" in intent.lower() or "engine health" in intent.lower() or "meta self healing" in intent.lower() or "自愈引擎" in intent or "健康自愈" in intent or ("元进化" in intent and "诊断" in intent) or ("meta" in intent.lower() and "health" in intent.lower()) or ("元进化" in intent and "自愈" in intent):
+        print(f"[元进化内部健康诊断与自愈引擎] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_evolution_internal_health_diagnosis_self_healing_engine.py")
+
+        # 确定要执行的命令
+        if "--status" in sys.argv or "状态" in intent:
+            filtered_args = ["--status"]
+        elif "--diagnose" in sys.argv or "诊断" in intent:
+            filtered_args = ["--diagnose"]
+        elif "--repair" in sys.argv or "修复" in intent or "自动修复" in intent:
+            filtered_args = ["--repair"]
+        elif "--dry-run" in sys.argv or "模拟" in intent or "dry run" in intent.lower():
+            filtered_args = ["--repair", "--dry-run"]
+        elif "--run" in sys.argv or "完整闭环" in intent or "运行闭环" in intent or "full loop" in intent.lower():
+            filtered_args = ["--run"]
+        elif "--auto-repair" in sys.argv:
+            filtered_args = ["--run", "--auto-repair"]
+        elif "--health-score" in sys.argv or "健康评分" in intent or "评分" in intent:
+            filtered_args = ["--health-score"]
+        elif "--cockpit-data" in sys.argv or "驾驶舱" in intent or "cockpit" in intent.lower():
+            filtered_args = ["--cockpit-data"]
+        elif "--history" in sys.argv or "历史" in intent:
+            filtered_args = ["--history"]
+        else:
+            # 默认：显示状态
+            filtered_args = ["--status"]
+
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
     # 智能全场景进化环执行策略自优化深度增强引擎（Round 449）- 自动分析引擎执行效果、识别协作低效模式、智能生成并执行优化策略
     elif "策略优化" in intent or "执行优化" in intent or "自优化" in intent or "优化策略" in intent or "strategy optimization" in intent.lower() or "execution optimization" in intent.lower() or "self-optimization" in intent.lower() or "optimize strategy" in intent.lower() or "策略自优化" in intent or "执行策略优化" in intent:
         print(f"[执行策略自优化深度增强引擎] 正在处理...", file=sys.stderr)
