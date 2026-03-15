@@ -3103,6 +3103,25 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 638: 智能全场景进化环元进化预测-验证-优化三角闭环深度协同引擎 - 基于 round 635（创新执行）、round 636（预测策略）、round 637（预测验证）三个引擎，构建让系统能够将三个引擎深度协同，形成三角闭环的持续自增强能力
+    # 实现「验证→预测优化→执行调整→验证」的三角闭环协同
+    elif "三角闭环" in intent or "协同优化" in intent or "闭环协同" in intent or "triangular" in intent.lower() or "closed loop" in intent.lower() or "collaboration" in intent.lower() or "三角协同" in intent or "自增强" in intent or "反馈优化" in intent:
+        print(f"[智能全场景进化环元进化预测-验证-优化三角闭环深度协同引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_triangular_closed_loop_collaboration_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["三角闭环", "协同优化", "闭环协同", "triangular", "closed loop", "collaboration", "三角协同", "自增强", "反馈优化"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 633: 智能全场景进化环元进化知识图谱动态推理与主动创新发现引擎 - 基于 round 625 记忆整合和 round 632 方法论学习，构建让系统能够构建动态进化的知识图谱、进行图谱实时推理、主动发现创新机会并生成可执行创新建议
     # 实现「构建→推理→发现→建议→演化」的完整知识图谱创新闭环
     elif "知识图谱" in intent or "图谱推理" in intent or "创新发现" in intent or "knowledge graph" in intent.lower() or "kg" in intent.lower() or "图谱动态" in intent or "kg reasoning" in intent.lower() or "innovation discovery" in intent.lower() or "graph reasoning" in intent.lower() or "图谱分析" in intent or "kg reasoning" in intent.lower():
