@@ -3085,6 +3085,24 @@ def main():
             print(result.stderr, file=sys.stderr)
         sys.exit(0 if result.returncode == 0 else result.returncode)
 
+    # round 637: 智能全场景进化环元进化预测准确性验证与自适应优化引擎 - 基于 round 636 预测模型，构建让系统能够自动验证预测模型准确性、持续优化预测算法、形成预测→验证→优化的完整闭环
+    elif "预测验证" in intent or "预测准确性" in intent or "prediction accuracy" in intent.lower() or "预测优化" in intent or "accuracy verification" in intent.lower() or "预测校准" in intent or "置信度校准" in intent or "参数优化" in intent or "model calibration" in intent.lower():
+        print(f"[智能全场景进化环元进化预测准确性验证与自适应优化引擎 v1.0.0] 正在处理...", file=sys.stderr)
+        script_path = os.path.join(SCRIPTS, "evolution_meta_prediction_accuracy_verification_engine.py")
+        # 解析命令参数
+        cmd_args = sys.argv[1:] if len(sys.argv) > 1 else ["--status"]
+        # 过滤掉意图关键词
+        filter_words = ["预测验证", "预测准确性", "prediction accuracy", "预测优化", "accuracy verification", "预测校准", "置信度校准", "参数优化", "model calibration"]
+        filtered_args = [arg for arg in cmd_args if not any(w in arg for w in filter_words)]
+        if not filtered_args:
+            filtered_args = ["--status"]
+        result = subprocess.run([sys.executable, script_path] + filtered_args, cwd=PROJECT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0 and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        sys.exit(0 if result.returncode == 0 else result.returncode)
+
     # round 633: 智能全场景进化环元进化知识图谱动态推理与主动创新发现引擎 - 基于 round 625 记忆整合和 round 632 方法论学习，构建让系统能够构建动态进化的知识图谱、进行图谱实时推理、主动发现创新机会并生成可执行创新建议
     # 实现「构建→推理→发现→建议→演化」的完整知识图谱创新闭环
     elif "知识图谱" in intent or "图谱推理" in intent or "创新发现" in intent or "knowledge graph" in intent.lower() or "kg" in intent.lower() or "图谱动态" in intent or "kg reasoning" in intent.lower() or "innovation discovery" in intent.lower() or "graph reasoning" in intent.lower() or "图谱分析" in intent or "kg reasoning" in intent.lower():
