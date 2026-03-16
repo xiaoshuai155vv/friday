@@ -6,7 +6,7 @@ LLM-OS 控制面板 - 整合现有能力的统一入口
 本脚本整合窗口管理、进程管理、应用启动等能力，提供统一的 LLM-OS 桌面操作系统控制能力。
 基于已有的大量进化引擎能力，构建桌面操作系统级别的控制接口。
 
-版本: 2.0.0
+版本: 2.3.0
 依赖: window_tool, process_tool, launch_* 脚本, file_tool, notification_tool 等
 """
 
@@ -1403,6 +1403,30 @@ def main():
     parser.add_argument("--behavior-patterns", "-bpat", action="store_true",
                         help="分析时间模式")
 
+    # 场景自动发现引擎
+    parser.add_argument("--scene-init", "-scinit", action="store_true",
+                        help="初始化场景自动发现数据库")
+    parser.add_argument("--scene-analyze", "-scan", action="store_true",
+                        help="分析行为模式发现可自动化场景")
+    parser.add_argument("--scene-discover", "-scd", action="store_true",
+                        help="发现并创建自动化场景")
+    parser.add_argument("--scene-min-freq", "-scmf", type=int, default=3,
+                        help="场景发现最小频率 (默认: 3)")
+    parser.add_argument("--scene-list", "-scl", action="store_true",
+                        help="列出自动发现的场景")
+    parser.add_argument("--scene-details", "-scdt", type=int, metavar="ID",
+                        help="获取场景详情")
+    parser.add_argument("--scene-execute", "-scex", type=int, metavar="ID",
+                        help="执行自动发现的场景")
+    parser.add_argument("--scene-enable", "-scen", type=int, metavar="ID",
+                        help="启用场景")
+    parser.add_argument("--scene-disable", "-scdis", type=int, metavar="ID",
+                        help="禁用场景")
+    parser.add_argument("--scene-delete", "-scdel", type=int, metavar="ID",
+                        help="删除场景")
+    parser.add_argument("--scene-summary", "-scsum", action="store_true",
+                        help="获取场景自动发现统计")
+
     args = parser.parse_args()
 
     # 如果没有参数，显示菜单
@@ -1973,6 +1997,87 @@ def main():
         behavior_module = os.path.join(SCRIPT_DIR, "llm_os_user_behavior_prediction.py")
         result = subprocess.run(
             [sys.executable, behavior_module, "--analyze-patterns"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    # 场景自动发现引擎
+    if args.scene_init:
+        scene_module = os.path.join(SCRIPT_DIR, "llm_os_scene_auto_discovery.py")
+        result = subprocess.run(
+            [sys.executable, scene_module, "--init"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.scene_analyze:
+        scene_module = os.path.join(SCRIPT_DIR, "llm_os_scene_auto_discovery.py")
+        result = subprocess.run(
+            [sys.executable, scene_module, "--analyze"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.scene_discover:
+        scene_module = os.path.join(SCRIPT_DIR, "llm_os_scene_auto_discovery.py")
+        result = subprocess.run(
+            [sys.executable, scene_module, "--discover", "--min-freq", str(args.scene_min_freq)],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.scene_list:
+        scene_module = os.path.join(SCRIPT_DIR, "llm_os_scene_auto_discovery.py")
+        result = subprocess.run(
+            [sys.executable, scene_module, "--list-scenes"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.scene_details:
+        scene_module = os.path.join(SCRIPT_DIR, "llm_os_scene_auto_discovery.py")
+        result = subprocess.run(
+            [sys.executable, scene_module, "--scene-details", str(args.scene_details)],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.scene_execute:
+        scene_module = os.path.join(SCRIPT_DIR, "llm_os_scene_auto_discovery.py")
+        result = subprocess.run(
+            [sys.executable, scene_module, "--execute", str(args.scene_execute)],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.scene_enable:
+        scene_module = os.path.join(SCRIPT_DIR, "llm_os_scene_auto_discovery.py")
+        result = subprocess.run(
+            [sys.executable, scene_module, "--enable", str(args.scene_enable)],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.scene_disable:
+        scene_module = os.path.join(SCRIPT_DIR, "llm_os_scene_auto_discovery.py")
+        result = subprocess.run(
+            [sys.executable, scene_module, "--disable", str(args.scene_disable)],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.scene_delete:
+        scene_module = os.path.join(SCRIPT_DIR, "llm_os_scene_auto_discovery.py")
+        result = subprocess.run(
+            [sys.executable, scene_module, "--delete", str(args.scene_delete)],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.scene_summary:
+        scene_module = os.path.join(SCRIPT_DIR, "llm_os_scene_auto_discovery.py")
+        result = subprocess.run(
+            [sys.executable, scene_module, "--summary"],
             capture_output=True, text=True, encoding='utf-8', errors='replace'
         )
         print(result.stdout)
