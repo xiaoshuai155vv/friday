@@ -1135,6 +1135,7 @@ class VoiceOverlayWidget(QWidget):
         super().__init__(parent)
         self._ball = ball
         self._stop_event = None
+        self._last_user_text = ""
         self.setWindowTitle("Friday 语音")
         self.setFixedSize(VOICE_OVERLAY_W, VOICE_OVERLAY_H)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Window)
@@ -1194,7 +1195,18 @@ class VoiceOverlayWidget(QWidget):
             "QPushButton:hover { background: rgba(100,150,200,0.35); }"
         )
         self._continue_btn.clicked.connect(self._on_continue)
+        self._log_btn = QPushButton("查看日志")
+        self._log_btn.setCursor(Qt.PointingHandCursor)
+        self._log_btn.setFixedHeight(32)
+        self._log_btn.setMinimumWidth(70)
+        self._log_btn.setStyleSheet(
+            "QPushButton { color: rgb(160,200,220); background: rgba(80,120,150,0.2); "
+            "border: 1px solid rgb(80,120,150); border-radius: 4px; font-weight: 600; font-size: 11px; }"
+            "QPushButton:hover { background: rgba(80,120,150,0.35); }"
+        )
+        self._log_btn.clicked.connect(self._on_open_log)
         btn_row.addStretch()
+        btn_row.addWidget(self._log_btn)
         btn_row.addWidget(self._continue_btn)
         btn_row.addWidget(self._stop_btn)
         btn_row.addStretch()
@@ -1205,6 +1217,20 @@ class VoiceOverlayWidget(QWidget):
     def _on_continue(self):
         if self._ball and hasattr(self._ball, "_start_voice_from_ball"):
             self._ball._start_voice_from_ball()
+
+    def _on_open_log(self):
+        log_dir = os.path.join(ROOT, "runtime", "logs")
+        state_dir = os.path.join(ROOT, "runtime", "state")
+        voice_log = os.path.join(log_dir, "voice_interaction.log")
+        evo_log = os.path.join(log_dir, "evolution_loop.log")
+        evo_status = os.path.join(state_dir, "evolution_last_status.json")
+        if sys.platform == "win32":
+            for p in [voice_log, evo_log, evo_status]:
+                if os.path.isfile(p):
+                    os.startfile(p)
+                    return
+            if os.path.isdir(log_dir):
+                os.startfile(log_dir)
 
     def _on_stop(self):
         e = getattr(self, "_stop_event", None)
@@ -1233,14 +1259,28 @@ class VoiceOverlayWidget(QWidget):
     def set_final(self, text):
         self._status.setText("你说")
         self._text.setText(text[:100] + ("…" if len(text) > 100 else ""))
+        self._last_user_text = (text or "").strip()
         if text and text.strip():
             html = '<div style="text-align:right; margin:6px 0; color:rgb(255,220,100)">你: %s</div>' % self._escape_html(text.strip())
             self._append_chat_html(html)
 
     def set_response(self, text):
         if text and text.strip():
+            self._log_voice(self._last_user_text, text.strip())
             html = '<div style="text-align:left; margin:6px 0; color:rgb(180,220,255)">CC: %s</div>' % self._escape_html(text.strip())
             self._append_chat_html(html)
+
+    def _log_voice(self, user_text, cc_response):
+        try:
+            log_dir = os.path.join(ROOT, "runtime", "logs")
+            os.makedirs(log_dir, exist_ok=True)
+            log_path = os.path.join(log_dir, "voice_interaction.log")
+            from datetime import datetime
+            line = "[%s] 你: %s | CC: %s\n" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), user_text[:200], cc_response[:500].replace("\n", " "))
+            with open(log_path, "a", encoding="utf-8") as f:
+                f.write(line)
+        except Exception:
+            pass
 
     def _scroll_chat_to_bottom(self):
         sb = self._chat.verticalScrollBar()
@@ -1273,7 +1313,7 @@ class VoiceOverlayWidget(QWidget):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             child = self.childAt(event.pos())
-            if child in (self._stop_btn, self._continue_btn):
+            if child in (self._stop_btn, self._continue_btn, self._log_btn):
                 event.ignore()
                 return
             self._drag_start = event.globalPos() - self.frameGeometry().topLeft()
@@ -1783,7 +1823,10 @@ class FridayBall(QWidget):
                     self._voice_vision_worker.finished_signal.connect(self._on_voice_vision_finished)
                     self._voice_vision_worker.start()
             else:
-                self._voice_overlay.set_response("执行完成")
+                msg = err[:800] if err else "执行完成（无 stdout/stderr）"
+                if err and len(err) > 800:
+                    msg = msg + "\n…"
+                self._voice_overlay.set_response(msg)
                 self._auto_restart_voice()
         except Exception as e:
             self._voice_overlay.set_response("执行异常: " + str(e)[:80])
