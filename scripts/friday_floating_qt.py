@@ -94,6 +94,7 @@ try:
         QMenu, QAction, QDesktopWidget, QScrollArea,
         QPushButton, QVBoxLayout, QHBoxLayout, QFrame,
         QPlainTextEdit, QTextEdit, QComboBox, QShortcut, QFileDialog, QInputDialog,
+        QSizeGrip,
     )
     from PyQt5.QtCore import Qt, QTimer, QPoint, QRect, QEvent, QThread, pyqtSignal
     from PyQt5.QtGui import (
@@ -1160,7 +1161,8 @@ class VoiceOverlayWidget(QWidget):
         self._last_user_text = ""
         self._session_path = None
         self.setWindowTitle("Friday 语音")
-        self.setFixedSize(VOICE_OVERLAY_W, VOICE_OVERLAY_H)
+        self.setMinimumSize(VOICE_OVERLAY_W, VOICE_OVERLAY_H)
+        self.resize(VOICE_OVERLAY_W, VOICE_OVERLAY_H)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Window)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self._drag_start = None
@@ -1171,7 +1173,7 @@ class VoiceOverlayWidget(QWidget):
         self._status.setWordWrap(True)
         self._status.setAlignment(Qt.AlignCenter)
         self._status.setStyleSheet(
-            "color: rgb(255,235,140); font-size: 12px; font-weight: 600; "
+            "color: rgb(255,235,140); font-size: 14px; font-weight: 600; "
             "background: transparent; letter-spacing: 2px; "
             "text-shadow: 0 0 12px rgba(255,200,80,0.8);"
         )
@@ -1180,7 +1182,7 @@ class VoiceOverlayWidget(QWidget):
         self._text.setWordWrap(True)
         self._text.setAlignment(Qt.AlignCenter)
         self._text.setStyleSheet(
-            "color: rgb(255,220,100); font-size: 14px; font-weight: 600; "
+            "color: rgb(255,220,100); font-size: 16px; font-weight: 600; "
             "background: transparent; letter-spacing: 2px; line-height: 1.4; "
             "text-shadow: 0 0 14px rgba(255,180,50,0.7);"
         )
@@ -1190,15 +1192,22 @@ class VoiceOverlayWidget(QWidget):
         self._chat.setFrameShape(QFrame.NoFrame)
         self._chat.setMinimumHeight(280)
         self._chat.setStyleSheet(
-            "QTextEdit { color: rgb(200,220,240); font-size: 13px; "
+            "QTextEdit { color: rgb(200,220,240); font-size: 15px; "
             "background: transparent; border: none; "
             "selection-background-color: rgba(255,170,50,0.3); }"
+            "QScrollBar:vertical { background: rgba(60,80,120,0.25); width: 8px; "
+            "border-radius: 4px; margin: 0; }"
+            "QScrollBar::handle:vertical { background: rgba(255,200,80,0.35); "
+            "border-radius: 4px; min-height: 30px; }"
+            "QScrollBar::handle:vertical:hover { background: rgba(255,200,80,0.55); }"
+            "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }"
         )
         self._chat.setPlaceholderText("你与 CC 的语音对话将显示在这里…")
         layout.addWidget(self._chat, 1)
         self._cc_placeholder = QLabel("")
         self._cc_placeholder.setWordWrap(True)
-        self._cc_placeholder.setStyleSheet("color: rgb(180,220,255); font-size: 12px; background: transparent;")
+        self._cc_placeholder.setAlignment(Qt.AlignLeft)
+        self._cc_placeholder.setStyleSheet("color: rgb(180,220,255); font-size: 14px; background: transparent;")
         self._cc_placeholder.setVisible(False)
         layout.addWidget(self._cc_placeholder, 0)
         btn_row = QHBoxLayout()
@@ -1237,7 +1246,10 @@ class VoiceOverlayWidget(QWidget):
         btn_row.addWidget(self._log_btn)
         btn_row.addWidget(self._continue_btn)
         btn_row.addWidget(self._stop_btn)
-        btn_row.addStretch()
+        self._size_grip = QSizeGrip(self)
+        self._size_grip.setStyleSheet("QSizeGrip { background: rgba(255,200,80,0.2); border-radius: 4px; }")
+        self._size_grip.setFixedSize(16, 16)
+        btn_row.addWidget(self._size_grip)
         layout.addLayout(btn_row)
         esc = QShortcut(QKeySequence(Qt.Key_Escape), self)
         esc.activated.connect(self._on_stop)
@@ -1287,6 +1299,10 @@ class VoiceOverlayWidget(QWidget):
         c.insertHtml(html + "<br>")
         self._chat.setTextCursor(c)
         self._scroll_chat_to_bottom()
+
+    def set_processing(self):
+        """CC 处理中时更新状态"""
+        self._status.setText("◉ 处理中…")
 
     def set_final(self, text):
         self._status.setText("你说")
@@ -1352,7 +1368,7 @@ class VoiceOverlayWidget(QWidget):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             child = self.childAt(event.pos())
-            if child in (self._stop_btn, self._continue_btn, self._log_btn):
+            if child in (self._stop_btn, self._continue_btn, self._log_btn, getattr(self, "_size_grip", None)):
                 event.ignore()
                 return
             self._drag_start = event.globalPos() - self.frameGeometry().topLeft()
@@ -1789,7 +1805,8 @@ class FridayBall(QWidget):
                 tray.showMessage("Friday", "请安装: pip install websocket-client sounddevice numpy", QSystemTrayIcon.Warning, 4000)
             return
         self._voice_stop_event = __import__("threading").Event()
-        if self._voice_overlay is None or not self._voice_overlay.isVisible():
+        was_hidden = self._voice_overlay is None or not self._voice_overlay.isVisible()
+        if was_hidden:
             self._voice_overlay = VoiceOverlayWidget(self)
             sys.path.insert(0, SCRIPTS)
             from voice_session import create_session
@@ -1799,11 +1816,12 @@ class FridayBall(QWidget):
         self._voice_overlay.set_listening()
         self._voice_overlay.activateWindow()
         self._voice_overlay.raise_()
-        screen = QDesktopWidget().availableGeometry()
-        ox = screen.center().x() - VOICE_OVERLAY_W // 2
-        oy = screen.center().y() - VOICE_OVERLAY_H // 2
-        self._voice_overlay.move(max(screen.left(), min(ox, screen.right() - VOICE_OVERLAY_W)),
-                                max(screen.top(), min(oy, screen.bottom() - VOICE_OVERLAY_H)))
+        if was_hidden:
+            screen = QDesktopWidget().availableGeometry()
+            ox = screen.center().x() - VOICE_OVERLAY_W // 2
+            oy = screen.center().y() - VOICE_OVERLAY_H // 2
+            self._voice_overlay.move(max(screen.left(), min(ox, screen.right() - VOICE_OVERLAY_W)),
+                                    max(screen.top(), min(oy, screen.bottom() - VOICE_OVERLAY_H)))
         self._voice_overlay.show()
         self._voice_overlay.raise_()
         self._set_spinning(True)
@@ -1843,6 +1861,8 @@ class FridayBall(QWidget):
             self._voice_overlay.set_response("写入会话失败: " + str(e)[:80])
             self._auto_restart_voice()
             return
+        self._voice_cc_responded = False
+        self._voice_overlay.set_processing()
         self._voice_overlay.update_cc_placeholder("处理中…")
         self._voice_cc_worker = VoiceCCWorker(session_path, text.strip())
         self._voice_cc_worker.finished_signal.connect(self._on_voice_cc_finished)
@@ -1855,11 +1875,14 @@ class FridayBall(QWidget):
         if not self._voice_overlay or not self._voice_overlay.isVisible():
             self._stop_voice_poll()
             return
+        if getattr(self, "_voice_cc_responded", False):
+            return
         try:
             from voice_session import read_cc_content_after
             content, is_completed = read_cc_content_after(session_path)
             self._voice_overlay.update_cc_placeholder(content or "处理中…")
             if is_completed:
+                self._voice_cc_responded = True
                 self._stop_voice_poll()
                 self._voice_overlay.set_response(content or "已完成")
                 self._auto_restart_voice()
@@ -1878,8 +1901,6 @@ class FridayBall(QWidget):
             if self._voice_overlay and self._voice_overlay.isVisible():
                 self._voice_overlay.set_response("CC 调用失败: " + error_msg)
             self._auto_restart_voice()
-        elif success and self._voice_overlay and self._voice_overlay._session_path:
-            QTimer.singleShot(500, lambda: self._poll_voice_session(self._voice_overlay._session_path))
 
     def _on_voice_vision_finished(self, result):
         self._voice_vision_worker = None
