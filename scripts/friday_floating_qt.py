@@ -1060,6 +1060,28 @@ class FridayMultimodalDialog(QWidget):
             self._drag_start = None
 
 
+class VoiceCCWorker(QThread):
+    """后台调用 CC 处理语音请求，写入会话文件"""
+    finished_signal = pyqtSignal(bool, str)
+
+    def __init__(self, session_path, user_text):
+        super().__init__()
+        self._session_path = session_path
+        self._user_text = user_text
+
+    def run(self):
+        try:
+            sys.path.insert(0, SCRIPTS)
+            from voice_cc_client import call_cc_voice
+            ok, out = call_cc_voice(self._session_path, self._user_text)
+            if ok:
+                self.finished_signal.emit(True, "")
+            else:
+                self.finished_signal.emit(False, str(out)[:300])
+        except Exception as e:
+            self.finished_signal.emit(False, str(e)[:300])
+
+
 class VoiceVisionFallbackWorker(QThread):
     """do.py 失败时：截图 + vision_proxy 多模态兜底"""
     finished_signal = pyqtSignal(str)
@@ -1136,6 +1158,7 @@ class VoiceOverlayWidget(QWidget):
         self._ball = ball
         self._stop_event = None
         self._last_user_text = ""
+        self._session_path = None
         self.setWindowTitle("Friday 语音")
         self.setFixedSize(VOICE_OVERLAY_W, VOICE_OVERLAY_H)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Window)
@@ -1173,6 +1196,11 @@ class VoiceOverlayWidget(QWidget):
         )
         self._chat.setPlaceholderText("你与 CC 的语音对话将显示在这里…")
         layout.addWidget(self._chat, 1)
+        self._cc_placeholder = QLabel("")
+        self._cc_placeholder.setWordWrap(True)
+        self._cc_placeholder.setStyleSheet("color: rgb(180,220,255); font-size: 12px; background: transparent;")
+        self._cc_placeholder.setVisible(False)
+        layout.addWidget(self._cc_placeholder, 0)
         btn_row = QHBoxLayout()
         self._stop_btn = QPushButton("结束 (Esc)")
         self._stop_btn.setCursor(Qt.PointingHandCursor)
@@ -1221,16 +1249,20 @@ class VoiceOverlayWidget(QWidget):
     def _on_open_log(self):
         log_dir = os.path.join(ROOT, "runtime", "logs")
         state_dir = os.path.join(ROOT, "runtime", "state")
+        sessions_dir = os.path.join(ROOT, "runtime", "voice_sessions")
         voice_log = os.path.join(log_dir, "voice_interaction.log")
         evo_log = os.path.join(log_dir, "evolution_loop.log")
         evo_status = os.path.join(state_dir, "evolution_last_status.json")
         if sys.platform == "win32":
-            for p in [voice_log, evo_log, evo_status]:
-                if os.path.isfile(p):
+            session_path = getattr(self, "_session_path", None)
+            for p in [session_path, voice_log, evo_log, evo_status]:
+                if p and os.path.isfile(p):
                     os.startfile(p)
                     return
-            if os.path.isdir(log_dir):
-                os.startfile(log_dir)
+            for d in [sessions_dir, log_dir]:
+                if os.path.isdir(d):
+                    os.startfile(d)
+                    return
 
     def _on_stop(self):
         e = getattr(self, "_stop_event", None)
@@ -1265,10 +1297,17 @@ class VoiceOverlayWidget(QWidget):
             self._append_chat_html(html)
 
     def set_response(self, text):
+        self._cc_placeholder.setVisible(False)
+        self._cc_placeholder.setText("")
         if text and text.strip():
             self._log_voice(self._last_user_text, text.strip())
             html = '<div style="text-align:left; margin:6px 0; color:rgb(180,220,255)">CC: %s</div>' % self._escape_html(text.strip())
             self._append_chat_html(html)
+
+    def update_cc_placeholder(self, text):
+        """轮询时更新 CC 占位内容"""
+        self._cc_placeholder.setText("CC: " + (text or "处理中…"))
+        self._cc_placeholder.setVisible(True)
 
     def _log_voice(self, user_text, cc_response):
         try:
@@ -1752,6 +1791,10 @@ class FridayBall(QWidget):
         self._voice_stop_event = __import__("threading").Event()
         if self._voice_overlay is None or not self._voice_overlay.isVisible():
             self._voice_overlay = VoiceOverlayWidget(self)
+            sys.path.insert(0, SCRIPTS)
+            from voice_session import create_session
+            sid, session_path = create_session()
+            self._voice_overlay._session_path = session_path
         self._voice_overlay._stop_event = self._voice_stop_event
         self._voice_overlay.set_listening()
         self._voice_overlay.activateWindow()
@@ -1788,49 +1831,55 @@ class FridayBall(QWidget):
             self._auto_restart_voice()
             return
         self._voice_overlay.set_final(text)
-        try:
-            timeout_sec = 360 if ("进化" in text or "evolution" in text.lower()) else 120
-            r = subprocess.run(
-                [sys.executable, os.path.join(SCRIPTS, "do.py"), text.strip()],
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                timeout=timeout_sec,
-                encoding="utf-8",
-                errors="replace",
-            )
-            out = (r.stdout or "").strip()
-            err = (r.stderr or "").strip()
-            if "do.py stderr argv=" in err:
-                err = ""
-            if out:
-                raw = out[:800]
-                if err:
-                    raw = raw + "\n[stderr] " + err[:400]
-                self._voice_overlay.set_response(raw)
-                self._auto_restart_voice()
-            elif r.returncode != 0:
-                fail_msg = "do.py 执行失败" + ("\n[stderr] " + err[:400] if err else "")
-                if "进化" in text or "evolution" in text.lower():
-                    fail_msg += "\n[进化环进度见 runtime/logs/evolution_loop.log 和 runtime/state/evolution_last_status.json]"
-                    self._voice_overlay.set_response(fail_msg)
-                    self._auto_restart_voice()
-                else:
-                    fail_msg += "\n尝试多模态…"
-                    self._voice_overlay.set_response(fail_msg)
-                    self._voice_overlay._continue_btn.setEnabled(False)
-                    self._voice_vision_worker = VoiceVisionFallbackWorker(text.strip())
-                    self._voice_vision_worker.finished_signal.connect(self._on_voice_vision_finished)
-                    self._voice_vision_worker.start()
-            else:
-                msg = err[:800] if err else "执行完成（无 stdout/stderr）"
-                if err and len(err) > 800:
-                    msg = msg + "\n…"
-                self._voice_overlay.set_response(msg)
-                self._auto_restart_voice()
-        except Exception as e:
-            self._voice_overlay.set_response("执行异常: " + str(e)[:80])
+        session_path = getattr(self._voice_overlay, "_session_path", None)
+        if not session_path:
+            self._voice_overlay.set_response("会话文件未创建")
             self._auto_restart_voice()
+            return
+        try:
+            from voice_session import append_user, read_cc_content_after
+            append_user(session_path, text.strip())
+        except Exception as e:
+            self._voice_overlay.set_response("写入会话失败: " + str(e)[:80])
+            self._auto_restart_voice()
+            return
+        self._voice_overlay.update_cc_placeholder("处理中…")
+        self._voice_cc_worker = VoiceCCWorker(session_path, text.strip())
+        self._voice_cc_worker.finished_signal.connect(self._on_voice_cc_finished)
+        self._voice_cc_worker.start()
+        self._voice_poll_timer = QTimer(self)
+        self._voice_poll_timer.timeout.connect(lambda: self._poll_voice_session(session_path))
+        self._voice_poll_timer.start(5000)
+
+    def _poll_voice_session(self, session_path):
+        if not self._voice_overlay or not self._voice_overlay.isVisible():
+            self._stop_voice_poll()
+            return
+        try:
+            from voice_session import read_cc_content_after
+            content, is_completed = read_cc_content_after(session_path)
+            self._voice_overlay.update_cc_placeholder(content or "处理中…")
+            if is_completed:
+                self._stop_voice_poll()
+                self._voice_overlay.set_response(content or "已完成")
+                self._auto_restart_voice()
+        except Exception:
+            pass
+
+    def _stop_voice_poll(self):
+        if hasattr(self, "_voice_poll_timer") and self._voice_poll_timer:
+            self._voice_poll_timer.stop()
+            self._voice_poll_timer = None
+
+    def _on_voice_cc_finished(self, success, error_msg):
+        self._voice_cc_worker = None
+        if not success and error_msg:
+            self._stop_voice_poll()
+            if self._voice_overlay and self._voice_overlay.isVisible():
+                self._voice_overlay.set_response("CC 调用失败: " + error_msg)
+            self._auto_restart_voice()
+        elif success and self._voice_overlay and self._voice_overlay._session_path:
+            QTimer.singleShot(500, lambda: self._poll_voice_session(self._voice_overlay._session_path))
 
     def _on_voice_vision_finished(self, result):
         self._voice_vision_worker = None
