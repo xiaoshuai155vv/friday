@@ -1,5 +1,6 @@
 # 技能配置（含 API key，勿提交）
 scripts/vision_config.json
+runtime/config/xunfei_config.json
 vision_config.json
 **/vision_config.json
 

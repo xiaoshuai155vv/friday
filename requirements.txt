@@ -1,3 +1,7 @@
 # 技能依赖：详见 SKILL.md「依赖与安装」节
 # 悬浮窗：Qt 版，需 PyQt5
 PyQt5>=5.15
+# 讯飞语音（可选）：TTS/ASR
+websocket-client>=1.0
+sounddevice>=0.4.0
+numpy>=1.20

@@ -27,8 +27,10 @@ if sys.platform == "win32":
         WM_HOTKEY = 0x0312
         VK_S = 0x53
         VK_Q = 0x51
+        VK_V = 0x56
         HOTKEY_ID_FULL = 9001
         HOTKEY_ID_REGION = 9002
+        HOTKEY_ID_VOICE = 9003
         _win_RegisterHotKey = user32.RegisterHotKey
         _win_RegisterHotKey.argtypes = [ctypes.wintypes.HWND, ctypes.c_int, ctypes.c_uint, ctypes.c_uint]
         _win_RegisterHotKey.restype = ctypes.wintypes.BOOL
@@ -1057,6 +1059,162 @@ class FridayMultimodalDialog(QWidget):
             self._drag_start = None
 
 
+class VoiceAsrWorker(QThread):
+    """后台线程：讯飞 ASR 录音识别，支持提前结束。"""
+    partial_signal = pyqtSignal(str)
+    finished_signal = pyqtSignal(str)
+
+    def __init__(self, stop_event, duration_sec=60):
+        super().__init__()
+        self._stop = stop_event
+        self._duration = duration_sec
+
+    def run(self):
+        try:
+            sys.path.insert(0, SCRIPTS)
+            from xunfei_asr_service import record_and_recognize, is_configured, HAS_SOUNDDEVICE, HAS_WEBSOCKET
+            if not is_configured() or not HAS_WEBSOCKET or not HAS_SOUNDDEVICE:
+                self.finished_signal.emit("")
+                return
+            text = record_and_recognize(
+                duration_sec=self._duration,
+                on_partial=lambda t: self.partial_signal.emit(t),
+                stop_event=self._stop,
+            )
+            self.finished_signal.emit(text or "")
+        except Exception as e:
+            self.finished_signal.emit("")
+
+
+class FridayVoiceDialog(QWidget):
+    """语音浮层：录音→识别→调用 do.py，电脑端以快捷键/点击触发。"""
+    def __init__(self, ball, parent=None):
+        super().__init__(parent)
+        self._ball = ball
+        self.setWindowTitle("Friday 语音")
+        self.setFixedSize(420, 280)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        self._drag_start = None
+        self._asr_worker = None
+        self._stop_event = None
+        self._build_ui()
+
+    def _build_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(16, 14, 16, 14)
+        layout.setSpacing(12)
+        title = QLabel("语音 · Ctrl+Shift+V")
+        title.setStyleSheet("color: rgb(255,210,90); font-size: 14px; font-weight: 600; background: transparent;")
+        layout.addWidget(title)
+        self._status = QLabel("点击「开始录音」或按 Ctrl+Shift+V")
+        self._status.setWordWrap(True)
+        self._status.setStyleSheet("color: rgb(255,220,110); font-size: 13px; padding: 8px; background: rgba(65,65,80,0.95); border-radius: 8px; min-height: 80px;")
+        layout.addWidget(self._status, 1)
+        btn_ss = (
+            "QPushButton { color: rgb(255,210,90); background: rgba(255,180,60,0.25); "
+            "border: 1px solid rgb(255,170,50); border-radius: 6px; padding: 8px 16px; font-weight: 600; }"
+            "QPushButton:hover { background: rgba(255,170,50,0.4); }"
+            "QPushButton:disabled { color: rgb(150,130,70); }"
+        )
+        self._start_btn = QPushButton("开始录音")
+        self._start_btn.setCursor(Qt.PointingHandCursor)
+        self._start_btn.setStyleSheet(btn_ss)
+        self._start_btn.clicked.connect(self._on_start)
+        self._stop_btn = QPushButton("结束")
+        self._stop_btn.setCursor(Qt.PointingHandCursor)
+        self._stop_btn.setStyleSheet(btn_ss)
+        self._stop_btn.clicked.connect(self._on_stop)
+        self._stop_btn.setEnabled(False)
+        row = QHBoxLayout()
+        row.addWidget(self._start_btn)
+        row.addWidget(self._stop_btn)
+        layout.addLayout(row)
+        close_btn = QPushButton("关闭")
+        close_btn.setCursor(Qt.PointingHandCursor)
+        close_btn.setStyleSheet(btn_ss)
+        close_btn.clicked.connect(self.close)
+        layout.addWidget(close_btn, 0, Qt.AlignCenter)
+
+    def _on_start(self):
+        sys.path.insert(0, SCRIPTS)
+        try:
+            from xunfei_config_loader import is_configured
+            from xunfei_asr_service import HAS_SOUNDDEVICE, HAS_WEBSOCKET
+        except Exception:
+            self._status.setText("讯飞语音未配置或依赖缺失。请复制 config/xunfei_config.example.json 到 runtime/config/xunfei_config.json 并填入密钥，安装: pip install websocket-client sounddevice numpy")
+            return
+        if not is_configured():
+            self._status.setText("请配置讯飞 API：复制 config/xunfei_config.example.json 到 runtime/config/xunfei_config.json 并填入 app_id、api_key、api_secret")
+            return
+        if not HAS_SOUNDDEVICE or not HAS_WEBSOCKET:
+            self._status.setText("请安装: pip install websocket-client sounddevice numpy")
+            return
+        self._stop_event = __import__("threading").Event()
+        self._start_btn.setEnabled(False)
+        self._stop_btn.setEnabled(True)
+        self._status.setText("正在录音… 说完后点击「结束」")
+        self._asr_worker = VoiceAsrWorker(self._stop_event, duration_sec=60)
+        self._asr_worker.partial_signal.connect(self._on_partial)
+        self._asr_worker.finished_signal.connect(self._on_finished)
+        self._asr_worker.start()
+
+    def _on_partial(self, text):
+        if text:
+            self._status.setText("识别中: " + (text[:80] + "…" if len(text) > 80 else text))
+
+    def _on_stop(self):
+        if self._stop_event:
+            self._stop_event.set()
+        self._stop_btn.setEnabled(False)
+        self._status.setText("正在识别…")
+
+    def _on_finished(self, text):
+        self._asr_worker = None
+        self._start_btn.setEnabled(True)
+        self._stop_btn.setEnabled(False)
+        if not text or not text.strip():
+            self._status.setText("未识别到内容，请重试。")
+            return
+        self._status.setText("已识别: " + text[:100] + ("…" if len(text) > 100 else ""))
+        # 调用 do.py
+        try:
+            r = subprocess.run(
+                [sys.executable, os.path.join(SCRIPTS, "do.py"), text.strip()],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                encoding="utf-8",
+                errors="replace",
+            )
+            out = (r.stdout or "").strip()[:200]
+            if out:
+                self._status.setText("执行结果: " + out)
+        except Exception as e:
+            self._status.setText("执行异常: " + str(e)[:80])
+
+    def paintEvent(self, event):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing, True)
+        p.setPen(QPen(QColor(255, 180, 50, 220), 1))
+        p.setBrush(QColor(58, 58, 72, 252))
+        p.drawRoundedRect(1, 1, self.width() - 2, self.height() - 2, 12, 12)
+        p.end()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._drag_start = event.globalPos() - self.frameGeometry().topLeft()
+
+    def mouseMoveEvent(self, event):
+        if getattr(self, "_drag_start", None) is not None and event.buttons() & Qt.LeftButton:
+            self.move(event.globalPos() - self._drag_start)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._drag_start = None
+
+
 class EvolutionLoopWorker(QThread):
     """后台线程：调用 evolution_loop_client 向 CCR 提交一轮进化环，不阻塞悬浮球。"""
     finished_signal = pyqtSignal(bool, object)
@@ -1200,6 +1358,10 @@ class FridayBall(QWidget):
         s2 = QShortcut(QKeySequence("Ctrl+Shift+Q"), self)
         s2.setContext(Qt.ApplicationShortcut)
         s2.activated.connect(self._on_shortcut_region_capture)
+        s3 = QShortcut(QKeySequence("Ctrl+Shift+V"), self)
+        s3.setContext(Qt.ApplicationShortcut)
+        s3.activated.connect(self._on_shortcut_voice)
+        self._voice_dialog = None
         self._apply_state()
         # Windows 全局热键（其他应用前台时也能响应）
         if HAS_GLOBAL_HOTKEY:
@@ -1296,6 +1458,17 @@ class FridayBall(QWidget):
         self._onecall_dialog.raise_()
         self._onecall_dialog.activateWindow()
 
+    def _show_voice(self):
+        if self._voice_dialog is None or not self._voice_dialog.isVisible():
+            self._voice_dialog = FridayVoiceDialog(self)
+        self._voice_dialog.move(self._dialog_pos(420, 280))
+        self._voice_dialog.show()
+        self._voice_dialog.raise_()
+        self._voice_dialog.activateWindow()
+
+    def _on_shortcut_voice(self):
+        self._show_voice()
+
     def _on_shortcut_full_screenshot(self):
         self._show_onecall()
         QTimer.singleShot(120, self._trigger_full_screenshot)
@@ -1321,6 +1494,8 @@ class FridayBall(QWidget):
             if _win_RegisterHotKey(hwnd, HOTKEY_ID_FULL, mod, VK_S):
                 pass
             if _win_RegisterHotKey(hwnd, HOTKEY_ID_REGION, mod, VK_Q):
+                pass
+            if _win_RegisterHotKey(hwnd, HOTKEY_ID_VOICE, mod, VK_V):
                 pass
         except Exception:
             pass
@@ -1352,6 +1527,9 @@ class FridayBall(QWidget):
                         return True, 0
                     if msg.wParam == HOTKEY_ID_REGION:
                         QTimer.singleShot(0, self._on_shortcut_region_capture)
+                        return True
+                    if msg.wParam == HOTKEY_ID_VOICE:
+                        QTimer.singleShot(0, self._on_shortcut_voice)
                         return True, 0
             except Exception:
                 pass
@@ -1363,6 +1541,7 @@ class FridayBall(QWidget):
                 hwnd = int(self.winId())
                 _win_UnregisterHotKey(hwnd, HOTKEY_ID_FULL)
                 _win_UnregisterHotKey(hwnd, HOTKEY_ID_REGION)
+                _win_UnregisterHotKey(hwnd, HOTKEY_ID_VOICE)
             except Exception:
                 pass
         super().closeEvent(event)
@@ -1376,6 +1555,9 @@ class FridayBall(QWidget):
         onecall_act = QAction("OneCall · 多模态", self)
         onecall_act.triggered.connect(self._show_onecall)
         menu.addAction(onecall_act)
+        voice_act = QAction("开始语音 (Ctrl+Shift+V)", self)
+        voice_act.triggered.connect(self._show_voice)
+        menu.addAction(voice_act)
         menu.addSeparator()
         evolution_act = QAction("提交一轮进化环", self)
         evolution_act.triggered.connect(lambda: self._trigger_evolution_loop(None))

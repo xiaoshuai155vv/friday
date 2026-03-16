@@ -1,0 +1,9 @@
+{
+  "app_id": "请填写讯飞APPID",
+  "api_key": "请填写讯飞APIKey",
+  "api_secret": "请填写讯飞APISecret",
+  "voice": "xiaoyan",
+  "speed": 50,
+  "volume": 50,
+  "pitch": 50
+}

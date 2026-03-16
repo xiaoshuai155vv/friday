@@ -303,16 +303,21 @@ class TTSEngine:
 
 def speak_text(text: str, rate: int = 150, volume: float = 1.0) -> Dict[str, Any]:
     """
-    便捷函数：合成并播放语音
-
-    Args:
-        text: 要播放的文本
-        rate: 语速
-        volume: 音量
-
-    Returns:
-        dict: 执行结果
+    便捷函数：合成并播放语音。
+    若配置了讯飞 API 则优先使用讯飞 TTS，否则使用 pyttsx3/SAPI/gTTS。
     """
+    try:
+        import sys
+        _scripts = os.path.dirname(os.path.abspath(__file__))
+        if _scripts not in sys.path:
+            sys.path.insert(0, _scripts)
+        from xunfei_config_loader import is_configured
+        from xunfei_tts_service import text_to_speech
+        if is_configured():
+            text_to_speech(text, play=True)
+            return {"success": True, "text": text, "engine": "xunfei"}
+    except Exception:
+        pass
     engine = TTSEngine(voice_rate=rate, voice_volume=volume)
     success = engine.speak(text)
     return {

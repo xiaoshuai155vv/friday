@@ -1002,6 +1002,9 @@ def main():
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "tray_icon_tool.py"), "info"], cwd=PROJECT)
     elif intent in ("截图", "截屏"):
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "screenshot_tool.py")], cwd=PROJECT)
+    elif intent in ("语音", "开始语音"):
+        dur = args[0] if args else "15"
+        subprocess.run([sys.executable, os.path.join(SCRIPTS, "voice_capture.py"), str(dur)], cwd=PROJECT)
     elif intent == "打开浏览器":
         url = sys.argv[2] if len(sys.argv) > 2 else "https://www.bing.com"
         subprocess.run([sys.executable, os.path.join(SCRIPTS, "launch_browser.py"), url], cwd=PROJECT)
