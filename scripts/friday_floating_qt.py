@@ -1676,9 +1676,15 @@ class FridayBall(QWidget):
                 encoding="utf-8",
                 errors="replace",
             )
-            out = (r.stdout or r.stderr or "").strip()[:200]
+            out = (r.stdout or "").strip()
             if out:
-                self._voice_overlay.set_response(out)
+                self._voice_overlay.set_response(out[:200])
+            elif r.returncode != 0:
+                err = (r.stderr or "").strip()
+                if err and "do.py stderr argv=" not in err:
+                    self._voice_overlay.set_response("执行失败: " + err[:120])
+                else:
+                    self._voice_overlay.set_response("执行失败")
         except Exception as e:
             self._voice_overlay.set_response("执行异常: " + str(e)[:80])
 
