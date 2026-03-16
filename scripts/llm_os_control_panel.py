@@ -475,11 +475,148 @@ def file_manager_quick():
     return result.stdout
 
 
+# ========== 系统设置函数 ==========
+
+def settings_brightness(action, value=None):
+    """亮度控制"""
+    settings = os.path.join(SCRIPT_DIR, "llm_os_settings.py")
+    cmd = [sys.executable, settings, "--brightness"]
+    if action == "get":
+        cmd.append("get")
+    elif action == "set" and value is not None:
+        cmd.extend(["--brightness", str(value)])
+    elif action == "up":
+        cmd.append("up")
+    elif action == "down":
+        cmd.append("down")
+
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace')
+    return result.stdout
+
+
+def settings_volume(action, value=None):
+    """音量控制"""
+    settings = os.path.join(SCRIPT_DIR, "llm_os_settings.py")
+    cmd = [sys.executable, settings, "--volume"]
+    if action == "get":
+        cmd.append("get")
+    elif action == "set" and value is not None:
+        cmd.extend(["--volume", str(value)])
+    elif action == "up":
+        cmd.append("up")
+    elif action == "down":
+        cmd.append("down")
+    elif action == "mute":
+        cmd.append("mute")
+
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace')
+    return result.stdout
+
+
+def settings_battery():
+    """电池状态"""
+    settings = os.path.join(SCRIPT_DIR, "llm_os_settings.py")
+    result = subprocess.run(
+        [sys.executable, settings, "--battery", "status"],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
+def settings_power(action, plan=None):
+    """电源管理"""
+    settings = os.path.join(SCRIPT_DIR, "llm_os_settings.py")
+    if action == "get":
+        result = subprocess.run(
+            [sys.executable, settings, "--power", "plan"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+    elif action == "set" and plan:
+        result = subprocess.run(
+            [sys.executable, settings, "--power", "set", plan],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+    else:
+        return "用法: --settings-power get 或 --settings-power set <plan>"
+    return result.stdout
+
+
+def settings_dark_mode(action):
+    """深色模式"""
+    settings = os.path.join(SCRIPT_DIR, "llm_os_settings.py")
+    cmd = [sys.executable, settings, "--dark-mode"]
+    if action == "get":
+        cmd.append("status")
+    elif action == "on":
+        cmd.append("on")
+    elif action == "off":
+        cmd.append("off")
+    elif action == "toggle":
+        cmd.append("toggle")
+    else:
+        return "用法: --settings-dark-mode status|on|off|toggle"
+
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace')
+    return result.stdout
+
+
+def settings_airplane_mode(action):
+    """飞行模式"""
+    settings = os.path.join(SCRIPT_DIR, "llm_os_settings.py")
+    cmd = [sys.executable, settings, "--airplane-mode"]
+    if action == "get":
+        cmd.append("status")
+    elif action == "on":
+        cmd.append("on")
+    elif action == "off":
+        cmd.append("off")
+    else:
+        return "用法: --settings-airplane status|on|off"
+
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace')
+    return result.stdout
+
+
+def settings_scale():
+    """显示缩放"""
+    settings = os.path.join(SCRIPT_DIR, "llm_os_settings.py")
+    result = subprocess.run(
+        [sys.executable, settings, "--scale", "status"],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
+def settings_wallpaper(action, path=None):
+    """壁纸控制"""
+    settings = os.path.join(SCRIPT_DIR, "llm_os_settings.py")
+    cmd = [sys.executable, settings, "--wallpaper"]
+    if action == "get":
+        cmd.append("get")
+    elif action == "set" and path:
+        cmd.extend(["set", path])
+    else:
+        return "用法: --settings-wallpaper get 或 --settings-wallpaper set <path>"
+
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace')
+    return result.stdout
+
+
+def settings_all():
+    """获取所有设置概览"""
+    settings = os.path.join(SCRIPT_DIR, "llm_os_settings.py")
+    result = subprocess.run(
+        [sys.executable, settings, "--all"],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
 def show_menu():
     """显示 LLM-OS 控制面板菜单"""
     menu = """
 ╔═══════════════════════════════════════════════════════════╗
-║           LLM-OS 桌面操作系统控制面板 v1.4.0              ║
+║           LLM-OS 桌面操作系统控制面板 v1.5.0              ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  1. 窗口管理                                             ║
 ║     - list_windows: 列出所有窗口                         ║
@@ -534,7 +671,26 @@ def show_menu():
 ║     - task_kill <name/pid>: 结束进程                     ║
 ║     - task_services: 列出Windows服务                      ║
 ║                                                         ║
-║  10. 退出                                                 ║
+║  10. 任务管理器 (新增!)                                  ║
+║     - task_list: 列出所有进程                            ║
+║     - task_top <N>: 列出前N个进程                         ║
+║     - task_resources: 查看系统资源                        ║
+║     - task_kill <name\pid>: 结束进程                     ║
+║     - task_services: 列出Windows服务                      ║
+║                                                         ║
+║  11. 系统设置 (新增!)                                    ║
+║     - settings-brightness get/up/down/set <0-100>        ║
+║     - settings-volume get/up/down/mute/set <0-100>      ║
+║     - settings-battery: 查看电池状态                     ║
+║     - settings-power get: 查看电源计划                   ║
+║     - settings-power-plan <balanced/power_saver/high>   ║
+║     - settings-dark-mode status/on/off/toggle           ║
+║     - settings-airplane status/on/off                    ║
+║     - settings-scale: 显示缩放比例                       ║
+║     - settings-wallpaper get/set <path>                 ║
+║     - settings-all: 所有设置概览                        ║
+║                                                         ║
+║  12. 退出                                                 ║
 ╚═══════════════════════════════════════════════════════════╝
 """
     return menu
@@ -662,6 +818,28 @@ def main():
                         help="查看磁盘使用情况")
     parser.add_argument("--file-quick", "-fquick", action="store_true",
                         help="获取快速访问位置")
+
+    # 系统设置支持
+    parser.add_argument("--settings-brightness", "-sb", nargs="?", const="get",
+                        help="亮度控制: get, set <0-100>, up, down")
+    parser.add_argument("--settings-volume", "-sv", nargs="?", const="get",
+                        help="音量控制: get, set <0-100>, up, down, mute")
+    parser.add_argument("--settings-battery", "-sbat", action="store_true",
+                        help="获取电池状态")
+    parser.add_argument("--settings-power", "-sp", nargs="?", const="get", metavar="ACTION",
+                        help="电源管理: get, set <balanced|power_saver|high_performance>")
+    parser.add_argument("--settings-power-plan", "-spp", type=str,
+                        help="设置电源计划（平衡/节能/高性能）")
+    parser.add_argument("--settings-dark-mode", "-sd", nargs="?", const="get",
+                        help="深色模式: status, on, off, toggle")
+    parser.add_argument("--settings-airplane", "-sa", nargs="?", const="get",
+                        help="飞行模式: status, on, off")
+    parser.add_argument("--settings-scale", "-ss", action="store_true",
+                        help="获取显示缩放比例")
+    parser.add_argument("--settings-wallpaper", "-sw", nargs="+", metavar="ACTION",
+                        help="壁纸: get, set <path>")
+    parser.add_argument("--settings-all", "-sall", action="store_true",
+                        help="获取所有设置概览")
 
     args = parser.parse_args()
 
@@ -880,6 +1058,62 @@ def main():
     if args.file_quick:
         print("=== 快速访问位置 ===")
         print(file_manager_quick())
+
+    # ========== 系统设置操作 ==========
+    if args.settings_brightness:
+        if args.settings_brightness == "get":
+            print(settings_brightness("get"))
+        elif args.settings_brightness == "up":
+            print(settings_brightness("up"))
+        elif args.settings_brightness == "down":
+            print(settings_brightness("down"))
+        elif args.settings_brightness.isdigit():
+            print(settings_brightness("set", int(args.settings_brightness)))
+
+    if args.settings_volume:
+        if args.settings_volume == "get":
+            print(settings_volume("get"))
+        elif args.settings_volume == "up":
+            print(settings_volume("up"))
+        elif args.settings_volume == "down":
+            print(settings_volume("down"))
+        elif args.settings_volume == "mute":
+            print(settings_volume("mute"))
+        elif args.settings_volume.isdigit():
+            print(settings_volume("set", int(args.settings_volume)))
+
+    if args.settings_battery:
+        print("=== 电池状态 ===")
+        print(settings_battery())
+
+    if args.settings_power == "get":
+        print("=== 电源计划 ===")
+        print(settings_power("get"))
+
+    if args.settings_power_plan:
+        print(settings_power("set", args.settings_power_plan))
+
+    if args.settings_dark_mode:
+        print(settings_dark_mode(args.settings_dark_mode))
+
+    if args.settings_airplane:
+        print(settings_airplane_mode(args.settings_airplane))
+
+    if args.settings_scale:
+        print("=== 显示缩放 ===")
+        print(settings_scale())
+
+    if args.settings_wallpaper:
+        action = args.settings_wallpaper[0]
+        path = args.settings_wallpaper[1] if len(args.settings_wallpaper) > 1 else None
+        if action == "get":
+            print(settings_wallpaper("get"))
+        elif action == "set" and path:
+            print(settings_wallpaper("set", path))
+
+    if args.settings_all:
+        print("=== 系统设置概览 ===")
+        print(settings_all())
 
 
 if __name__ == "__main__":
