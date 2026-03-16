@@ -1059,6 +1059,38 @@ class FridayMultimodalDialog(QWidget):
             self._drag_start = None
 
 
+class VoiceVisionFallbackWorker(QThread):
+    """do.py 失败时：截图 + vision_proxy 多模态兜底"""
+    finished_signal = pyqtSignal(str)
+
+    def __init__(self, user_text):
+        super().__init__()
+        self._user_text = user_text
+
+    def run(self):
+        try:
+            import tempfile
+            bmp = os.path.join(tempfile.gettempdir(), "friday_voice_fallback.bmp")
+            r1 = subprocess.run(
+                [sys.executable, os.path.join(SCRIPTS, "screenshot_tool.py"), bmp],
+                cwd=ROOT, capture_output=True, text=True, timeout=10
+            )
+            if r1.returncode != 0 or not os.path.isfile(bmp):
+                self.finished_signal.emit("截图失败")
+                return
+            r2 = subprocess.run(
+                [sys.executable, os.path.join(SCRIPTS, "vision_proxy.py"), bmp, self._user_text],
+                cwd=ROOT, capture_output=True, text=True, timeout=60, encoding="utf-8", errors="replace"
+            )
+            out = (r2.stdout or "").strip()
+            if out:
+                self.finished_signal.emit(out[:300])
+            else:
+                self.finished_signal.emit("多模态未返回结果")
+        except Exception as e:
+            self.finished_signal.emit("多模态异常: " + str(e)[:80])
+
+
 class VoiceAsrWorker(QThread):
     """后台线程：讯飞 ASR 录音识别，支持提前结束。"""
     partial_signal = pyqtSignal(str)
@@ -1086,9 +1118,9 @@ class VoiceAsrWorker(QThread):
             self.finished_signal.emit("")
 
 
-# 语音聊天框尺寸（屏幕中央透明 chat）
-VOICE_OVERLAY_W = 420
-VOICE_OVERLAY_H = 380
+# 语音聊天框尺寸（屏幕中央透明 chat，放大以便多轮对话）
+VOICE_OVERLAY_W = 560
+VOICE_OVERLAY_H = 520
 
 
 class VoiceOverlayWidget(QWidget):
@@ -1126,7 +1158,7 @@ class VoiceOverlayWidget(QWidget):
         self._chat = QPlainTextEdit()
         self._chat.setReadOnly(True)
         self._chat.setFrameShape(QFrame.NoFrame)
-        self._chat.setMinimumHeight(180)
+        self._chat.setMinimumHeight(280)
         self._chat.setStyleSheet(
             "QPlainTextEdit { color: rgb(200,220,240); font-size: 13px; "
             "background: transparent; border: none; "
@@ -1134,21 +1166,39 @@ class VoiceOverlayWidget(QWidget):
         )
         self._chat.setPlaceholderText("你与 CC 的语音对话将显示在这里…")
         layout.addWidget(self._chat, 1)
-        btn = QPushButton("结束 (Esc)")
-        btn.setCursor(Qt.PointingHandCursor)
-        btn.setFocusPolicy(Qt.StrongFocus)
-        btn.setFixedHeight(32)
-        btn.setMinimumWidth(100)
-        btn.setStyleSheet(
+        btn_row = QHBoxLayout()
+        self._stop_btn = QPushButton("结束 (Esc)")
+        self._stop_btn.setCursor(Qt.PointingHandCursor)
+        self._stop_btn.setFocusPolicy(Qt.StrongFocus)
+        self._stop_btn.setFixedHeight(32)
+        self._stop_btn.setMinimumWidth(100)
+        self._stop_btn.setStyleSheet(
             "QPushButton { color: rgb(255,200,80); background: rgba(255,170,50,0.15); "
             "border: 1px solid rgb(255,170,50); border-radius: 4px; font-weight: 600; font-size: 12px; }"
             "QPushButton:hover { background: rgba(255,170,50,0.35); }"
         )
-        btn.clicked.connect(self._on_stop)
-        layout.addWidget(btn, 0, Qt.AlignCenter)
-        self._stop_btn = btn
+        self._stop_btn.clicked.connect(self._on_stop)
+        self._continue_btn = QPushButton("继续说话")
+        self._continue_btn.setCursor(Qt.PointingHandCursor)
+        self._continue_btn.setFixedHeight(32)
+        self._continue_btn.setMinimumWidth(90)
+        self._continue_btn.setStyleSheet(
+            "QPushButton { color: rgb(180,220,255); background: rgba(100,150,200,0.2); "
+            "border: 1px solid rgb(100,150,200); border-radius: 4px; font-weight: 600; font-size: 12px; }"
+            "QPushButton:hover { background: rgba(100,150,200,0.35); }"
+        )
+        self._continue_btn.clicked.connect(self._on_continue)
+        btn_row.addStretch()
+        btn_row.addWidget(self._continue_btn)
+        btn_row.addWidget(self._stop_btn)
+        btn_row.addStretch()
+        layout.addLayout(btn_row)
         esc = QShortcut(QKeySequence(Qt.Key_Escape), self)
         esc.activated.connect(self._on_stop)
+
+    def _on_continue(self):
+        if self._ball and hasattr(self._ball, "_start_voice_from_ball"):
+            self._ball._start_voice_from_ball()
 
     def _on_stop(self):
         e = getattr(self, "_stop_event", None)
@@ -1207,7 +1257,7 @@ class VoiceOverlayWidget(QWidget):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             child = self.childAt(event.pos())
-            if child is self._stop_btn:
+            if child in (self._stop_btn, self._continue_btn):
                 event.ignore()
                 return
             self._drag_start = event.globalPos() - self.frameGeometry().topLeft()
@@ -1688,15 +1738,23 @@ class FridayBall(QWidget):
             )
             out = (r.stdout or "").strip()
             if out:
-                self._voice_overlay.set_response(out[:200])
+                self._voice_overlay.set_response(out[:300])
             elif r.returncode != 0:
-                err = (r.stderr or "").strip()
-                if err and "do.py stderr argv=" not in err:
-                    self._voice_overlay.set_response("执行失败: " + err[:120])
-                else:
-                    self._voice_overlay.set_response("执行失败")
+                self._voice_overlay.set_response("do.py 执行失败，尝试多模态…")
+                self._voice_overlay._continue_btn.setEnabled(False)
+                self._voice_vision_worker = VoiceVisionFallbackWorker(text.strip())
+                self._voice_vision_worker.finished_signal.connect(self._on_voice_vision_finished)
+                self._voice_vision_worker.start()
+            else:
+                self._voice_overlay.set_response("执行完成")
         except Exception as e:
             self._voice_overlay.set_response("执行异常: " + str(e)[:80])
+
+    def _on_voice_vision_finished(self, result):
+        self._voice_vision_worker = None
+        if self._voice_overlay and self._voice_overlay.isVisible():
+            self._voice_overlay.set_response(result)
+            self._voice_overlay._continue_btn.setEnabled(True)
 
     def _show_voice(self):
         """快捷键/菜单：同左键点击，打开浮层并开始录音"""
