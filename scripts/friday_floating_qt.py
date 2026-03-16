@@ -1204,7 +1204,7 @@ class VoiceOverlayWidget(QWidget):
         e = getattr(self, "_stop_event", None)
         if e:
             e.set()
-            self._status.setText("◉ 已结束，识别中…")
+        self.hide()
 
     def set_listening(self):
         self._status.setText("◉ 正在听…")
