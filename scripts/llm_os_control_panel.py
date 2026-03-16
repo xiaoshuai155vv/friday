@@ -998,6 +998,24 @@ def main():
     parser.add_argument("--monitor-all", "-ma", action="store_true",
                         help="获取所有监控详细信息")
 
+    # 设备管理支持
+    parser.add_argument("--device-summary", "-ds", action="store_true",
+                        help="获取设备管理摘要 (USB/蓝牙/打印机/网络适配器)")
+    parser.add_argument("--device-usb", "-dusb", action="store_true",
+                        help="获取 USB 设备列表")
+    parser.add_argument("--device-bluetooth", "-dbt", action="store_true",
+                        help="获取蓝牙设备列表")
+    parser.add_argument("--device-printers", "-dpr", action="store_true",
+                        help="获取打印机列表")
+    parser.add_argument("--device-network", "-dnet", action="store_true",
+                        help="获取网络适配器列表")
+    parser.add_argument("--device-disks", "-dd", action="store_true",
+                        help="获取磁盘驱动器列表")
+    parser.add_argument("--device-battery", "-dbat", action="store_true",
+                        help="获取电池状态")
+    parser.add_argument("--device-all", "-dall", action="store_true",
+                        help="获取所有设备详细信息")
+
     args = parser.parse_args()
 
     # 如果没有参数，显示菜单
@@ -1339,6 +1357,66 @@ def main():
         print(get_disk_monitor())
         print("\n>>> 网络详情 <<<")
         print(get_network_monitor())
+
+    # 设备管理操作
+    if args.device_summary or args.device_all or args.device_usb or args.device_bluetooth or args.device_printers or args.device_network or args.device_disks or args.device_battery:
+        device_manager = os.path.join(SCRIPT_DIR, "llm_os_device_manager.py")
+
+    if args.device_summary:
+        result = subprocess.run(
+            [sys.executable, device_manager, "--summary"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.device_usb:
+        result = subprocess.run(
+            [sys.executable, device_manager, "--usb"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.device_bluetooth:
+        result = subprocess.run(
+            [sys.executable, device_manager, "--bluetooth"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.device_printers:
+        result = subprocess.run(
+            [sys.executable, device_manager, "--printers"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.device_network:
+        result = subprocess.run(
+            [sys.executable, device_manager, "--network"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.device_disks:
+        result = subprocess.run(
+            [sys.executable, device_manager, "--disks"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.device_battery:
+        result = subprocess.run(
+            [sys.executable, device_manager, "--battery"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.device_all:
+        result = subprocess.run(
+            [sys.executable, device_manager, "--all"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
 
 
 if __name__ == "__main__":
