@@ -212,11 +212,63 @@ def launch_app_launcher(action, target=None):
     return result.stdout, result.returncode
 
 
+def multidisplay_list():
+    """列出所有显示器信息"""
+    multidisplay = os.path.join(SCRIPT_DIR, "llm_os_multidisplay.py")
+    result = subprocess.run(
+        [sys.executable, multidisplay, "--list"],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def multidisplay_move_window(window_title, display_index):
+    """将窗口移动到指定显示器"""
+    multidisplay = os.path.join(SCRIPT_DIR, "llm_os_multidisplay.py")
+    result = subprocess.run(
+        [sys.executable, multidisplay, "--move-window", window_title, str(display_index)],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def multidisplay_mirror_window(window_title, display_index):
+    """将窗口镜像到指定显示器"""
+    multidisplay = os.path.join(SCRIPT_DIR, "llm_os_multidisplay.py")
+    result = subprocess.run(
+        [sys.executable, multidisplay, "--mirror-window", window_title, str(display_index)],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def multidisplay_window_display(window_title):
+    """获取窗口当前所在的显示器"""
+    multidisplay = os.path.join(SCRIPT_DIR, "llm_os_multidisplay.py")
+    result = subprocess.run(
+        [sys.executable, multidisplay, "--window-display", window_title],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
 def show_menu():
     """显示 LLM-OS 控制面板菜单"""
     menu = """
 ╔═══════════════════════════════════════════════════════════╗
-║           LLM-OS 桌面操作系统控制面板 v1.1.0              ║
+║           LLM-OS 桌面操作系统控制面板 v1.2.0              ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  1. 窗口管理                                             ║
 ║     - list_windows: 列出所有窗口                         ║
@@ -253,7 +305,13 @@ def show_menu():
 ║  7. 文件管理                                             ║
 ║     - explore: 打开文件管理器                            ║
 ║                                                         ║
-║  8. 退出                                                 ║
+║  8. 多显示器支持 (新增!)                                 ║
+║     - list_displays: 列出所有显示器                      ║
+║     - move_window <title> <index>: 移动窗口到显示器      ║
+║     - mirror_window <title> <index>: 镜像窗口到显示器    ║
+║     - window_display <title>: 查看窗口所在显示器         ║
+║                                                         ║
+║  9. 退出                                                 ║
 ╚═══════════════════════════════════════════════════════════╝
 """
     return menu
@@ -329,6 +387,18 @@ def main():
                         help="获取虚拟应用启动器状态")
     parser.add_argument("--quick-launch", "-ql", type=str,
                         help="快速启动应用/网站/系统功能（根据名称自动识别）")
+
+    # 多显示器支持
+    parser.add_argument("--list-displays", "-ld", action="store_true",
+                        help="列出所有显示器信息")
+    parser.add_argument("--move-window", "-mw", type=str, nargs=2,
+                        metavar=('WINDOW_TITLE', 'DISPLAY_INDEX'),
+                        help="将窗口移动到指定显示器（0=主显示器，1=显示器2，...）")
+    parser.add_argument("--mirror-window", "-mir", type=str, nargs=2,
+                        metavar=('WINDOW_TITLE', 'DISPLAY_INDEX'),
+                        help="将窗口镜像到指定显示器（保持相对位置）")
+    parser.add_argument("--window-display", "-wd", type=str,
+                        help="查看窗口当前所在的显示器")
 
     args = parser.parse_args()
 
@@ -466,6 +536,26 @@ def main():
                     print(f"✓ 系统功能 {target} 已启动")
                 else:
                     print(f"✗ 未找到: {target}")
+
+    # 多显示器操作
+    if args.list_displays:
+        print(multidisplay_list())
+
+    if args.move_window:
+        window_title = args.move_window[0]
+        display_index = int(args.move_window[1])
+        output, code = multidisplay_move_window(window_title, display_index)
+        print(output if output else f"✓ 窗口已移动到显示器 {display_index}")
+
+    if args.mirror_window:
+        window_title = args.mirror_window[0]
+        display_index = int(args.mirror_window[1])
+        output, code = multidisplay_mirror_window(window_title, display_index)
+        print(output if output else f"✓ 窗口已镜像到显示器 {display_index}")
+
+    if args.window_display:
+        output, code = multidisplay_window_display(args.window_display)
+        print(output if output else "未找到窗口")
 
 
 if __name__ == "__main__":
