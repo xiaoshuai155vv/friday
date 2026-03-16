@@ -60,6 +60,84 @@ def get_cc_prompt_block(session_path, user_text):
 """ % (abs_path, user_text)
 
 
+def is_session_empty(session_path):
+    """会话是否为空（用户从未说过话，无 ## 你 区块）"""
+    if not session_path or not os.path.isfile(session_path):
+        return True
+    try:
+        with open(session_path, "r", encoding="utf-8") as f:
+            raw = f.read()
+    except Exception:
+        return True
+    return "## 你" not in raw
+
+
+def delete_session_if_empty(session_path):
+    """若会话为空则删除文件"""
+    if is_session_empty(session_path):
+        try:
+            os.remove(session_path)
+        except Exception:
+            pass
+
+
+def list_sessions(max_count=50):
+    """列出历史会话（仅含对话内容的），按修改时间倒序，返回 [(path, display_name), ...]"""
+    if not os.path.isdir(SESSIONS_DIR):
+        return []
+    items = []
+    for name in os.listdir(SESSIONS_DIR):
+        if name.startswith("voice_") and name.endswith(".md"):
+            path = os.path.join(SESSIONS_DIR, name)
+            if os.path.isfile(path) and not is_session_empty(path):
+                mtime = os.path.getmtime(path)
+                items.append((path, mtime, name))
+    items.sort(key=lambda x: x[1], reverse=True)
+    result = []
+    for path, _, name in items[:max_count]:
+        base = name[:-3]  # voice_20260316_171022
+        ts = base.replace("voice_", "") if base.startswith("voice_") else base
+        display = ts  # 可改为友好时间，如 2026-03-16 17:10:22
+        if len(ts) == 15 and ts[8] == "_":
+            try:
+                from datetime import datetime
+                dt = datetime.strptime(ts, "%Y%m%d_%H%M%S")
+                display = dt.strftime("%Y-%m-%d %H:%M")
+            except Exception:
+                pass
+        result.append((path, display))
+    return result
+
+
+def read_session_for_display(session_path):
+    """解析会话文件，返回 [(role, text), ...] 用于界面展示"""
+    if not session_path or not os.path.isfile(session_path):
+        return []
+    try:
+        with open(session_path, "r", encoding="utf-8") as f:
+            raw = f.read()
+    except Exception:
+        return []
+    result = []
+    blocks = re.split(r"\n## (你|CC)\n", raw)
+    # blocks[0] = header, then [role1, text1, role2, text2, ...]
+    for i in range(1, len(blocks) - 1, 2):
+        role = blocks[i].strip()
+        text = blocks[i + 1].strip() if i + 1 < len(blocks) else ""
+        if role in ("你", "CC") and text:
+            lines = []
+            for line in text.split("\n"):
+                if line.strip() == "--已完成":
+                    break
+                if line.strip().startswith("--日志"):
+                    continue
+                lines.append(line)
+            text = "\n".join(lines).strip()
+            if text:
+                result.append((role, text))
+    return result
+
+
 def read_cc_content_after(session_path, after_marker="## CC"):
     """
     读取会话文件中最后一个 ## CC 区块的内容。

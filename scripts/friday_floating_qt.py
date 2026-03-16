@@ -1242,7 +1242,18 @@ class VoiceOverlayWidget(QWidget):
             "QPushButton:hover { background: rgba(80,120,150,0.35); }"
         )
         self._log_btn.clicked.connect(self._on_open_log)
+        self._history_btn = QPushButton("历史对话")
+        self._history_btn.setCursor(Qt.PointingHandCursor)
+        self._history_btn.setFixedHeight(32)
+        self._history_btn.setMinimumWidth(70)
+        self._history_btn.setStyleSheet(
+            "QPushButton { color: rgb(160,200,220); background: rgba(80,120,150,0.2); "
+            "border: 1px solid rgb(80,120,150); border-radius: 4px; font-weight: 600; font-size: 11px; }"
+            "QPushButton:hover { background: rgba(80,120,150,0.35); }"
+        )
+        self._history_btn.clicked.connect(self._on_open_history)
         btn_row.addStretch()
+        btn_row.addWidget(self._history_btn)
         btn_row.addWidget(self._log_btn)
         btn_row.addWidget(self._continue_btn)
         btn_row.addWidget(self._stop_btn)
@@ -1257,6 +1268,37 @@ class VoiceOverlayWidget(QWidget):
     def _on_continue(self):
         if self._ball and hasattr(self._ball, "_start_voice_from_ball"):
             self._ball._start_voice_from_ball()
+
+    def _on_open_history(self):
+        """选择历史对话并加载到聊天区"""
+        sys.path.insert(0, SCRIPTS)
+        try:
+            from voice_session import list_sessions, read_session_for_display
+        except Exception:
+            return
+        sessions = list_sessions()
+        if not sessions:
+            return
+        items = [disp for _, disp in sessions]
+        path_by_disp = {disp: path for path, disp in sessions}
+        chosen, ok = QInputDialog.getItem(self, "历史对话", "选择要查看的会话：", items, 0, False)
+        if not ok or not chosen:
+            return
+        path = path_by_disp.get(chosen)
+        if not path or not os.path.isfile(path):
+            return
+        self._session_path = path
+        self._chat.clear()
+        self._cc_placeholder.setVisible(False)
+        self._cc_placeholder.setText("")
+        for role, text in read_session_for_display(path):
+            if role == "你":
+                html = '<div style="text-align:right; margin:6px 0; color:rgb(255,220,100)">你: %s</div>' % self._escape_html(text)
+            else:
+                html = '<div style="text-align:left; margin:6px 0; color:rgb(180,220,255)">CC: %s</div>' % self._escape_html(text)
+            self._append_chat_html(html)
+        self._status.setText("已加载历史会话")
+        self._text.setText("")
 
     def _on_open_log(self):
         log_dir = os.path.join(ROOT, "runtime", "logs")
@@ -1280,6 +1322,14 @@ class VoiceOverlayWidget(QWidget):
         e = getattr(self, "_stop_event", None)
         if e:
             e.set()
+        session_path = getattr(self, "_session_path", None)
+        if session_path:
+            sys.path.insert(0, SCRIPTS)
+            try:
+                from voice_session import delete_session_if_empty
+                delete_session_if_empty(session_path)
+            except Exception:
+                pass
         self.hide()
 
     def set_listening(self):
@@ -1368,7 +1418,7 @@ class VoiceOverlayWidget(QWidget):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             child = self.childAt(event.pos())
-            if child in (self._stop_btn, self._continue_btn, self._log_btn, getattr(self, "_size_grip", None)):
+            if child in (self._stop_btn, self._continue_btn, self._log_btn, getattr(self, "_history_btn", None), getattr(self, "_size_grip", None)):
                 event.ignore()
                 return
             self._drag_start = event.globalPos() - self.frameGeometry().topLeft()
