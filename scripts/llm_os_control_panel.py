@@ -6,7 +6,7 @@ LLM-OS 控制面板 - 整合现有能力的统一入口
 本脚本整合窗口管理、进程管理、应用启动等能力，提供统一的 LLM-OS 桌面操作系统控制能力。
 基于已有的大量进化引擎能力，构建桌面操作系统级别的控制接口。
 
-版本: 2.3.0
+版本: 2.4.0
 依赖: window_tool, process_tool, launch_* 脚本, file_tool, notification_tool 等
 """
 
@@ -1427,6 +1427,22 @@ def main():
     parser.add_argument("--scene-summary", "-scsum", action="store_true",
                         help="获取场景自动发现统计")
 
+    # 工作流编排引擎
+    parser.add_argument("--workflow-init", "-wfi", action="store_true",
+                        help="初始化工作流编排数据库")
+    parser.add_argument("--workflow-analyze", "-wfa", type=str, metavar="TASK",
+                        help="分析复杂任务并返回分解建议")
+    parser.add_argument("--workflow-create", "-wfc", type=str, metavar="TASK",
+                        help="创建并执行工作流")
+    parser.add_argument("--workflow-execute", "-wfex", type=int, metavar="ID",
+                        help="执行指定工作流（ID）")
+    parser.add_argument("--workflow-status", "-wfs", type=int, metavar="ID",
+                        help="查看工作流状态")
+    parser.add_argument("--workflow-list", "-wfl", action="store_true",
+                        help="列出所有工作流")
+    parser.add_argument("--workflow-stats", "-wfst", action="store_true",
+                        help="查看工作流统计信息")
+
     args = parser.parse_args()
 
     # 如果没有参数，显示菜单
@@ -2078,6 +2094,63 @@ def main():
         scene_module = os.path.join(SCRIPT_DIR, "llm_os_scene_auto_discovery.py")
         result = subprocess.run(
             [sys.executable, scene_module, "--summary"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    # ========== 工作流编排引擎操作 ==========
+    if args.workflow_init:
+        workflow_module = os.path.join(SCRIPT_DIR, "llm_os_workflow_orchestrator.py")
+        result = subprocess.run(
+            [sys.executable, workflow_module, "--init"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.workflow_analyze:
+        workflow_module = os.path.join(SCRIPT_DIR, "llm_os_workflow_orchestrator.py")
+        result = subprocess.run(
+            [sys.executable, workflow_module, "--analyze", args.workflow_analyze],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.workflow_create:
+        workflow_module = os.path.join(SCRIPT_DIR, "llm_os_workflow_orchestrator.py")
+        result = subprocess.run(
+            [sys.executable, workflow_module, "--create", args.workflow_create],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.workflow_execute:
+        workflow_module = os.path.join(SCRIPT_DIR, "llm_os_workflow_orchestrator.py")
+        result = subprocess.run(
+            [sys.executable, workflow_module, "--execute", str(args.workflow_execute)],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.workflow_status:
+        workflow_module = os.path.join(SCRIPT_DIR, "llm_os_workflow_orchestrator.py")
+        result = subprocess.run(
+            [sys.executable, workflow_module, "--status", str(args.workflow_status)],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.workflow_list:
+        workflow_module = os.path.join(SCRIPT_DIR, "llm_os_workflow_orchestrator.py")
+        result = subprocess.run(
+            [sys.executable, workflow_module, "--list"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.workflow_stats:
+        workflow_module = os.path.join(SCRIPT_DIR, "llm_os_workflow_orchestrator.py")
+        result = subprocess.run(
+            [sys.executable, workflow_module, "--stats"],
             capture_output=True, text=True, encoding='utf-8', errors='replace'
         )
         print(result.stdout)
