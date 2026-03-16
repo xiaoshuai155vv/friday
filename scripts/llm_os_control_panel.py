@@ -558,6 +558,81 @@ def user_profile_delete(profile_id):
     return result.stdout, result.returncode
 
 
+# ========== 应用管理器函数 ==========
+
+def app_manager_list():
+    """列出已安装应用"""
+    app_manager = os.path.join(SCRIPT_DIR, "llm_os_app_manager.py")
+    result = subprocess.run(
+        [sys.executable, app_manager, "--list"],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+def app_manager_search(keyword):
+    """搜索应用"""
+    app_manager = os.path.join(SCRIPT_DIR, "llm_os_app_manager.py")
+    result = subprocess.run(
+        [sys.executable, app_manager, "--search", keyword],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+def app_manager_stats(top=10):
+    """获取应用使用统计"""
+    app_manager = os.path.join(SCRIPT_DIR, "llm_os_app_manager.py")
+    result = subprocess.run(
+        [sys.executable, app_manager, "--stats", "--top", str(top)],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+def app_manager_category():
+    """按类别显示应用"""
+    app_manager = os.path.join(SCRIPT_DIR, "llm_os_app_manager.py")
+    result = subprocess.run(
+        [sys.executable, app_manager, "--category"],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+def app_manager_info(app_name):
+    """显示应用详情"""
+    app_manager = os.path.join(SCRIPT_DIR, "llm_os_app_manager.py")
+    result = subprocess.run(
+        [sys.executable, app_manager, "--info", app_name],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+def app_manager_record_launch(app_name):
+    """记录应用启动"""
+    app_manager = os.path.join(SCRIPT_DIR, "llm_os_app_manager.py")
+    result = subprocess.run(
+        [sys.executable, app_manager, "--record-launch", app_name],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
 # ========== 文件管理器函数 ==========
 
 def file_manager_list(path=None, show_hidden=False, sort_by="name"):
@@ -1292,6 +1367,20 @@ def main():
     parser.add_argument("--profile-delete", "-pdel", type=str,
                         help="删除用户画像 (ID)")
 
+    # 应用管理器参数
+    parser.add_argument("--app-list", "-al", action="store_true",
+                        help="列出已安装应用")
+    parser.add_argument("--app-search", "-as", type=str, metavar="关键词",
+                        help="搜索应用")
+    parser.add_argument("--app-stats", "-astats", nargs="?", const=10, type=int, metavar="N",
+                        help="显示应用使用统计 (默认Top 10)")
+    parser.add_argument("--app-category", "-acat", action="store_true",
+                        help="按类别显示应用")
+    parser.add_argument("--app-info", "-ai", type=str, metavar="应用名",
+                        help="显示应用详情")
+    parser.add_argument("--app-record", "-arec", type=str, metavar="应用名",
+                        help="记录应用启动")
+
     args = parser.parse_args()
 
     # 如果没有参数，显示菜单
@@ -1763,6 +1852,25 @@ def main():
     if args.profile_delete:
         output, code = user_profile_delete(args.profile_delete)
         print(output if output else f"用户画像已删除: {args.profile_delete}")
+
+    # 应用管理器处理
+    if args.app_list:
+        print(app_manager_list())
+
+    if args.app_search:
+        print(app_manager_search(args.app_search))
+
+    if args.app_stats is not None:
+        print(app_manager_stats(args.app_stats))
+
+    if args.app_category:
+        print(app_manager_category())
+
+    if args.app_info:
+        print(app_manager_info(args.app_info))
+
+    if args.app_record:
+        print(app_manager_record_launch(args.app_record))
 
 
 if __name__ == "__main__":
