@@ -173,6 +173,19 @@ def launch_app(app_name):
     return True
 
 
+def arrange_windows(action):
+    """执行窗口排列操作"""
+    window_arrange = os.path.join(SCRIPT_DIR, "llm_os_window_arrange.py")
+    result = subprocess.run(
+        [sys.executable, window_arrange, action],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
 def show_menu():
     """显示 LLM-OS 控制面板菜单"""
     menu = """
@@ -186,21 +199,30 @@ def show_menu():
 ║     - minimize <title>: 最小化窗口                        ║
 ║     - close <title>: 关闭窗口                             ║
 ║                                                         ║
-║  2. 进程管理                                             ║
+║  2. 窗口排列                                             ║
+║     - tile: 平铺排列                                     ║
+║     - cascade: 堆叠排列                                   ║
+║     - center: 居中排列                                    ║
+║     - left: 左半屏                                       ║
+║     - right: 右半屏                                      ║
+║     - maximize_all: 全部最大化                            ║
+║     - minimize_all: 全部最小化                            ║
+║                                                         ║
+║  3. 进程管理                                             ║
 ║     - list_processes: 列出所有进程                       ║
 ║     - kill <name/pid>: 结束进程                          ║
 ║                                                         ║
-║  3. 应用管理                                             ║
+║  4. 应用管理                                             ║
 ║     - list_apps: 列出已安装应用                          ║
 ║     - launch <name>: 启动应用                            ║
 ║                                                         ║
-║  4. 系统信息                                             ║
+║  5. 系统信息                                             ║
 ║     - sysinfo: 获取系统信息                              ║
 ║                                                         ║
-║  5. 文件管理                                             ║
+║  6. 文件管理                                             ║
 ║     - explore: 打开文件管理器                            ║
 ║                                                         ║
-║  6. 退出                                                 ║
+║  7. 退出                                                 ║
 ╚═══════════════════════════════════════════════════════════╝
 """
     return menu
@@ -230,6 +252,22 @@ def main():
                         help="最小化指定窗口")
     parser.add_argument("--close-window", "-c", type=str,
                         help="关闭指定窗口")
+
+    # 窗口排列
+    parser.add_argument("--tile", action="store_true",
+                        help="平铺排列所有窗口")
+    parser.add_argument("--cascade", action="store_true",
+                        help="堆叠排列所有窗口")
+    parser.add_argument("--center", action="store_true",
+                        help="居中排列所有窗口")
+    parser.add_argument("--left", action="store_true",
+                        help="左半屏排列")
+    parser.add_argument("--right", action="store_true",
+                        help="右半屏排列")
+    parser.add_argument("--maximize-all", action="store_true",
+                        help="最大化所有窗口")
+    parser.add_argument("--minimize-all", action="store_true",
+                        help="最小化所有窗口")
 
     # 进程管理
     parser.add_argument("--list-processes", "-lp", action="store_true",
@@ -292,6 +330,35 @@ def main():
             print("✓ 窗口已关闭")
         else:
             print("✗ 关闭失败")
+
+    # 窗口排列操作
+    if args.tile:
+        output, code = arrange_windows("tile")
+        print(output if output else "✓ 平铺排列完成")
+
+    if args.cascade:
+        output, code = arrange_windows("cascade")
+        print(output if output else "✓ 堆叠排列完成")
+
+    if args.center:
+        output, code = arrange_windows("center")
+        print(output if output else "✓ 居中排列完成")
+
+    if args.left:
+        output, code = arrange_windows("left")
+        print(output if output else "✓ 左半屏排列完成")
+
+    if args.right:
+        output, code = arrange_windows("right")
+        print(output if output else "✓ 右半屏排列完成")
+
+    if args.maximize_all:
+        output, code = arrange_windows("maximize")
+        print(output if output else "✓ 全部最大化完成")
+
+    if args.minimize_all:
+        output, code = arrange_windows("minimize")
+        print(output if output else "✓ 全部最小化完成")
 
     if args.list_processes:
         print("=== 运行中的进程 ===")
