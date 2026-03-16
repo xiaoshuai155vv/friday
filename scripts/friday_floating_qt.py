@@ -1086,13 +1086,13 @@ class VoiceAsrWorker(QThread):
             self.finished_signal.emit("")
 
 
-# 科幻歌词浮层尺寸
-VOICE_OVERLAY_W = 360
-VOICE_OVERLAY_H = 180
+# 语音聊天框尺寸（屏幕中央透明 chat）
+VOICE_OVERLAY_W = 420
+VOICE_OVERLAY_H = 380
 
 
 class VoiceOverlayWidget(QWidget):
-    """悬浮球下方透明歌词浮层：ASR 实时识别 + 对话回复，科幻 HUD 风格"""
+    """屏幕中央透明 chat 框：用户与 AI(CC) 的语音文字对话"""
     def __init__(self, ball, parent=None):
         super().__init__(parent)
         self._ball = ball
@@ -1104,7 +1104,7 @@ class VoiceOverlayWidget(QWidget):
         self._drag_start = None
         layout = QVBoxLayout(self)
         layout.setContentsMargins(16, 14, 16, 14)
-        layout.setSpacing(10)
+        layout.setSpacing(8)
         self._status = QLabel("◉ 正在听…")
         self._status.setWordWrap(True)
         self._status.setAlignment(Qt.AlignCenter)
@@ -1113,23 +1113,26 @@ class VoiceOverlayWidget(QWidget):
             "background: transparent; letter-spacing: 2px; "
             "text-shadow: 0 0 12px rgba(255,200,80,0.8);"
         )
-        layout.addWidget(self._status, 1)
+        layout.addWidget(self._status, 0)
         self._text = QLabel("")
         self._text.setWordWrap(True)
         self._text.setAlignment(Qt.AlignCenter)
         self._text.setStyleSheet(
-            "color: rgb(255,220,100); font-size: 15px; font-weight: 600; "
+            "color: rgb(255,220,100); font-size: 14px; font-weight: 600; "
             "background: transparent; letter-spacing: 2px; line-height: 1.4; "
             "text-shadow: 0 0 14px rgba(255,180,50,0.7);"
         )
-        layout.addWidget(self._text, 2)
-        self._chat = QLabel("")
-        self._chat.setWordWrap(True)
-        self._chat.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self._text, 0)
+        self._chat = QPlainTextEdit()
+        self._chat.setReadOnly(True)
+        self._chat.setFrameShape(QFrame.NoFrame)
+        self._chat.setMinimumHeight(180)
         self._chat.setStyleSheet(
-            "color: rgb(180,220,255); font-size: 12px; background: transparent; "
-            "text-shadow: 0 0 8px rgba(120,180,255,0.5);"
+            "QPlainTextEdit { color: rgb(200,220,240); font-size: 13px; "
+            "background: transparent; border: none; "
+            "selection-background-color: rgba(255,170,50,0.3); }"
         )
+        self._chat.setPlaceholderText("你与 CC 的语音对话将显示在这里…")
         layout.addWidget(self._chat, 1)
         btn = QPushButton("结束 (Esc)")
         btn.setCursor(Qt.PointingHandCursor)
@@ -1156,23 +1159,31 @@ class VoiceOverlayWidget(QWidget):
     def set_listening(self):
         self._status.setText("◉ 正在听…")
         self._text.setText("")
-        self._chat.setText("")
 
     def set_partial(self, text):
         self._status.setText("◉ 识别中")
-        self._text.setText(text[:70] + ("…" if len(text) > 70 else ""))
+        self._text.setText(text[:80] + ("…" if len(text) > 80 else ""))
 
     def set_final(self, text):
         self._status.setText("你说")
-        self._text.setText(text[:90] + ("…" if len(text) > 90 else ""))
+        self._text.setText(text[:100] + ("…" if len(text) > 100 else ""))
+        if text and text.strip():
+            self._chat.appendPlainText("你: " + text.strip())
+            self._scroll_chat_to_bottom()
 
     def set_response(self, text):
-        self._chat.setText("FRIDAY · " + (text[:150] + "…" if len(text) > 150 else text))
+        if text and text.strip():
+            self._chat.appendPlainText("CC: " + text.strip())
+            self._scroll_chat_to_bottom()
+
+    def _scroll_chat_to_bottom(self):
+        sb = self._chat.verticalScrollBar()
+        if sb:
+            sb.setValue(sb.maximum())
 
     def set_error(self, msg):
         self._status.setText("")
-        self._text.setText(msg[:70])
-        self._chat.setText("")
+        self._text.setText(msg[:70] if msg else "")
 
     def paintEvent(self, event):
         p = QPainter(self)
@@ -1639,12 +1650,11 @@ class FridayBall(QWidget):
         self._voice_overlay.set_listening()
         self._voice_overlay.activateWindow()
         self._voice_overlay.raise_()
-        ox = self.x() + (self.width() - VOICE_OVERLAY_W) // 2
-        oy = self.y() + self.height() + 6
         screen = QDesktopWidget().availableGeometry()
-        if oy + VOICE_OVERLAY_H > screen.bottom():
-            oy = self.y() - VOICE_OVERLAY_H - 6
-        self._voice_overlay.move(max(screen.left(), min(ox, screen.right() - VOICE_OVERLAY_W)), oy)
+        ox = screen.center().x() - VOICE_OVERLAY_W // 2
+        oy = screen.center().y() - VOICE_OVERLAY_H // 2
+        self._voice_overlay.move(max(screen.left(), min(ox, screen.right() - VOICE_OVERLAY_W)),
+                                max(screen.top(), min(oy, screen.bottom() - VOICE_OVERLAY_H)))
         self._voice_overlay.show()
         self._voice_overlay.raise_()
         self._set_spinning(True)
