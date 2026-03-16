@@ -274,6 +274,8 @@ python scripts/launch_friday_floating.py
 | 看图并问问题 | `python scripts/vision_proxy.py <图片路径> "<问题>"` 或 run_plan 中 `{"do": "vision", ...}` |
 | **获取点击坐标**（多轮取中位数） | `python scripts/vision_coords.py <图片路径> "<问题>"` 或 run_plan 中 `{"do": "vision_coords", ...}` |
 | 按计划执行一系列操作 | `python scripts/run_plan.py assets/plans/xxx.json` |
+| **提交进化环** / **进化环** / **进化环守护** | `do.py 提交进化环`、`do.py 进化环守护`；或 `evolution_loop_client.py --once --auto-evolution`、`evolution_loop_daemon.py`。详见上方「进化环定时触发能力」及 [references/evolution_rounds_summary.md](references/evolution_rounds_summary.md) 第四章。 |
+| **进化分析** / **进化评估** / **方法论优化** / **知识问答** 等 | 通过 `do.py <意图>` 触发（如 `do 进化分析`、`do 方法论优化`、`do 知识问答`）；或 `evolution_cli.py status/analyze/run`。**600+ 轮产生的进化引擎能力**见 [references/evolution_rounds_summary.md](references/evolution_rounds_summary.md) 第四章。 |
 
 更多脚本与用法见下方「脚本」节；详细需求与能力链见 [references/assumed_demands.md](references/assumed_demands.md)。
 
@@ -305,6 +307,7 @@ python scripts/launch_friday_floating.py
 | [references/capabilities.md](references/capabilities.md) | 能力与调用方式一览，供模型在识别意图后选用（本技能不做意图识别）。 |
 | **assets/plans/** | **场景指导 JSON**：用户话匹配 triggers 时**必须**查阅对应 JSON，**严格按 steps 执行**（如 play_music 必须先获取应用列表）；绩效达成直接 `run_plan assets/plans/ihaier_performance_declaration.json`。**禁止**跳过场景用截图/多模态。 |
 | [references/agent_evolution_workflow.md](references/agent_evolution_workflow.md) | **通用智能体进化环**：假设→决策→执行→校验→反思的输入/输出与执行清单，供任何智能体驱动无限进化。 |
+| [references/evolution_rounds_summary.md](references/evolution_rounds_summary.md) | **进化轮次概览与能力用法**：600+ 轮进化历程、阶段划分、**如何使用进化能力**（do 意图、evolution_cli、进化环客户端/守护、悬浮球、直接运行引擎）。需了解进化到哪了、如何调用进化引擎时读。 |
 | [references/base_capabilities_analysis.md](references/base_capabilities_analysis.md) | **底座能力盘点与缺口**：按输入/输出/看/执行/窗口/进程等维度盘点已有能力与待补齐项。 |
 | [references/portable_env.md](references/portable_env.md) | **便携运行环境**：如何将 Python+依赖打入项目、复制到别机直接使用。 |
 | [references/scenario_logging.md](references/scenario_logging.md) | **场景维度日志**：用户场景请求与执行结果的记录与查询，按场景积累成功/失败经验。 |

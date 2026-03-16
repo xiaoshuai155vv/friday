@@ -236,7 +236,7 @@ def _compact_from_completed_jsons():
                 continue
     except Exception:
         pass
-    sorted_entries = sorted(by_round.items(), key=lambda x: x[0], reverse=True)[:500]
+    sorted_entries = sorted(by_round.items(), key=lambda x: x[0], reverse=True)
     return "\n".join(e[1][0] for e in sorted_entries) if sorted_entries else ""
 
 
@@ -284,7 +284,7 @@ def _compact_evolution_summary(body):
         elif "完成" in s or "是否完成" in s:
             summary_line = "完成" if ("已完成" in s or ("是" in s and "未" not in s)) else "未完成"
     flush_round()
-    return "\n".join(sorted(lines, key=lambda x: int(re.search(r"round\s+(\d+)", x, re.I).group(1)) if re.search(r"round\s+(\d+)", x, re.I) else 0, reverse=True)[:500]) if lines else ""
+    return "\n".join(sorted(lines, key=lambda x: int(re.search(r"round\s+(\d+)", x, re.I).group(1)) if re.search(r"round\s+(\d+)", x, re.I) else 0, reverse=True)) if lines else ""
 
 
 def build_auto_evolution_hint():
