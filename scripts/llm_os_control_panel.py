@@ -6,8 +6,8 @@ LLM-OS 控制面板 - 整合现有能力的统一入口
 本脚本整合窗口管理、进程管理、应用启动等能力，提供统一的 LLM-OS 桌面操作系统控制能力。
 基于已有的大量进化引擎能力，构建桌面操作系统级别的控制接口。
 
-版本: 1.0.0
-依赖: window_tool, process_tool, launch_* 脚本, file_tool 等
+版本: 1.6.0
+依赖: window_tool, process_tool, launch_* 脚本, file_tool, notification_tool 等
 """
 
 import os
@@ -612,11 +612,67 @@ def settings_all():
     return result.stdout
 
 
+def notification_history(count=10):
+    """获取通知历史"""
+    notification = os.path.join(SCRIPT_DIR, "llm_os_notification_center.py")
+    result = subprocess.run(
+        [sys.executable, notification, "--notification-history", str(count)],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
+def notification_settings():
+    """获取通知设置"""
+    notification = os.path.join(SCRIPT_DIR, "llm_os_notification_center.py")
+    result = subprocess.run(
+        [sys.executable, notification, "--notification-settings"],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
+def notification_set(notifications_enabled=None, do_not_disturb=None, focus_assist=None):
+    """设置通知参数"""
+    notification = os.path.join(SCRIPT_DIR, "llm_os_notification_center.py")
+    cmd = [sys.executable, notification, "--notification-set"]
+
+    if notifications_enabled is not None:
+        cmd.extend(["--notifications-enabled", str(notifications_enabled).lower()])
+    if do_not_disturb is not None:
+        cmd.extend(["--do-not-disturb", str(do_not_disturb).lower()])
+    if focus_assist is not None:
+        cmd.extend(["--focus-assist", str(focus_assist).lower()])
+
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace')
+    return result.stdout
+
+
+def notification_send(title, message, urgency="normal"):
+    """发送通知"""
+    notification = os.path.join(SCRIPT_DIR, "llm_os_notification_center.py")
+    result = subprocess.run(
+        [sys.executable, notification, "--notification-send", title, message, "--urgency", urgency],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
+def notification_clear():
+    """清除通知"""
+    notification = os.path.join(SCRIPT_DIR, "llm_os_notification_center.py")
+    result = subprocess.run(
+        [sys.executable, notification, "--notification-clear"],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
 def show_menu():
     """显示 LLM-OS 控制面板菜单"""
     menu = """
 ╔═══════════════════════════════════════════════════════════╗
-║           LLM-OS 桌面操作系统控制面板 v1.5.0              ║
+║           LLM-OS 桌面操作系统控制面板 v1.6.0              ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  1. 窗口管理                                             ║
 ║     - list_windows: 列出所有窗口                         ║
@@ -690,7 +746,14 @@ def show_menu():
 ║     - settings-wallpaper get/set <path>                 ║
 ║     - settings-all: 所有设置概览                        ║
 ║                                                         ║
-║  12. 退出                                                 ║
+║  12. 通知中心 (新增!)                                    ║
+║     - notification-history: 获取通知历史                 ║
+║     - notification-settings: 获取通知设置               ║
+║     - notification-set: 设置通知参数                     ║
+║     - notification-send "标题" "内容": 发送通知          ║
+║     - notification-clear: 清除通知                      ║
+║                                                         ║
+║  13. 退出                                                 ║
 ╚═══════════════════════════════════════════════════════════╝
 """
     return menu
@@ -840,6 +903,27 @@ def main():
                         help="壁纸: get, set <path>")
     parser.add_argument("--settings-all", "-sall", action="store_true",
                         help="获取所有设置概览")
+
+    # 通知中心支持
+    parser.add_argument("--notification-history", "-nh", nargs="?", const=10, type=int,
+                        help="获取通知历史 (默认10条)")
+    parser.add_argument("--notification-settings", "-nset", action="store_true",
+                        help="获取通知设置")
+    parser.add_argument("--notification-set", "-ns", action="store_true",
+                        help="设置通知参数")
+    parser.add_argument("--notifications-enabled", type=str, choices=["true", "false"],
+                        help="启用/禁用通知 (与 --notification-set 配合)")
+    parser.add_argument("--do-not-disturb", type=str, choices=["true", "false"],
+                        help="勿扰模式 (与 --notification-set 配合)")
+    parser.add_argument("--focus-assist", type=str, choices=["true", "false"],
+                        help="专注助手 (与 --notification-set 配合)")
+    parser.add_argument("--notification-send", "-nsend", nargs=2, metavar=("TITLE", "MESSAGE"),
+                        help="发送通知 (标题 内容)")
+    parser.add_argument("--notification-urgency", type=str, default="normal",
+                        choices=["low", "normal", "high"],
+                        help="通知紧急程度 (与 --notification-send 配合)")
+    parser.add_argument("--notification-clear", "-nclear", action="store_true",
+                        help="清除所有通知")
 
     args = parser.parse_args()
 
@@ -1114,6 +1198,40 @@ def main():
     if args.settings_all:
         print("=== 系统设置概览 ===")
         print(settings_all())
+
+    # 通知中心处理
+    if args.notification_history:
+        print("=== 通知历史 ===")
+        print(notification_history(args.notification_history))
+
+    if args.notification_settings:
+        print("=== 通知设置 ===")
+        print(notification_settings())
+
+    if args.notification_set:
+        notifications_enabled = None
+        if args.notifications_enabled:
+            notifications_enabled = args.notifications_enabled == "true"
+
+        do_not_disturb = None
+        if args.do_not_disturb:
+            do_not_disturb = args.do_not_disturb == "true"
+
+        focus_assist = None
+        if args.focus_assist:
+            focus_assist = args.focus_assist == "true"
+
+        print("=== 设置通知 ===")
+        print(notification_set(notifications_enabled, do_not_disturb, focus_assist))
+
+    if args.notification_send:
+        title, message = args.notification_send
+        print("=== 发送通知 ===")
+        print(notification_send(title, message, args.notification_urgency))
+
+    if args.notification_clear:
+        print("=== 清除通知 ===")
+        print(notification_clear())
 
 
 if __name__ == "__main__":
