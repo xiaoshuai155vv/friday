@@ -1086,6 +1086,135 @@ class VoiceAsrWorker(QThread):
             self.finished_signal.emit("")
 
 
+# 科幻歌词浮层尺寸
+VOICE_OVERLAY_W = 360
+VOICE_OVERLAY_H = 180
+
+
+class VoiceOverlayWidget(QWidget):
+    """悬浮球下方透明歌词浮层：ASR 实时识别 + 对话回复，科幻 HUD 风格"""
+    def __init__(self, ball, parent=None):
+        super().__init__(parent)
+        self._ball = ball
+        self._stop_event = None
+        self.setWindowTitle("Friday 语音")
+        self.setFixedSize(VOICE_OVERLAY_W, VOICE_OVERLAY_H)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Window)
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        self._drag_start = None
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(16, 14, 16, 14)
+        layout.setSpacing(10)
+        self._status = QLabel("◉ 正在听…")
+        self._status.setWordWrap(True)
+        self._status.setAlignment(Qt.AlignCenter)
+        self._status.setStyleSheet(
+            "color: rgb(255,235,140); font-size: 12px; font-weight: 600; "
+            "background: transparent; letter-spacing: 2px; "
+            "text-shadow: 0 0 12px rgba(255,200,80,0.8);"
+        )
+        layout.addWidget(self._status, 1)
+        self._text = QLabel("")
+        self._text.setWordWrap(True)
+        self._text.setAlignment(Qt.AlignCenter)
+        self._text.setStyleSheet(
+            "color: rgb(255,220,100); font-size: 15px; font-weight: 600; "
+            "background: transparent; letter-spacing: 2px; line-height: 1.4; "
+            "text-shadow: 0 0 14px rgba(255,180,50,0.7);"
+        )
+        layout.addWidget(self._text, 2)
+        self._chat = QLabel("")
+        self._chat.setWordWrap(True)
+        self._chat.setAlignment(Qt.AlignCenter)
+        self._chat.setStyleSheet(
+            "color: rgb(180,220,255); font-size: 12px; background: transparent; "
+            "text-shadow: 0 0 8px rgba(120,180,255,0.5);"
+        )
+        layout.addWidget(self._chat, 1)
+        btn = QPushButton("结束 (Esc)")
+        btn.setCursor(Qt.PointingHandCursor)
+        btn.setFocusPolicy(Qt.StrongFocus)
+        btn.setFixedHeight(32)
+        btn.setMinimumWidth(100)
+        btn.setStyleSheet(
+            "QPushButton { color: rgb(255,200,80); background: rgba(255,170,50,0.15); "
+            "border: 1px solid rgb(255,170,50); border-radius: 4px; font-weight: 600; font-size: 12px; }"
+            "QPushButton:hover { background: rgba(255,170,50,0.35); }"
+        )
+        btn.clicked.connect(self._on_stop)
+        layout.addWidget(btn, 0, Qt.AlignCenter)
+        self._stop_btn = btn
+        esc = QShortcut(QKeySequence(Qt.Key_Escape), self)
+        esc.activated.connect(self._on_stop)
+
+    def _on_stop(self):
+        e = getattr(self, "_stop_event", None)
+        if e:
+            e.set()
+            self._status.setText("◉ 已结束，识别中…")
+
+    def set_listening(self):
+        self._status.setText("◉ 正在听…")
+        self._text.setText("")
+        self._chat.setText("")
+
+    def set_partial(self, text):
+        self._status.setText("◉ 识别中")
+        self._text.setText(text[:70] + ("…" if len(text) > 70 else ""))
+
+    def set_final(self, text):
+        self._status.setText("你说")
+        self._text.setText(text[:90] + ("…" if len(text) > 90 else ""))
+
+    def set_response(self, text):
+        self._chat.setText("FRIDAY · " + (text[:150] + "…" if len(text) > 150 else text))
+
+    def set_error(self, msg):
+        self._status.setText("")
+        self._text.setText(msg[:70])
+        self._chat.setText("")
+
+    def paintEvent(self, event):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing, True)
+        p.setRenderHint(QPainter.SmoothPixmapTransform, True)
+        # 玻璃质感：高透明、渐变、细描边
+        r = self.rect().adjusted(1, 1, -1, -1)
+        grad = QLinearGradient(0, 0, 0, self.height())
+        grad.setColorAt(0, QColor(100, 130, 180, 85))
+        grad.setColorAt(0.5, QColor(60, 85, 130, 65))
+        grad.setColorAt(1, QColor(40, 60, 100, 75))
+        p.setBrush(grad)
+        p.setPen(QPen(QColor(255, 255, 255, 90), 1))
+        p.drawRoundedRect(r, 14, 14)
+        # 玻璃高光边
+        p.setPen(QPen(QColor(255, 255, 255, 45), 1))
+        p.setBrush(Qt.NoBrush)
+        p.drawRoundedRect(r.adjusted(2, 2, -2, -2), 12, 12)
+        p.end()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            child = self.childAt(event.pos())
+            if child is self._stop_btn:
+                event.ignore()
+                return
+            self._drag_start = event.globalPos() - self.frameGeometry().topLeft()
+
+    def mouseMoveEvent(self, event):
+        if getattr(self, "_drag_start", None) is not None and event.buttons() & Qt.LeftButton:
+            self.move(event.globalPos() - self._drag_start)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._drag_start = None
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.activateWindow()
+        self.raise_()
+
+
 class FridayVoiceDialog(QWidget):
     """语音浮层：录音→识别→调用 do.py，电脑端以快捷键/点击触发。"""
     def __init__(self, ball, parent=None):
@@ -1334,7 +1463,7 @@ class FridayBall(QWidget):
             "color: rgb(240,185,70); font-size: 12px; font-weight: 500; background: transparent;"
         )
         self._round.setGeometry(0, CENTER + 14, SIZE, 20)
-        self._hint = QLabel("双击 · 查看过程", self)
+        self._hint = QLabel("单击语音 · 双击过程", self)
         self._hint.setAlignment(Qt.AlignCenter)
         self._hint.setStyleSheet(
             "color: rgb(255,180,60); font-size: 10px; font-weight: 500; background: transparent;"
@@ -1351,6 +1480,13 @@ class FridayBall(QWidget):
         self._last_auto_ui_sec = 0
         self._stuck_edge = None
         self._onecall_dialog = None
+        self._voice_overlay = None
+        self._voice_asr_worker = None
+        self._voice_stop_event = None
+        self._press_pos = None
+        self._click_timer = QTimer(self)
+        self._click_timer.setSingleShot(True)
+        self._click_timer.timeout.connect(self._start_voice_from_ball)
         # 应用级快捷键（本应用前台时有效）
         s1 = QShortcut(QKeySequence("Ctrl+Shift+S"), self)
         s1.setContext(Qt.ApplicationShortcut)
@@ -1384,6 +1520,7 @@ class FridayBall(QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
+            self._press_pos = event.globalPos()
             if self._stuck_edge:
                 self._unstick()
             else:
@@ -1399,7 +1536,7 @@ class FridayBall(QWidget):
         self._round.show()
         self._hint.show()
         self._auto_info.show()
-        self._hint.setText("双击 · 查看过程")
+        self._hint.setText("单击语音 · 双击过程")
         self._hint.setGeometry(0, CENTER + 36, SIZE, 18)
         screen = QDesktopWidget().availableGeometry()
         x = min(max(self.x(), 0), screen.width() - SIZE)
@@ -1414,24 +1551,34 @@ class FridayBall(QWidget):
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
+            # 区分点击与拖拽：位移 < 8px 视为点击
+            is_click = (
+                self._press_pos is not None
+                and (event.globalPos() - self._press_pos).manhattanLength() < 8
+            )
+            self._press_pos = None
             if not self._stuck_edge and self._drag_start is not None:
-                stick = self._stick_to_edge(self.pos())
-                if stick:
-                    edge, nx, ny = stick
-                    self._stuck_edge = edge
-                    self.setFixedSize(EDGE_STICK_W, EDGE_STICK_W)
-                    self.setMask(QRegion(0, 0, EDGE_STICK_W, EDGE_STICK_W, QRegion.Ellipse))
-                    self.move(nx, ny)
-                    self._title.hide()
-                    self._phase.hide()
-                    self._mission.hide()
-                    self._round.hide()
-                    self._hint.hide()
-                    self._auto_info.hide()
+                if is_click:
+                    self._on_ball_clicked()
+                else:
+                    stick = self._stick_to_edge(self.pos())
+                    if stick:
+                        edge, nx, ny = stick
+                        self._stuck_edge = edge
+                        self.setFixedSize(EDGE_STICK_W, EDGE_STICK_W)
+                        self.setMask(QRegion(0, 0, EDGE_STICK_W, EDGE_STICK_W, QRegion.Ellipse))
+                        self.move(nx, ny)
+                        self._title.hide()
+                        self._phase.hide()
+                        self._mission.hide()
+                        self._round.hide()
+                        self._hint.hide()
+                        self._auto_info.hide()
             self._drag_start = None
 
     def mouseDoubleClickEvent(self, event):
         if event.button() == Qt.LeftButton:
+            self._click_timer.stop()
             d = FridayLogDialog(self)
             d.move(self._dialog_pos(LOG_DIALOG_W, LOG_DIALOG_H))
             d.show()
@@ -1458,13 +1605,86 @@ class FridayBall(QWidget):
         self._onecall_dialog.raise_()
         self._onecall_dialog.activateWindow()
 
+    def _on_ball_clicked(self):
+        """左键单击悬浮球：延迟判定，避免与双击冲突；单击=语音，双击=日志"""
+        self._click_timer.start(220)
+
+    def _start_voice_from_ball(self):
+        """开始语音：显示浮层、启动 ASR、网格旋转"""
+        if self._voice_asr_worker is not None and self._voice_asr_worker.isRunning():
+            return
+        sys.path.insert(0, SCRIPTS)
+        try:
+            from xunfei_config_loader import is_configured
+            from xunfei_asr_service import HAS_SOUNDDEVICE, HAS_WEBSOCKET
+        except Exception:
+            tray = getattr(self, "_tray", None)
+            if tray and hasattr(tray, "showMessage"):
+                tray.showMessage("Friday", "讯飞语音未配置或依赖缺失。pip install websocket-client sounddevice numpy", QSystemTrayIcon.Warning, 4000)
+            return
+        if not is_configured():
+            tray = getattr(self, "_tray", None)
+            if tray and hasattr(tray, "showMessage"):
+                tray.showMessage("Friday", "请配置讯飞 API：复制 config/xunfei_config.example.json 到 runtime/config/xunfei_config.json", QSystemTrayIcon.Warning, 4000)
+            return
+        if not HAS_SOUNDDEVICE or not HAS_WEBSOCKET:
+            tray = getattr(self, "_tray", None)
+            if tray and hasattr(tray, "showMessage"):
+                tray.showMessage("Friday", "请安装: pip install websocket-client sounddevice numpy", QSystemTrayIcon.Warning, 4000)
+            return
+        self._voice_stop_event = __import__("threading").Event()
+        if self._voice_overlay is None or not self._voice_overlay.isVisible():
+            self._voice_overlay = VoiceOverlayWidget(self)
+        self._voice_overlay._stop_event = self._voice_stop_event
+        self._voice_overlay.set_listening()
+        self._voice_overlay.activateWindow()
+        self._voice_overlay.raise_()
+        ox = self.x() + (self.width() - VOICE_OVERLAY_W) // 2
+        oy = self.y() + self.height() + 6
+        screen = QDesktopWidget().availableGeometry()
+        if oy + VOICE_OVERLAY_H > screen.bottom():
+            oy = self.y() - VOICE_OVERLAY_H - 6
+        self._voice_overlay.move(max(screen.left(), min(ox, screen.right() - VOICE_OVERLAY_W)), oy)
+        self._voice_overlay.show()
+        self._voice_overlay.raise_()
+        self._set_spinning(True)
+        self._voice_asr_worker = VoiceAsrWorker(self._voice_stop_event, duration_sec=60)
+        self._voice_asr_worker.partial_signal.connect(self._on_voice_partial)
+        self._voice_asr_worker.finished_signal.connect(self._on_voice_finished)
+        self._voice_asr_worker.start()
+
+    def _on_voice_partial(self, text):
+        if self._voice_overlay and self._voice_overlay.isVisible():
+            self._voice_overlay.set_partial(text)
+
+    def _on_voice_finished(self, text):
+        self._voice_asr_worker = None
+        self._set_spinning(False)
+        if not self._voice_overlay or not self._voice_overlay.isVisible():
+            return
+        if not text or not text.strip():
+            self._voice_overlay.set_error("未识别到内容")
+            return
+        self._voice_overlay.set_final(text)
+        try:
+            r = subprocess.run(
+                [sys.executable, os.path.join(SCRIPTS, "do.py"), text.strip()],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                encoding="utf-8",
+                errors="replace",
+            )
+            out = (r.stdout or r.stderr or "").strip()[:200]
+            if out:
+                self._voice_overlay.set_response(out)
+        except Exception as e:
+            self._voice_overlay.set_response("执行异常: " + str(e)[:80])
+
     def _show_voice(self):
-        if self._voice_dialog is None or not self._voice_dialog.isVisible():
-            self._voice_dialog = FridayVoiceDialog(self)
-        self._voice_dialog.move(self._dialog_pos(420, 280))
-        self._voice_dialog.show()
-        self._voice_dialog.raise_()
-        self._voice_dialog.activateWindow()
+        """快捷键/菜单：同左键点击，打开浮层并开始录音"""
+        self._start_voice_from_ball()
 
     def _on_shortcut_voice(self):
         self._show_voice()
