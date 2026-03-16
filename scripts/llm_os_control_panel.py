@@ -1381,6 +1381,28 @@ def main():
     parser.add_argument("--app-record", "-arec", type=str, metavar="应用名",
                         help="记录应用启动")
 
+    # 用户行为预测与主动服务参数
+    parser.add_argument("--behavior-init", "-binit", action="store_true",
+                        help="初始化用户行为数据库")
+    parser.add_argument("--behavior-record", "-brec", nargs=2, metavar=('TYPE', 'TARGET'),
+                        help="记录用户行为 (action_type target)")
+    parser.add_argument("--behavior-record-app", "-bra", type=str, metavar="应用名",
+                        help="记录应用使用")
+    parser.add_argument("--behavior-context", "-bc", action="store_true",
+                        help="获取当前上下文")
+    parser.add_argument("--behavior-predict", "-bp", action="store_true",
+                        help="预测用户意图")
+    parser.add_argument("--behavior-suggestions", "-bs", action="store_true",
+                        help="获取主动建议")
+    parser.add_argument("--behavior-preferences", "-bpf", action="store_true",
+                        help="分析用户偏好")
+    parser.add_argument("--behavior-summary", "-bsum", nargs='?', const=7, type=int, metavar="DAYS",
+                        help="获取行为摘要（默认7天）")
+    parser.add_argument("--behavior-trigger", "-bt", type=str,
+                        help="触发主动服务")
+    parser.add_argument("--behavior-patterns", "-bpat", action="store_true",
+                        help="分析时间模式")
+
     args = parser.parse_args()
 
     # 如果没有参数，显示菜单
@@ -1871,6 +1893,89 @@ def main():
 
     if args.app_record:
         print(app_manager_record_launch(args.app_record))
+
+    # 用户行为预测与主动服务处理
+    if args.behavior_init:
+        behavior_module = os.path.join(SCRIPT_DIR, "llm_os_user_behavior_prediction.py")
+        result = subprocess.run(
+            [sys.executable, behavior_module, "--init-db"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.behavior_record:
+        action_type, target = args.behavior_record
+        behavior_module = os.path.join(SCRIPT_DIR, "llm_os_user_behavior_prediction.py")
+        result = subprocess.run(
+            [sys.executable, behavior_module, "--record-behavior", action_type, target],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.behavior_record_app:
+        behavior_module = os.path.join(SCRIPT_DIR, "llm_os_user_behavior_prediction.py")
+        result = subprocess.run(
+            [sys.executable, behavior_module, "--record-app", args.behavior_record_app],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.behavior_context:
+        behavior_module = os.path.join(SCRIPT_DIR, "llm_os_user_behavior_prediction.py")
+        result = subprocess.run(
+            [sys.executable, behavior_module, "--context"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.behavior_predict:
+        behavior_module = os.path.join(SCRIPT_DIR, "llm_os_user_behavior_prediction.py")
+        result = subprocess.run(
+            [sys.executable, behavior_module, "--predict"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.behavior_suggestions:
+        behavior_module = os.path.join(SCRIPT_DIR, "llm_os_user_behavior_prediction.py")
+        result = subprocess.run(
+            [sys.executable, behavior_module, "--suggestions"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.behavior_preferences:
+        behavior_module = os.path.join(SCRIPT_DIR, "llm_os_user_behavior_prediction.py")
+        result = subprocess.run(
+            [sys.executable, behavior_module, "--preferences"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.behavior_summary is not None:
+        behavior_module = os.path.join(SCRIPT_DIR, "llm_os_user_behavior_prediction.py")
+        days = args.behavior_summary if args.behavior_summary > 0 else 7
+        result = subprocess.run(
+            [sys.executable, behavior_module, "--summary", str(days)],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.behavior_trigger:
+        behavior_module = os.path.join(SCRIPT_DIR, "llm_os_user_behavior_prediction.py")
+        result = subprocess.run(
+            [sys.executable, behavior_module, "--trigger", args.behavior_trigger],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
+
+    if args.behavior_patterns:
+        behavior_module = os.path.join(SCRIPT_DIR, "llm_os_user_behavior_prediction.py")
+        result = subprocess.run(
+            [sys.executable, behavior_module, "--analyze-patterns"],
+            capture_output=True, text=True, encoding='utf-8', errors='replace'
+        )
+        print(result.stdout)
 
 
 if __name__ == "__main__":
