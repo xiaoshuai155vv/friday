@@ -1717,6 +1717,11 @@ class FridayBall(QWidget):
         if self._voice_overlay and self._voice_overlay.isVisible():
             self._voice_overlay.set_partial(text)
 
+    def _auto_restart_voice(self):
+        """AI 返回后自动开始下一轮录音，无需点击"""
+        if self._voice_overlay and self._voice_overlay.isVisible():
+            QTimer.singleShot(400, self._start_voice_from_ball)
+
     def _on_voice_finished(self, text):
         self._voice_asr_worker = None
         self._set_spinning(False)
@@ -1724,6 +1729,7 @@ class FridayBall(QWidget):
             return
         if not text or not text.strip():
             self._voice_overlay.set_error("未识别到内容")
+            self._auto_restart_voice()
             return
         self._voice_overlay.set_final(text)
         try:
@@ -1739,6 +1745,7 @@ class FridayBall(QWidget):
             out = (r.stdout or "").strip()
             if out:
                 self._voice_overlay.set_response(out[:300])
+                self._auto_restart_voice()
             elif r.returncode != 0:
                 self._voice_overlay.set_response("do.py 执行失败，尝试多模态…")
                 self._voice_overlay._continue_btn.setEnabled(False)
@@ -1747,14 +1754,17 @@ class FridayBall(QWidget):
                 self._voice_vision_worker.start()
             else:
                 self._voice_overlay.set_response("执行完成")
+                self._auto_restart_voice()
         except Exception as e:
             self._voice_overlay.set_response("执行异常: " + str(e)[:80])
+            self._auto_restart_voice()
 
     def _on_voice_vision_finished(self, result):
         self._voice_vision_worker = None
         if self._voice_overlay and self._voice_overlay.isVisible():
             self._voice_overlay.set_response(result)
             self._voice_overlay._continue_btn.setEnabled(True)
+            self._auto_restart_voice()
 
     def _show_voice(self):
         """快捷键/菜单：同左键点击，打开浮层并开始录音"""
