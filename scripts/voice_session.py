@@ -81,6 +81,28 @@ def delete_session_if_empty(session_path):
             pass
 
 
+def _first_user_line(session_path, max_len=15):
+    """取会话中第一句用户输入，截断后返回"""
+    if not session_path or not os.path.isfile(session_path):
+        return ""
+    try:
+        with open(session_path, "r", encoding="utf-8") as f:
+            raw = f.read()
+    except Exception:
+        return ""
+    parts = re.split(r"\n## 你\n", raw)
+    if len(parts) < 2:
+        return ""
+    first_block = parts[1].split("\n\n## CC")[0].strip()
+    line = first_block.split("\n")[0].strip() if first_block else ""
+    if not line:
+        return ""
+    line = line.replace("\n", " ").strip()
+    if len(line) > max_len:
+        return line[:max_len] + "…"
+    return line
+
+
 def list_sessions(max_count=50):
     """列出历史会话（仅含对话内容的），按修改时间倒序，返回 [(path, display_name), ...]"""
     if not os.path.isdir(SESSIONS_DIR):
@@ -97,14 +119,16 @@ def list_sessions(max_count=50):
     for path, _, name in items[:max_count]:
         base = name[:-3]  # voice_20260316_171022
         ts = base.replace("voice_", "") if base.startswith("voice_") else base
-        display = ts  # 可改为友好时间，如 2026-03-16 17:10:22
+        display = ts
         if len(ts) == 15 and ts[8] == "_":
             try:
-                from datetime import datetime
                 dt = datetime.strptime(ts, "%Y%m%d_%H%M%S")
                 display = dt.strftime("%Y-%m-%d %H:%M")
             except Exception:
                 pass
+        first_line = _first_user_line(path)
+        if first_line:
+            display = "%s | %s" % (display, first_line)
         result.append((path, display))
     return result
 
