@@ -6,7 +6,7 @@ LLM-OS 控制面板 - 整合现有能力的统一入口
 本脚本整合窗口管理、进程管理、应用启动等能力，提供统一的 LLM-OS 桌面操作系统控制能力。
 基于已有的大量进化引擎能力，构建桌面操作系统级别的控制接口。
 
-版本: 1.6.0
+版本: 1.7.0
 依赖: window_tool, process_tool, launch_* 脚本, file_tool, notification_tool 等
 """
 
@@ -668,11 +668,62 @@ def notification_clear():
     return result.stdout
 
 
+# ==================== 系统监控支持 ====================
+def get_system_monitor_summary():
+    """获取系统监控摘要"""
+    monitor = os.path.join(SCRIPT_DIR, "llm_os_system_monitor.py")
+    result = subprocess.run(
+        [sys.executable, monitor, "--summary", "--format", "text"],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
+def get_cpu_monitor():
+    """获取 CPU 监控详情"""
+    monitor = os.path.join(SCRIPT_DIR, "llm_os_system_monitor.py")
+    result = subprocess.run(
+        [sys.executable, monitor, "--cpu"],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
+def get_memory_monitor():
+    """获取内存监控详情"""
+    monitor = os.path.join(SCRIPT_DIR, "llm_os_system_monitor.py")
+    result = subprocess.run(
+        [sys.executable, monitor, "--memory"],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
+def get_disk_monitor():
+    """获取磁盘监控详情"""
+    monitor = os.path.join(SCRIPT_DIR, "llm_os_system_monitor.py")
+    result = subprocess.run(
+        [sys.executable, monitor, "--disk"],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
+def get_network_monitor():
+    """获取网络监控详情"""
+    monitor = os.path.join(SCRIPT_DIR, "llm_os_system_monitor.py")
+    result = subprocess.run(
+        [sys.executable, monitor, "--network"],
+        capture_output=True, text=True, encoding='utf-8', errors='replace'
+    )
+    return result.stdout
+
+
 def show_menu():
     """显示 LLM-OS 控制面板菜单"""
     menu = """
 ╔═══════════════════════════════════════════════════════════╗
-║           LLM-OS 桌面操作系统控制面板 v1.6.0              ║
+║           LLM-OS 桌面操作系统控制面板 v1.7.0              ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  1. 窗口管理                                             ║
 ║     - list_windows: 列出所有窗口                         ║
@@ -753,7 +804,15 @@ def show_menu():
 ║     - notification-send "标题" "内容": 发送通知          ║
 ║     - notification-clear: 清除通知                      ║
 ║                                                         ║
-║  13. 退出                                                 ║
+║  13. 系统监控 (新增!)                                     ║
+║     - monitor-summary: 系统监控摘要                      ║
+║     - monitor-cpu: CPU 详细信息                          ║
+║     - monitor-memory: 内存详细信息                        ║
+║     - monitor-disk: 磁盘详细信息                          ║
+║     - monitor-network: 网络详细信息                       ║
+║     - monitor-all: 所有监控详细信息                       ║
+║                                                         ║
+║  14. 退出                                                 ║
 ╚═══════════════════════════════════════════════════════════╝
 """
     return menu
@@ -924,6 +983,20 @@ def main():
                         help="通知紧急程度 (与 --notification-send 配合)")
     parser.add_argument("--notification-clear", "-nclear", action="store_true",
                         help="清除所有通知")
+
+    # 系统监控支持
+    parser.add_argument("--monitor-summary", "-ms", action="store_true",
+                        help="获取系统监控摘要 (CPU/内存/磁盘/网络)")
+    parser.add_argument("--monitor-cpu", "-mc", action="store_true",
+                        help="获取 CPU 详细信息")
+    parser.add_argument("--monitor-memory", "-mm", action="store_true",
+                        help="获取内存详细信息")
+    parser.add_argument("--monitor-disk", "-md", action="store_true",
+                        help="获取磁盘详细信息")
+    parser.add_argument("--monitor-network", "-mn", action="store_true",
+                        help="获取网络详细信息")
+    parser.add_argument("--monitor-all", "-ma", action="store_true",
+                        help="获取所有监控详细信息")
 
     args = parser.parse_args()
 
@@ -1232,6 +1305,40 @@ def main():
     if args.notification_clear:
         print("=== 清除通知 ===")
         print(notification_clear())
+
+    # 系统监控
+    if args.monitor_summary:
+        print("=== 系统监控摘要 ===")
+        print(get_system_monitor_summary())
+
+    if args.monitor_cpu:
+        print("=== CPU 监控详情 ===")
+        print(get_cpu_monitor())
+
+    if args.monitor_memory:
+        print("=== 内存监控详情 ===")
+        print(get_memory_monitor())
+
+    if args.monitor_disk:
+        print("=== 磁盘监控详情 ===")
+        print(get_disk_monitor())
+
+    if args.monitor_network:
+        print("=== 网络监控详情 ===")
+        print(get_network_monitor())
+
+    if args.monitor_all:
+        print("=== 完整系统监控 ===")
+        print(">>> 系统监控摘要 <<<")
+        print(get_system_monitor_summary())
+        print("\n>>> CPU 详情 <<<")
+        print(get_cpu_monitor())
+        print("\n>>> 内存详情 <<<")
+        print(get_memory_monitor())
+        print("\n>>> 磁盘详情 <<<")
+        print(get_disk_monitor())
+        print("\n>>> 网络详情 <<<")
+        print(get_network_monitor())
 
 
 if __name__ == "__main__":
