@@ -93,12 +93,13 @@ try:
         QApplication, QWidget, QLabel, QSystemTrayIcon,
         QMenu, QAction, QDesktopWidget, QScrollArea,
         QPushButton, QVBoxLayout, QHBoxLayout, QFrame,
-        QPlainTextEdit, QComboBox, QShortcut, QFileDialog, QInputDialog,
+        QPlainTextEdit, QTextEdit, QComboBox, QShortcut, QFileDialog, QInputDialog,
     )
     from PyQt5.QtCore import Qt, QTimer, QPoint, QRect, QEvent, QThread, pyqtSignal
     from PyQt5.QtGui import (
         QPainter, QColor, QPen, QBrush, QRadialGradient,
         QPainterPath, QFont, QLinearGradient, QRegion, QIcon, QPixmap, QKeySequence, QWheelEvent, QKeyEvent,
+        QTextCursor,
     )
     HAS_QT = True
 except ImportError:
@@ -1078,17 +1079,22 @@ class VoiceVisionFallbackWorker(QThread):
             if r1.returncode != 0 or not os.path.isfile(bmp):
                 self.finished_signal.emit("截图失败")
                 return
+            q = "用户说: %s。请简短友好回复。若用户是打招呼或一般对话，请友好回复；若用户问屏幕上的内容，请描述。这是一般对话，不要返回坐标格式。" % self._user_text
             r2 = subprocess.run(
-                [sys.executable, os.path.join(SCRIPTS, "vision_proxy.py"), bmp, self._user_text],
+                [sys.executable, os.path.join(SCRIPTS, "vision_proxy.py"), bmp, q],
                 cwd=ROOT, capture_output=True, text=True, timeout=60, encoding="utf-8", errors="replace"
             )
             out = (r2.stdout or "").strip()
+            err = (r2.stderr or "").strip()
             if out:
-                self.finished_signal.emit(out[:300])
+                raw = out
+                if err and "do.py stderr" not in err:
+                    raw = raw + "\n[stderr] " + err[:200]
+                self.finished_signal.emit(raw[:800])
             else:
-                self.finished_signal.emit("多模态未返回结果")
+                self.finished_signal.emit("多模态未返回结果" + ("\n[stderr] " + err[:200] if err else ""))
         except Exception as e:
-            self.finished_signal.emit("多模态异常: " + str(e)[:80])
+            self.finished_signal.emit("多模态异常: " + str(e)[:200])
 
 
 class VoiceAsrWorker(QThread):
@@ -1155,12 +1161,12 @@ class VoiceOverlayWidget(QWidget):
             "text-shadow: 0 0 14px rgba(255,180,50,0.7);"
         )
         layout.addWidget(self._text, 0)
-        self._chat = QPlainTextEdit()
+        self._chat = QTextEdit()
         self._chat.setReadOnly(True)
         self._chat.setFrameShape(QFrame.NoFrame)
         self._chat.setMinimumHeight(280)
         self._chat.setStyleSheet(
-            "QPlainTextEdit { color: rgb(200,220,240); font-size: 13px; "
+            "QTextEdit { color: rgb(200,220,240); font-size: 13px; "
             "background: transparent; border: none; "
             "selection-background-color: rgba(255,170,50,0.3); }"
         )
@@ -1214,17 +1220,27 @@ class VoiceOverlayWidget(QWidget):
         self._status.setText("◉ 识别中")
         self._text.setText(text[:80] + ("…" if len(text) > 80 else ""))
 
+    def _escape_html(self, s):
+        return (s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>")
+
+    def _append_chat_html(self, html):
+        c = self._chat.textCursor()
+        c.movePosition(QTextCursor.End)
+        c.insertHtml(html + "<br>")
+        self._chat.setTextCursor(c)
+        self._scroll_chat_to_bottom()
+
     def set_final(self, text):
         self._status.setText("你说")
         self._text.setText(text[:100] + ("…" if len(text) > 100 else ""))
         if text and text.strip():
-            self._chat.appendPlainText("你: " + text.strip())
-            self._scroll_chat_to_bottom()
+            html = '<div style="text-align:right; margin:6px 0; color:rgb(255,220,100)">你: %s</div>' % self._escape_html(text.strip())
+            self._append_chat_html(html)
 
     def set_response(self, text):
         if text and text.strip():
-            self._chat.appendPlainText("CC: " + text.strip())
-            self._scroll_chat_to_bottom()
+            html = '<div style="text-align:left; margin:6px 0; color:rgb(180,220,255)">CC: %s</div>' % self._escape_html(text.strip())
+            self._append_chat_html(html)
 
     def _scroll_chat_to_bottom(self):
         sb = self._chat.verticalScrollBar()
@@ -1733,25 +1749,39 @@ class FridayBall(QWidget):
             return
         self._voice_overlay.set_final(text)
         try:
+            timeout_sec = 360 if ("进化" in text or "evolution" in text.lower()) else 120
             r = subprocess.run(
                 [sys.executable, os.path.join(SCRIPTS, "do.py"), text.strip()],
                 cwd=ROOT,
                 capture_output=True,
                 text=True,
-                timeout=120,
+                timeout=timeout_sec,
                 encoding="utf-8",
                 errors="replace",
             )
             out = (r.stdout or "").strip()
+            err = (r.stderr or "").strip()
+            if "do.py stderr argv=" in err:
+                err = ""
             if out:
-                self._voice_overlay.set_response(out[:300])
+                raw = out[:800]
+                if err:
+                    raw = raw + "\n[stderr] " + err[:400]
+                self._voice_overlay.set_response(raw)
                 self._auto_restart_voice()
             elif r.returncode != 0:
-                self._voice_overlay.set_response("do.py 执行失败，尝试多模态…")
-                self._voice_overlay._continue_btn.setEnabled(False)
-                self._voice_vision_worker = VoiceVisionFallbackWorker(text.strip())
-                self._voice_vision_worker.finished_signal.connect(self._on_voice_vision_finished)
-                self._voice_vision_worker.start()
+                fail_msg = "do.py 执行失败" + ("\n[stderr] " + err[:400] if err else "")
+                if "进化" in text or "evolution" in text.lower():
+                    fail_msg += "\n[进化环进度见 runtime/logs/evolution_loop.log 和 runtime/state/evolution_last_status.json]"
+                    self._voice_overlay.set_response(fail_msg)
+                    self._auto_restart_voice()
+                else:
+                    fail_msg += "\n尝试多模态…"
+                    self._voice_overlay.set_response(fail_msg)
+                    self._voice_overlay._continue_btn.setEnabled(False)
+                    self._voice_vision_worker = VoiceVisionFallbackWorker(text.strip())
+                    self._voice_vision_worker.finished_signal.connect(self._on_voice_vision_finished)
+                    self._voice_vision_worker.start()
             else:
                 self._voice_overlay.set_response("执行完成")
                 self._auto_restart_voice()
