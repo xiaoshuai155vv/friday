@@ -6,7 +6,7 @@ LLM-OS 控制面板 - 整合现有能力的统一入口
 本脚本整合窗口管理、进程管理、应用启动等能力，提供统一的 LLM-OS 桌面操作系统控制能力。
 基于已有的大量进化引擎能力，构建桌面操作系统级别的控制接口。
 
-版本: 1.7.0
+版本: 2.0.0
 依赖: window_tool, process_tool, launch_* 脚本, file_tool, notification_tool 等
 """
 
@@ -320,6 +320,242 @@ def task_manager_services():
         errors='replace'
     )
     return result.stdout
+
+
+# ========== 剪贴板管理器函数 ==========
+
+def clipboard_manager_history(limit=None, search=None):
+    """获取剪贴板历史"""
+    clipboard_manager = os.path.join(SCRIPT_DIR, "llm_os_clipboard_manager.py")
+    cmd = [sys.executable, clipboard_manager, "--history"]
+    if limit:
+        cmd.append(str(limit))
+    if search:
+        cmd.extend(["--search", search])
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def clipboard_manager_favorites(search=None):
+    """获取收藏列表"""
+    clipboard_manager = os.path.join(SCRIPT_DIR, "llm_os_clipboard_manager.py")
+    cmd = [sys.executable, clipboard_manager, "--favorites"]
+    if search:
+        cmd.extend(["--search", search])
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def clipboard_manager_add_favorite(content):
+    """添加收藏"""
+    clipboard_manager = os.path.join(SCRIPT_DIR, "llm_os_clipboard_manager.py")
+    result = subprocess.run(
+        [sys.executable, clipboard_manager, "--add-favorite", content],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def clipboard_manager_copy_history(index):
+    """复制历史记录"""
+    clipboard_manager = os.path.join(SCRIPT_DIR, "llm_os_clipboard_manager.py")
+    result = subprocess.run(
+        [sys.executable, clipboard_manager, "--copy", str(index)],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def clipboard_manager_clear():
+    """清空剪贴板历史"""
+    clipboard_manager = os.path.join(SCRIPT_DIR, "llm_os_clipboard_manager.py")
+    result = subprocess.run(
+        [sys.executable, clipboard_manager, "--clear"],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+# ========== 用户画像管理函数 ==========
+
+def user_profile_status():
+    """获取用户画像状态"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    result = subprocess.run(
+        [sys.executable, user_profile, "--status"],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def user_profile_show():
+    """显示完整用户画像"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    result = subprocess.run(
+        [sys.executable, user_profile, "--show-profile"],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def user_profile_preferences():
+    """显示偏好设置"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    result = subprocess.run(
+        [sys.executable, user_profile, "--show-prefs"],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def user_profile_history(limit=10):
+    """显示行为历史"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    result = subprocess.run(
+        [sys.executable, user_profile, "--history", str(limit)],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def user_profile_set_theme(theme):
+    """设置主题"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    result = subprocess.run(
+        [sys.executable, user_profile, "--set-theme", theme],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def user_profile_set_language(language):
+    """设置语言"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    result = subprocess.run(
+        [sys.executable, user_profile, "--set-lang", language],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def user_profile_set_notification(enabled):
+    """设置通知"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    on_off = "on" if enabled else "off"
+    result = subprocess.run(
+        [sys.executable, user_profile, "--set-notify", on_off],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def user_profile_add_preference(key, value):
+    """添加偏好设置"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    result = subprocess.run(
+        [sys.executable, user_profile, "--add-pref", key, value],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def user_profile_get_preference(key):
+    """获取偏好设置"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    result = subprocess.run(
+        [sys.executable, user_profile, "--get-pref", key],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def user_profile_list():
+    """列出所有用户画像"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    result = subprocess.run(
+        [sys.executable, user_profile, "--list-profiles"],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def user_profile_create(profile_id, name):
+    """创建新用户画像"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    result = subprocess.run(
+        [sys.executable, user_profile, "--create-profile", profile_id, name],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def user_profile_delete(profile_id):
+    """删除用户画像"""
+    user_profile = os.path.join(SCRIPT_DIR, "llm_os_user_profile.py")
+    result = subprocess.run(
+        [sys.executable, user_profile, "--delete-profile", profile_id],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
 
 
 # ========== 文件管理器函数 ==========
@@ -913,6 +1149,20 @@ def main():
     parser.add_argument("--task-services", "-ts", action="store_true",
                         help="列出 Windows 服务")
 
+    # 剪贴板管理器支持
+    parser.add_argument("--clipboard-history", "-ch", nargs="?", const=-1, type=int, metavar="[N]",
+                        help="查看剪贴板历史（可选指定数量）")
+    parser.add_argument("--clipboard-search", "-cs", type=str, metavar="关键词",
+                        help="搜索剪贴板历史")
+    parser.add_argument("--clipboard-favorites", "-cf", action="store_true",
+                        help="查看收藏的剪贴板内容")
+    parser.add_argument("--clipboard-add-favorite", "-caf", type=str, metavar="内容",
+                        help="添加内容到收藏")
+    parser.add_argument("--clipboard-copy", "-cco", type=int, metavar="N",
+                        help="复制第N条历史到剪贴板")
+    parser.add_argument("--clipboard-clear", "-ccl", action="store_true",
+                        help="清空剪贴板历史")
+
     # 文件管理器支持
     parser.add_argument("--file-list", "-fl", nargs="?", const=".", metavar="PATH",
                         help="列出目录内容（默认当前目录）")
@@ -1015,6 +1265,32 @@ def main():
                         help="获取电池状态")
     parser.add_argument("--device-all", "-dall", action="store_true",
                         help="获取所有设备详细信息")
+
+    # 用户画像与偏好管理支持
+    parser.add_argument("--profile-status", "-ps", action="store_true",
+                        help="显示用户画像状态")
+    parser.add_argument("--profile-show", "-pshow", action="store_true",
+                        help="显示完整用户画像")
+    parser.add_argument("--profile-prefs", "-pprefs", action="store_true",
+                        help="显示偏好设置")
+    parser.add_argument("--profile-history", "-ph", nargs="?", const=10, type=int,
+                        help="显示行为历史 (默认10条)")
+    parser.add_argument("--profile-theme", "-pt", type=str,
+                        help="设置主题 (light/dark)")
+    parser.add_argument("--profile-lang", "-plang", type=str,
+                        help="设置语言")
+    parser.add_argument("--profile-notify", "-pnotif", type=str, choices=["on", "off"],
+                        help="启用/禁用通知")
+    parser.add_argument("--profile-add-pref", "-padd", nargs=2, metavar=("KEY", "VALUE"),
+                        help="添加偏好设置 (键 值)")
+    parser.add_argument("--profile-get-pref", "-pget", type=str,
+                        help="获取偏好设置 (键)")
+    parser.add_argument("--profile-list", "-plist", action="store_true",
+                        help="列出所有用户画像")
+    parser.add_argument("--profile-create", "-pcr", nargs=2, metavar=("ID", "NAME"),
+                        help="创建新用户画像 (ID 名称)")
+    parser.add_argument("--profile-delete", "-pdel", type=str,
+                        help="删除用户画像 (ID)")
 
     args = parser.parse_args()
 
@@ -1189,6 +1465,29 @@ def main():
 
     if args.task_services:
         print(task_manager_services())
+
+    # ========== 剪贴板管理器操作 ==========
+    if args.clipboard_history is not None:
+        limit = args.clipboard_history if args.clipboard_history > 0 else None
+        print(clipboard_manager_history(limit=limit, search=args.clipboard_search))
+
+    if args.clipboard_search and args.clipboard_history is None:
+        print(clipboard_manager_history(search=args.clipboard_search))
+
+    if args.clipboard_favorites:
+        print(clipboard_manager_favorites(search=args.clipboard_search))
+
+    if args.clipboard_add_favorite:
+        output, code = clipboard_manager_add_favorite(args.clipboard_add_favorite)
+        print(output if output else "✓ 已添加到收藏")
+
+    if args.clipboard_copy:
+        output, code = clipboard_manager_copy_history(args.clipboard_copy)
+        print(output if output else f"✓ 已复制第 {args.clipboard_copy} 条到剪贴板")
+
+    if args.clipboard_clear:
+        output, code = clipboard_manager_clear()
+        print(output if output else "✓ 已清空剪贴板历史")
 
     # ========== 文件管理器操作 ==========
     if args.file_list:
@@ -1417,6 +1716,53 @@ def main():
             capture_output=True, text=True, encoding='utf-8', errors='replace'
         )
         print(result.stdout)
+
+    # 用户画像与偏好管理处理
+    if args.profile_status:
+        print(user_profile_status())
+
+    if args.profile_show:
+        print(user_profile_show())
+
+    if args.profile_prefs:
+        print(user_profile_preferences())
+
+    if args.profile_history is not None:
+        limit = args.profile_history if args.profile_history > 0 else 10
+        print(user_profile_history(limit))
+
+    if args.profile_theme:
+        output, code = user_profile_set_theme(args.profile_theme)
+        print(output if output else f"主题已设置为: {args.profile_theme}")
+
+    if args.profile_lang:
+        output, code = user_profile_set_language(args.profile_lang)
+        print(output if output else f"语言已设置为: {args.profile_lang}")
+
+    if args.profile_notify:
+        enabled = args.profile_notify == "on"
+        output, code = user_profile_set_notification(enabled)
+        print(output if output else f"通知已{'启用' if enabled else '禁用'}")
+
+    if args.profile_add_pref:
+        key, value = args.profile_add_pref
+        output, code = user_profile_add_preference(key, value)
+        print(output if output else f"偏好设置已添加: {key} = {value}")
+
+    if args.profile_get_pref:
+        print(user_profile_get_preference(args.profile_get_pref))
+
+    if args.profile_list:
+        print(user_profile_list())
+
+    if args.profile_create:
+        profile_id, name = args.profile_create
+        output, code = user_profile_create(profile_id, name)
+        print(output if output else f"用户画像已创建: {profile_id} ({name})")
+
+    if args.profile_delete:
+        output, code = user_profile_delete(args.profile_delete)
+        print(output if output else f"用户画像已删除: {args.profile_delete}")
 
 
 if __name__ == "__main__":
