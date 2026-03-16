@@ -186,11 +186,37 @@ def arrange_windows(action):
     return result.stdout, result.returncode
 
 
+def launch_app_launcher(action, target=None):
+    """执行虚拟应用启动器操作"""
+    app_launcher = os.path.join(SCRIPT_DIR, "llm_os_app_launcher.py")
+    cmd = [sys.executable, app_launcher]
+
+    if action == "list":
+        cmd.append("--list")
+    elif action == "status":
+        cmd.append("--status")
+    elif action == "launch-app" and target:
+        cmd.extend(["--launch-app", target])
+    elif action == "launch-website" and target:
+        cmd.extend(["--launch-website", target])
+    elif action == "launch-system" and target:
+        cmd.extend(["--launch-system", target])
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
 def show_menu():
     """显示 LLM-OS 控制面板菜单"""
     menu = """
 ╔═══════════════════════════════════════════════════════════╗
-║           LLM-OS 桌面操作系统控制面板 v1.0.0              ║
+║           LLM-OS 桌面操作系统控制面板 v1.1.0              ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  1. 窗口管理                                             ║
 ║     - list_windows: 列出所有窗口                         ║
@@ -216,13 +242,18 @@ def show_menu():
 ║     - list_apps: 列出已安装应用                          ║
 ║     - launch <name>: 启动应用                            ║
 ║                                                         ║
-║  5. 系统信息                                             ║
+║  5. 虚拟应用启动器                                       ║
+║     - list_shortcuts: 列出所有快捷方式                   ║
+║     - launcher_status: 获取启动器状态                    ║
+║     - quick_launch <name>: 快速启动                      ║
+║                                                         ║
+║  6. 系统信息                                             ║
 ║     - sysinfo: 获取系统信息                              ║
 ║                                                         ║
-║  6. 文件管理                                             ║
+║  7. 文件管理                                             ║
 ║     - explore: 打开文件管理器                            ║
 ║                                                         ║
-║  7. 退出                                                 ║
+║  8. 退出                                                 ║
 ╚═══════════════════════════════════════════════════════════╝
 """
     return menu
@@ -290,6 +321,14 @@ def main():
     # 文件管理
     parser.add_argument("--explore", "-e", nargs="?", const=".",
                         help="打开文件管理器（默认当前目录）")
+
+    # 虚拟应用启动器
+    parser.add_argument("--list-shortcuts", action="store_true",
+                        help="列出所有可用快捷方式")
+    parser.add_argument("--launcher-status", action="store_true",
+                        help="获取虚拟应用启动器状态")
+    parser.add_argument("--quick-launch", "-ql", type=str,
+                        help="快速启动应用/网站/系统功能（根据名称自动识别）")
 
     args = parser.parse_args()
 
@@ -396,6 +435,37 @@ def main():
         launch_explorer = os.path.join(SCRIPT_DIR, "launch_explorer.py")
         subprocess.run([sys.executable, launch_explorer, args.explore])
         print(f"✓ 文件管理器已打开: {args.explore}")
+
+    # 虚拟应用启动器
+    if args.list_shortcuts:
+        output, code = launch_app_launcher("list")
+        print(output if output else "✓ 快捷方式列表已显示")
+
+    if args.launcher_status:
+        output, code = launch_app_launcher("status")
+        print(output if output else "✓ 启动器状态已显示")
+
+    if args.quick_launch:
+        # 尝试识别类型并启动
+        target = args.quick_launch
+        config_path = os.path.join(os.path.expanduser("~"), ".friday", "llm_os", "app_launcher_config.json")
+
+        # 尝试作为应用启动
+        output, code = launch_app_launcher("launch-app", target)
+        if code == 0:
+            print(f"✓ 应用 {target} 已启动")
+        else:
+            # 尝试作为网站启动
+            output, code = launch_app_launcher("launch-website", target)
+            if code == 0:
+                print(f"✓ 网站 {target} 已打开")
+            else:
+                # 尝试作为系统功能启动
+                output, code = launch_app_launcher("launch-system", target)
+                if code == 0:
+                    print(f"✓ 系统功能 {target} 已启动")
+                else:
+                    print(f"✗ 未找到: {target}")
 
 
 if __name__ == "__main__":
