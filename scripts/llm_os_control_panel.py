@@ -322,11 +322,164 @@ def task_manager_services():
     return result.stdout
 
 
+# ========== 文件管理器函数 ==========
+
+def file_manager_list(path=None, show_hidden=False, sort_by="name"):
+    """列出目录内容"""
+    file_manager = os.path.join(SCRIPT_DIR, "llm_os_file_manager.py")
+    cmd = [sys.executable, file_manager, "list"]
+    if path:
+        cmd.append(path)
+    if show_hidden:
+        cmd.append("--hidden")
+    cmd.extend(["--sort", sort_by])
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def file_manager_search(path, pattern, recursive=False, max_results=100):
+    """搜索文件"""
+    file_manager = os.path.join(SCRIPT_DIR, "llm_os_file_manager.py")
+    cmd = [sys.executable, file_manager, "search", path, pattern]
+    if recursive:
+        cmd.append("-r")
+    cmd.extend(["-m", str(max_results)])
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def file_manager_info(path):
+    """获取文件信息"""
+    file_manager = os.path.join(SCRIPT_DIR, "llm_os_file_manager.py")
+    result = subprocess.run(
+        [sys.executable, file_manager, "info", path],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def file_manager_copy(source, destination, force=False):
+    """复制文件或目录"""
+    file_manager = os.path.join(SCRIPT_DIR, "llm_os_file_manager.py")
+    cmd = [sys.executable, file_manager, "copy", source, destination]
+    if force:
+        cmd.append("-f")
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def file_manager_move(source, destination, force=False):
+    """移动/重命名文件或目录"""
+    file_manager = os.path.join(SCRIPT_DIR, "llm_os_file_manager.py")
+    cmd = [sys.executable, file_manager, "move", source, destination]
+    if force:
+        cmd.append("-f")
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def file_manager_delete(path, recursive=False):
+    """删除文件或目录"""
+    file_manager = os.path.join(SCRIPT_DIR, "llm_os_file_manager.py")
+    cmd = [sys.executable, file_manager, "delete", path]
+    if recursive:
+        cmd.append("-r")
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def file_manager_create(path, is_directory=False, content=""):
+    """新建文件或目录"""
+    file_manager = os.path.join(SCRIPT_DIR, "llm_os_file_manager.py")
+    cmd = [sys.executable, file_manager, "create", path]
+    if is_directory:
+        cmd.append("-d")
+    if content:
+        cmd.extend(["-c", content])
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def file_manager_disk(path=None):
+    """获取磁盘使用情况"""
+    file_manager = os.path.join(SCRIPT_DIR, "llm_os_file_manager.py")
+    cmd = [sys.executable, file_manager, "disk"]
+    if path:
+        cmd.append(path)
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def file_manager_quick():
+    """获取快速访问位置"""
+    file_manager = os.path.join(SCRIPT_DIR, "llm_os_file_manager.py")
+    result = subprocess.run(
+        [sys.executable, file_manager, "quick"],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
 def show_menu():
     """显示 LLM-OS 控制面板菜单"""
     menu = """
 ╔═══════════════════════════════════════════════════════════╗
-║           LLM-OS 桌面操作系统控制面板 v1.3.0              ║
+║           LLM-OS 桌面操作系统控制面板 v1.4.0              ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  1. 窗口管理                                             ║
 ║     - list_windows: 列出所有窗口                         ║
@@ -360,8 +513,13 @@ def show_menu():
 ║  6. 系统信息                                             ║
 ║     - sysinfo: 获取系统信息                              ║
 ║                                                         ║
-║  7. 文件管理                                             ║
-║     - explore: 打开文件管理器                            ║
+║  7. 文件管理 (新增!)                                    ║
+║     - file_list: 列出目录内容                            ║
+║     - file_search: 搜索文件                              ║
+║     - file_info: 获取文件信息                            ║
+║     - file_copy/move/delete: 文件操作                   ║
+║     - file_disk: 磁盘使用情况                            ║
+║     - file_quick: 快速访问位置                            ║
 ║                                                         ║
 ║  8. 多显示器支持 (新增!)                                 ║
 ║     - list_displays: 列出所有显示器                      ║
@@ -476,6 +634,34 @@ def main():
                         help="结束进程（进程名或PID）")
     parser.add_argument("--task-services", "-ts", action="store_true",
                         help="列出 Windows 服务")
+
+    # 文件管理器支持
+    parser.add_argument("--file-list", "-fl", nargs="?", const=".", metavar="PATH",
+                        help="列出目录内容（默认当前目录）")
+    parser.add_argument("--file-hidden", action="store_true",
+                        help="列出目录时显示隐藏文件（与 --file-list 配合）")
+    parser.add_argument("--file-sort", choices=["name", "size", "date", "type"], default="name",
+                        help="目录列表排序方式（与 --file-list 配合）")
+    parser.add_argument("--file-search", "-fs", nargs=2, metavar=('PATH', 'PATTERN'),
+                        help="搜索文件 (路径 搜索模式)")
+    parser.add_argument("-r", "--recursive", action="store_true",
+                        help="递归搜索（与 --file-search 配合）")
+    parser.add_argument("--file-info", "-fi", metavar="PATH",
+                        help="获取文件/目录详细信息")
+    parser.add_argument("--file-copy", "-fcp", nargs=2, metavar=('SOURCE', 'DEST'),
+                        help="复制文件或目录")
+    parser.add_argument("--file-move", "-fmv", nargs=2, metavar=('SOURCE', 'DEST'),
+                        help="移动/重命名文件或目录")
+    parser.add_argument("--file-delete", "-fdel", metavar="PATH",
+                        help="删除文件或目录")
+    parser.add_argument("--file-create", "-fcr", metavar="PATH",
+                        help="新建文件")
+    parser.add_argument("--file-mkdir", "-fdir", metavar="PATH",
+                        help="新建目录")
+    parser.add_argument("--file-disk", "-fdisk", nargs="?", const=".", metavar="PATH",
+                        help="查看磁盘使用情况")
+    parser.add_argument("--file-quick", "-fquick", action="store_true",
+                        help="获取快速访问位置")
 
     args = parser.parse_args()
 
@@ -650,6 +836,50 @@ def main():
 
     if args.task_services:
         print(task_manager_services())
+
+    # ========== 文件管理器操作 ==========
+    if args.file_list:
+        print("=== 目录内容 ===")
+        print(file_manager_list(args.file_list, args.file_hidden, args.file_sort))
+
+    if args.file_search:
+        path, pattern = args.file_search
+        print(f"=== 搜索: {pattern} ===")
+        print(file_manager_search(path, pattern, args.recursive))
+
+    if args.file_info:
+        print("=== 文件信息 ===")
+        print(file_manager_info(args.file_info))
+
+    if args.file_copy:
+        source, dest = args.file_copy
+        output, code = file_manager_copy(source, dest)
+        print(output if output else f"✓ 已复制: {source} -> {dest}")
+
+    if args.file_move:
+        source, dest = args.file_move
+        output, code = file_manager_move(source, dest)
+        print(output if output else f"✓ 已移动: {source} -> {dest}")
+
+    if args.file_delete:
+        output, code = file_manager_delete(args.file_delete)
+        print(output if output else f"✓ 已删除: {args.file_delete}")
+
+    if args.file_create:
+        output, code = file_manager_create(args.file_create)
+        print(output if output else f"✓ 已创建文件: {args.file_create}")
+
+    if args.file_mkdir:
+        output, code = file_manager_create(args.file_mkdir, is_directory=True)
+        print(output if output else f"✓ 已创建目录: {args.file_mkdir}")
+
+    if args.file_disk:
+        print("=== 磁盘使用情况 ===")
+        print(file_manager_disk(args.file_disk))
+
+    if args.file_quick:
+        print("=== 快速访问位置 ===")
+        print(file_manager_quick())
 
 
 if __name__ == "__main__":
