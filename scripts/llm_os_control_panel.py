@@ -264,11 +264,69 @@ def multidisplay_window_display(window_title):
     return result.stdout, result.returncode
 
 
+def task_manager_list(top_n=None):
+    """获取进程列表（任务管理器）"""
+    task_manager = os.path.join(SCRIPT_DIR, "llm_os_task_manager.py")
+    cmd = [sys.executable, task_manager]
+    if top_n:
+        cmd.extend(["--top", str(top_n)])
+    else:
+        cmd.append("--list")
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def task_manager_resources():
+    """获取系统资源使用情况"""
+    task_manager = os.path.join(SCRIPT_DIR, "llm_os_task_manager.py")
+    result = subprocess.run(
+        [sys.executable, task_manager, "--resources"],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
+def task_manager_kill(process_name):
+    """结束进程"""
+    task_manager = os.path.join(SCRIPT_DIR, "llm_os_task_manager.py")
+    result = subprocess.run(
+        [sys.executable, task_manager, "--kill", process_name],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout, result.returncode
+
+
+def task_manager_services():
+    """列出 Windows 服务"""
+    task_manager = os.path.join(SCRIPT_DIR, "llm_os_task_manager.py")
+    result = subprocess.run(
+        [sys.executable, task_manager, "--services"],
+        capture_output=True,
+        text=True,
+        encoding='utf-8',
+        errors='replace'
+    )
+    return result.stdout
+
+
 def show_menu():
     """显示 LLM-OS 控制面板菜单"""
     menu = """
 ╔═══════════════════════════════════════════════════════════╗
-║           LLM-OS 桌面操作系统控制面板 v1.2.0              ║
+║           LLM-OS 桌面操作系统控制面板 v1.3.0              ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  1. 窗口管理                                             ║
 ║     - list_windows: 列出所有窗口                         ║
@@ -311,7 +369,14 @@ def show_menu():
 ║     - mirror_window <title> <index>: 镜像窗口到显示器    ║
 ║     - window_display <title>: 查看窗口所在显示器         ║
 ║                                                         ║
-║  9. 退出                                                 ║
+║  9. 任务管理器 (新增!)                                  ║
+║     - task_list: 列出所有进程                            ║
+║     - task_top <N>: 列出前N个进程                         ║
+║     - task_resources: 查看系统资源                       ║
+║     - task_kill <name/pid>: 结束进程                     ║
+║     - task_services: 列出Windows服务                      ║
+║                                                         ║
+║  10. 退出                                                 ║
 ╚═══════════════════════════════════════════════════════════╝
 """
     return menu
@@ -399,6 +464,18 @@ def main():
                         help="将窗口镜像到指定显示器（保持相对位置）")
     parser.add_argument("--window-display", "-wd", type=str,
                         help="查看窗口当前所在的显示器")
+
+    # 任务管理器支持
+    parser.add_argument("--task-list", "-tl", action="store_true",
+                        help="列出所有进程（任务管理器）")
+    parser.add_argument("--task-top", "-tt", type=int, metavar="N",
+                        help="列出资源占用最高的N个进程")
+    parser.add_argument("--task-resources", "-tr", action="store_true",
+                        help="查看系统资源使用情况")
+    parser.add_argument("--task-kill", "-tk", type=str,
+                        help="结束进程（进程名或PID）")
+    parser.add_argument("--task-services", "-ts", action="store_true",
+                        help="列出 Windows 服务")
 
     args = parser.parse_args()
 
@@ -556,6 +633,23 @@ def main():
     if args.window_display:
         output, code = multidisplay_window_display(args.window_display)
         print(output if output else "未找到窗口")
+
+    # 任务管理器操作
+    if args.task_list:
+        print(task_manager_list())
+
+    if args.task_top:
+        print(task_manager_list(args.task_top))
+
+    if args.task_resources:
+        print(task_manager_resources())
+
+    if args.task_kill:
+        output, code = task_manager_kill(args.task_kill)
+        print(output if output else f"✓ 进程 {args.task_kill} 已结束")
+
+    if args.task_services:
+        print(task_manager_services())
 
 
 if __name__ == "__main__":
